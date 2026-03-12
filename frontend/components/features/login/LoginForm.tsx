@@ -9,6 +9,8 @@ interface LoginFormProps {
   firstInputRef?: React.RefObject<HTMLInputElement>;
 }
 
+const DEV_AUTH_BYPASS = process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === "true";
+
 export function LoginForm({ firstInputRef }: LoginFormProps) {
   const { login } = useAuth();
   const [form, setForm] = useState({ full_name: "", employee_id: "" });
@@ -19,23 +21,42 @@ export function LoginForm({ firstInputRef }: LoginFormProps) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
+  async function submitLogin(fullName: string, employeeId: string) {
+    const trimmed = fullName.trim();
+    const spaceIdx = trimmed.indexOf(" ");
+    const first_name = spaceIdx >= 0 ? trimmed.slice(0, spaceIdx).trim() : trimmed;
+    const last_name = spaceIdx >= 0 ? trimmed.slice(spaceIdx + 1).trim() : "";
+
+    await login({
+      employee_id: employeeId.trim(),
+      first_name,
+      last_name,
+      access_code: "AAP",
+    });
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    const trimmed = form.full_name.trim();
-    const spaceIdx = trimmed.indexOf(" ");
-    const first_name = spaceIdx >= 0 ? trimmed.slice(0, spaceIdx).trim() : trimmed;
-    const last_name = spaceIdx >= 0 ? trimmed.slice(spaceIdx + 1).trim() : "";
+    try {
+      await submitLogin(form.full_name, form.employee_id);
+    } catch (err) {
+      setError(
+        err instanceof ApiError ? err.message : "Something went wrong. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleDevBypass() {
+    setLoading(true);
+    setError(null);
 
     try {
-      await login({
-        employee_id: form.employee_id.trim(),
-        first_name,
-        last_name,
-        access_code: "AAP",
-      });
+      await submitLogin("Dev User", "dev-001");
     } catch (err) {
       setError(
         err instanceof ApiError ? err.message : "Something went wrong. Please try again."
@@ -89,9 +110,30 @@ export function LoginForm({ firstInputRef }: LoginFormProps) {
         </div>
       )}
 
-      <Button type="submit" size="lg" loading={loading} className="w-full justify-center">
-        Enter AAP Start
-      </Button>
+      <div className="space-y-3">
+        <Button type="submit" size="lg" loading={loading} className="w-full justify-center">
+          Enter AAP Start
+        </Button>
+
+        {DEV_AUTH_BYPASS && (
+          <div className="rounded-[22px] border border-brand-action/15 bg-brand-action/[0.05] p-4">
+            <p className="text-ui font-semibold text-brand-ink">Development login is enabled</p>
+            <p className="mt-1 text-caption text-text-secondary">
+              Use the shortcut below to enter with the local dev profile instead of checking Google Sheets.
+            </p>
+            <Button
+              type="button"
+              variant="secondary"
+              size="md"
+              onClick={handleDevBypass}
+              disabled={loading}
+              className="mt-3 w-full justify-center"
+            >
+              Enter with dev profile
+            </Button>
+          </div>
+        )}
+      </div>
 
       <p className="text-caption text-text-muted">
         Use the same full name and employee number listed in the employee roster. Session access stays active while you work.

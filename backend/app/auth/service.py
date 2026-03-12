@@ -9,11 +9,13 @@ Google Sheet structure expected:
   Columns:   Employee ID | Full Name | Track
 """
 
-import gspread
-from google.oauth2.service_account import Credentials
-from jose import jwt, JWTError
 from datetime import datetime, timedelta, timezone
+
+import gspread
 from fastapi import HTTPException, Request, status
+from google.oauth2.service_account import Credentials
+from jose import JWTError, jwt
+
 from app.config import get_settings
 
 settings = get_settings()
@@ -26,7 +28,25 @@ SCOPES = [
 VALID_TRACKS = {"hr", "warehouse", "administrative"}
 
 
-# ── Google Sheets ─────────────────────────────────────────────────────────────
+def _normalize_track(track: str) -> str:
+    normalized = track.strip().lower()
+    if normalized not in VALID_TRACKS:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=(
+                "DEV_AUTH_TRACK must be one of hr, warehouse, or administrative."
+            ),
+        )
+    return normalized
+
+
+def _get_dev_user() -> dict:
+    return {
+        "employee_id": settings.dev_auth_employee_id.strip(),
+        "full_name": settings.dev_auth_full_name.strip(),
+        "track": _normalize_track(settings.dev_auth_track),
+    }
+
 
 def _get_roster() -> list[dict]:
     """
@@ -59,26 +79,24 @@ def _get_roster() -> list[dict]:
         )
 
 
-# ── Validation ────────────────────────────────────────────────────────────────
-
 def validate_login(employee_id: str, first_name: str, last_name: str, access_code: str) -> dict:
     """
     Validates credentials against the Employee Roster.
     Returns {employee_id, full_name, track} on success.
     Raises HTTPException on failure.
     """
-    # 1. Verify shared access code
+    if settings.dev_auth_bypass:
+        return _get_dev_user()
+
     if access_code.strip().upper() != settings.access_code.strip().upper():
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials.",
         )
 
-    # 2. Normalise inputs
     submitted_id = employee_id.strip()
     submitted_full_name = f"{first_name.strip()} {last_name.strip()}".strip()
 
-    # 3. Look up employee in roster
     roster = _get_roster()
     match = None
     for row in roster:
@@ -94,7 +112,6 @@ def validate_login(employee_id: str, first_name: str, last_name: str, access_cod
             detail="Invalid credentials.",
         )
 
-    # 4. Validate and normalise track
     raw_track = str(match.get("Track", "")).strip().lower()
     if raw_track not in VALID_TRACKS:
         raise HTTPException(
@@ -108,8 +125,6 @@ def validate_login(employee_id: str, first_name: str, last_name: str, access_cod
         "track": raw_track,
     }
 
-
-# ── JWT ───────────────────────────────────────────────────────────────────────
 
 def create_token(employee_id: str, full_name: str, track: str) -> str:
     expiry = datetime.now(timezone.utc) + timedelta(hours=settings.jwt_expiration_hours)
@@ -136,7 +151,7 @@ def decode_token(token: str) -> dict:
 
 
 def get_current_user(request: Request) -> dict:
-    """FastAPI dependency — resolves the current employee from the session cookie."""
+    """FastAPI dependency - resolves the current employee from the session cookie."""
     token = request.cookies.get("aap_session")
     if not token:
         raise HTTPException(

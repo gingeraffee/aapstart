@@ -1,6 +1,6 @@
-from pydantic_settings import BaseSettings
 from functools import lru_cache
-import os
+
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -13,6 +13,10 @@ class Settings(BaseSettings):
     content_dir: str = "../content"
     database_url: str = "sqlite:///./data/progress.db"
     frontend_url: str = "http://localhost:3000"
+    dev_auth_bypass: bool = False
+    dev_auth_employee_id: str = "dev-001"
+    dev_auth_full_name: str = "Dev User"
+    dev_auth_track: str = "hr"
 
     class Config:
         env_file = ".env"

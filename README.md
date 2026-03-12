@@ -1,4 +1,4 @@
-# AAP Start â€” Onboarding Portal
+# AAP Start Ã¢â‚¬â€ Onboarding Portal
 
 A guided onboarding portal for new AAP employees. Built with FastAPI (backend) and Next.js (frontend).
 
@@ -28,7 +28,7 @@ AAP Start is an employee onboarding portal that guides new hires through a serie
 
 Progress is saved automatically. Employees can log out and return at any time.
 
-**Tracks** â€” Employees are assigned a track (HR, Warehouse, or Administrative) based on their entry in the Google Sheets roster. The track determines which modules they see.
+**Tracks** Ã¢â‚¬â€ Employees are assigned a track (HR, Warehouse, or Administrative) based on their entry in the Google Sheets roster. The track determines which modules they see.
 
 ---
 
@@ -36,34 +36,34 @@ Progress is saved automatically. Employees can log out and return at any time.
 
 ```
 aapstart/
-â”œâ”€â”€ backend/          FastAPI backend (Python)
-â”‚   â”œâ”€â”€ app/
-â”‚   â”‚   â”œâ”€â”€ auth/     Login, JWT session
-â”‚   â”‚   â”œâ”€â”€ content/  Content loader (reads /content files)
-â”‚   â”‚   â”œâ”€â”€ database/ SQLite progress tracking
-â”‚   â”‚   â”œâ”€â”€ modules/  Module API routes
-â”‚   â”‚   â”œâ”€â”€ progress/ Progress tracking routes
-â”‚   â”‚   â””â”€â”€ resources/ Resource Hub routes
-â”‚   â”œâ”€â”€ static/
-â”‚   â”‚   â””â”€â”€ downloads/ Downloadable files served by the Resource Hub
-â”‚   â”œâ”€â”€ .env          Your local environment config (not committed)
-â”‚   â”œâ”€â”€ .env.example  Template for .env
-â”‚   â””â”€â”€ requirements.txt
-â”‚
-â”œâ”€â”€ frontend/         Next.js frontend (TypeScript)
-â”‚   â”œâ”€â”€ app/          Pages and routes
-â”‚   â”œâ”€â”€ components/   Reusable UI components
-â”‚   â”œâ”€â”€ lib/          API client, types, context
-â”‚   â””â”€â”€ styles/       Global CSS
-â”‚
-â””â”€â”€ content/          All editable content lives here
-    â”œâ”€â”€ modules/      One .md file per module
-    â”œâ”€â”€ resources/
-    â”‚   â””â”€â”€ resources.yaml   Resource Hub items
-    â””â”€â”€ ui/
-        â”œâ”€â”€ rotating-headers.yaml  Welcome message variants
-        â”œâ”€â”€ coach-tips.yaml        Quick tip variants
-        â””â”€â”€ login-scenes.yaml      Login page left panel
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ backend/          FastAPI backend (Python)
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ app/
+Ã¢â€â€š   Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ auth/     Login, JWT session
+Ã¢â€â€š   Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ content/  Content loader (reads /content files)
+Ã¢â€â€š   Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ database/ SQLite progress tracking
+Ã¢â€â€š   Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ modules/  Module API routes
+Ã¢â€â€š   Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ progress/ Progress tracking routes
+Ã¢â€â€š   Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ resources/ Resource Hub routes
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ static/
+Ã¢â€â€š   Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ downloads/ Downloadable files served by the Resource Hub
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ .env          Your local environment config (not committed)
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ .env.example  Template for .env
+Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ requirements.txt
+Ã¢â€â€š
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ frontend/         Next.js frontend (TypeScript)
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ app/          Pages and routes
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ components/   Reusable UI components
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ lib/          API client, types, context
+Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ styles/       Global CSS
+Ã¢â€â€š
+Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ content/          All editable content lives here
+    Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ modules/      One .md file per module
+    Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ resources/
+    Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ resources.yaml   Resource Hub items
+    Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ ui/
+        Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ rotating-headers.yaml  Welcome message variants
+        Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ coach-tips.yaml        Quick tip variants
+        Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ login-scenes.yaml      Login page left panel
 ```
 
 ---
@@ -73,18 +73,18 @@ aapstart/
 The frontend now has a small set of shared files that control most of the visual system.
 Start here before changing page-level styling:
 
-- `frontend/tailwind.config.ts` â€” core design tokens (colors, type scale, radius, shadows, animation)
-- `frontend/styles/globals.css` â€” ambient background, premium panel styles, prose styling, utility classes
-- `frontend/components/layout/AppShell.tsx` â€” global portal shell, header, navigation, signed-in framing
-- `frontend/components/layout/PageContainer.tsx` â€” page width and spacing rules
-- `frontend/components/ui/` â€” reusable buttons, cards, badges, tabs, checklist controls, callouts
+- `frontend/tailwind.config.ts` Ã¢â‚¬â€ core design tokens (colors, type scale, radius, shadows, animation)
+- `frontend/styles/globals.css` Ã¢â‚¬â€ ambient background, premium panel styles, prose styling, utility classes
+- `frontend/components/layout/AppShell.tsx` Ã¢â‚¬â€ global portal shell, header, navigation, signed-in framing
+- `frontend/components/layout/PageContainer.tsx` Ã¢â‚¬â€ page width and spacing rules
+- `frontend/components/ui/` Ã¢â‚¬â€ reusable buttons, cards, badges, tabs, checklist controls, callouts
 
 Feature-level page composition lives here:
 
-- `frontend/components/features/login/` â€” login composition and form
-- `frontend/components/features/overview/` â€” welcome hero, progress, module cards, right rail
-- `frontend/components/features/modules/` â€” module content rendering and checklist blocks
-- `frontend/components/features/completion/` â€” completion state presentation
+- `frontend/components/features/login/` Ã¢â‚¬â€ login composition and form
+- `frontend/components/features/overview/` Ã¢â‚¬â€ welcome hero, progress, module cards, right rail
+- `frontend/components/features/modules/` Ã¢â‚¬â€ module content rendering and checklist blocks
+- `frontend/components/features/completion/` Ã¢â‚¬â€ completion state presentation
 
 Keep content changes in `/content` whenever possible. Use React components for layout and interaction, not for storing business copy.
 
@@ -92,13 +92,13 @@ Keep content changes in `/content` whenever possible. Use React components for l
 
 Primary product routes live in `frontend/app/`:
 
-- `frontend/app/(auth)/login/page.tsx` â€” sign-in experience
-- `frontend/app/(portal)/overview/page.tsx` â€” post-login home / launch point
-- `frontend/app/(portal)/modules/[slug]/page.tsx` â€” guided module reading experience
-- `frontend/app/(portal)/modules/[slug]/acknowledge/page.tsx` â€” acknowledgement flow
-- `frontend/app/(portal)/modules/[slug]/quiz/page.tsx` â€” one-question-at-a-time quiz flow
-- `frontend/app/(portal)/modules/[slug]/complete/page.tsx` â€” completion state
-- `frontend/app/(portal)/resources/page.tsx` â€” resource hub
+- `frontend/app/(auth)/login/page.tsx` Ã¢â‚¬â€ sign-in experience
+- `frontend/app/(portal)/overview/page.tsx` Ã¢â‚¬â€ post-login home / launch point
+- `frontend/app/(portal)/modules/[slug]/page.tsx` Ã¢â‚¬â€ guided module reading experience
+- `frontend/app/(portal)/modules/[slug]/acknowledge/page.tsx` Ã¢â‚¬â€ acknowledgement flow
+- `frontend/app/(portal)/modules/[slug]/quiz/page.tsx` Ã¢â‚¬â€ one-question-at-a-time quiz flow
+- `frontend/app/(portal)/modules/[slug]/complete/page.tsx` Ã¢â‚¬â€ completion state
+- `frontend/app/(portal)/resources/page.tsx` Ã¢â‚¬â€ resource hub
 
 ## Content vs UI
 
@@ -132,7 +132,7 @@ pip install -r requirements.txt
 
 # Copy and configure environment
 cp .env.example .env
-# Edit .env â€” add your JWT secret, Google credentials path, and sheet name
+# Edit .env Ã¢â‚¬â€ add your JWT secret, Google credentials path, and sheet name
 ```
 
 **Required `.env` values:**
@@ -173,7 +173,7 @@ Both servers must be running at the same time for the app to work.
 
 ## Editing Content
 
-All content lives in the `/content` folder. You can edit these files directly in VS Code â€” no coding required.
+All content lives in the `/content` folder. You can edit these files directly in VS Code Ã¢â‚¬â€ no coding required.
 
 ### Module files (`content/modules/`)
 
@@ -193,10 +193,10 @@ quiz:
         - id: a
           text: Paylocity
         - id: b
-          text: BambooHR   â† correct answer
+          text: BambooHR   Ã¢â€ Â correct answer
         - id: c
           text: LinkedIn Learning
-      correctId: b          â† must match the id above
+      correctId: b          Ã¢â€ Â must match the id above
 ```
 
 **Change acknowledgement statements:**
@@ -210,10 +210,10 @@ acknowledgements:
 
 **Edit body content:**
 Everything below the second `---` is regular Markdown. Standard formatting works:
-- `**bold**` â†’ bold
-- `*italic*` â†’ italic
-- `## Heading` â†’ section heading
-- `- Item` â†’ bullet list
+- `**bold**` Ã¢â€ â€™ bold
+- `*italic*` Ã¢â€ â€™ italic
+- `## Heading` Ã¢â€ â€™ section heading
+- `- Item` Ã¢â€ â€™ bullet list
 
 **Special content blocks:**
 
@@ -240,9 +240,9 @@ description: Brief description of the link.
 
 **Change module status:**
 In the frontmatter, set `status:` to one of:
-- `published` â€” visible and accessible
-- `coming_soon` â€” visible but locked with a "coming soon" label
-- `draft` â€” completely hidden from employees
+- `published` Ã¢â‚¬â€ visible and accessible
+- `coming_soon` Ã¢â‚¬â€ visible but locked with a "coming soon" label
+- `draft` Ã¢â‚¬â€ completely hidden from employees
 
 ---
 
@@ -254,16 +254,16 @@ In the frontmatter, set `status:` to one of:
    ```
 
 2. **Update the frontmatter.** At minimum, change:
-   - `slug:` â€” must match the filename (without `.md`)
-   - `title:` â€” shown on the overview page
-   - `description:` â€” shown under the title on the overview card
-   - `tracks:` â€” which employees see it: `[hr]`, `[warehouse]`, `[administrative]`, or `[hr, warehouse, administrative]`
-   - `order:` â€” position in the module list (lower = earlier)
-   - `status:` â€” `published`, `coming_soon`, or `draft`
+   - `slug:` Ã¢â‚¬â€ must match the filename (without `.md`)
+   - `title:` Ã¢â‚¬â€ shown on the overview page
+   - `description:` Ã¢â‚¬â€ shown under the title on the overview card
+   - `tracks:` Ã¢â‚¬â€ which employees see it: `[hr]`, `[warehouse]`, `[administrative]`, or `[hr, warehouse, administrative]`
+   - `order:` Ã¢â‚¬â€ position in the module list (lower = earlier)
+   - `status:` Ã¢â‚¬â€ `published`, `coming_soon`, or `draft`
 
 3. **Set quiz/acknowledgement flags:**
-   - `requiresQuiz: true` â€” employee must pass a quiz to complete
-   - `requiresAcknowledgement: true` â€” employee must confirm statements to complete
+   - `requiresQuiz: true` Ã¢â‚¬â€ employee must pass a quiz to complete
+   - `requiresAcknowledgement: true` Ã¢â‚¬â€ employee must confirm statements to complete
    - Set to `false` if not needed
 
 4. **Write the content** below the second `---`.
@@ -368,7 +368,7 @@ The sheet must have a worksheet named **`Employee Roster`** with these columns (
 ### Content-only changes (modules, resources, UI copy)
 
 1. Edit the files in `/content`
-2. Restart the backend â€” content is loaded at startup
+2. Restart the backend Ã¢â‚¬â€ content is loaded at startup
 3. No frontend rebuild needed
 
 ### Code changes (frontend or backend)
@@ -401,7 +401,7 @@ npm run dev       # Development mode
 **A module isn't showing up.**
 - Check that `status:` is set to `published` (not `draft` or `coming_soon`).
 - Check that `tracks:` includes the employee's track.
-- Restart the backend â€” content loads at startup.
+- Restart the backend Ã¢â‚¬â€ content loads at startup.
 
 **A quiz answer isn't working.**
 - Confirm `correctId:` matches the `id:` of the correct option exactly (e.g., `b`).
@@ -419,3 +419,32 @@ npm run dev       # Development mode
 ## Contact
 
 For questions about this application, contact Nicole Thornton, HR Manager.
+
+## Dev Login Bypass
+
+For local development, you can bypass Google Sheets login entirely.
+This stays off unless you explicitly enable it.
+
+Backend in `backend/.env`:
+
+```env
+DEV_AUTH_BYPASS=true
+DEV_AUTH_EMPLOYEE_ID=dev-001
+DEV_AUTH_FULL_NAME=Dev User
+DEV_AUTH_TRACK=hr
+```
+
+Frontend in `frontend/.env.local`:
+
+```env
+NEXT_PUBLIC_DEV_AUTH_BYPASS=true
+```
+
+Then restart both servers.
+
+What this does:
+- The backend skips roster validation and signs you in as the dev user from `backend/.env`
+- The login page shows an `Enter with dev profile` button when the frontend flag is enabled
+- Progress stays tied to that stable dev employee ID, so you can test flows consistently
+
+Keep this off in production.
