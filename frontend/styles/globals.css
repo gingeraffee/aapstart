@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap');
+/* Inter is loaded via next/font/google in layout.tsx for optimal performance */
 
 @tailwind base;
 @tailwind components;
@@ -6,11 +6,11 @@
 
 :root {
   color-scheme: light;
-  --page-ambient-top: rgba(46, 61, 143, 0.2);
-  --page-ambient-mid: rgba(48, 119, 185, 0.13);
-  --page-ambient-low: rgba(223, 0, 42, 0.06);
-  --panel-border: rgba(255, 255, 255, 0.72);
-  --panel-shadow: 0 30px 80px rgba(15, 23, 42, 0.09), 0 10px 28px rgba(15, 23, 42, 0.05);
+  --accent: #df002a;
+  --brand-ink: #0f1d3c;
+  --brand-action: #3077b9;
+  --brand-deep: #1a2a5e;
+  --brand-sky: #5d9fd2;
 }
 
 @layer base {
@@ -29,22 +29,7 @@
     @apply bg-background text-text-primary font-sans;
     min-height: 100vh;
     font-size: 1rem;
-    line-height: 1.75;
-    background-image:
-      radial-gradient(circle at top left, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0) 34%),
-      linear-gradient(180deg, #f7f9fd 0%, #edf2f8 100%);
-  }
-
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    background:
-      radial-gradient(circle at 10% 10%, var(--page-ambient-top), transparent 30%),
-      radial-gradient(circle at 85% 15%, var(--page-ambient-mid), transparent 26%),
-      radial-gradient(circle at 50% 100%, var(--page-ambient-low), transparent 28%);
+    line-height: 1.7;
   }
 
   h1, h2, h3 {
@@ -79,54 +64,6 @@
 }
 
 @layer components {
-  .premium-panel {
-    position: relative;
-    overflow: hidden;
-    border: 1px solid var(--panel-border);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(248, 250, 255, 0.82));
-    box-shadow: var(--panel-shadow);
-    backdrop-filter: blur(16px);
-  }
-
-  .premium-panel::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background-image: linear-gradient(rgba(215, 223, 235, 0.22) 1px, transparent 1px), linear-gradient(90deg, rgba(215, 223, 235, 0.14) 1px, transparent 1px);
-    background-size: 100% 48px, 48px 100%;
-    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.16), transparent 70%);
-  }
-
-  .premium-panel-dark {
-    position: relative;
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: linear-gradient(145deg, rgba(4, 17, 34, 0.92), rgba(12, 28, 58, 0.86));
-    box-shadow: 0 40px 120px rgba(3, 8, 18, 0.35);
-    backdrop-filter: blur(22px);
-  }
-
-  .section-kicker {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    padding: 0.45rem 0.85rem;
-    border-radius: 999px;
-    border: 1px solid rgba(48, 119, 185, 0.14);
-    background: rgba(48, 119, 185, 0.08);
-    color: #2e5f9d;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-
-  .soft-divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(184, 197, 216, 0.8), transparent);
-  }
-
   .prose-module {
     @apply text-text-primary leading-relaxed;
   }
@@ -137,6 +74,8 @@
 
   .prose-module h3 {
     @apply text-h3 text-text-primary mt-8 mb-3;
+    padding-left: 1rem;
+    border-left: 3px solid var(--accent);
   }
 
   .prose-module p {
@@ -162,12 +101,11 @@
     content: "";
     position: absolute;
     left: -1.1rem;
-    top: 0.8rem;
-    width: 0.42rem;
-    height: 0.42rem;
-    border-radius: 999px;
-    background: linear-gradient(135deg, #243673 0%, #3077b9 100%);
-    box-shadow: 0 0 0 0.3rem rgba(48, 119, 185, 0.1);
+    top: 0.75rem;
+    width: 6px;
+    height: 6px;
+    border-radius: 1px;
+    background: var(--accent);
   }
 
   .prose-module strong {

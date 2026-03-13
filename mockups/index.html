@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AAP Start — Mockup Comparison</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Manrope', system-ui, sans-serif;
+    background: #0f1d3c; color: #f0f4fa;
+    min-height: 100vh; padding: 3rem 2rem;
+  }
+  .header { text-align: center; margin-bottom: 3rem; }
+  .header h1 { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.04em; margin-bottom: 0.5rem; }
+  .header p { color: rgba(255,255,255,0.5); font-size: 1rem; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; max-width: 1400px; margin: 0 auto; }
+  .card {
+    border-radius: 20px; overflow: hidden; background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08); transition: all 0.3s ease;
+  }
+  .card:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+  .card-label {
+    padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .card-label h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; }
+  .card-label p { font-size: 0.78rem; color: rgba(255,255,255,0.4); }
+  .card-preview {
+    position: relative; width: 100%; padding-top: 65%; overflow: hidden;
+  }
+  .card-preview iframe {
+    position: absolute; top: 0; left: 0;
+    width: 200%; height: 200%;
+    transform: scale(0.5); transform-origin: top left;
+    border: none; pointer-events: none;
+  }
+  .card-actions { padding: 1.25rem 1.5rem; display: flex; gap: 0.75rem; }
+  .btn {
+    flex: 1; padding: 0.7rem; border-radius: 10px; border: none;
+    font-family: inherit; font-size: 0.82rem; font-weight: 700;
+    cursor: pointer; text-align: center; text-decoration: none;
+    transition: all 0.2s;
+  }
+  .btn-open {
+    background: linear-gradient(135deg, #243673, #3077b9); color: #fff;
+  }
+  .btn-open:hover { box-shadow: 0 4px 16px rgba(48, 119, 185, 0.3); }
+  .features {
+    padding: 0 1.5rem 1.5rem;
+  }
+  .feature-list { list-style: none; }
+  .feature-list li {
+    font-size: 0.78rem; color: rgba(255,255,255,0.45); padding: 0.3rem 0;
+    padding-left: 1rem; position: relative;
+  }
+  .feature-list li::before {
+    content: ''; position: absolute; left: 0; top: 0.65rem;
+    width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.2);
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>AAP Start Mockups</h1>
+  <p>3 visual directions for the onboarding portal. Click to open each in full view.</p>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <div class="card-label">
+      <h2>Version A: Midnight Luxe</h2>
+      <p>Dark mode + gold accents + sidebar nav</p>
+    </div>
+    <div class="card-preview">
+      <iframe src="version-a.html" loading="lazy"></iframe>
+    </div>
+    <div class="features">
+      <ul class="feature-list">
+        <li>Full dark theme with gold accent color</li>
+        <li>Persistent sidebar navigation with module list</li>
+        <li>Card grid overview for modules</li>
+        <li>Underline tab style for module pages</li>
+        <li>Premium, high-end editorial feel</li>
+      </ul>
+    </div>
+    <div class="card-actions">
+      <a class="btn btn-open" href="version-a.html" target="_blank">Open Full View</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">
+      <h2>Version B: Crystal Clear</h2>
+      <p>Light glassmorphism + top nav + linear rows</p>
+    </div>
+    <div class="card-preview">
+      <iframe src="version-b.html" loading="lazy"></iframe>
+    </div>
+    <div class="features">
+      <ul class="feature-list">
+        <li>Light theme with frosted glass panels</li>
+        <li>Compact top navbar with progress indicator</li>
+        <li>Linear row layout for module list (clean, scannable)</li>
+        <li>Pill-style tab switcher for module pages</li>
+        <li>Airy, Apple-inspired aesthetic</li>
+      </ul>
+    </div>
+    <div class="card-actions">
+      <a class="btn btn-open" href="version-b.html" target="_blank">Open Full View</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">
+      <h2>Version C: Bold Blocks</h2>
+      <p>Icon rail + red accent + bento grid</p>
+    </div>
+    <div class="card-preview">
+      <iframe src="version-c.html" loading="lazy"></iframe>
+    </div>
+    <div class="features">
+      <ul class="feature-list">
+        <li>Slim icon rail with minimal sidebar</li>
+        <li>Red accent color for energy and brand differentiation</li>
+        <li>Bento-style grid with featured module highlight</li>
+        <li>Segmented control tabs for module pages</li>
+        <li>Bold editorial / Notion-like structure</li>
+      </ul>
+    </div>
+    <div class="card-actions">
+      <a class="btn btn-open" href="version-c.html" target="_blank">Open Full View</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

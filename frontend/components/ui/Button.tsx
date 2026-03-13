@@ -14,19 +14,19 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    "bg-[linear-gradient(135deg,#243673_0%,#3077b9_100%)] text-white shadow-[0_18px_36px_rgba(36,54,115,0.22)] hover:-translate-y-0.5 hover:shadow-[0_22px_44px_rgba(36,54,115,0.26)] active:translate-y-0",
+    "bg-brand-ink text-white hover:bg-[#1a2540] hover:-translate-y-px hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] active:translate-y-0",
   secondary:
-    "border border-white/80 bg-white/90 text-text-primary shadow-sm hover:bg-white hover:-translate-y-0.5",
+    "border border-border bg-surface text-text-primary hover:bg-bg-light hover:-translate-y-px",
   ghost:
-    "bg-transparent text-text-secondary hover:bg-slate-950/[0.04] hover:text-text-primary",
+    "bg-transparent text-text-secondary hover:bg-black/[0.04] hover:text-text-primary",
   destructive:
-    "bg-[linear-gradient(135deg,#df002a_0%,#b50b2f_100%)] text-white shadow-[0_18px_36px_rgba(223,0,42,0.18)] hover:-translate-y-0.5",
+    "bg-accent text-white hover:-translate-y-px hover:shadow-[0_4px_12px_rgba(223,0,42,0.2)]",
 };
 
 const sizeClasses: Record<Size, string> = {
-  sm: "h-9 px-3.5 text-caption rounded-full gap-1.5",
-  md: "h-11 px-5 text-ui rounded-full gap-2",
-  lg: "h-[3.25rem] px-7 text-ui rounded-full gap-2.5",
+  sm: "h-9 px-3.5 text-[0.78rem] rounded-button gap-1.5",
+  md: "h-11 px-5 text-[0.88rem] rounded-button gap-2",
+  lg: "h-[2.875rem] px-7 text-[0.88rem] rounded-button gap-2.5",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -36,7 +36,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || loading}
         className={cn(
-          "inline-flex items-center justify-center font-semibold tracking-[-0.01em] transition-all duration-200 ease-out",
+          "inline-flex items-center justify-center font-bold tracking-[-0.01em] transition-all duration-200 ease-out",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-action focus-visible:ring-offset-2 focus-visible:ring-offset-white",
           "disabled:cursor-not-allowed disabled:opacity-50",
           "select-none whitespace-nowrap",

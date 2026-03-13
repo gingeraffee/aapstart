@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AAP Start — Version C: Bold Blocks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --brand-action: #3077b9;
+    --brand-deep: #1a2a5e;
+    --brand-ink: #0f1d3c;
+    --brand-sky: #5d9fd2;
+    --accent: #df002a;
+    --accent-soft: rgba(223, 0, 42, 0.06);
+    --bg: #f8f9fb;
+    --surface: #ffffff;
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --text-muted: #9ca3af;
+    --border: #e5e7eb;
+    --success: #059669;
+    --success-bg: #ecfdf5;
+  }
+  html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background: var(--bg); color: var(--text-primary);
+    min-height: 100vh; line-height: 1.7;
+  }
+  ::selection { background: rgba(48, 119, 185, 0.18); }
+
+  .layout { display: flex; min-height: 100vh; padding-top: 36px; }
+  .rail {
+    width: 72px; flex-shrink: 0; background: var(--brand-ink);
+    display: flex; flex-direction: column; align-items: center;
+    padding: 1.25rem 0; gap: 0.5rem; position: fixed; top: 36px; bottom: 0; z-index: 40;
+  }
+  .rail-logo {
+    width: 44px; height: 44px; border-radius: 12px; overflow: hidden;
+    background: #fff; display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+  .rail-logo img { width: 36px; height: auto; }
+  .rail-item {
+    width: 44px; height: 44px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; color: rgba(255,255,255,0.4); cursor: pointer;
+    transition: all 0.2s; position: relative;
+  }
+  .rail-item:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); }
+  .rail-item.active { background: rgba(48, 119, 185, 0.2); color: #fff; }
+  .rail-item.active::before {
+    content: ''; position: absolute; left: -4px; top: 50%; transform: translateY(-50%);
+    width: 4px; height: 20px; border-radius: 0 4px 4px 0; background: var(--brand-action);
+  }
+  .rail-bottom { margin-top: auto; }
+  .rail-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, #374151, #6b7280);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 700; color: #fff;
+  }
+
+  .main-area { flex: 1; margin-left: 72px; }
+
+  .page-header {
+    position: sticky; top: 36px; z-index: 30;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.85rem 2.5rem; background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(16px); border-bottom: 1px solid var(--border);
+  }
+  .page-header-brand { display: flex; align-items: center; gap: 0.85rem; }
+  .page-header-brand img { height: 26px; }
+  .page-header-brand .sep { width: 1px; height: 20px; background: var(--border); }
+  .page-header-brand h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.05rem; font-weight: 500; color: var(--brand-deep); letter-spacing: -0.02em;
+  }
+  .header-meta { display: flex; align-items: center; gap: 1.5rem; }
+  .header-progress {
+    display: flex; align-items: center; gap: 0.65rem;
+    font-size: 0.73rem; color: var(--text-muted); font-weight: 600;
+  }
+  .header-bar { width: 100px; height: 4px; border-radius: 2px; background: var(--border); }
+  .header-bar-fill { width: 20%; height: 100%; border-radius: 2px; background: var(--accent); }
+
+  .content-area { padding: 2.5rem; max-width: 1100px; }
+
+  /* Overview */
+  .overview-grid {
+    display: grid; grid-template-columns: 1fr 340px; gap: 2rem; margin-bottom: 2rem;
+  }
+  .welcome-block {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; padding: 2.5rem; position: relative; overflow: hidden;
+  }
+  .welcome-block::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--brand-deep), var(--brand-action), var(--accent));
+  }
+  .welcome-block .eyebrow {
+    font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.14em;
+    font-weight: 700; color: var(--accent); margin-bottom: 1rem;
+  }
+  .welcome-block h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 500;
+    letter-spacing: -0.03em; line-height: 1.12; margin-bottom: 0.75rem;
+  }
+  .welcome-block p { color: var(--text-secondary); font-size: 0.93rem; max-width: 480px; }
+
+  .stats-block {
+    background: var(--brand-ink); border-radius: 20px; padding: 2rem; color: #fff;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .stats-block h3 {
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em;
+    color: rgba(255,255,255,0.45); font-weight: 700; margin-bottom: 1.5rem;
+  }
+  .stat-row { display: flex; align-items: baseline; gap: 0.75rem; margin-bottom: 1.5rem; }
+  .stat-row:last-child { margin-bottom: 0; }
+  .stat-big { font-size: 2.5rem; font-weight: 700; font-family: 'Playfair Display', Georgia, serif; line-height: 1; }
+  .stat-big.red { color: var(--accent); }
+  .stat-desc { font-size: 0.8rem; color: rgba(255,255,255,0.55); }
+  .stat-bar-track { width: 100%; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.1); margin-top: 1rem; }
+  .stat-bar-fill { width: 20%; height: 100%; border-radius: 3px; background: var(--accent); }
+
+  /* Bento Grid */
+  .bento-title {
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.14em;
+    font-weight: 700; color: var(--text-muted); margin-bottom: 1rem;
+  }
+  .bento-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .bento-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.5rem; cursor: pointer;
+    transition: all 0.2s ease; position: relative; overflow: hidden;
+  }
+  .bento-card:hover {
+    border-color: var(--brand-action);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06); transform: translateY(-2px);
+  }
+  .bento-card .num {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 3rem; font-weight: 700; line-height: 1;
+    color: rgba(0, 0, 0, 0.04); position: absolute; bottom: 0.5rem; right: 1rem;
+  }
+  .bento-tag {
+    display: inline-flex; padding: 0.2rem 0.55rem; border-radius: 6px;
+    font-size: 0.63rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+    margin-bottom: 0.75rem;
+  }
+  .tag-done { background: var(--success-bg); color: var(--success); }
+  .tag-active { background: rgba(48, 119, 185, 0.08); color: var(--brand-action); }
+  .tag-locked { background: #f3f4f6; color: var(--text-muted); }
+  .bento-card h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .bento-card p { font-size: 0.76rem; color: var(--text-muted); line-height: 1.5; }
+  .bento-card.featured {
+    grid-column: span 2; background: var(--brand-ink); color: #fff; border-color: transparent;
+  }
+  .bento-card.featured:hover { border-color: var(--brand-action); }
+  .bento-card.featured p { color: rgba(255,255,255,0.5); }
+  .bento-card.featured .num { color: rgba(255,255,255,0.05); }
+  .bento-card.featured .tag-active { background: rgba(48, 119, 185, 0.2); color: var(--brand-sky); }
+
+  /* Module Page */
+  .module-page { display: none; }
+  .module-page.visible { display: block; }
+  .breadcrumb {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-size: 0.76rem; color: var(--text-muted); margin-bottom: 2rem;
+  }
+  .breadcrumb a { color: var(--text-muted); text-decoration: none; cursor: pointer; }
+  .breadcrumb a:hover { color: var(--brand-action); }
+  .breadcrumb .sep { color: var(--border); }
+
+  .module-title-bar {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border);
+  }
+  .module-title-bar .eyebrow {
+    font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.14em;
+    font-weight: 700; color: var(--accent); margin-bottom: 0.5rem;
+  }
+  .module-title-bar h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 500; letter-spacing: -0.02em;
+  }
+  .module-title-bar p { color: var(--text-secondary); font-size: 0.86rem; margin-top: 0.35rem; }
+
+  .seg-tabs {
+    display: inline-flex; background: #f3f4f6; border-radius: 10px; padding: 3px; margin-bottom: 2rem;
+  }
+  .seg-tab {
+    padding: 0.6rem 1.5rem; border: none; border-radius: 8px;
+    font-family: inherit; font-size: 0.8rem; font-weight: 600;
+    color: var(--text-muted); background: transparent; cursor: pointer; transition: all 0.2s;
+  }
+  .seg-tab.active {
+    background: var(--surface); color: var(--text-primary);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  }
+
+  .content-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 18px; padding: 2.5rem 3rem;
+  }
+  .content-card h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.1rem; font-weight: 600; margin-bottom: 0.6rem; margin-top: 2rem;
+    position: relative; padding-left: 1rem;
+  }
+  .content-card h3:first-child { margin-top: 0; }
+  .content-card h3::before {
+    content: ''; position: absolute; left: 0; top: 0.15rem; bottom: 0.15rem;
+    width: 3px; border-radius: 2px; background: var(--accent);
+  }
+  .content-card p { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem; }
+  .content-card ul { list-style: none; padding: 0; margin-bottom: 1.25rem; }
+  .content-card li {
+    display: flex; align-items: flex-start; gap: 0.65rem;
+    color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.55rem;
+  }
+  .content-card li::before {
+    content: ''; margin-top: 0.55rem;
+    width: 6px; height: 6px; border-radius: 2px; flex-shrink: 0;
+    background: var(--accent);
+  }
+
+  .callout-strip {
+    display: flex; align-items: flex-start; gap: 1rem;
+    padding: 1.15rem 1.5rem; border-radius: 12px; margin: 1.5rem 0;
+    background: var(--accent-soft); border: 1px solid rgba(223, 0, 42, 0.1);
+  }
+  .callout-strip .icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 0.1rem; }
+  .callout-strip p { color: var(--text-primary) !important; font-size: 0.86rem !important; margin: 0 !important; }
+  .callout-strip strong { color: var(--accent); }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1.75rem; border: none; border-radius: 10px;
+    font-family: inherit; font-size: 0.86rem; font-weight: 700;
+    background: var(--brand-ink); color: #fff; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-primary:hover { background: #1a2540; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+  .btn-outline {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1.75rem; border: 1px solid var(--border); border-radius: 10px;
+    font-family: inherit; font-size: 0.86rem; font-weight: 600;
+    background: var(--surface); color: var(--text-secondary); cursor: pointer; transition: all 0.2s;
+  }
+  .btn-outline:hover { border-color: var(--text-muted); }
+
+  .quiz-panel, .ack-panel { display: none; }
+  .quiz-panel.visible, .ack-panel.visible { display: block; }
+  .q-block {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.75rem; margin-bottom: 1.25rem;
+  }
+  .q-block h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 1rem; }
+  .q-opt {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.75rem 1rem; border-radius: 10px; margin-bottom: 0.4rem;
+    border: 1px solid var(--border); cursor: pointer;
+    font-size: 0.86rem; color: var(--text-secondary); transition: all 0.2s;
+  }
+  .q-opt:hover { border-color: var(--brand-action); background: rgba(48, 119, 185, 0.03); }
+  .q-radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; }
+
+  .ack-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 18px; padding: 3rem; text-align: center;
+  }
+  .ack-box .icon { font-size: 2.5rem; margin-bottom: 1rem; }
+  .ack-box h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 600; margin-bottom: 0.75rem; }
+  .ack-box p { color: var(--text-secondary); font-size: 0.86rem; max-width: 420px; margin: 0 auto 1.75rem; }
+  .ack-chk { display: flex; align-items: center; gap: 0.75rem; justify-content: center; margin-bottom: 1.5rem; }
+  .ack-chk input { width: 20px; height: 20px; accent-color: var(--brand-ink); }
+  .ack-chk label { font-size: 0.86rem; color: var(--text-secondary); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .anim { animation: fadeUp 0.35s ease-out both; }
+  .d1 { animation-delay: 50ms; }
+  .d2 { animation-delay: 100ms; }
+  .d3 { animation-delay: 150ms; }
+  .d4 { animation-delay: 200ms; }
+  .d5 { animation-delay: 250ms; }
+
+  .version-label {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--brand-ink); color: #fff; text-align: center; padding: 0.5rem;
+    font-size: 0.76rem; font-weight: 700; letter-spacing: 0.06em;
+  }
+  .version-label span { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="version-label">VERSION C — BOLD BLOCKS / Playfair Display + DM Sans / <span>Red Accent</span> + Icon Rail + Bento Grid</div>
+
+<div class="layout">
+  <nav class="rail">
+    <div class="rail-logo"><img src="logo.png" alt="AAP"></div>
+    <div class="rail-item active" title="Dashboard" onclick="showOverview()">&#9633;</div>
+    <div class="rail-item" title="Modules" onclick="showModule()">&#9776;</div>
+    <div class="rail-item" title="Resources">&#128218;</div>
+    <div class="rail-bottom"><div class="rail-avatar">NT</div></div>
+  </nav>
+
+  <div class="main-area">
+    <div class="page-header">
+      <div class="page-header-brand">
+        <img src="logo.png" alt="AAP">
+        <div class="sep"></div>
+        <h1>Start</h1>
+      </div>
+      <div class="header-meta">
+        <div class="header-progress">
+          <div class="header-bar"><div class="header-bar-fill"></div></div>
+          <span>20% complete</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overview -->
+    <div id="overview-page" class="content-area">
+      <div class="overview-grid anim">
+        <div class="welcome-block">
+          <div class="eyebrow">Good morning, Nicole</div>
+          <h2>Your onboarding,<br>your pace.</h2>
+          <p>AAP Start walks you through everything you need to know. Each module builds on the last — no rush, no pop quizzes you can't retake.</p>
+        </div>
+        <div class="stats-block">
+          <h3>Your Progress</h3>
+          <div class="stat-row"><div class="stat-big red">2</div><div class="stat-desc">Modules<br>completed</div></div>
+          <div class="stat-row"><div class="stat-big">8</div><div class="stat-desc">Modules<br>remaining</div></div>
+          <div class="stat-bar-track"><div class="stat-bar-fill"></div></div>
+        </div>
+      </div>
+      <div class="bento-title anim d1">Modules</div>
+      <div class="bento-grid">
+        <div class="bento-card anim d1">
+          <span class="bento-tag tag-done">Complete</span>
+          <h3>Welcome to AAP</h3><p>Who we are, our mission, and what AAP Start is for.</p><span class="num">01</span>
+        </div>
+        <div class="bento-card featured anim d2" onclick="showModule()" style="cursor:pointer;">
+          <span class="bento-tag tag-active">In Progress</span>
+          <h3>How We Show Up</h3><p>Professionalism, respect, ethics, and raising concerns at AAP.</p><span class="num">02</span>
+        </div>
+        <div class="bento-card anim d2">
+          <span class="bento-tag tag-locked">Up Next</span>
+          <h3>Tools &amp; Systems</h3><p>BambooHR, Paylocity, LinkedIn Learning, timeclock.</p><span class="num">03</span>
+        </div>
+        <div class="bento-card anim d3">
+          <span class="bento-tag tag-locked">Locked</span>
+          <h3>How Work Works</h3><p>Attendance, dress code, performance expectations.</p><span class="num">04</span>
+        </div>
+        <div class="bento-card anim d3">
+          <span class="bento-tag tag-locked">Locked</span>
+          <h3>Benefits &amp; Pay</h3><p>Payroll, PTO, benefits timing, holiday eligibility.</p><span class="num">05</span>
+        </div>
+        <div class="bento-card anim d4">
+          <span class="bento-tag tag-locked">Locked</span>
+          <h3>Support &amp; Resources</h3><p>Leave, EAP, accommodations, escalation paths.</p><span class="num">06</span>
+        </div>
+        <div class="bento-card anim d4">
+          <span class="bento-tag tag-locked">Locked</span>
+          <h3>Safety at AAP</h3><p>Hazard reporting, incidents, and security awareness.</p><span class="num">07</span>
+        </div>
+        <div class="bento-card anim d5">
+          <span class="bento-tag tag-locked">Locked</span>
+          <h3>Where You Make an Impact</h3><p>Role-specific content coming soon.</p><span class="num">08</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Module Page -->
+    <div id="module-page" class="module-page">
+      <div class="content-area">
+        <div class="breadcrumb anim">
+          <a onclick="showOverview()">Dashboard</a><span class="sep">/</span><span>How We Show Up</span>
+        </div>
+        <div class="module-title-bar anim d1">
+          <div>
+            <div class="eyebrow">Module 02 / 10</div>
+            <h2>How We Show Up</h2>
+            <p>Standards behind the work, not just the work itself.</p>
+          </div>
+        </div>
+        <div class="seg-tabs anim d2">
+          <button class="seg-tab active" onclick="switchTab('content')">Content</button>
+          <button class="seg-tab" onclick="switchTab('quiz')">Quiz</button>
+          <button class="seg-tab" onclick="switchTab('ack')">Acknowledge</button>
+        </div>
+
+        <div id="tab-content" class="content-card anim d3">
+          <h3>What This Module Covers</h3>
+          <p>This module is about the standards behind the work, not just the work itself. At AAP, how people show up matters — professionalism, respectful behavior, ethical conduct, accountability, and how concerns are raised.</p>
+          <h3>Respect and Professionalism</h3>
+          <p>AAP expects employees to contribute to a workplace that is respectful, professional, and safe. Communicating directly, treating people with dignity, and handling conflict constructively are baseline expectations.</p>
+          <p>The non-negotiables:</p>
+          <ul>
+            <li>Harassment is not tolerated</li>
+            <li>Bullying and disrespectful behavior are not acceptable</li>
+            <li>Retaliation for good-faith reporting is not acceptable</li>
+            <li>Dishonest, unethical, or illegal conduct is not acceptable</li>
+          </ul>
+          <h3>Ethics and Conduct</h3>
+          <p>Employees are expected to use good judgment, protect trust, and conduct themselves in a way that reflects well on the company.</p>
+          <div class="callout-strip">
+            <span class="icon">&#128172;</span>
+            <p><strong>Speaking Up:</strong> Most workplace concerns should be raised early. Your supervisor is the first point of contact. If you're not comfortable with that, contact HR.</p>
+          </div>
+          <h3>Need Help?</h3>
+          <p>Start with your supervisor for most day-to-day concerns. Contact HR if the issue involves workplace conduct, harassment, bullying, or retaliation.</p>
+          <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+            <button class="btn-primary" onclick="switchTab('quiz')">Continue to Quiz &#8594;</button>
+          </div>
+        </div>
+
+        <div id="tab-quiz" class="quiz-panel">
+          <div class="q-block anim">
+            <h4>1. What should you do first if you have a workplace concern?</h4>
+            <div class="q-opt"><span class="q-radio"></span> Post about it on social media</div>
+            <div class="q-opt"><span class="q-radio"></span> Raise it with your supervisor</div>
+            <div class="q-opt"><span class="q-radio"></span> Ignore it and hope it resolves</div>
+            <div class="q-opt"><span class="q-radio"></span> File a formal complaint immediately</div>
+          </div>
+          <div class="q-block anim d1">
+            <h4>2. Which of the following is NOT acceptable at AAP?</h4>
+            <div class="q-opt"><span class="q-radio"></span> Direct communication</div>
+            <div class="q-opt"><span class="q-radio"></span> Constructive conflict resolution</div>
+            <div class="q-opt"><span class="q-radio"></span> Retaliation for good-faith reporting</div>
+            <div class="q-opt"><span class="q-radio"></span> Treating people with dignity</div>
+          </div>
+          <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+            <button class="btn-primary" onclick="switchTab('ack')">Submit &amp; Continue &#8594;</button>
+            <button class="btn-outline" onclick="switchTab('content')">&#8592; Review Content</button>
+          </div>
+        </div>
+
+        <div id="tab-ack" class="ack-panel">
+          <div class="ack-box anim">
+            <div class="icon">&#9989;</div>
+            <h3>Module Acknowledgement</h3>
+            <p>By checking the box below, you confirm that you have reviewed and understood the content in this module.</p>
+            <div class="ack-chk">
+              <input type="checkbox" id="ack-cb">
+              <label for="ack-cb">I acknowledge that I have reviewed "How We Show Up"</label>
+            </div>
+            <button class="btn-primary">Complete Module &#8594;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showOverview() {
+  document.getElementById('overview-page').style.display = 'block';
+  document.getElementById('module-page').classList.remove('visible');
+}
+function showModule() {
+  document.getElementById('overview-page').style.display = 'none';
+  document.getElementById('module-page').classList.add('visible');
+}
+function switchTab(tab) {
+  document.querySelectorAll('.seg-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-content').style.display = 'none';
+  document.getElementById('tab-quiz').classList.remove('visible');
+  document.getElementById('tab-ack').classList.remove('visible');
+  if (tab === 'content') {
+    document.getElementById('tab-content').style.display = 'block';
+    document.querySelectorAll('.seg-tab')[0].classList.add('active');
+  } else if (tab === 'quiz') {
+    document.getElementById('tab-quiz').classList.add('visible');
+    document.querySelectorAll('.seg-tab')[1].classList.add('active');
+  } else if (tab === 'ack') {
+    document.getElementById('tab-ack').classList.add('visible');
+    document.querySelectorAll('.seg-tab')[2].classList.add('active');
+  }
+}
+</script>
+</body>
+</html>
