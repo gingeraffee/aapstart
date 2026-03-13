@@ -163,10 +163,10 @@ function Scene1Hero({ onNavClick }: { onNavClick: (idx: number) => void }) {
             You are now.
           </span>
         </h1>
-        <p style={{ color: C.white60, fontSize: "0.9375rem", lineHeight: 1.6, margin: "0 0 0.375rem" }}>
+        <p style={{ color: "rgba(255,255,255,0.84)", fontSize: "1.1875rem", fontWeight: 600, lineHeight: 1.45, margin: "0 0 0.375rem" }}>
           A smoother start begins here.
         </p>
-        <p style={{ color: C.white40, fontSize: "0.875rem", lineHeight: 1.6, margin: 0 }}>
+        <p style={{ color: "rgba(255,255,255,0.74)", fontSize: "1.125rem", fontWeight: 500, lineHeight: 1.45, margin: 0 }}>
           Because day one already has enough surprises.
         </p>
       </div>
