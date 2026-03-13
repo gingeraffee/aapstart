@@ -1,21 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useAuth } from "@/lib/context/AuthContext";
-import { ScenePanel } from "@/components/features/login/ScenePanel";
 import { LoginForm } from "@/components/features/login/LoginForm";
 import { FullPageSpinner } from "@/components/ui/Spinner";
-
-const BENEFITS = [
-  { title: "Track-specific guidance", body: "Your path stays tailored to your role, without exposing the track logic behind it." },
-  { title: "Progress that stays with you", body: "Pause when you need to. Your onboarding progress, acknowledgements, and quiz state stay connected to your session." },
-];
 
 export default function LoginPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const firstInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!loading && user) {
@@ -23,73 +17,84 @@ export default function LoginPage() {
     }
   }, [user, loading, router]);
 
-  const focusForm = useCallback(() => {
-    firstInputRef.current?.focus({ preventScroll: true });
-  }, []);
-
   if (loading) return <FullPageSpinner />;
   if (user) return null;
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[linear-gradient(160deg,#020d1a_0%,#071529_50%,#0a1f3e_100%)] text-white">
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-[-8rem] top-[-8rem] h-[22rem] w-[22rem] rounded-full bg-white/8 blur-3xl" />
-        <div className="absolute right-[-10rem] top-[16%] h-[26rem] w-[26rem] rounded-full bg-brand-action/20 blur-3xl" />
-        <div className="absolute bottom-[-14rem] left-[22%] h-[28rem] w-[28rem] rounded-full bg-brand-deep/35 blur-3xl" />
-      </div>
+    <div className="min-h-screen bg-bg-light">
+      {/* Hero Section */}
+      <section className="relative min-h-[55vh] overflow-hidden bg-brand-ink text-white">
+        {/* Top gradient stripe */}
+        <div className="absolute top-0 left-0 right-0 h-1 z-10 bg-gradient-to-r from-brand-deep via-brand-action to-accent" />
 
-      <div className="relative flex min-h-screen items-center pl-0 pr-4 pt-0 pb-6 md:pr-6 lg:pr-8">
-        <div className="grid w-full overflow-hidden rounded-[34px] border border-white/10 bg-white/[0.04] shadow-[0_40px_140px_rgba(3,8,18,0.35)] lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="relative min-h-[44rem] border-b border-white/10 lg:border-b-0 lg:border-r lg:border-white/10">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_35%)]" />
-            <ScenePanel onCtaClick={focusForm} />
+        {/* Radial gradient overlays */}
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute inset-0" style={{
+            background: "radial-gradient(circle at 25% 30%, rgba(48, 119, 185, 0.15), transparent 40%), radial-gradient(circle at 75% 70%, rgba(223, 0, 42, 0.06), transparent 35%)"
+          }} />
+        </div>
+
+        {/* Hero top bar */}
+        <div className="relative z-[1] flex items-center justify-between px-8 py-6 lg:px-16">
+          <Image src="/logo.png" alt="AAP Logo" width={176} height={44} className="h-11 w-auto" />
+          <div className="hidden md:flex gap-2">
+            {["What's Inside", "About AAP", "Your Benefits", "Life at AAP"].map((label) => (
+              <span
+                key={label}
+                className="rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1.5 text-[0.7rem] font-semibold text-white/45 transition-colors hover:border-white/20 hover:text-white/65"
+              >
+                {label} &darr;
+              </span>
+            ))}
           </div>
+        </div>
 
-          <div className="relative flex items-center justify-center bg-[linear-gradient(180deg,rgba(248,250,255,0.98)_0%,rgba(237,242,248,0.95)_100%)] px-5 py-8 text-text-primary md:px-8 lg:px-10">
-            <div className="pointer-events-none absolute inset-0 bg-page-grid opacity-40" />
-            <div className="relative z-10 w-full max-w-[35rem] space-y-6">
-              <div className="space-y-5">
-                <span className="section-kicker">Access your onboarding path</span>
-                <div className="space-y-3">
-                  <h1 className="max-w-xl text-h1 font-display text-brand-ink">A calmer, clearer start to AAP.</h1>
-                  <p className="max-w-2xl text-ui text-text-secondary">
-                    Sign in to pick up your guided onboarding path, move through each module with confidence, and keep your progress wherever you left off.
-                  </p>
-                </div>
-              </div>
+        {/* Hero content */}
+        <div className="relative z-[1] mx-auto max-w-[600px] px-6 pb-4 pt-8 text-center animate-fade-up-slow" style={{ animationDelay: "100ms" }}>
+          <span className="mb-6 inline-flex rounded-full border border-accent/20 bg-accent/[0.12] px-3.5 py-1.5 text-[0.65rem] font-bold uppercase tracking-[0.14em] text-accent">
+            Welcome Aboard
+          </span>
+          <h1 className="mt-4 text-[clamp(2.2rem,4vw,3.2rem)] font-extrabold leading-[1.08] tracking-[-0.04em]">
+            Ready for day one?<br />
+            <span className="text-brand-sky">You are now.</span>
+          </h1>
+          <p className="mt-4 text-[0.92rem] leading-[1.7] text-white/45">
+            A smoother start begins here.<br />
+            <strong className="text-white/70">Because day one already has enough surprises.</strong>
+          </p>
+        </div>
+      </section>
 
-              <div className="grid gap-3 sm:grid-cols-2">
-                {BENEFITS.map((item) => (
-                  <div key={item.title} className="rounded-[24px] border border-white/80 bg-white/[0.72] p-4 shadow-sm backdrop-blur-xl">
-                    <p className="text-ui font-semibold text-text-primary">{item.title}</p>
-                    <p className="mt-2 text-caption text-text-secondary">{item.body}</p>
-                  </div>
-                ))}
-              </div>
+      {/* Card wrapper - overlaps hero */}
+      <div className="relative z-[5] -mt-20 flex justify-center px-6 pb-16">
+        <div className="w-full max-w-[440px] animate-fade-up-slow overflow-hidden rounded-login-card bg-surface shadow-login" style={{ animationDelay: "200ms" }}>
+          {/* Card gradient stripe */}
+          <div className="h-1 bg-gradient-to-r from-brand-deep via-brand-action to-accent" />
 
-              <div className="premium-panel rounded-[32px] p-6 md:p-8">
-                <div className="relative z-10 space-y-6">
-                  <div className="flex items-start justify-between gap-4 border-b border-border/70 pb-5">
-                    <div>
-                      <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-text-muted">Secure portal access</p>
-                      <h2 className="mt-1 text-[1.4rem] font-semibold tracking-[-0.03em] text-brand-ink">Welcome to AAP Start</h2>
-                    </div>
-                    <span className="rounded-full border border-brand-action/15 bg-brand-action/[0.08] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-brand-action">
-                      Employees only
-                    </span>
-                  </div>
+          {/* Card body */}
+          <div className="p-8 md:p-10">
+            <h2 className="text-[1.4rem] font-extrabold tracking-[-0.03em] text-text-primary">
+              Let&apos;s get you in.
+            </h2>
+            <p className="mt-1.5 text-[0.84rem] leading-[1.6] text-text-secondary">
+              Enter your name and employee number to jump into your portal.
+            </p>
 
-                  <LoginForm firstInputRef={firstInputRef} />
-                </div>
-              </div>
-
-              <p className="text-caption text-white/60 lg:text-text-muted">
-                Need help accessing your onboarding? HR and your supervisor can help confirm your roster details.
-              </p>
+            <div className="mt-8">
+              <LoginForm />
             </div>
+
+            <p className="mt-5 text-center text-[0.73rem] text-text-muted">
+              Your credentials were provided by HR during onboarding.
+            </p>
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="animate-fade-up-slow pb-10 text-center text-[0.68rem] text-text-muted" style={{ animationDelay: "300ms" }}>
+        &copy; 2026 AAP &mdash; All rights reserved
+      </footer>
     </div>
   );
 }

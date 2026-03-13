@@ -7,14 +7,14 @@ interface PageContainerProps {
 }
 
 const sizeClasses = {
-  default: "max-w-[78rem]",
-  narrow: "max-w-[70rem]",
-  wide: "max-w-[88rem]",
+  default: "max-w-[1100px]",
+  narrow: "max-w-[800px]",
+  wide: "max-w-[1100px]",
 };
 
 export function PageContainer({ children, className, size = "default" }: PageContainerProps) {
   return (
-    <div className={cn("mx-auto w-full px-1 py-2 md:px-2 lg:py-4", sizeClasses[size], className)}>
+    <div className={cn("mx-auto w-full px-6 py-6 lg:px-10 lg:py-10", sizeClasses[size], className)}>
       {children}
     </div>
   );

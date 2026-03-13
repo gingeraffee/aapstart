@@ -1,6 +1,3 @@
-import { ProgressDots } from "@/components/ui/ProgressDots";
-import { plural } from "@/lib/utils";
-
 interface TrackProgressProps {
   total: number;
   completed: number;
@@ -8,34 +5,36 @@ interface TrackProgressProps {
 
 export function TrackProgress({ total, completed }: TrackProgressProps) {
   const remaining = total - completed;
+  const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
 
   return (
-    <div className="h-full rounded-[30px] border border-white/80 bg-white/[0.82] p-7 shadow-card backdrop-blur-xl">
-      <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-text-muted">Progress snapshot</p>
-      <div className="mt-5 flex items-end gap-3">
-        <span className="font-display text-[3.25rem] leading-none text-brand-ink">{completed}</span>
-        <div className="pb-1">
-          <p className="text-ui font-semibold text-text-primary">of {total} modules complete</p>
-          <p className="text-caption text-text-muted">Your guided path updates as you move.</p>
+    <div className="flex h-full flex-col justify-between rounded-[20px] bg-brand-ink p-7 text-white">
+      <p className="text-[0.7rem] font-bold uppercase tracking-[0.12em] text-white/45">
+        Your Progress
+      </p>
+
+      <div className="mt-5 space-y-4">
+        <div>
+          <span className="text-[2.5rem] font-extrabold leading-none text-accent">{completed}</span>
+          <p className="mt-1 text-[0.8rem] text-white/60">completed</p>
+        </div>
+        <div>
+          <span className="text-[2.5rem] font-extrabold leading-none text-white">{remaining}</span>
+          <p className="mt-1 text-[0.8rem] text-white/60">remaining</p>
         </div>
       </div>
 
-      <ProgressDots total={total} completed={completed} className="mt-6" />
-
-      <div className="mt-6 rounded-[24px] border border-border/80 bg-slate-950/[0.03] p-4">
-        {remaining > 0 ? (
-          <>
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-text-muted">Next milestone</p>
-            <p className="mt-2 text-ui text-text-secondary">
-              {remaining} {plural(remaining, "module", "modules")} left to complete your onboarding path.
-            </p>
-          </>
-        ) : (
-          <>
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-success">Complete</p>
-            <p className="mt-2 text-ui text-text-secondary">Every published module on your path is complete. You can review any section whenever you need it.</p>
-          </>
-        )}
+      <div className="mt-6">
+        <div className="flex items-center justify-between text-[0.7rem] text-white/45">
+          <span>Progress</span>
+          <span>{pct}%</span>
+        </div>
+        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
+          <div
+            className="h-full rounded-full bg-accent transition-all duration-500"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
       </div>
     </div>
   );

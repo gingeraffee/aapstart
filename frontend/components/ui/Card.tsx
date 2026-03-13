@@ -9,21 +9,20 @@ interface CardProps {
 
 const paddingClasses = {
   sm: "p-5",
-  md: "p-7",
-  lg: "p-9",
+  md: "p-6",
+  lg: "p-8",
 };
 
 export function Card({ children, className, hover = false, padding = "md" }: CardProps) {
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-[26px] border border-white/80 bg-white/90 shadow-card backdrop-blur-xl",
+        "overflow-hidden rounded-bento border border-border bg-surface",
         paddingClasses[padding],
-        hover && "cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-raised",
+        hover && "cursor-pointer transition-all duration-200 hover:border-brand-action hover:-translate-y-0.5 hover:shadow-card",
         className
       )}
     >
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent opacity-80" />
       {children}
     </div>
   );
