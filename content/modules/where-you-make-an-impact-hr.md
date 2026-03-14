@@ -3,7 +3,7 @@ slug: where-you-make-an-impact-hr
 title: Where You Make an Impact
 description: How your work as an HR Administrative Assistant directly supports the AAP team and mission.
 tracks: [hr]
-order: 6
+order: 8
 estimatedMinutes: 10
 status: coming_soon
 requiresQuiz: false

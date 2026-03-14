@@ -3,7 +3,7 @@ slug: your-first-90-days-warehouse
 title: Your First 90 Days
 description: What to expect — and what's expected of you — during your first three months in a warehouse role at AAP.
 tracks: [warehouse]
-order: 7
+order: 9
 estimatedMinutes: 10
 status: coming_soon
 requiresQuiz: false

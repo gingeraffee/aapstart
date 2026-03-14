@@ -3,7 +3,7 @@ slug: safety-at-aap
 title: Safety at AAP
 description: Universal safety expectations — reporting, hazards, and good judgment in the workplace.
 tracks: [all]
-order: 4
+order: 7
 estimatedMinutes: 8
 status: published
 requiresQuiz: true

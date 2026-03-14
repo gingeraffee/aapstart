@@ -5,8 +5,6 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import useSWR from "swr";
 import { modulesApi, progressApi } from "@/lib/api";
-import { PageContainer } from "@/components/layout/PageContainer";
-import { ModuleTabBar } from "@/components/layout/ModuleTabBar";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
@@ -28,7 +26,11 @@ export default function QuizPage() {
   const [submitting, setSubmitting] = useState(false);
 
   if (isLoading || !module) {
-    return <PageContainer><div className="flex justify-center py-24"><Spinner size="lg" /></div></PageContainer>;
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
   }
 
   const questions = module.quiz?.questions ?? [];
@@ -44,6 +46,12 @@ export default function QuizPage() {
   const questionFeedback = feedback?.feedback[question.id];
   const isCorrect = questionFeedback?.correct ?? false;
   const correctId = questionFeedback?.correct_id;
+
+  const steps = [
+    { key: "read", label: "Read" },
+    ...(module.requires_acknowledgement ? [{ key: "confirm", label: "Confirm" }] : []),
+    ...(module.requires_quiz ? [{ key: "quiz", label: "Quiz" }] : []),
+  ];
 
   function handleSelect(optionId: string) {
     if (isRevealed) return;
@@ -72,7 +80,6 @@ export default function QuizPage() {
 
   async function handleFinish() {
     setSubmitting(true);
-
     try {
       const result = await progressApi.submitQuiz(slug, selected) as QuizFeedback;
       if (result.passed) {
@@ -107,8 +114,9 @@ export default function QuizPage() {
   }
 
   return (
-    <PageContainer>
-      <div className="space-y-6 animate-fade-up">
+    <div className="w-full px-6 py-6 lg:px-8 lg:py-8 animate-fade-up">
+      <div className="mx-auto max-w-[860px] space-y-5">
+
         {/* Breadcrumb */}
         <div className="flex flex-wrap items-center gap-2 text-[0.78rem] text-text-muted">
           <Link href="/overview" className="hover:text-text-primary transition-colors">My Path</Link>
@@ -118,107 +126,184 @@ export default function QuizPage() {
           <span className="text-text-primary font-medium">Quiz</span>
         </div>
 
-        {/* Title */}
-        <div>
-          <p className="text-[0.68rem] font-bold uppercase tracking-[0.12em] text-accent">Knowledge check</p>
-          <h1 className="mt-2 text-[clamp(1.4rem,2.5vw,1.8rem)] font-extrabold leading-[1.15] tracking-[-0.03em] text-text-primary">
-            One question at a time. Move forward only when it is right.
-          </h1>
-          <p className="mt-3 max-w-2xl text-[0.93rem] leading-[1.7] text-text-secondary">
-            Answer each question, review the immediate feedback, and retry the same question if needed before advancing.
-          </p>
+        {/* Module header card */}
+        <div
+          className="relative overflow-hidden rounded-[20px]"
+          style={{
+            background: "linear-gradient(135deg, #ffffff 0%, #f2f8ff 100%)",
+            boxShadow: "0 4px 24px rgba(14,118,189,0.13), 0 1px 6px rgba(0,0,0,0.07)",
+            border: "1px solid rgba(14,118,189,0.16)",
+          }}
+        >
+          <div
+            className="h-1 w-full"
+            style={{ background: "linear-gradient(90deg, #0e76bd 0%, #5d9fd2 60%, #22c55e 100%)" }}
+          />
+          <div className="px-7 pt-5 pb-6">
+            <p className="text-[0.58rem] font-bold uppercase tracking-[0.22em]" style={{ color: "#0e76bd" }}>
+              Module {String(module.order).padStart(2, "0")} · Knowledge Check
+            </p>
+            <h1 className="mt-1.5 text-[clamp(1.4rem,2.5vw,1.8rem)] font-extrabold leading-[1.1] tracking-[-0.03em] text-text-primary">
+              One question at a time. Move forward only when it is right.
+            </h1>
+            <p className="mt-2 max-w-[600px] text-[0.88rem] leading-[1.65] text-text-secondary">
+              Answer each question, review the immediate feedback, and retry if needed before moving on.
+            </p>
+            {/* Step path */}
+            <div className="mt-4 flex items-center gap-1.5">
+              {steps.map((step, i) => (
+                <div key={step.key} className="flex items-center gap-1.5">
+                  <div
+                    className="flex h-[22px] items-center gap-1.5 rounded-full px-2.5 text-[0.62rem] font-bold uppercase tracking-[0.06em]"
+                    style={
+                      step.key === "quiz"
+                        ? { backgroundColor: "#0e76bd", color: "#fff" }
+                        : { backgroundColor: "rgba(34,197,94,0.15)", color: "#16a34a" }
+                    }
+                  >
+                    <span
+                      className="flex h-[13px] w-[13px] shrink-0 items-center justify-center rounded-full text-[0.48rem] font-black"
+                      style={
+                        step.key === "quiz"
+                          ? { backgroundColor: "rgba(255,255,255,0.25)", color: "#fff" }
+                          : { backgroundColor: "rgba(34,197,94,0.3)", color: "#16a34a" }
+                      }
+                    >
+                      {step.key === "quiz" ? i + 1 : "✓"}
+                    </span>
+                    {step.label}
+                  </div>
+                  {i < steps.length - 1 && (
+                    <span style={{ color: "rgba(14,118,189,0.3)", fontSize: "0.7rem" }}>→</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* Tab bar */}
-        <ModuleTabBar
-          slug={slug}
-          current="quiz"
-          requiresAcknowledgement={module.requires_acknowledgement}
-          requiresQuiz={module.requires_quiz}
-        />
-
         {/* Quiz card */}
-        <div className="rounded-bento border border-border bg-surface p-6 md:p-8">
-          <div className="space-y-6">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-[0.68rem] font-bold uppercase tracking-[0.12em] text-text-muted">Question {currentQ + 1}</p>
-                  <h2 className="mt-2 text-[1.25rem] font-extrabold tracking-[-0.02em] text-text-primary">{question.text}</h2>
-                </div>
-                <span className="shrink-0 rounded-[6px] border border-border bg-bg-light px-3 py-1.5 text-[0.72rem] font-bold text-text-muted">
-                  {currentQ + 1} / {questions.length}
-                </span>
-              </div>
-              <div className="h-1.5 rounded-full bg-gray-100">
-                <div
-                  className="h-full rounded-full bg-accent transition-all duration-300"
-                  style={{ width: `${((currentQ + 1) / questions.length) * 100}%` }}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              {question.options.map((option, index) => {
-                const isSelected = selected[question.id] === option.id;
-                const isCorrectOption = option.id === correctId;
-
-                return (
-                  <button
-                    key={option.id}
-                    onClick={() => handleSelect(option.id)}
-                    disabled={isRevealed}
-                    className={cn(
-                      "w-full rounded-[10px] border px-5 py-4 text-left text-[0.88rem] transition-all duration-200",
-                      !isSelected && !isRevealed && "border-border bg-white hover:border-brand-action/30 hover:bg-blue-50/50",
-                      isSelected && !isRevealed && "border-brand-action bg-blue-50 text-brand-action shadow-sm",
-                      isRevealed && isCorrectOption && "border-success/30 bg-success-surface text-success",
-                      isRevealed && isSelected && !isCorrectOption && "border-brand-alert/20 bg-brand-alert/[0.05] text-brand-alert",
-                      isRevealed && !isSelected && !isCorrectOption && "border-border/60 bg-gray-50/50 text-text-muted"
-                    )}
+        <div
+          className="rounded-[16px] bg-white"
+          style={{ border: "1px solid #e5e7eb", boxShadow: "0 2px 12px rgba(0,0,0,0.04)" }}
+        >
+          <div className="px-8 py-8 md:px-10">
+            <div className="space-y-6">
+              {/* Question header */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-[0.62rem] font-bold uppercase tracking-[0.12em] text-text-muted">
+                      Question {currentQ + 1} of {questions.length}
+                    </p>
+                    <h2 className="mt-2 text-[1.15rem] font-extrabold tracking-[-0.02em] text-text-primary">
+                      {question.text}
+                    </h2>
+                  </div>
+                  <span
+                    className="shrink-0 rounded-[8px] px-3 py-1.5 text-[0.72rem] font-bold"
+                    style={{ backgroundColor: "rgba(14,118,189,0.08)", color: "#0e76bd" }}
                   >
-                    <span className="flex items-center gap-3">
-                      <span
-                        className={cn(
-                          "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-[0.72rem] font-bold",
-                          isSelected && !isRevealed ? "border-brand-action bg-brand-action text-white" : "border-current",
-                          isRevealed && isCorrectOption ? "border-success bg-success text-white" : "",
-                          isRevealed && isSelected && !isCorrectOption ? "border-brand-alert bg-brand-alert text-white" : ""
-                        )}
-                      >
-                        {String.fromCharCode(65 + index)}
-                      </span>
-                      <span>{option.text}</span>
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {isRevealed && (
-              <div className={cn(
-                "rounded-[10px] border px-4 py-4 text-[0.88rem]",
-                isCorrect ? "border-success/20 bg-success-surface text-success" : "border-brand-alert/20 bg-brand-alert/[0.05] text-brand-alert"
-              )}>
-                {isCorrect ? "Correct. Nice work." : "Not quite. The correct answer is highlighted above. Update your answer and try again before moving on."}
+                    {currentQ + 1} / {questions.length}
+                  </span>
+                </div>
+                {/* Progress bar */}
+                <div
+                  className="h-1.5 overflow-hidden rounded-full"
+                  style={{ backgroundColor: "rgba(14,118,189,0.1)" }}
+                >
+                  <div
+                    className="h-full rounded-full transition-all duration-300"
+                    style={{
+                      width: `${((currentQ + 1) / questions.length) * 100}%`,
+                      background: "linear-gradient(90deg, #0e76bd, #22c55e)",
+                    }}
+                  />
+                </div>
               </div>
-            )}
+
+              {/* Answer options */}
+              <div className="space-y-3">
+                {question.options.map((option, index) => {
+                  const isSelected = selected[question.id] === option.id;
+                  const isCorrectOption = option.id === correctId;
+
+                  return (
+                    <button
+                      key={option.id}
+                      onClick={() => handleSelect(option.id)}
+                      disabled={isRevealed}
+                      className={cn(
+                        "w-full rounded-[10px] border px-5 py-4 text-left text-[0.88rem] transition-all duration-200",
+                        !isSelected && !isRevealed && "border-border bg-white hover:border-brand-action/30 hover:bg-blue-50/50",
+                        isSelected && !isRevealed && "border-brand-action bg-blue-50 text-brand-action shadow-sm",
+                        isRevealed && isCorrectOption && "border-success/30 bg-success-surface text-success",
+                        isRevealed && isSelected && !isCorrectOption && "border-brand-alert/20 bg-brand-alert/[0.05] text-brand-alert",
+                        isRevealed && !isSelected && !isCorrectOption && "border-border/60 bg-gray-50/50 text-text-muted"
+                      )}
+                    >
+                      <span className="flex items-center gap-3">
+                        <span
+                          className={cn(
+                            "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-[0.72rem] font-bold",
+                            isSelected && !isRevealed ? "border-brand-action bg-brand-action text-white" : "border-current",
+                            isRevealed && isCorrectOption ? "border-success bg-success text-white" : "",
+                            isRevealed && isSelected && !isCorrectOption ? "border-brand-alert bg-brand-alert text-white" : ""
+                          )}
+                        >
+                          {String.fromCharCode(65 + index)}
+                        </span>
+                        <span>{option.text}</span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Feedback */}
+              {isRevealed && (
+                <div
+                  className={cn(
+                    "rounded-[10px] border px-4 py-4 text-[0.88rem] font-medium",
+                    isCorrect
+                      ? "border-success/20 bg-success-surface text-success"
+                      : "border-brand-alert/20 bg-brand-alert/[0.05] text-brand-alert"
+                  )}
+                >
+                  {isCorrect
+                    ? "✓ Correct. Nice work."
+                    : "Not quite. The correct answer is highlighted above. Try again before moving on."}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Footer actions */}
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <Link href={`/modules/${slug}`} className="text-[0.88rem] font-semibold text-text-muted hover:text-text-primary transition-colors">
-            ← Back to module
+        <div
+          className="flex flex-col gap-3 rounded-[14px] px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
+          style={{ backgroundColor: "#f4f7fb", border: "1px solid #e5e7eb" }}
+        >
+          <Link
+            href={`/modules/${slug}`}
+            className="flex items-center gap-1.5 text-[0.82rem] font-semibold text-text-muted hover:text-text-primary transition-colors"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 2L4 7l5 5" />
+            </svg>
+            Back to module
           </Link>
 
           {!isRevealed ? (
             <Button size="lg" onClick={handleCheck} disabled={!hasSelected} loading={submitting}>
               Check answer
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="ml-1">
+                <path d="M5 2l5 5-5 5" />
+              </svg>
             </Button>
           ) : isCorrect ? (
             <Button size="lg" onClick={handleNext} loading={submitting}>
-              {isLastQuestion ? "Finish quiz" : "Next question"}
+              {isLastQuestion ? "Finish quiz" : "Next question →"}
             </Button>
           ) : (
             <Button size="lg" variant="secondary" onClick={handleRetryCurrent}>
@@ -226,7 +311,8 @@ export default function QuizPage() {
             </Button>
           )}
         </div>
+
       </div>
-    </PageContainer>
+    </div>
   );
 }

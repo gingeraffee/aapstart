@@ -3,7 +3,7 @@ slug: where-you-make-an-impact-warehouse
 title: Where You Make an Impact
 description: How your work on the warehouse floor directly supports the AAP mission.
 tracks: [warehouse]
-order: 6
+order: 8
 estimatedMinutes: 10
 status: coming_soon
 requiresQuiz: false
