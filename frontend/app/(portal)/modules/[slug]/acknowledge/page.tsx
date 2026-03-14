@@ -5,8 +5,6 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import useSWR from "swr";
 import { modulesApi, progressApi } from "@/lib/api";
-import { PageContainer } from "@/components/layout/PageContainer";
-import { ModuleTabBar } from "@/components/layout/ModuleTabBar";
 import { ChecklistItem } from "@/components/ui/ChecklistItem";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
@@ -26,11 +24,21 @@ export default function AcknowledgePage() {
   const [error, setError] = useState<string | null>(null);
 
   if (isLoading || !module) {
-    return <PageContainer><div className="flex justify-center py-24"><Spinner size="lg" /></div></PageContainer>;
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
   }
 
   const currentModule = module;
   const allChecked = currentModule.acknowledgements.every((item) => checked[item.id]);
+
+  const steps = [
+    { key: "read", label: "Read" },
+    ...(currentModule.requires_acknowledgement ? [{ key: "confirm", label: "Confirm" }] : []),
+    ...(currentModule.requires_quiz ? [{ key: "quiz", label: "Quiz" }] : []),
+  ];
 
   async function handleSubmit() {
     if (!allChecked) return;
@@ -52,8 +60,9 @@ export default function AcknowledgePage() {
   }
 
   return (
-    <PageContainer>
-      <div className="space-y-6 animate-fade-up">
+    <div className="w-full px-6 py-6 lg:px-8 lg:py-8 animate-fade-up">
+      <div className="mx-auto max-w-[860px] space-y-5">
+
         {/* Breadcrumb */}
         <div className="flex flex-wrap items-center gap-2 text-[0.78rem] text-text-muted">
           <Link href="/overview" className="hover:text-text-primary transition-colors">My Path</Link>
@@ -63,62 +72,133 @@ export default function AcknowledgePage() {
           <span className="text-text-primary font-medium">Confirmation</span>
         </div>
 
-        {/* Title */}
-        <div>
-          <p className="text-[0.68rem] font-bold uppercase tracking-[0.12em] text-accent">Before you continue</p>
-          <h1 className="mt-2 text-[clamp(1.4rem,2.5vw,1.8rem)] font-extrabold leading-[1.15] tracking-[-0.03em] text-text-primary">
-            Confirm the key expectations from this module.
-          </h1>
-          <p className="mt-3 max-w-2xl text-[0.93rem] leading-[1.7] text-text-secondary">
-            Review each statement below and confirm every item you understand before moving to the next step.
-          </p>
+        {/* Module header card */}
+        <div
+          className="relative overflow-hidden rounded-[20px]"
+          style={{
+            background: "linear-gradient(135deg, #ffffff 0%, #f2f8ff 100%)",
+            boxShadow: "0 4px 24px rgba(14,118,189,0.13), 0 1px 6px rgba(0,0,0,0.07)",
+            border: "1px solid rgba(14,118,189,0.16)",
+          }}
+        >
+          <div
+            className="h-1 w-full"
+            style={{ background: "linear-gradient(90deg, #0e76bd 0%, #5d9fd2 60%, #22c55e 100%)" }}
+          />
+          <div className="px-7 pt-5 pb-6">
+            <p className="text-[0.58rem] font-bold uppercase tracking-[0.22em]" style={{ color: "#0e76bd" }}>
+              Module {String(currentModule.order).padStart(2, "0")} · Confirmation
+            </p>
+            <h1 className="mt-1.5 text-[clamp(1.4rem,2.5vw,1.8rem)] font-extrabold leading-[1.1] tracking-[-0.03em] text-text-primary">
+              Confirm the key expectations from this module.
+            </h1>
+            <p className="mt-2 max-w-[600px] text-[0.88rem] leading-[1.65] text-text-secondary">
+              Review each statement below and confirm every item you understand before moving to the next step.
+            </p>
+            {/* Step path */}
+            <div className="mt-4 flex items-center gap-1.5">
+              {steps.map((step, i) => (
+                <div key={step.key} className="flex items-center gap-1.5">
+                  <div
+                    className="flex h-[22px] items-center gap-1.5 rounded-full px-2.5 text-[0.62rem] font-bold uppercase tracking-[0.06em]"
+                    style={
+                      step.key === "confirm"
+                        ? { backgroundColor: "#0e76bd", color: "#fff" }
+                        : step.key === "read"
+                          ? { backgroundColor: "rgba(34,197,94,0.15)", color: "#16a34a" }
+                          : { backgroundColor: "rgba(14,118,189,0.1)", color: "#0e76bd" }
+                    }
+                  >
+                    <span
+                      className="flex h-[13px] w-[13px] shrink-0 items-center justify-center rounded-full text-[0.48rem] font-black"
+                      style={
+                        step.key === "confirm"
+                          ? { backgroundColor: "rgba(255,255,255,0.25)", color: "#fff" }
+                          : step.key === "read"
+                            ? { backgroundColor: "rgba(34,197,94,0.3)", color: "#16a34a" }
+                            : { backgroundColor: "rgba(14,118,189,0.2)", color: "#0e76bd" }
+                      }
+                    >
+                      {step.key === "read" ? "✓" : i + 1}
+                    </span>
+                    {step.label}
+                  </div>
+                  {i < steps.length - 1 && (
+                    <span style={{ color: "rgba(14,118,189,0.3)", fontSize: "0.7rem" }}>→</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* Tab bar */}
-        <ModuleTabBar
-          slug={slug}
-          current="acknowledge"
-          requiresAcknowledgement={currentModule.requires_acknowledgement}
-          requiresQuiz={currentModule.requires_quiz}
-        />
-
         {/* Module recap card */}
-        <div className="rounded-bento border border-border bg-surface p-6">
-          <p className="text-[0.68rem] font-bold uppercase tracking-[0.12em] text-text-muted">Module recap</p>
-          <p className="mt-3 text-[0.93rem] font-semibold text-text-primary">{currentModule.title}</p>
-          <p className="mt-2 text-[0.82rem] text-text-secondary">{currentModule.description}</p>
+        <div
+          className="rounded-[14px] px-6 py-4"
+          style={{ backgroundColor: "rgba(14,118,189,0.04)", border: "1px solid rgba(14,118,189,0.12)" }}
+        >
+          <p className="text-[0.62rem] font-bold uppercase tracking-[0.12em]" style={{ color: "#0e76bd" }}>
+            You completed reading
+          </p>
+          <p className="mt-1 text-[0.93rem] font-semibold text-text-primary">{currentModule.title}</p>
+          {currentModule.description && (
+            <p className="mt-1 text-[0.82rem] text-text-secondary">{currentModule.description}</p>
+          )}
         </div>
 
         {/* Checklist card */}
-        <div className="rounded-bento border border-border bg-surface p-6">
-          <div className="space-y-3">
-            {currentModule.acknowledgements.map((ack) => (
-              <ChecklistItem
-                key={ack.id}
-                label={ack.statement}
-                checked={checked[ack.id] ?? false}
-                onChange={(value) => setChecked((prev) => ({ ...prev, [ack.id]: value }))}
-                className="border border-border/70 bg-gray-50/50"
-              />
-            ))}
+        <div
+          className="rounded-[16px] bg-white"
+          style={{ border: "1px solid #e5e7eb", boxShadow: "0 2px 12px rgba(0,0,0,0.04)" }}
+        >
+          <div className="px-6 py-5">
+            <p className="mb-4 text-[0.78rem] font-bold text-text-primary">
+              Check off each statement to confirm your understanding:
+            </p>
+            <div className="space-y-3">
+              {currentModule.acknowledgements.map((ack) => (
+                <ChecklistItem
+                  key={ack.id}
+                  label={ack.statement}
+                  checked={checked[ack.id] ?? false}
+                  onChange={(value) => setChecked((prev) => ({ ...prev, [ack.id]: value }))}
+                  className="border border-border/70 bg-gray-50/50"
+                />
+              ))}
+            </div>
           </div>
         </div>
 
         {error && <p className="text-[0.88rem] text-brand-alert">{error}</p>}
 
         {/* Footer actions */}
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <Link href={`/modules/${slug}`} className="text-[0.88rem] font-semibold text-text-muted hover:text-text-primary transition-colors">
-            ← Back to module
+        <div
+          className="flex flex-col gap-3 rounded-[14px] px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
+          style={{ backgroundColor: "#f4f7fb", border: "1px solid #e5e7eb" }}
+        >
+          <Link
+            href={`/modules/${slug}`}
+            className="flex items-center gap-1.5 text-[0.82rem] font-semibold text-text-muted hover:text-text-primary transition-colors"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 2L4 7l5 5" />
+            </svg>
+            Back to module
           </Link>
           <div className="flex flex-col items-end gap-2">
             <Button size="lg" disabled={!allChecked} loading={submitting} onClick={handleSubmit}>
               {currentModule.requires_quiz ? "Continue to quiz" : "Complete module"}
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="ml-1">
+                <path d="M5 2l5 5-5 5" />
+              </svg>
             </Button>
-            {!allChecked && <p className="text-[0.76rem] text-text-muted">Please confirm all items to continue.</p>}
+            {!allChecked && (
+              <p className="text-[0.73rem] text-text-muted">Please confirm all items to continue.</p>
+            )}
           </div>
         </div>
+
       </div>
-    </PageContainer>
+    </div>
   );
 }
