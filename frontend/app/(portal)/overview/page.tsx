@@ -4,7 +4,6 @@ import Link from "next/link";
 import useSWR from "swr";
 import { useAuth } from "@/lib/context/AuthContext";
 import { modulesApi, progressApi, resourcesApi } from "@/lib/api";
-import { PageContainer } from "@/components/layout/PageContainer";
 import { WelcomeHeader } from "@/components/features/overview/WelcomeHeader";
 import { Badge } from "@/components/ui/Badge";
 import { Spinner } from "@/components/ui/Spinner";
@@ -34,18 +33,16 @@ export default function OverviewPage() {
 
   if (isLoading) {
     return (
-      <PageContainer>
-        <div className="flex items-center justify-center py-24">
-          <Spinner size="lg" />
-        </div>
-      </PageContainer>
+      <div className="flex items-center justify-center py-24">
+        <Spinner size="lg" />
+      </div>
     );
   }
 
   const firstName = user?.full_name?.split(" ")[0] ?? "there";
 
   return (
-    <PageContainer>
+    <div className="ml-0 mr-auto w-full max-w-[1100px] pl-6 pr-6 py-6 lg:pr-10 lg:py-10">
       <div className="flex gap-6 items-start">
 
         {/* ── Left: main content ── */}
@@ -234,6 +231,6 @@ export default function OverviewPage() {
 
         </div>
       </div>
-    </PageContainer>
+    </div>
   );
 }
