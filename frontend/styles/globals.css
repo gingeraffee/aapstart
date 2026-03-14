@@ -1,4 +1,4 @@
-/* Inter is loaded via next/font/google in layout.tsx for optimal performance */
+/* Inter + Josefin Sans loaded via next/font/google in layout.tsx */
 
 @tailwind base;
 @tailwind components;
@@ -25,6 +25,17 @@
     scroll-behavior: smooth;
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
   body {
     @apply bg-background text-text-primary font-sans;
     min-height: 100vh;
@@ -32,8 +43,10 @@
     line-height: 1.7;
   }
 
-  h1, h2, h3 {
+  h1, h2, h3, h4 {
+    font-family: var(--font-josefin), "Josefin Sans", "Futura", "Century Gothic", sans-serif;
     text-wrap: balance;
+    letter-spacing: -0.02em;
   }
 
   a {
@@ -163,5 +176,45 @@
   .bg-page-grid {
     background-image: linear-gradient(rgba(215, 223, 235, 0.45) 1px, transparent 1px), linear-gradient(90deg, rgba(215, 223, 235, 0.25) 1px, transparent 1px);
     background-size: 100% 54px, 54px 100%;
+  }
+
+  /* Dot grid texture — premium SaaS feel */
+  .bg-dot-grid {
+    background-image: radial-gradient(circle, rgba(180, 195, 215, 0.55) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  /* Noise texture overlay via pseudo-element — apply to parent */
+  .bg-noise {
+    position: relative;
+  }
+  .bg-noise::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 180px 180px;
+    pointer-events: none;
+    border-radius: inherit;
+    z-index: 0;
+  }
+
+  /* Soft inner glow for dark panels */
+  .glow-blue {
+    box-shadow: inset 0 0 80px rgba(48, 119, 185, 0.12), inset 0 0 40px rgba(93, 159, 210, 0.06);
+  }
+
+  /* Dimensional card shadow — stronger than default */
+  .shadow-dimensional {
+    box-shadow:
+      0 1px 1px rgba(0,0,0,0.04),
+      0 4px 8px rgba(0,0,0,0.05),
+      0 16px 32px rgba(18,33,56,0.09),
+      0 40px 80px rgba(18,33,56,0.07);
+  }
+
+  .font-heading {
+    font-family: var(--font-josefin), "Josefin Sans", "Futura", "Century Gothic", sans-serif;
   }
 }

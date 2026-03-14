@@ -34,6 +34,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-inter)", "Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+        heading: ["var(--font-josefin)", "Josefin Sans", "Futura", "Century Gothic", "sans-serif"],
       },
       fontSize: {
         display: ["clamp(2.8rem, 5vw, 4.8rem)", { lineHeight: "1.02", letterSpacing: "-0.05em", fontWeight: "600" }],
