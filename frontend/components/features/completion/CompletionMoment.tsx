@@ -53,7 +53,7 @@ export function CompletionMoment({ moduleTitle, isLastModule = false }: Completi
           </AnimatePresence>
 
           <motion.div
-            className="premium-panel rounded-[36px] px-8 py-10 text-center md:px-12"
+            className="rounded-bento border border-border bg-surface px-8 py-10 text-center md:px-12"
             initial={{ opacity: 0, scale: 0.94, y: 12 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
@@ -80,9 +80,9 @@ export function CompletionMoment({ moduleTitle, isLastModule = false }: Completi
               </motion.div>
 
               <motion.div className="space-y-3" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-success">Module complete</p>
-                <h2 className="text-h1 font-display text-brand-ink">{moduleTitle}</h2>
-                <p className="mx-auto max-w-xl text-ui text-text-secondary">
+                <p className="text-[0.68rem] font-bold uppercase tracking-[0.12em] text-success">Module complete</p>
+                <h2 className="text-[1.8rem] font-extrabold tracking-[-0.03em] text-text-primary">{moduleTitle}</h2>
+                <p className="mx-auto max-w-xl text-[0.93rem] leading-[1.7] text-text-secondary">
                   {isLastModule
                     ? "That completes every published module on your path. Welcome to AAP."
                     : "Well done. Your progress is saved and you are ready for the next part of onboarding whenever you are."}

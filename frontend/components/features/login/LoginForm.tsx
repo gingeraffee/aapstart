@@ -3,15 +3,10 @@
 import { useState } from "react";
 import { useAuth } from "@/lib/context/AuthContext";
 import { ApiError } from "@/lib/api";
-import { Button } from "@/components/ui/Button";
-
-interface LoginFormProps {
-  firstInputRef?: React.RefObject<HTMLInputElement>;
-}
 
 const DEV_AUTH_BYPASS = process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === "true";
 
-export function LoginForm({ firstInputRef }: LoginFormProps) {
+export function LoginForm() {
   const { login } = useAuth();
   const [form, setForm] = useState({ full_name: "", employee_id: "" });
   const [error, setError] = useState<string | null>(null);
@@ -66,31 +61,33 @@ export function LoginForm({ firstInputRef }: LoginFormProps) {
     }
   }
 
-  const inputClassName =
-    "h-14 w-full rounded-2xl border border-border bg-white px-4 text-[0.98rem] text-text-primary shadow-sm outline-none transition-all duration-200 placeholder:text-text-muted focus:border-brand-action focus:bg-info-surface/60 focus:shadow-[0_0_0_4px_rgba(48,119,185,0.12)]";
-
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="space-y-2">
-        <label htmlFor="full_name" className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-text-muted">
-          Full name
+      {error && (
+        <div className="rounded-[8px] border border-accent/15 bg-accent-soft px-3.5 py-2.5 text-[0.78rem] font-medium text-accent">
+          {error}
+        </div>
+      )}
+
+      <div>
+        <label htmlFor="full_name" className="mb-1.5 block text-[0.68rem] font-bold uppercase tracking-[0.1em] text-text-muted">
+          Full Name
         </label>
         <input
-          ref={firstInputRef}
           id="full_name"
           type="text"
           autoComplete="name"
-          placeholder="Jane Smith"
+          placeholder="e.g. Jane Doe"
           value={form.full_name}
           onChange={(e) => update("full_name", e.target.value)}
           required
-          className={inputClassName}
+          className="w-full rounded-input border border-border bg-bg-light px-4 py-3 text-[0.88rem] text-text-primary outline-none transition-all placeholder:text-text-muted focus:border-brand-action focus:shadow-[0_0_0_3px_rgba(48,119,185,0.1)]"
         />
       </div>
 
-      <div className="space-y-2">
-        <label htmlFor="employee_id" className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-text-muted">
-          Employee number
+      <div>
+        <label htmlFor="employee_id" className="mb-1.5 block text-[0.68rem] font-bold uppercase tracking-[0.1em] text-text-muted">
+          Employee Number
         </label>
         <input
           id="employee_id"
@@ -100,44 +97,31 @@ export function LoginForm({ firstInputRef }: LoginFormProps) {
           value={form.employee_id}
           onChange={(e) => update("employee_id", e.target.value)}
           required
-          className={inputClassName}
+          className="w-full rounded-input border border-border bg-bg-light px-4 py-3 text-[0.88rem] text-text-primary outline-none transition-all placeholder:text-text-muted focus:border-brand-action focus:shadow-[0_0_0_3px_rgba(48,119,185,0.1)]"
         />
       </div>
 
-      {error && (
-        <div className="rounded-[22px] border border-brand-alert/15 bg-brand-alert/[0.04] px-4 py-3 text-ui text-brand-alert">
-          {error}
+      <button
+        type="submit"
+        disabled={loading}
+        className="mt-2 w-full rounded-button bg-brand-ink px-4 py-3.5 text-[0.88rem] font-bold text-white transition-all hover:bg-[#1a2540] hover:-translate-y-px hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] disabled:opacity-60 disabled:pointer-events-none"
+      >
+        {loading ? "Signing in..." : "Continue"}
+      </button>
+
+      {DEV_AUTH_BYPASS && (
+        <div className="rounded-[10px] border border-brand-action/15 bg-brand-action/[0.05] p-4">
+          <p className="text-[0.8rem] font-semibold text-brand-ink">Dev login enabled</p>
+          <button
+            type="button"
+            onClick={handleDevBypass}
+            disabled={loading}
+            className="mt-2 w-full rounded-button border border-border bg-surface px-4 py-2.5 text-[0.84rem] font-semibold text-text-primary transition-all hover:bg-bg-light disabled:opacity-60"
+          >
+            Enter with dev profile
+          </button>
         </div>
       )}
-
-      <div className="space-y-3">
-        <Button type="submit" size="lg" loading={loading} className="w-full justify-center">
-          Enter AAP Start
-        </Button>
-
-        {DEV_AUTH_BYPASS && (
-          <div className="rounded-[22px] border border-brand-action/15 bg-brand-action/[0.05] p-4">
-            <p className="text-ui font-semibold text-brand-ink">Development login is enabled</p>
-            <p className="mt-1 text-caption text-text-secondary">
-              Use the shortcut below to enter with the local dev profile instead of checking Google Sheets.
-            </p>
-            <Button
-              type="button"
-              variant="secondary"
-              size="md"
-              onClick={handleDevBypass}
-              disabled={loading}
-              className="mt-3 w-full justify-center"
-            >
-              Enter with dev profile
-            </Button>
-          </div>
-        )}
-      </div>
-
-      <p className="text-caption text-text-muted">
-        Use the same full name and employee number listed in the employee roster. Session access stays active while you work.
-      </p>
     </form>
   );
 }

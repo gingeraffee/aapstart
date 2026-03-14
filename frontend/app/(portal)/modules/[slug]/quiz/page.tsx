@@ -6,9 +6,8 @@ import { useParams, useRouter } from "next/navigation";
 import useSWR from "swr";
 import { modulesApi, progressApi } from "@/lib/api";
 import { PageContainer } from "@/components/layout/PageContainer";
-import { StepIndicator } from "@/components/layout/StepIndicator";
+import { ModuleTabBar } from "@/components/layout/ModuleTabBar";
 import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
 import type { ModuleDetail, QuizFeedback } from "@/lib/types";
@@ -29,7 +28,7 @@ export default function QuizPage() {
   const [submitting, setSubmitting] = useState(false);
 
   if (isLoading || !module) {
-    return <PageContainer size="wide"><div className="flex justify-center py-24"><Spinner size="lg" /></div></PageContainer>;
+    return <PageContainer><div className="flex justify-center py-24"><Spinner size="lg" /></div></PageContainer>;
   }
 
   const questions = module.quiz?.questions ?? [];
@@ -108,137 +107,124 @@ export default function QuizPage() {
   }
 
   return (
-    <PageContainer size="wide">
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
-        <div className="space-y-6 animate-fade-up">
-          <section className="premium-panel rounded-[34px] px-7 py-7 md:px-10 md:py-10">
-            <div className="relative z-10 space-y-6">
-              <div className="flex flex-wrap items-center gap-2 text-caption text-text-muted">
-                <Link href="/overview" className="hover:text-text-primary">My Path</Link>
-                <span>/</span>
-                <Link href={`/modules/${slug}`} className="hover:text-text-primary">{module.title}</Link>
-                <span>/</span>
-                <span className="text-text-primary">Quiz</span>
-              </div>
+    <PageContainer>
+      <div className="space-y-6 animate-fade-up">
+        {/* Breadcrumb */}
+        <div className="flex flex-wrap items-center gap-2 text-[0.78rem] text-text-muted">
+          <Link href="/overview" className="hover:text-text-primary transition-colors">My Path</Link>
+          <span>/</span>
+          <Link href={`/modules/${slug}`} className="hover:text-text-primary transition-colors">{module.title}</Link>
+          <span>/</span>
+          <span className="text-text-primary font-medium">Quiz</span>
+        </div>
 
-              <div className="space-y-5">
+        {/* Title */}
+        <div>
+          <p className="text-[0.68rem] font-bold uppercase tracking-[0.12em] text-accent">Knowledge check</p>
+          <h1 className="mt-2 text-[clamp(1.4rem,2.5vw,1.8rem)] font-extrabold leading-[1.15] tracking-[-0.03em] text-text-primary">
+            One question at a time. Move forward only when it is right.
+          </h1>
+          <p className="mt-3 max-w-2xl text-[0.93rem] leading-[1.7] text-text-secondary">
+            Answer each question, review the immediate feedback, and retry the same question if needed before advancing.
+          </p>
+        </div>
+
+        {/* Tab bar */}
+        <ModuleTabBar
+          slug={slug}
+          current="quiz"
+          requiresAcknowledgement={module.requires_acknowledgement}
+          requiresQuiz={module.requires_quiz}
+        />
+
+        {/* Quiz card */}
+        <div className="rounded-bento border border-border bg-surface p-6 md:p-8">
+          <div className="space-y-6">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-4">
                 <div>
-                  <span className="section-kicker">Knowledge check</span>
-                  <h1 className="mt-4 text-h1 font-display text-brand-ink">One question at a time. Move forward only when it is right.</h1>
-                  <p className="mt-4 max-w-3xl text-ui text-text-secondary">
-                    Answer each question, review the immediate feedback, and retry the same question if needed before advancing.
-                  </p>
+                  <p className="text-[0.68rem] font-bold uppercase tracking-[0.12em] text-text-muted">Question {currentQ + 1}</p>
+                  <h2 className="mt-2 text-[1.25rem] font-extrabold tracking-[-0.02em] text-text-primary">{question.text}</h2>
                 </div>
-
-                <StepIndicator
-                  current="quiz"
-                  requiresAcknowledgement={module.requires_acknowledgement}
-                  requiresQuiz={module.requires_quiz}
+                <span className="shrink-0 rounded-[6px] border border-border bg-bg-light px-3 py-1.5 text-[0.72rem] font-bold text-text-muted">
+                  {currentQ + 1} / {questions.length}
+                </span>
+              </div>
+              <div className="h-1.5 rounded-full bg-gray-100">
+                <div
+                  className="h-full rounded-full bg-accent transition-all duration-300"
+                  style={{ width: `${((currentQ + 1) / questions.length) * 100}%` }}
                 />
               </div>
             </div>
-          </section>
 
-          <Card padding="lg">
-            <div className="space-y-6">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-text-muted">Question {currentQ + 1}</p>
-                    <h2 className="mt-2 text-h2 text-text-primary">{question.text}</h2>
-                  </div>
-                  <span className="rounded-full border border-brand-action/15 bg-brand-action/[0.08] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-brand-action">
-                    {currentQ + 1} / {questions.length}
-                  </span>
-                </div>
-                <div className="h-2 rounded-full bg-border/80">
-                  <div
-                    className="h-full rounded-full bg-[linear-gradient(135deg,#243673_0%,#3077b9_100%)] transition-all duration-300"
-                    style={{ width: `${((currentQ + 1) / questions.length) * 100}%` }}
-                  />
-                </div>
-              </div>
+            <div className="space-y-3">
+              {question.options.map((option, index) => {
+                const isSelected = selected[question.id] === option.id;
+                const isCorrectOption = option.id === correctId;
 
-              <div className="space-y-3">
-                {question.options.map((option, index) => {
-                  const isSelected = selected[question.id] === option.id;
-                  const isCorrectOption = option.id === correctId;
-
-                  return (
-                    <button
-                      key={option.id}
-                      onClick={() => handleSelect(option.id)}
-                      disabled={isRevealed}
-                      className={cn(
-                        "w-full rounded-[24px] border px-5 py-4 text-left text-ui transition-all duration-200",
-                        !isSelected && !isRevealed && "border-border bg-white hover:border-brand-action/25 hover:bg-info-surface/65",
-                        isSelected && !isRevealed && "border-brand-action bg-info-surface text-brand-action shadow-sm",
-                        isRevealed && isCorrectOption && "border-success/20 bg-success-surface text-success",
-                        isRevealed && isSelected && !isCorrectOption && "border-brand-alert/15 bg-brand-alert/[0.05] text-brand-alert",
-                        isRevealed && !isSelected && !isCorrectOption && "border-border/70 bg-slate-950/[0.02] text-text-muted"
-                      )}
-                    >
-                      <span className="flex items-center gap-3">
-                        <span
-                          className={cn(
-                            "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-caption font-bold",
-                            isSelected && !isRevealed ? "border-brand-action bg-brand-action text-white" : "border-current",
-                            isRevealed && isCorrectOption ? "border-success bg-success text-white" : "",
-                            isRevealed && isSelected && !isCorrectOption ? "border-brand-alert bg-brand-alert text-white" : ""
-                          )}
-                        >
-                          {String.fromCharCode(65 + index)}
-                        </span>
-                        <span>{option.text}</span>
+                return (
+                  <button
+                    key={option.id}
+                    onClick={() => handleSelect(option.id)}
+                    disabled={isRevealed}
+                    className={cn(
+                      "w-full rounded-[10px] border px-5 py-4 text-left text-[0.88rem] transition-all duration-200",
+                      !isSelected && !isRevealed && "border-border bg-white hover:border-brand-action/30 hover:bg-blue-50/50",
+                      isSelected && !isRevealed && "border-brand-action bg-blue-50 text-brand-action shadow-sm",
+                      isRevealed && isCorrectOption && "border-success/30 bg-success-surface text-success",
+                      isRevealed && isSelected && !isCorrectOption && "border-brand-alert/20 bg-brand-alert/[0.05] text-brand-alert",
+                      isRevealed && !isSelected && !isCorrectOption && "border-border/60 bg-gray-50/50 text-text-muted"
+                    )}
+                  >
+                    <span className="flex items-center gap-3">
+                      <span
+                        className={cn(
+                          "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-[0.72rem] font-bold",
+                          isSelected && !isRevealed ? "border-brand-action bg-brand-action text-white" : "border-current",
+                          isRevealed && isCorrectOption ? "border-success bg-success text-white" : "",
+                          isRevealed && isSelected && !isCorrectOption ? "border-brand-alert bg-brand-alert text-white" : ""
+                        )}
+                      >
+                        {String.fromCharCode(65 + index)}
                       </span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {isRevealed && (
-                <div className={cn(
-                  "rounded-[22px] border px-4 py-4 text-ui",
-                  isCorrect ? "border-success/15 bg-success-surface text-success" : "border-brand-alert/15 bg-brand-alert/[0.05] text-brand-alert"
-                )}>
-                  {isCorrect ? "Correct. Nice work." : "Not quite. The correct answer is highlighted above. Update your answer and try again before moving on."}
-                </div>
-              )}
+                      <span>{option.text}</span>
+                    </span>
+                  </button>
+                );
+              })}
             </div>
-          </Card>
 
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <Link href={`/modules/${slug}`} className="text-ui font-semibold text-text-muted hover:text-text-primary">
-              ← Back to module
-            </Link>
-
-            {!isRevealed ? (
-              <Button size="lg" onClick={handleCheck} disabled={!hasSelected} loading={submitting}>
-                Check answer
-              </Button>
-            ) : isCorrect ? (
-              <Button size="lg" onClick={handleNext} loading={submitting}>
-                {isLastQuestion ? "Finish quiz" : "Next question"}
-              </Button>
-            ) : (
-              <Button size="lg" variant="secondary" onClick={handleRetryCurrent}>
-                Try again
-              </Button>
+            {isRevealed && (
+              <div className={cn(
+                "rounded-[10px] border px-4 py-4 text-[0.88rem]",
+                isCorrect ? "border-success/20 bg-success-surface text-success" : "border-brand-alert/20 bg-brand-alert/[0.05] text-brand-alert"
+              )}>
+                {isCorrect ? "Correct. Nice work." : "Not quite. The correct answer is highlighted above. Update your answer and try again before moving on."}
+              </div>
             )}
           </div>
         </div>
 
-        <div className="space-y-6 xl:pt-4">
-          <Card padding="md">
-            <div className="space-y-4">
-              <span className="section-kicker">Quiz rules</span>
-              <ul className="space-y-3 text-ui text-text-secondary">
-                <li>You receive feedback immediately after each answer.</li>
-                <li>If an answer is incorrect, you retry that same question before moving on.</li>
-                <li>The module passes only when every question is answered correctly.</li>
-              </ul>
-            </div>
-          </Card>
+        {/* Footer actions */}
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <Link href={`/modules/${slug}`} className="text-[0.88rem] font-semibold text-text-muted hover:text-text-primary transition-colors">
+            ← Back to module
+          </Link>
+
+          {!isRevealed ? (
+            <Button size="lg" onClick={handleCheck} disabled={!hasSelected} loading={submitting}>
+              Check answer
+            </Button>
+          ) : isCorrect ? (
+            <Button size="lg" onClick={handleNext} loading={submitting}>
+              {isLastQuestion ? "Finish quiz" : "Next question"}
+            </Button>
+          ) : (
+            <Button size="lg" variant="secondary" onClick={handleRetryCurrent}>
+              Try again
+            </Button>
+          )}
         </div>
       </div>
     </PageContainer>

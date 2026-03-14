@@ -1,99 +1,135 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
+import useSWR from "swr";
 import { useAuth } from "@/lib/context/AuthContext";
-import { cn, initials, trackLabel } from "@/lib/utils";
+import { modulesApi, progressApi } from "@/lib/api";
+import { cn, initials } from "@/lib/utils";
+import type { ModuleSummary, ProgressRecord } from "@/lib/types";
 
 interface AppShellProps {
   children: React.ReactNode;
 }
 
+const railItems = [
+  {
+    href: "/overview",
+    label: "Overview",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="2" width="7" height="7" rx="1.5" />
+        <rect x="11" y="2" width="7" height="7" rx="1.5" />
+        <rect x="2" y="11" width="7" height="7" rx="1.5" />
+        <rect x="11" y="11" width="7" height="7" rx="1.5" />
+      </svg>
+    ),
+  },
+  {
+    href: "/resources",
+    label: "Resources",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 4.5A1.5 1.5 0 014.5 3h11A1.5 1.5 0 0117 4.5v11a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 013 15.5v-11z" />
+        <path d="M7 3v14" />
+        <path d="M10 7h4" />
+        <path d="M10 10h4" />
+      </svg>
+    ),
+  },
+];
+
 export function AppShell({ children }: AppShellProps) {
   const { user, logout } = useAuth();
   const pathname = usePathname();
 
-  const navLinks = [
-    { href: "/overview", label: "Overview" },
-    { href: "/resources", label: "Resource Hub" },
-  ];
+  const { data: modules } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
+  const { data: progress } = useSWR("progress", () => progressApi.getAll() as Promise<ProgressRecord[]>);
+
+  const publishedModules = (modules ?? []).filter((m) => m.status !== "draft");
+  const completedCount = progress
+    ? publishedModules.filter((m) => progress.find((p) => p.module_slug === m.slug)?.module_completed).length
+    : 0;
+  const progressPct = publishedModules.length > 0 ? Math.round((completedCount / publishedModules.length) * 100) : 0;
 
   return (
-    <div className="min-h-screen text-text-primary">
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute left-[-10rem] top-[-6rem] h-[24rem] w-[24rem] rounded-full bg-brand-deep/10 blur-3xl" />
-        <div className="absolute right-[-6rem] top-[8rem] h-[22rem] w-[22rem] rounded-full bg-brand-action/10 blur-3xl" />
-        <div className="absolute bottom-[-10rem] left-1/2 h-[28rem] w-[28rem] -translate-x-1/2 rounded-full bg-brand-alert/5 blur-3xl" />
-      </div>
+    <div className="flex min-h-screen">
+      {/* Icon Rail */}
+      <nav className="fixed left-0 top-0 bottom-0 z-40 flex w-[72px] flex-col items-center bg-brand-ink py-5">
+        {/* Logo */}
+        <Link href="/overview" className="mb-6 flex h-11 w-11 items-center justify-center rounded-[12px] bg-white">
+          <Image src="/logo.png" alt="AAP" width={36} height={36} className="h-8 w-auto" />
+        </Link>
 
-      <header className="sticky top-0 z-40 px-4 pt-4 md:px-6 lg:px-8">
-        <div className="mx-auto max-w-[92rem] overflow-hidden rounded-[30px] border border-white/80 bg-white/[0.72] shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur-xl">
-          <div className="flex flex-col gap-5 px-5 py-5 lg:flex-row lg:items-center lg:justify-between lg:px-7">
-            <Link href="/overview" className="group flex min-w-0 items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#243673_0%,#3077b9_100%)] shadow-[0_18px_36px_rgba(36,54,115,0.22)]">
-                <span className="text-sm font-extrabold uppercase tracking-[0.18em] text-white">AAP</span>
-              </div>
-              <div className="min-w-0">
-                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-text-muted">Guided onboarding</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="truncate text-[1.5rem] font-display text-brand-ink">AAP Start</span>
-                  <span className="hidden text-caption text-text-muted sm:inline">Premium internal onboarding portal</span>
-                </div>
-              </div>
-            </Link>
-
-            <nav className="flex w-full flex-wrap items-center gap-2 rounded-full border border-slate-200/80 bg-slate-950/[0.03] p-1.5 lg:w-auto lg:flex-nowrap">
-              {navLinks.map((link) => {
-                const active = pathname === link.href || pathname.startsWith(`${link.href}/`);
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={cn(
-                      "rounded-full px-4 py-2.5 text-ui font-semibold transition-all duration-200",
-                      active
-                        ? "bg-[linear-gradient(135deg,#243673_0%,#3077b9_100%)] text-white shadow-[0_14px_30px_rgba(36,54,115,0.18)]"
-                        : "text-text-secondary hover:bg-white hover:text-text-primary"
-                    )}
-                  >
-                    {link.label}
-                  </Link>
-                );
-              })}
-            </nav>
-
-            {user && (
-              <div className="flex items-center gap-3 self-start lg:self-auto">
-                <div className="hidden text-right sm:block">
-                  <p className="text-ui font-semibold text-text-primary">{user.full_name}</p>
-                  <div className="mt-1 flex items-center justify-end gap-2">
-                    <span className="rounded-full border border-brand-action/15 bg-brand-action/[0.08] px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-brand-action">
-                      {trackLabel(user.track)}
-                    </span>
-                    <span className="text-caption text-text-muted">Signed in</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 rounded-full border border-white/80 bg-white/[0.82] px-2.5 py-2 shadow-sm backdrop-blur-xl">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-deep text-sm font-bold text-white shadow-[0_12px_24px_rgba(36,54,115,0.22)]">
-                    {initials(user.full_name)}
-                  </div>
-                  <button
-                    onClick={() => logout()}
-                    className="rounded-full px-3 py-1.5 text-caption font-semibold text-text-secondary hover:bg-slate-950/[0.04] hover:text-text-primary"
-                  >
-                    Sign out
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+        {/* Nav items */}
+        <div className="flex flex-col items-center gap-1.5">
+          {railItems.map((item) => {
+            const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                title={item.label}
+                className={cn(
+                  "relative flex h-11 w-11 items-center justify-center rounded-[12px] transition-all duration-200",
+                  active
+                    ? "bg-brand-action/20 text-white"
+                    : "text-white/40 hover:bg-white/[0.08] hover:text-white/70"
+                )}
+              >
+                {active && (
+                  <span className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-brand-action" />
+                )}
+                {item.icon}
+              </Link>
+            );
+          })}
         </div>
-      </header>
 
-      <main className="relative px-4 pb-16 pt-6 md:px-6 lg:px-8">
-        <div className="mx-auto max-w-[92rem]">{children}</div>
-      </main>
+        {/* Spacer */}
+        <div className="flex-1" />
+
+        {/* User avatar */}
+        {user && (
+          <button
+            onClick={() => logout()}
+            title="Sign out"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-brand-deep to-brand-action text-[0.7rem] font-bold text-white transition-all hover:opacity-80"
+          >
+            {initials(user.full_name)}
+          </button>
+        )}
+      </nav>
+
+      {/* Main area */}
+      <div className="ml-[72px] flex flex-1 flex-col min-h-screen">
+        {/* Page header */}
+        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-white/[0.92] px-8 py-3 backdrop-blur-[16px]">
+          <div className="flex items-center gap-3">
+            <Image src="/logo.png" alt="AAP" width={104} height={26} className="h-[26px] w-auto" />
+            <span className="h-5 w-px bg-border" />
+            <span className="text-[0.92rem] font-semibold text-text-primary">Start</span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="h-1 w-[100px] overflow-hidden rounded-full bg-border">
+              <div
+                className="h-full rounded-full bg-accent transition-all duration-500"
+                style={{ width: `${progressPct}%` }}
+              />
+            </div>
+            <span className="text-[0.78rem] font-semibold text-text-muted">
+              {progressPct}% complete
+            </span>
+          </div>
+        </header>
+
+        {/* Content */}
+        <main className="flex-1">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

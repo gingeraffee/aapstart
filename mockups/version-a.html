@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AAP Start — Version A: Midnight Luxe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --brand-action: #3077b9;
+    --brand-deep: #243673;
+    --brand-ink: #0f1d3c;
+    --brand-sky: #5d9fd2;
+    --brand-alert: #df002a;
+    --gold: #c9a44c;
+    --gold-soft: rgba(201, 164, 76, 0.12);
+    --surface-dark: #0a1428;
+    --surface-card: rgba(14, 26, 52, 0.85);
+    --surface-card-hover: rgba(20, 36, 68, 0.92);
+    --border-dark: rgba(255, 255, 255, 0.08);
+    --border-gold: rgba(201, 164, 76, 0.25);
+    --text-bright: #f0f4fa;
+    --text-mid: #8fa3c4;
+    --text-dim: #506380;
+    --success: #34d399;
+  }
+  html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background: var(--surface-dark);
+    color: var(--text-bright);
+    min-height: 100vh;
+    line-height: 1.7;
+    background-image:
+      radial-gradient(circle at 15% 5%, rgba(36, 54, 115, 0.4), transparent 35%),
+      radial-gradient(circle at 80% 10%, rgba(48, 119, 185, 0.15), transparent 30%),
+      radial-gradient(circle at 50% 95%, rgba(201, 164, 76, 0.06), transparent 25%);
+  }
+  ::selection { background: rgba(201, 164, 76, 0.3); }
+
+  /* Layout */
+  .app-shell { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 280px; flex-shrink: 0; padding: 2rem 0;
+    background: rgba(6, 12, 26, 0.7);
+    border-right: 1px solid var(--border-dark);
+    backdrop-filter: blur(20px);
+    display: flex; flex-direction: column;
+  }
+  .sidebar-brand {
+    padding: 0 1.5rem 2rem; border-bottom: 1px solid var(--border-dark);
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .sidebar-brand img { height: 38px; width: auto; }
+  .sidebar-brand-text h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.5rem; font-weight: 600; letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #f0f4fa 0%, var(--gold) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .sidebar-brand-text span { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.14em; font-weight: 700; display: block; margin-top: 0.1rem; }
+  .sidebar-nav { flex: 1; padding: 1.5rem 0; overflow-y: auto; }
+  .nav-section-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--text-dim); padding: 0.5rem 1.5rem; font-weight: 700; }
+  .nav-item {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.7rem 1.5rem; font-size: 0.86rem; font-weight: 500;
+    color: var(--text-mid); cursor: pointer; transition: all 0.2s ease;
+    border-left: 3px solid transparent; text-decoration: none;
+  }
+  .nav-item:hover { color: var(--text-bright); background: rgba(255, 255, 255, 0.03); }
+  .nav-item.active { color: var(--gold); border-left-color: var(--gold); background: var(--gold-soft); }
+  .nav-item .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    border: 2px solid var(--text-dim); flex-shrink: 0;
+  }
+  .nav-item.active .dot { background: var(--gold); border-color: var(--gold); box-shadow: 0 0 8px rgba(201, 164, 76, 0.4); }
+  .nav-item.completed .dot { background: var(--success); border-color: var(--success); }
+  .sidebar-footer { padding: 1.5rem; border-top: 1px solid var(--border-dark); }
+  .sidebar-user { display: flex; align-items: center; gap: 0.75rem; }
+  .sidebar-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand-deep), var(--brand-action));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.78rem; font-weight: 700; color: #fff;
+  }
+  .sidebar-user-name { font-size: 0.85rem; font-weight: 600; }
+  .sidebar-user-role { font-size: 0.7rem; color: var(--text-dim); }
+
+  /* Main */
+  .main { flex: 1; overflow-y: auto; }
+  .main-header {
+    padding: 2.5rem 3rem 0;
+    position: sticky; top: 0; z-index: 10;
+    background: linear-gradient(180deg, var(--surface-dark) 60%, transparent);
+  }
+  .main-content { padding: 2rem 3rem 4rem; }
+
+  /* Page Toggle */
+  .page-toggle {
+    display: inline-flex; gap: 0.25rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-dark);
+    border-radius: 12px; padding: 0.3rem;
+  }
+  .page-toggle button {
+    padding: 0.55rem 1.25rem; border: none; border-radius: 10px;
+    font-family: inherit; font-size: 0.8rem; font-weight: 600;
+    color: var(--text-mid); background: transparent; cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .page-toggle button.active {
+    background: linear-gradient(135deg, var(--brand-deep), var(--brand-action));
+    color: #fff; box-shadow: 0 4px 16px rgba(48, 119, 185, 0.25);
+  }
+
+  /* Overview Page */
+  .overview-hero { margin-bottom: 3rem; }
+  .overview-hero .kicker {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.4rem 0.85rem; border-radius: 999px;
+    background: var(--gold-soft); border: 1px solid var(--border-gold);
+    color: var(--gold); font-size: 0.68rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 1.25rem;
+  }
+  .overview-hero h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(2.4rem, 4vw, 3.4rem); font-weight: 500;
+    letter-spacing: -0.03em; line-height: 1.1;
+    margin-bottom: 0.75rem;
+  }
+  .overview-hero p { color: var(--text-mid); font-size: 1.02rem; max-width: 560px; }
+
+  /* Progress Bar */
+  .progress-strip {
+    display: flex; align-items: center; gap: 1.25rem;
+    padding: 1.25rem 1.5rem; border-radius: 16px;
+    background: var(--surface-card); border: 1px solid var(--border-dark);
+    margin-bottom: 2.5rem;
+  }
+  .progress-bar-track {
+    flex: 1; height: 6px; border-radius: 3px;
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .progress-bar-fill {
+    height: 100%; border-radius: 3px; width: 20%;
+    background: linear-gradient(90deg, var(--gold), #e8c861);
+    box-shadow: 0 0 16px rgba(201, 164, 76, 0.35);
+    transition: width 0.5s ease;
+  }
+  .progress-label { font-size: 0.8rem; color: var(--text-mid); font-weight: 600; white-space: nowrap; }
+  .progress-pct { font-size: 1.4rem; font-weight: 700; color: var(--gold); white-space: nowrap; font-family: 'Playfair Display', serif; }
+
+  /* Module Cards Grid */
+  .modules-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.25rem;
+  }
+  .module-card {
+    position: relative; border-radius: 18px; padding: 1.75rem;
+    background: var(--surface-card); border: 1px solid var(--border-dark);
+    cursor: pointer; transition: all 0.25s ease; overflow: hidden;
+    text-decoration: none; color: inherit; display: block;
+  }
+  .module-card:hover {
+    background: var(--surface-card-hover);
+    border-color: rgba(201, 164, 76, 0.2);
+    transform: translateY(-3px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  }
+  .module-card .card-number {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 2.8rem; font-weight: 700; line-height: 1;
+    color: rgba(255, 255, 255, 0.04); position: absolute; top: 1rem; right: 1.25rem;
+  }
+  .module-card .card-badge {
+    display: inline-flex; padding: 0.3rem 0.65rem; border-radius: 6px;
+    font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 1rem;
+  }
+  .badge-locked { background: rgba(255, 255, 255, 0.05); color: var(--text-dim); }
+  .badge-active { background: rgba(48, 119, 185, 0.15); color: var(--brand-sky); }
+  .badge-done { background: rgba(52, 211, 153, 0.12); color: var(--success); }
+  .module-card h3 {
+    font-size: 1.02rem; font-weight: 700; margin-bottom: 0.4rem;
+    letter-spacing: -0.01em;
+  }
+  .module-card p { font-size: 0.8rem; color: var(--text-dim); line-height: 1.55; }
+
+  /* Module Page */
+  .module-page { display: none; }
+  .module-page.visible { display: block; }
+  .module-header { margin-bottom: 2rem; }
+  .module-header .back-link {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-size: 0.8rem; color: var(--text-dim); margin-bottom: 1.5rem;
+    cursor: pointer; text-decoration: none;
+  }
+  .module-header .back-link:hover { color: var(--gold); }
+  .module-header h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 500;
+    letter-spacing: -0.02em; margin-bottom: 0.5rem;
+  }
+  .module-header p { color: var(--text-mid); font-size: 0.92rem; }
+
+  /* Module Tabs */
+  .module-tabs {
+    display: flex; gap: 0; border-bottom: 1px solid var(--border-dark);
+    margin-bottom: 2.5rem;
+  }
+  .module-tab {
+    padding: 0.85rem 1.5rem; font-size: 0.83rem; font-weight: 600;
+    color: var(--text-dim); cursor: pointer; border: none; background: none;
+    font-family: inherit; position: relative; transition: color 0.2s;
+  }
+  .module-tab:hover { color: var(--text-mid); }
+  .module-tab.active { color: var(--gold); }
+  .module-tab.active::after {
+    content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+    height: 2px; background: var(--gold);
+  }
+
+  /* Content Panel */
+  .content-panel {
+    max-width: 720px;
+    background: var(--surface-card); border: 1px solid var(--border-dark);
+    border-radius: 20px; padding: 2.5rem;
+  }
+  .content-panel h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.2rem; font-weight: 600; margin-bottom: 0.75rem;
+    letter-spacing: -0.01em; margin-top: 2rem;
+  }
+  .content-panel h3:first-child { margin-top: 0; }
+  .content-panel p { color: var(--text-mid); font-size: 0.9rem; margin-bottom: 1rem; }
+  .content-panel ul { list-style: none; padding: 0; margin-bottom: 1.25rem; }
+  .content-panel li {
+    position: relative; padding-left: 1.25rem; color: var(--text-mid);
+    font-size: 0.9rem; margin-bottom: 0.5rem;
+  }
+  .content-panel li::before {
+    content: ''; position: absolute; left: 0; top: 0.6rem;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), #e8c861);
+  }
+
+  /* Callout */
+  .callout {
+    padding: 1.25rem 1.5rem; border-radius: 14px; margin: 1.5rem 0;
+    border-left: 3px solid var(--gold);
+    background: var(--gold-soft);
+  }
+  .callout p { color: var(--text-bright) !important; font-size: 0.86rem !important; margin: 0 !important; }
+  .callout strong { color: var(--gold); }
+
+  /* Quiz Panel */
+  .quiz-panel, .ack-panel { display: none; max-width: 720px; }
+  .quiz-panel.visible, .ack-panel.visible { display: block; }
+
+  .quiz-question {
+    background: var(--surface-card); border: 1px solid var(--border-dark);
+    border-radius: 18px; padding: 2rem; margin-bottom: 1.5rem;
+  }
+  .quiz-question h4 { font-size: 0.93rem; font-weight: 700; margin-bottom: 1.25rem; }
+  .quiz-option {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.85rem 1.15rem; border-radius: 12px; margin-bottom: 0.5rem;
+    border: 1px solid var(--border-dark); cursor: pointer;
+    font-size: 0.86rem; color: var(--text-mid); transition: all 0.2s ease;
+  }
+  .quiz-option:hover { border-color: rgba(201, 164, 76, 0.3); background: var(--gold-soft); color: var(--text-bright); }
+  .quiz-option .radio {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 2px solid var(--text-dim); flex-shrink: 0;
+  }
+
+  /* Ack Panel */
+  .ack-box {
+    background: var(--surface-card); border: 1px solid var(--border-dark);
+    border-radius: 18px; padding: 2.5rem; text-align: center;
+  }
+  .ack-box .icon { font-size: 2.5rem; margin-bottom: 1rem; }
+  .ack-box h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 600; margin-bottom: 0.75rem; }
+  .ack-box p { color: var(--text-mid); font-size: 0.88rem; margin-bottom: 1.75rem; max-width: 420px; margin-inline: auto; }
+  .ack-checkbox {
+    display: flex; align-items: center; gap: 0.75rem; justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+  .ack-checkbox input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--gold); }
+  .ack-checkbox label { font-size: 0.86rem; color: var(--text-mid); }
+
+  /* Buttons */
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1.75rem; border: none; border-radius: 12px;
+    font-family: inherit; font-size: 0.86rem; font-weight: 700;
+    background: linear-gradient(135deg, var(--gold), #ddb350);
+    color: var(--brand-ink); cursor: pointer; transition: all 0.2s ease;
+    box-shadow: 0 4px 16px rgba(201, 164, 76, 0.25);
+  }
+  .btn-primary:hover { box-shadow: 0 6px 24px rgba(201, 164, 76, 0.35); transform: translateY(-1px); }
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1.75rem; border: 1px solid var(--border-dark); border-radius: 12px;
+    font-family: inherit; font-size: 0.86rem; font-weight: 600;
+    background: transparent; color: var(--text-mid); cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-secondary:hover { border-color: var(--text-dim); color: var(--text-bright); }
+
+  /* Coach Tip */
+  .coach-tip {
+    display: flex; gap: 1rem; padding: 1.25rem 1.5rem; border-radius: 16px;
+    background: rgba(48, 119, 185, 0.08); border: 1px solid rgba(48, 119, 185, 0.12);
+    margin-top: 2rem;
+  }
+  .coach-tip .tip-icon { font-size: 1.4rem; flex-shrink: 0; }
+  .coach-tip .tip-text { font-size: 0.8rem; color: var(--text-mid); line-height: 1.6; }
+  .coach-tip .tip-text strong { color: var(--brand-sky); }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main-content { padding: 1.5rem; }
+  }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .animate-in { animation: fadeUp 0.4s ease-out both; }
+  .delay-1 { animation-delay: 60ms; }
+  .delay-2 { animation-delay: 120ms; }
+  .delay-3 { animation-delay: 180ms; }
+  .delay-4 { animation-delay: 240ms; }
+
+  .version-label {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: linear-gradient(90deg, var(--gold), #ddb350);
+    color: var(--brand-ink); text-align: center; padding: 0.5rem;
+    font-size: 0.76rem; font-weight: 700; letter-spacing: 0.06em;
+  }
+  .app-shell { padding-top: 36px; }
+</style>
+</head>
+<body>
+
+<div class="version-label">VERSION A — MIDNIGHT LUXE / Playfair Display + DM Sans / Dark + Gold / Sidebar</div>
+
+<div class="app-shell">
+  <nav class="sidebar">
+    <div class="sidebar-brand">
+      <img src="logo.png" alt="AAP Logo">
+      <div class="sidebar-brand-text">
+        <h1>Start</h1>
+        <span>Onboarding Portal</span>
+      </div>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-section-label">Your Journey</div>
+      <a class="nav-item completed" onclick="showOverview()"><span class="dot"></span> Overview</a>
+      <a class="nav-item completed"><span class="dot"></span> Welcome to AAP</a>
+      <a class="nav-item active" onclick="showModule()"><span class="dot"></span> How We Show Up</a>
+      <a class="nav-item"><span class="dot"></span> Tools &amp; Systems</a>
+      <a class="nav-item"><span class="dot"></span> How Work Works</a>
+      <a class="nav-item"><span class="dot"></span> Benefits, Pay &amp; Time Away</a>
+      <a class="nav-item"><span class="dot"></span> Support &amp; Resources</a>
+      <a class="nav-item"><span class="dot"></span> Safety at AAP</a>
+      <a class="nav-item"><span class="dot"></span> Where You Make an Impact</a>
+      <a class="nav-item"><span class="dot"></span> Your First 90 Days</a>
+      <a class="nav-item"><span class="dot"></span> Final Review</a>
+      <div style="height: 1rem"></div>
+      <div class="nav-section-label">Resources</div>
+      <a class="nav-item"><span class="dot"></span> Resource Hub</a>
+    </div>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">NT</div>
+        <div>
+          <div class="sidebar-user-name">Nicole Thornton</div>
+          <div class="sidebar-user-role">HR Manager</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main">
+    <!-- ======== OVERVIEW PAGE ======== -->
+    <div id="overview-page">
+      <div class="main-header">
+        <div class="page-toggle">
+          <button class="active" onclick="showOverview()">Dashboard</button>
+          <button onclick="showModule()">Module View</button>
+        </div>
+      </div>
+      <div class="main-content">
+        <div class="overview-hero animate-in">
+          <div class="kicker">&#9670; Good morning, Nicole</div>
+          <h2>Let's get you started.</h2>
+          <p>AAP Start walks you through everything you need to know in your first 90 days. Work through each module at your own pace.</p>
+        </div>
+
+        <div class="progress-strip animate-in delay-1">
+          <div class="progress-pct">20%</div>
+          <div class="progress-bar-track"><div class="progress-bar-fill"></div></div>
+          <div class="progress-label">2 of 10 modules complete</div>
+        </div>
+
+        <div class="modules-grid">
+          <div class="module-card animate-in delay-1">
+            <span class="card-number">01</span>
+            <div class="card-badge badge-done">Complete</div>
+            <h3>Welcome to AAP</h3>
+            <p>Who AAP is, our mission, and what AAP Start is designed to help you do.</p>
+          </div>
+          <div class="module-card animate-in delay-2" onclick="showModule()">
+            <span class="card-number">02</span>
+            <div class="card-badge badge-active">In Progress</div>
+            <h3>How We Show Up</h3>
+            <p>Professionalism, respect, ethics, and how to raise concerns.</p>
+          </div>
+          <div class="module-card animate-in delay-3">
+            <span class="card-number">03</span>
+            <div class="card-badge badge-locked">Locked</div>
+            <h3>Tools &amp; Systems</h3>
+            <p>BambooHR, Paylocity, LinkedIn Learning, and your day-one setup.</p>
+          </div>
+          <div class="module-card animate-in delay-4">
+            <span class="card-number">04</span>
+            <div class="card-badge badge-locked">Locked</div>
+            <h3>How Work Works</h3>
+            <p>Attendance, timekeeping, dress code, performance, and the open door.</p>
+          </div>
+          <div class="module-card animate-in delay-4">
+            <span class="card-number">05</span>
+            <div class="card-badge badge-locked">Locked</div>
+            <h3>Benefits, Pay &amp; Time Away</h3>
+            <p>Payroll basics, benefits timing, PTO, and holiday eligibility.</p>
+          </div>
+          <div class="module-card animate-in delay-4">
+            <span class="card-number">06</span>
+            <div class="card-badge badge-locked">Locked</div>
+            <h3>Support &amp; Resources</h3>
+            <p>Leave support, EAP, accommodations, and when to escalate.</p>
+          </div>
+        </div>
+
+        <div class="coach-tip animate-in delay-4">
+          <span class="tip-icon">&#128161;</span>
+          <span class="tip-text"><strong>Pro tip:</strong> You don't need to memorize everything on day one. AAP Start is here as a reference you can come back to anytime.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======== MODULE PAGE ======== -->
+    <div id="module-page" class="module-page">
+      <div class="main-header">
+        <div class="page-toggle">
+          <button onclick="showOverview()">Dashboard</button>
+          <button class="active">Module View</button>
+        </div>
+      </div>
+      <div class="main-content">
+        <div class="module-header animate-in">
+          <a class="back-link" onclick="showOverview()">&#8592; Back to Overview</a>
+          <h2>How We Show Up</h2>
+          <p>Module 2 of 10 &mdash; Standards behind the work, not just the work itself.</p>
+        </div>
+
+        <div class="module-tabs animate-in delay-1">
+          <button class="module-tab active" onclick="switchTab('content')">Content</button>
+          <button class="module-tab" onclick="switchTab('quiz')">Quiz</button>
+          <button class="module-tab" onclick="switchTab('ack')">Acknowledgement</button>
+        </div>
+
+        <div id="tab-content" class="content-panel animate-in delay-2">
+          <h3>What This Module Covers</h3>
+          <p>This module is about the standards behind the work, not just the work itself. At AAP, how people show up matters. That includes professionalism, respectful behavior, ethical conduct, accountability, and how concerns are raised.</p>
+          <h3>Respect and Professionalism</h3>
+          <p>AAP expects employees to contribute to a workplace that is respectful, professional, and safe for others. That means communicating directly, treating people with dignity, listening well, and handling conflict in a constructive way.</p>
+          <p>It also means understanding the non-negotiables:</p>
+          <ul>
+            <li>Harassment is not tolerated</li>
+            <li>Bullying and disrespectful behavior are not acceptable</li>
+            <li>Retaliation for good-faith reporting is not acceptable</li>
+            <li>Dishonest, unethical, or illegal conduct is not acceptable</li>
+          </ul>
+          <h3>Ethics and Conduct</h3>
+          <p>Employees are expected to use good judgment, protect trust, and conduct themselves in a way that reflects well on the company and the people it serves.</p>
+          <div class="callout">
+            <p><strong>Speaking Up:</strong> Most workplace concerns should be raised early rather than left to grow teeth. Your supervisor is the first point of contact. If you are not comfortable going to your supervisor, contact HR.</p>
+          </div>
+          <h3>Need Help?</h3>
+          <p>Start with your supervisor for most day-to-day concerns. Contact HR if the issue involves workplace conduct, harassment, bullying, or retaliation, or if the issue needs sensitive handling.</p>
+          <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+            <button class="btn-primary" onclick="switchTab('quiz')">Continue to Quiz &#8594;</button>
+          </div>
+        </div>
+
+        <div id="tab-quiz" class="quiz-panel">
+          <div class="quiz-question animate-in">
+            <h4>1. What should you do first if you have a workplace concern?</h4>
+            <div class="quiz-option"><span class="radio"></span> Post about it on social media</div>
+            <div class="quiz-option"><span class="radio"></span> Raise it with your supervisor</div>
+            <div class="quiz-option"><span class="radio"></span> Ignore it and hope it goes away</div>
+            <div class="quiz-option"><span class="radio"></span> File a formal complaint immediately</div>
+          </div>
+          <div class="quiz-question animate-in delay-1">
+            <h4>2. Which of the following is NOT acceptable at AAP?</h4>
+            <div class="quiz-option"><span class="radio"></span> Direct communication</div>
+            <div class="quiz-option"><span class="radio"></span> Constructive conflict resolution</div>
+            <div class="quiz-option"><span class="radio"></span> Retaliation for good-faith reporting</div>
+            <div class="quiz-option"><span class="radio"></span> Treating people with dignity</div>
+          </div>
+          <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+            <button class="btn-primary" onclick="switchTab('ack')">Submit &amp; Continue &#8594;</button>
+            <button class="btn-secondary" onclick="switchTab('content')">&#8592; Review Content</button>
+          </div>
+        </div>
+
+        <div id="tab-ack" class="ack-panel">
+          <div class="ack-box animate-in">
+            <div class="icon">&#9989;</div>
+            <h3>Module Acknowledgement</h3>
+            <p>By checking the box below, you confirm that you have reviewed and understood the content in this module.</p>
+            <div class="ack-checkbox">
+              <input type="checkbox" id="ack-check">
+              <label for="ack-check">I acknowledge that I have reviewed "How We Show Up"</label>
+            </div>
+            <button class="btn-primary">Complete Module &#8594;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showOverview() {
+  document.getElementById('overview-page').style.display = 'block';
+  document.getElementById('module-page').classList.remove('visible');
+}
+function showModule() {
+  document.getElementById('overview-page').style.display = 'none';
+  document.getElementById('module-page').classList.add('visible');
+}
+function switchTab(tab) {
+  document.querySelectorAll('.module-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-content').style.display = 'none';
+  document.getElementById('tab-content').classList.remove('content-panel');
+  document.getElementById('tab-quiz').classList.remove('visible');
+  document.getElementById('tab-ack').classList.remove('visible');
+  if (tab === 'content') {
+    document.getElementById('tab-content').style.display = 'block';
+    document.getElementById('tab-content').classList.add('content-panel');
+    document.querySelectorAll('.module-tab')[0].classList.add('active');
+  } else if (tab === 'quiz') {
+    document.getElementById('tab-quiz').classList.add('visible');
+    document.querySelectorAll('.module-tab')[1].classList.add('active');
+  } else if (tab === 'ack') {
+    document.getElementById('tab-ack').classList.add('visible');
+    document.querySelectorAll('.module-tab')[2].classList.add('active');
+  }
+}
+</script>
+</body>
+</html>

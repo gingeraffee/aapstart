@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AAP Start — Login B: Full Dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --brand-ink: #0f1d3c;
+    --brand-deep: #1a2a5e;
+    --brand-action: #3077b9;
+    --brand-sky: #5d9fd2;
+    --accent: #df002a;
+    --bg-light: #f8f9fb;
+    --surface: #ffffff;
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --text-muted: #9ca3af;
+    --border: #e5e7eb;
+    --text-bright: #f0f4fa;
+    --text-dim: #506380;
+  }
+  html { -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    margin: 0; min-height: 100vh;
+    background: var(--brand-ink); color: var(--text-bright);
+    display: flex; flex-direction: column;
+    position: relative; overflow: hidden;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(48, 119, 185, 0.12), transparent 40%),
+      radial-gradient(circle at 70% 75%, rgba(223, 0, 42, 0.05), transparent 35%),
+      radial-gradient(circle at 50% 50%, rgba(26, 42, 94, 0.3), transparent 60%);
+  }
+  /* Grid pattern overlay */
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+  }
+
+  /* Top bar */
+  .top-bar {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.5rem 3rem;
+  }
+  .top-bar img { height: 40px; }
+  .top-bar .badge {
+    font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--accent);
+  }
+
+  /* Main area */
+  .main {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    position: relative; z-index: 1; padding: 2rem;
+  }
+
+  .center-layout {
+    display: flex; align-items: center; gap: 5rem; max-width: 950px;
+  }
+
+  /* Left: Tagline */
+  .tagline-side { flex: 1; }
+  .tagline-side h1 {
+    font-size: clamp(2.2rem, 3.5vw, 3.2rem); font-weight: 800;
+    letter-spacing: -0.04em; line-height: 1.08; margin-bottom: 1.25rem;
+  }
+  .tagline-side h1 .highlight { color: var(--brand-sky); }
+  .tagline-side p { color: rgba(255,255,255,0.4); font-size: 0.9rem; line-height: 1.7; max-width: 360px; }
+  .tagline-side p strong { color: rgba(255,255,255,0.65); }
+
+  /* Right: Card */
+  .card-side { flex-shrink: 0; width: 380px; }
+  .login-card {
+    background: var(--surface); border-radius: 22px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25), 0 8px 24px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+  .card-accent {
+    height: 4px;
+    background: linear-gradient(90deg, var(--brand-deep), var(--brand-action), var(--accent));
+  }
+  .card-body { padding: 2.25rem; }
+  .card-body h2 { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.35rem; color: var(--text-primary); }
+  .card-body .desc { font-size: 0.84rem; color: var(--text-secondary); margin-bottom: 2rem; line-height: 1.6; }
+
+  .field { margin-bottom: 1.25rem; }
+  .field label {
+    display: block; font-size: 0.68rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-muted); margin-bottom: 0.45rem;
+  }
+  .field input {
+    width: 100%; padding: 0.8rem 1rem; border-radius: 10px;
+    border: 1px solid var(--border); font-family: inherit;
+    font-size: 0.88rem; color: var(--text-primary);
+    background: var(--bg-light); transition: all 0.2s; outline: none;
+  }
+  .field input::placeholder { color: var(--text-muted); }
+  .field input:focus { border-color: var(--brand-action); box-shadow: 0 0 0 3px rgba(48, 119, 185, 0.1); }
+
+  .btn-continue {
+    width: 100%; padding: 0.85rem; border: none; border-radius: 10px;
+    font-family: inherit; font-size: 0.88rem; font-weight: 700;
+    background: var(--brand-ink); color: #fff; cursor: pointer;
+    transition: all 0.2s; margin-top: 0.5rem;
+  }
+  .btn-continue:hover { background: #1a2540; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+
+  .helper {
+    text-align: center; margin-top: 1.25rem;
+    font-size: 0.73rem; color: var(--text-muted);
+  }
+
+  .error-msg {
+    display: none; padding: 0.65rem 0.85rem; border-radius: 8px;
+    background: rgba(223, 0, 42, 0.06); border: 1px solid rgba(223, 0, 42, 0.15);
+    color: var(--accent); font-size: 0.78rem; font-weight: 500; margin-bottom: 1rem;
+  }
+  .error-msg.visible { display: block; }
+
+  /* Bottom */
+  .bottom-bar {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.5rem 3rem;
+  }
+  .quick-links { display: flex; gap: 0.6rem; }
+  .quick-link {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    padding: 0.4rem 0.85rem; border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03);
+    color: rgba(255,255,255,0.4); font-size: 0.7rem; font-weight: 600;
+    text-decoration: none; transition: all 0.2s;
+  }
+  .quick-link:hover { border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.6); }
+  .copyright { font-size: 0.66rem; color: rgba(255,255,255,0.2); }
+
+  .version-label {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--accent); color: #fff; text-align: center; padding: 0.45rem;
+    font-size: 0.73rem; font-weight: 700; letter-spacing: 0.06em;
+  }
+  body { padding-top: 32px; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  .anim { animation: fadeUp 0.5s ease-out both; }
+  .d1 { animation-delay: 100ms; }
+  .d2 { animation-delay: 200ms; }
+  .d3 { animation-delay: 300ms; }
+</style>
+</head>
+<body>
+
+<div class="version-label">LOGIN B — FULL DARK / Centered Two-Column / Grid Texture Background</div>
+
+<div class="top-bar anim">
+  <img src="logo.png" alt="AAP Logo">
+  <span class="badge">Welcome Aboard.</span>
+</div>
+
+<div class="main">
+  <div class="center-layout">
+    <div class="tagline-side anim d1">
+      <h1>Ready for day one?<br><span class="highlight">You are now.</span></h1>
+      <p>A smoother start begins here.<br><strong>Because day one already has enough surprises.</strong></p>
+    </div>
+    <div class="card-side anim d2">
+      <div class="login-card">
+        <div class="card-accent"></div>
+        <div class="card-body">
+          <h2>Let's get you in.</h2>
+          <p class="desc">Enter your name and access code to jump into your portal.</p>
+          <div class="error-msg" id="error">Incorrect access code. Please try again.</div>
+          <form onsubmit="return handleLogin(event)">
+            <div class="field">
+              <label>Full Name</label>
+              <input type="text" id="fullName" placeholder="e.g. Jane Doe" required>
+            </div>
+            <div class="field">
+              <label>Access Code</label>
+              <input type="text" id="accessCode" placeholder="Enter your access code" required>
+            </div>
+            <button type="submit" class="btn-continue">Continue</button>
+          </form>
+          <p class="helper">Your access code was provided by HR during onboarding.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-bar anim d3">
+  <div class="quick-links">
+    <a class="quick-link" href="#">What's Inside &#8595;</a>
+    <a class="quick-link" href="#">About AAP &#8595;</a>
+    <a class="quick-link" href="#">Your Benefits &#8595;</a>
+    <a class="quick-link" href="#">Life at AAP &#8595;</a>
+  </div>
+  <span class="copyright">&copy; 2026 AAP &mdash; All rights reserved</span>
+</div>
+
+<script>
+function handleLogin(e) {
+  e.preventDefault();
+  const name = document.getElementById('fullName').value.trim();
+  const code = document.getElementById('accessCode').value.trim();
+  if (code.toUpperCase() === 'AAP' && name) {
+    alert('Welcome, ' + name + '! Redirecting to AAP Start...');
+  } else {
+    document.getElementById('error').classList.add('visible');
+  }
+  return false;
+}
+</script>
+</body>
+</html>
