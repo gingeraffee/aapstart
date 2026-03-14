@@ -74,7 +74,7 @@ export function LoginForm() {
           Full Name
         </label>
         <input
-          id="full_name"
+          id="portal-full-name"
           type="text"
           autoComplete="name"
           placeholder="e.g. Jane Doe"

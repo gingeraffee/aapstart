@@ -1,0 +1,140 @@
+# Resources — AAP Start Resource Hub
+# ─────────────────────────────────────────────────────────────
+# Each resource needs:
+#   id          Unique identifier (kebab-case)
+#   title       Display name
+#   description Short description shown under the title
+#   type        "link" (opens in new tab) or "download" (triggers file download)
+#   url         Required for type: link
+#   filename    Required for type: download — filename inside backend/static/downloads/
+#   category    Must match one of the category IDs below
+#   tracks      Optional. List of track slugs, or omit for all tracks.
+#               Example: tracks: [hr] — only shown to HR employees
+#
+# HOW TO ADD A RESOURCE:
+#   1. Add an entry below with a unique id.
+#   2. For downloads: place the file in backend/static/downloads/ with the same filename.
+#   3. Redeploy (or restart the backend) for the change to appear.
+# ─────────────────────────────────────────────────────────────
+
+categories:
+  - id: quick-links
+    label: Quick Links
+  - id: policies
+    label: Policies
+  - id: forms
+    label: Forms
+  - id: hr-systems
+    label: HR Systems
+
+resources:
+  # ── Quick Links ────────────────────────────────────────────────────────────
+  - id: bamboohr
+    title: BambooHR
+    description: Employee profile, PTO requests, and HR information.
+    type: link
+    url: https://aap.bamboohr.com
+    category: quick-links
+
+  - id: paylocity
+    title: Paylocity
+    description: View pay stubs, paycheck details, and payroll history.
+    type: link
+    url: https://www.paylocity.com
+    category: quick-links
+
+  - id: linkedin-learning
+    title: LinkedIn Learning
+    description: Training and professional development — available from day one.
+    type: link
+    url: https://www.linkedin.com/learning
+    category: quick-links
+
+  - id: aap-start
+    title: AAP Start
+    description: Return to your onboarding portal at any time.
+    type: link
+    url: /overview
+    category: quick-links
+
+  # ── Policies ───────────────────────────────────────────────────────────────
+  - id: employee-handbook
+    title: Employee Handbook
+    description: AAP's official policies, expectations, and employee resources.
+    type: download
+    filename: aap-employee-handbook.pdf
+    category: policies
+
+  - id: pto-policy
+    title: Time Off Policy
+    description: PTO accrual, personal days, and how to request time away.
+    type: download
+    filename: aap-pto-policy.pdf
+    category: policies
+
+  - id: code-of-conduct
+    title: Code of Conduct
+    description: Standards for professional behavior and ethical conduct at AAP.
+    type: download
+    filename: aap-code-of-conduct.pdf
+    category: policies
+
+  - id: safety-policy
+    title: Workplace Safety Policy
+    description: AAP's safety standards, reporting procedures, and expectations.
+    type: download
+    filename: aap-safety-policy.pdf
+    category: policies
+
+  # ── Forms ──────────────────────────────────────────────────────────────────
+  - id: direct-deposit-form
+    title: Direct Deposit Authorization
+    description: Set up or update your direct deposit for payroll.
+    type: download
+    filename: aap-direct-deposit-form.pdf
+    category: forms
+
+  - id: emergency-contact-form
+    title: Emergency Contact Form
+    description: Update your emergency contact information with HR.
+    type: download
+    filename: aap-emergency-contact-form.pdf
+    category: forms
+
+  - id: benefits-enrollment-guide
+    title: Benefits Enrollment Guide
+    description: Overview of available benefits and how to enroll.
+    type: download
+    filename: aap-benefits-enrollment-guide.pdf
+    category: forms
+    tracks: [hr, administrative]
+
+  - id: incident-report-form
+    title: Incident Report Form
+    description: Use this form to report a workplace injury, near-miss, or safety concern.
+    type: download
+    filename: aap-incident-report-form.pdf
+    category: forms
+
+  # ── HR Systems ─────────────────────────────────────────────────────────────
+  - id: bamboohr-guide
+    title: BambooHR Quick Guide
+    description: How to navigate BambooHR — profiles, PTO requests, and time tracking.
+    type: download
+    filename: bamboohr-quick-guide.pdf
+    category: hr-systems
+
+  - id: paylocity-guide
+    title: Paylocity Quick Guide
+    description: How to log in, view pay stubs, and navigate your payroll account.
+    type: download
+    filename: paylocity-quick-guide.pdf
+    category: hr-systems
+
+  - id: linkedin-learning-guide
+    title: LinkedIn Learning Quick Start
+    description: How to activate your account and find assigned training content.
+    type: download
+    filename: linkedin-learning-quick-start.pdf
+    category: hr-systems
+    tracks: [hr, administrative]

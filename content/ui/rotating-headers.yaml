@@ -1,0 +1,14 @@
+# Rotating welcome headers — shown on the Overview page.
+# Use {name} as a placeholder — it will be replaced with the employee's first name.
+# Add as many as you like. One is picked at random each visit.
+
+- "Good to have you here, {name}."
+- "Ready when you are, {name}."
+- "Let's pick up where you left off, {name}."
+- "Welcome back, {name}. You've got this."
+- "Your path is waiting, {name}."
+- "Nice to see you, {name}."
+- "Making progress, {name}. Keep it going."
+- "One step at a time, {name}."
+- "You're right on track, {name}."
+- "Good to see you back, {name}."

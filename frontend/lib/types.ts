@@ -1,0 +1,81 @@
+export interface ModuleSummary {
+  slug: string;
+  title: string;
+  description: string;
+  order: number;
+  status: "published" | "draft" | "coming_soon";
+  estimated_minutes: number;
+  requires_acknowledgement: boolean;
+  requires_quiz: boolean;
+}
+
+export interface ProgressRecord {
+  module_slug: string;
+  visited: boolean;
+  acknowledgements_completed: boolean;
+  quiz_passed: boolean;
+  module_completed: boolean;
+}
+
+export interface ContentBlock {
+  type: "text" | "heading" | "callout" | "list" | "image" | "video";
+  content: string;
+  items?: string[];
+  variant?: string;
+  src?: string;
+  alt?: string;
+  caption?: string;
+}
+
+export interface Acknowledgement {
+  id: string;
+  statement: string;
+}
+
+export interface QuizOption {
+  id: string;
+  text: string;
+}
+
+export interface QuizQuestion {
+  id: string;
+  text: string;
+  options: QuizOption[];
+}
+
+export interface Quiz {
+  questions: QuizQuestion[];
+}
+
+export interface ModuleDetail extends ModuleSummary {
+  content_blocks: ContentBlock[];
+  acknowledgements: Acknowledgement[];
+  quiz: Quiz | null;
+}
+
+export interface QuizFeedback {
+  passed: boolean;
+  score: number;
+  total: number;
+  module_completed: boolean;
+  feedback: Record<string, { correct: boolean; correct_id: string }>;
+}
+
+export interface User {
+  employee_id: string;
+  first_name: string;
+  last_name: string;
+  full_name: string;
+  track: string;
+}
+
+export interface LoginPayload {
+  employee_id: string;
+  first_name: string;
+  last_name: string;
+  access_code: string;
+}
+
+export interface UiContent {
+  rotating_headers: string[];
+}
