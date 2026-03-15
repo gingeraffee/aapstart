@@ -17,14 +17,23 @@ export interface ProgressRecord {
   module_completed: boolean;
 }
 
+export interface ChecklistBlockItem {
+  label: string;
+  checked: boolean;
+}
+
 export interface ContentBlock {
-  type: "text" | "heading" | "callout" | "list" | "image" | "video";
-  content: string;
-  items?: string[];
+  type: "text" | "heading" | "callout" | "list" | "image" | "video" | "checklist" | "link" | "download";
+  content?: string;
+  items?: string[] | ChecklistBlockItem[];
   variant?: string;
   src?: string;
   alt?: string;
   caption?: string;
+  // link / download
+  url?: string;
+  label?: string;
+  description?: string;
 }
 
 export interface Acknowledgement {
