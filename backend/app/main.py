@@ -63,8 +63,8 @@ app.include_router(resources_router)
 def startup():
     init_db()
     load_all_content()
-    print("✓ Database ready")
-    print("✓ Content loaded")
+    print("[OK] Database ready")
+    print("[OK] Content loaded")
 
 
 @app.get("/api/health")
