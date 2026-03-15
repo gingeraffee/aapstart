@@ -41,17 +41,17 @@ export function AppShell({ children }: AppShellProps) {
   };
 
   return (
-    <div className="flex min-h-screen text-slate-100">
+    <div className="flex min-h-screen">
       <nav
         className="fixed bottom-0 left-0 top-0 z-40 flex w-[236px] flex-col overflow-y-auto"
         style={{
           background:
-            "radial-gradient(340px 320px at 14% -4%, rgba(34,211,238,0.26) 0%, rgba(34,211,238,0) 56%), radial-gradient(360px 340px at 94% 104%, rgba(239,68,68,0.2) 0%, rgba(239,68,68,0) 58%), linear-gradient(188deg, #041125 0%, #071a34 35%, #0c2850 58%, #102947 76%, #171f3a 100%)",
-          borderRight: "1px solid rgba(125, 168, 226, 0.28)",
-          boxShadow: "24px 0 60px rgba(4, 10, 24, 0.5)",
+            "radial-gradient(320px 260px at 16% -8%, rgba(103,232,249,0.2) 0%, rgba(103,232,249,0) 55%), radial-gradient(280px 240px at 90% 100%, rgba(251,113,133,0.12) 0%, rgba(251,113,133,0) 58%), linear-gradient(182deg, #07172f 0%, #0e2a52 44%, #153764 72%, #1f2f53 100%)",
+          borderRight: "1px solid rgba(133, 178, 231, 0.3)",
+          boxShadow: "18px 0 38px rgba(7, 18, 36, 0.32)",
         }}
       >
-        <div className="px-5 pb-4 pt-5" style={{ borderBottom: "1px solid rgba(148, 188, 236, 0.2)" }}>
+        <div className="px-5 pb-4 pt-5" style={{ borderBottom: "1px solid rgba(148, 188, 236, 0.24)" }}>
           <Link href="/overview" className="block">
             <Image
               src="/logo.png"
@@ -60,7 +60,7 @@ export function AppShell({ children }: AppShellProps) {
               height={48}
               className="h-11 w-auto"
               style={{
-                filter: "drop-shadow(0 0 12px rgba(12,170,214,0.32)) drop-shadow(0 3px 8px rgba(0,0,0,0.55))",
+                filter: "drop-shadow(0 0 10px rgba(14,118,189,0.42)) drop-shadow(0 3px 8px rgba(0,0,0,0.45))",
               }}
             />
           </Link>
@@ -76,8 +76,8 @@ export function AppShell({ children }: AppShellProps) {
             className={cn(
               "mb-1 flex items-center gap-2.5 rounded-[11px] px-3 py-2.5 text-[0.76rem] font-semibold transition-all duration-150",
               pathname === "/overview"
-                ? "bg-[#10274b]/95 text-white shadow-[0_12px_22px_rgba(2,8,20,0.55)] ring-1 ring-cyan-300/35"
-                : "text-slate-200 hover:bg-[#13335f]/55 hover:text-white"
+                ? "bg-white/[0.14] text-white shadow-[inset_0_0_0_1px_rgba(103,232,249,0.42),0_8px_18px_rgba(223,0,42,0.15)]"
+                : "text-slate-200 hover:bg-white/[0.1] hover:text-white"
             )}
           >
             <span
@@ -88,7 +88,7 @@ export function AppShell({ children }: AppShellProps) {
               style={
                 pathname === "/overview"
                   ? { background: "linear-gradient(135deg, #0ea5d9 0%, #d63964 100%)" }
-                  : { backgroundColor: "rgba(255,255,255,0.14)" }
+                  : { backgroundColor: "rgba(255,255,255,0.16)" }
               }
             >
               <svg
@@ -119,7 +119,7 @@ export function AppShell({ children }: AppShellProps) {
                   <div
                     key={m.slug}
                     className="flex cursor-not-allowed items-center gap-2.5 rounded-[10px] px-3 py-2.5"
-                    style={{ backgroundColor: "rgba(12, 34, 66, 0.7)", opacity: 0.72 }}
+                    style={{ backgroundColor: "rgba(255,255,255,0.05)", opacity: 0.72 }}
                   >
                     <span
                       className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full"
@@ -142,8 +142,8 @@ export function AppShell({ children }: AppShellProps) {
                   className={cn(
                     "flex items-center gap-2.5 rounded-[11px] px-3 py-2.5 text-[0.76rem] font-semibold transition-all duration-150",
                     isActive
-                      ? "bg-[#10274b]/95 text-white shadow-[0_12px_22px_rgba(2,8,20,0.55)] ring-1 ring-cyan-300/35"
-                      : "text-slate-200 hover:bg-[#13335f]/55 hover:text-white"
+                      ? "bg-white/[0.14] text-white shadow-[inset_0_0_0_1px_rgba(103,232,249,0.42),0_8px_18px_rgba(223,0,42,0.15)]"
+                      : "text-slate-200 hover:bg-white/[0.1] hover:text-white"
                   )}
                 >
                   <span
@@ -156,7 +156,7 @@ export function AppShell({ children }: AppShellProps) {
                         ? { background: "linear-gradient(135deg, #0ea5d9 0%, #d63964 100%)" }
                         : isComplete
                           ? { backgroundColor: "rgba(52, 211, 153, 0.2)" }
-                          : { backgroundColor: "rgba(255,255,255,0.14)" }
+                          : { backgroundColor: "rgba(255,255,255,0.16)" }
                     }
                   >
                     {isComplete ? (
@@ -187,8 +187,8 @@ export function AppShell({ children }: AppShellProps) {
             className={cn(
               "mt-0.5 flex items-center gap-2.5 rounded-[11px] px-3 py-2.5 text-[0.76rem] font-semibold transition-all duration-150",
               isRoadmapActive
-                ? "bg-[#10274b]/95 text-white shadow-[0_12px_22px_rgba(2,8,20,0.55)] ring-1 ring-cyan-300/35"
-                : "text-slate-200 hover:bg-[#13335f]/55 hover:text-white"
+                ? "bg-white/[0.14] text-white shadow-[inset_0_0_0_1px_rgba(103,232,249,0.42),0_8px_18px_rgba(223,0,42,0.15)]"
+                : "text-slate-200 hover:bg-white/[0.1] hover:text-white"
             )}
           >
             <span
@@ -199,7 +199,7 @@ export function AppShell({ children }: AppShellProps) {
               style={
                 isRoadmapActive
                   ? { background: "linear-gradient(135deg, #0ea5d9 0%, #d63964 100%)" }
-                  : { backgroundColor: "rgba(255,255,255,0.14)" }
+                  : { backgroundColor: "rgba(255,255,255,0.16)" }
               }
             >
               <svg
@@ -221,14 +221,14 @@ export function AppShell({ children }: AppShellProps) {
         </div>
 
         {user?.is_admin && (
-          <div className="px-3 pb-2" style={{ borderTop: "1px solid rgba(148, 188, 236, 0.2)", paddingTop: "10px" }}>
+          <div className="px-3 pb-2" style={{ borderTop: "1px solid rgba(148, 188, 236, 0.24)", paddingTop: "10px" }}>
             <Link
               href="/admin"
               className={cn(
                 "flex items-center gap-2.5 rounded-[11px] px-3 py-2.5 text-[0.76rem] font-semibold transition-all duration-150",
                 pathname === "/admin"
-                  ? "bg-[#10274b]/95 text-white shadow-[0_12px_22px_rgba(2,8,20,0.55)] ring-1 ring-cyan-300/35"
-                  : "text-slate-300 hover:bg-[#13335f]/55 hover:text-white"
+                  ? "bg-white/[0.14] text-white shadow-[inset_0_0_0_1px_rgba(103,232,249,0.42),0_8px_18px_rgba(223,0,42,0.15)]"
+                  : "text-slate-300 hover:bg-white/[0.1] hover:text-white"
               )}
             >
               <span
@@ -236,7 +236,7 @@ export function AppShell({ children }: AppShellProps) {
                 style={
                   pathname === "/admin"
                     ? { background: "linear-gradient(135deg, #0ea5d9 0%, #d63964 100%)" }
-                    : { backgroundColor: "rgba(255,255,255,0.14)" }
+                    : { backgroundColor: "rgba(255,255,255,0.16)" }
                 }
               >
                 <svg
@@ -259,7 +259,7 @@ export function AppShell({ children }: AppShellProps) {
           </div>
         )}
 
-        <div className="px-4 py-4" style={{ borderTop: "1px solid rgba(148, 188, 236, 0.2)" }}>
+        <div className="px-4 py-4" style={{ borderTop: "1px solid rgba(148, 188, 236, 0.24)" }}>
           {user && (
             <div className="flex items-center gap-2.5">
               <div
@@ -283,16 +283,16 @@ export function AppShell({ children }: AppShellProps) {
         className="fixed left-[236px] right-0 top-0 z-30 flex h-16 items-center px-6 backdrop-blur-md"
         style={{
           background:
-            "radial-gradient(900px 140px at 16% -120%, rgba(34,211,238,0.26) 0%, rgba(34,211,238,0) 54%), radial-gradient(760px 140px at 88% -110%, rgba(239,68,68,0.18) 0%, rgba(239,68,68,0) 56%), linear-gradient(180deg, rgba(7,20,42,0.84) 0%, rgba(8,24,50,0.86) 100%)",
-          borderBottom: "1px solid rgba(122, 162, 221, 0.22)",
+            "radial-gradient(900px 120px at 18% -90%, rgba(34,211,238,0.17) 0%, rgba(34,211,238,0) 52%), radial-gradient(700px 130px at 88% -100%, rgba(251,113,133,0.11) 0%, rgba(251,113,133,0) 52%), linear-gradient(180deg, rgba(247,251,255,0.95) 0%, rgba(242,248,255,0.93) 100%)",
+          borderBottom: "1px solid rgba(166, 189, 222, 0.75)",
         }}
       >
         <div
-          className="absolute left-1/2 flex -translate-x-1/2 rounded-[13px] p-1"
+          className="absolute left-1/2 flex -translate-x-1/2 rounded-[12px] p-1"
           style={{
-            background: "linear-gradient(180deg, rgba(18,46,88,0.95) 0%, rgba(16,38,72,0.95) 100%)",
-            border: "1px solid rgba(138, 184, 235, 0.36)",
-            boxShadow: "0 14px 30px rgba(3, 9, 23, 0.45)",
+            background: "linear-gradient(180deg, #e8f0fb 0%, #dee9f9 100%)",
+            border: "1px solid #c8d8ef",
+            boxShadow: "0 8px 16px rgba(20, 45, 79, 0.12)",
           }}
         >
           <button
@@ -300,17 +300,9 @@ export function AppShell({ children }: AppShellProps) {
             className={cn(
               "rounded-[9px] px-5 py-1.5 text-[0.78rem] font-semibold transition-all duration-150",
               isJourneyActive
-                ? "text-white shadow-[0_8px_16px_rgba(3,11,25,0.4)]"
-                : "text-slate-300 hover:text-white"
+                ? "bg-white text-[#0e1d38] shadow-[0_1px_8px_rgba(15,29,60,0.16)]"
+                : "text-[#5b6d87] hover:text-[#1f365f]"
             )}
-            style={
-              isJourneyActive
-                ? {
-                    background: "linear-gradient(135deg, rgba(19,47,89,1) 0%, rgba(12,34,68,1) 100%)",
-                    border: "1px solid rgba(160, 214, 255, 0.38)",
-                  }
-                : {}
-            }
           >
             Your Journey
           </button>
@@ -319,17 +311,9 @@ export function AppShell({ children }: AppShellProps) {
             className={cn(
               "rounded-[9px] px-5 py-1.5 text-[0.78rem] font-semibold transition-all duration-150",
               isResourcesActive
-                ? "text-white shadow-[0_8px_16px_rgba(3,11,25,0.4)]"
-                : "text-slate-300 hover:text-white"
+                ? "bg-white text-[#0e1d38] shadow-[0_1px_8px_rgba(15,29,60,0.16)]"
+                : "text-[#5b6d87] hover:text-[#1f365f]"
             )}
-            style={
-              isResourcesActive
-                ? {
-                    background: "linear-gradient(135deg, rgba(19,47,89,1) 0%, rgba(12,34,68,1) 100%)",
-                    border: "1px solid rgba(160, 214, 255, 0.38)",
-                  }
-                : {}
-            }
           >
             Resource Hub
           </button>
@@ -339,13 +323,13 @@ export function AppShell({ children }: AppShellProps) {
           <div
             className="flex items-center gap-2 rounded-[9px] px-3 py-1.5"
             style={{
-              backgroundColor: "rgba(14, 165, 233, 0.12)",
-              border: "1px solid rgba(125, 211, 252, 0.32)",
+              backgroundColor: "rgba(14, 165, 233, 0.09)",
+              border: "1px solid rgba(14, 165, 233, 0.22)",
             }}
           >
             <span
               className="flex h-[18px] w-[18px] items-center justify-center rounded-full"
-              style={{ background: "linear-gradient(135deg, rgba(56,189,248,0.36) 0%, rgba(214,51,108,0.3) 100%)" }}
+              style={{ background: "linear-gradient(135deg, rgba(56,189,248,0.25) 0%, rgba(214,51,108,0.2) 100%)" }}
             >
               <svg
                 width="10"
@@ -354,13 +338,13 @@ export function AppShell({ children }: AppShellProps) {
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="1.6"
-                className="text-cyan-100"
+                className="text-[#1f365f]"
               >
                 <path d="M7.4 1.2c.5 1.6.2 2.6-.9 3.3 1.8-.2 3 1 3 2.7 0 2-1.6 3.5-3.6 3.5S2.3 9.2 2.3 7.2c0-1.3.7-2.3 1.9-2.9.4 1 .9 1.5 1.6 1.5.7 0 1.3-.4 1.5-1.2.2-.8.2-1.8.1-3.4z" />
               </svg>
             </span>
-            <span className="text-[0.8rem] font-extrabold text-cyan-100">{completedCount}</span>
-            <span className="text-[0.68rem] font-medium text-cyan-100/85">done</span>
+            <span className="text-[0.8rem] font-extrabold text-[#17406f]">{completedCount}</span>
+            <span className="text-[0.68rem] font-medium text-[#516886]">done</span>
           </div>
           <div
             className="flex h-8 w-8 items-center justify-center rounded-full text-[0.68rem] font-bold text-white"
@@ -375,8 +359,7 @@ export function AppShell({ children }: AppShellProps) {
         className="ml-[236px] mt-16 flex min-h-[calc(100vh-4rem)] flex-1 flex-col"
         style={{
           background:
-            "radial-gradient(1400px 520px at 14% -6%, rgba(34,211,238,0.2) 0%, rgba(34,211,238,0) 46%), radial-gradient(1200px 460px at 94% -6%, rgba(239,68,68,0.14) 0%, rgba(239,68,68,0) 44%), radial-gradient(2px 2px at 20px 30px, rgba(149,184,227,0.16) 0%, transparent 100%), linear-gradient(180deg, #071429 0%, #091a36 45%, #07162e 100%)",
-          backgroundSize: "auto, auto, 34px 34px, auto",
+            "radial-gradient(1300px 420px at 14% -8%, rgba(34,211,238,0.18) 0%, rgba(34,211,238,0) 45%), radial-gradient(1100px 400px at 95% -6%, rgba(251,113,133,0.11) 0%, rgba(251,113,133,0) 45%), linear-gradient(180deg, #edf5ff 0%, #e7f1ff 46%, #eaf4ff 100%)",
         }}
       >
         <main className="flex-1">{children}</main>

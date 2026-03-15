@@ -58,37 +58,37 @@ export function WelcomeHeader({
       className="relative overflow-hidden rounded-[24px] p-7 lg:p-8"
       style={{
         background:
-          "radial-gradient(580px 220px at 0% -20%, rgba(34,211,238,0.26) 0%, rgba(34,211,238,0) 62%), radial-gradient(420px 220px at 100% -10%, rgba(239,68,68,0.2) 0%, rgba(239,68,68,0) 58%), linear-gradient(160deg, #0a1f3d 0%, #0e2a52 44%, #0a2446 72%, #121f3d 100%)",
-        border: "1px solid rgba(142, 196, 255, 0.26)",
-        boxShadow: "0 28px 64px rgba(2, 8, 20, 0.48), 0 12px 30px rgba(8, 22, 45, 0.28)",
+          "radial-gradient(600px 240px at 0% -20%, rgba(34,211,238,0.18) 0%, rgba(34,211,238,0) 62%), radial-gradient(420px 220px at 100% -10%, rgba(244,63,94,0.12) 0%, rgba(244,63,94,0) 58%), linear-gradient(150deg, #fbfdff 0%, #f2f8ff 58%, #fff8fa 100%)",
+        border: "1px solid rgba(139, 174, 224, 0.34)",
+        boxShadow: "0 22px 50px rgba(18, 39, 71, 0.15), 0 8px 18px rgba(18, 39, 71, 0.08)",
       }}
     >
       <div
         className="absolute inset-x-0 top-0 h-[4px]"
-        style={{ background: "linear-gradient(90deg, #0ea5d9 0%, #22d3ee 58%, #c92f58 100%)" }}
+        style={{ background: "linear-gradient(90deg, #0ea5d9 0%, #22d3ee 58%, #d63964 100%)" }}
       />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-[0.58rem] font-bold uppercase tracking-[0.22em] text-cyan-100/90">AAP Start</p>
+        <p className="text-[0.58rem] font-bold uppercase tracking-[0.22em] text-[#1f5a92]">AAP Start</p>
         <div
           className="inline-flex items-center gap-2 rounded-full px-3 py-1"
           style={{
-            backgroundColor: "rgba(14,165,233,0.14)",
-            border: "1px solid rgba(147, 227, 255, 0.32)",
+            backgroundColor: "rgba(14,165,233,0.1)",
+            border: "1px solid rgba(14,165,233,0.24)",
           }}
         >
-          <span className="h-1.5 w-1.5 rounded-full bg-cyan-200" />
-          <span className="text-[0.67rem] font-semibold text-cyan-100">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#1593c3]" />
+          <span className="text-[0.67rem] font-semibold text-[#20598f]">
             {isComplete ? "All modules complete" : `Day ${activeDay} of ${totalCount || 1}`}
           </span>
         </div>
       </div>
 
-      <h1 className="mt-2 text-[clamp(2rem,3vw,2.8rem)] font-extrabold leading-[1.03] tracking-[-0.03em] text-white">
+      <h1 className="mt-2 text-[clamp(2rem,3vw,2.8rem)] font-extrabold leading-[1.03] tracking-[-0.03em] text-[#0f1d38]">
         {headline}
       </h1>
 
-      <p className="mt-2.5 max-w-[640px] text-[0.93rem] leading-[1.7] text-slate-200">
+      <p className="mt-2.5 max-w-[640px] text-[0.93rem] leading-[1.7] text-[#3c516e]">
         This is not a checklist grind. It is your launchpad. One clear step at a time, with real momentum.
       </p>
 
@@ -97,9 +97,9 @@ export function WelcomeHeader({
           href={ctaHref}
           className="inline-flex items-center gap-2 rounded-[11px] px-4 py-2.5 text-[0.79rem] font-semibold text-white transition-all duration-200 hover:-translate-y-px"
           style={{
-            background: "linear-gradient(140deg, #102c55 0%, #163f71 60%, #12568a 100%)",
-            border: "1px solid rgba(147, 227, 255, 0.34)",
-            boxShadow: "0 14px 28px rgba(3, 11, 26, 0.45)",
+            background: "linear-gradient(140deg, #123867 0%, #15548a 70%, #1a679b 100%)",
+            border: "1px solid rgba(110, 173, 234, 0.4)",
+            boxShadow: "0 12px 24px rgba(16, 45, 81, 0.24)",
           }}
         >
           {ctaLabel}
@@ -117,7 +117,7 @@ export function WelcomeHeader({
             <path d="M6.5 2.5L10 6l-3.5 3.5" />
           </svg>
         </Link>
-        <p className="text-[0.73rem] font-medium text-cyan-100/88">
+        <p className="text-[0.73rem] font-medium text-[#526c8e]">
           {currentModule ? `Up next: ${currentModule.title}` : "You have completed every module in this path."}
         </p>
       </div>
@@ -125,38 +125,37 @@ export function WelcomeHeader({
       <div
         className="mt-6 rounded-[15px] px-5 py-4"
         style={{
-          background: "linear-gradient(160deg, rgba(11,32,63,0.7) 0%, rgba(9,25,51,0.78) 100%)",
-          border: "1px solid rgba(137, 192, 255, 0.26)",
-          boxShadow: "inset 0 1px 0 rgba(170, 218, 255, 0.18)",
+          background: "linear-gradient(170deg, rgba(226,242,255,0.68) 0%, rgba(244,250,255,0.9) 100%)",
+          border: "1px solid rgba(140, 186, 241, 0.28)",
         }}
       >
         <div className="flex flex-wrap items-center gap-4">
           <div className="min-w-[126px]">
-            <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em] text-cyan-100/75">Modules done</p>
-            <p className="mt-1 text-[1.12rem] font-extrabold leading-tight text-white">
+            <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[#5d7391]">Modules done</p>
+            <p className="mt-1 text-[1.12rem] font-extrabold leading-tight text-[#102445]">
               {completedCount}
-              <span className="ml-1 text-[0.75rem] font-semibold text-cyan-100/75">of {totalCount}</span>
+              <span className="ml-1 text-[0.75rem] font-semibold text-[#667f9f]">of {totalCount}</span>
             </p>
           </div>
 
-          <div className="h-10 w-px bg-cyan-200/30" />
+          <div className="h-10 w-px bg-[#b8d7f9]" />
 
           <div className="min-w-[210px] flex-1">
             <div className="mb-1.5 flex items-center justify-between">
-              <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em] text-cyan-100/75">Progress</p>
-              <p className="text-[0.78rem] font-extrabold text-cyan-100">{pct}%</p>
+              <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[#5d7391]">Progress</p>
+              <p className="text-[0.78rem] font-extrabold text-[#0f6092]">{pct}%</p>
             </div>
-            <div className="h-3 overflow-hidden rounded-full bg-cyan-950/70 ring-1 ring-cyan-300/20">
+            <div className="h-3 overflow-hidden rounded-full bg-[#d7e8fb]">
               <div
                 className="h-full rounded-full transition-all duration-700"
                 style={{
                   width: `${Math.max(pct, 6)}%`,
-                  background: "linear-gradient(90deg, #22d3ee 0%, #0ea5d9 52%, #c92f58 100%)",
+                  background: "linear-gradient(90deg, #22d3ee 0%, #0ea5d9 52%, #d63964 100%)",
                   opacity: pct === 0 ? 0.35 : 1,
                 }}
               />
             </div>
-            <p className="mt-1 text-[0.67rem] text-cyan-100/72">
+            <p className="mt-1 text-[0.67rem] text-[#627a9a]">
               {completedCount === 0
                 ? "Start Module 1 to kick off your progress tracker."
                 : isComplete
@@ -165,7 +164,7 @@ export function WelcomeHeader({
             </p>
           </div>
 
-          <div className="hidden min-w-[190px] text-[0.73rem] font-semibold italic text-cyan-100/82 lg:block">
+          <div className="hidden min-w-[190px] text-[0.73rem] font-semibold italic text-[#3d5677] lg:block">
             "{motivationalLine}"
           </div>
         </div>
