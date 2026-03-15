@@ -21,7 +21,10 @@ export function TabGroup({ tabs, className }: TabGroupProps) {
   return (
     <div className={cn("my-8 space-y-6", className)}>
       {/* Segmented control */}
-      <div className="inline-flex rounded-[10px] bg-gray-100 p-[3px]">
+      <div
+        className="inline-flex rounded-[11px] p-[3px]"
+        style={{ background: "linear-gradient(180deg, #e5edf8 0%, #dde7f6 100%)", border: "1px solid #d0dbec" }}
+      >
         {tabs.map((tab, index) => (
           <button
             key={tab.label}
@@ -29,7 +32,7 @@ export function TabGroup({ tabs, className }: TabGroupProps) {
             className={cn(
               "rounded-[8px] px-5 py-2.5 text-[0.8rem] font-semibold transition-all duration-200",
               index === active
-                ? "bg-white text-text-primary shadow-tab"
+                ? "bg-white text-text-primary shadow-[0_4px_10px_rgba(8,17,36,0.12)]"
                 : "text-text-muted hover:text-text-secondary"
             )}
           >
@@ -39,7 +42,10 @@ export function TabGroup({ tabs, className }: TabGroupProps) {
       </div>
 
       {/* Content panel */}
-      <div className="rounded-bento border border-border bg-surface p-6 md:p-8">
+      <div
+        className="rounded-bento border border-border bg-surface p-6 shadow-card md:p-8"
+        style={{ backgroundImage: "linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(246,251,255,0.94) 100%)" }}
+      >
         {tabs.map((tab, index) => (
           <div
             key={tab.label}

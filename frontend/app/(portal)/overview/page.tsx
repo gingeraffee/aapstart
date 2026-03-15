@@ -7,24 +7,25 @@ import { useAuth } from "@/lib/context/AuthContext";
 import { modulesApi, progressApi, resourcesApi } from "@/lib/api";
 import { WelcomeHeader } from "@/components/features/overview/WelcomeHeader";
 import { CelebrationModal } from "@/components/features/overview/CelebrationModal";
-import { Badge } from "@/components/ui/Badge";
 import { Spinner } from "@/components/ui/Spinner";
-import { cn } from "@/lib/utils";
-import { pickRandom } from "@/lib/utils";
+import { cn, pickRandom } from "@/lib/utils";
 import { COACH_TIPS } from "@/lib/coachTips";
 import type { ModuleSummary, ProgressRecord, UiContent } from "@/lib/types";
 
 export default function OverviewPage() {
   const { user } = useAuth();
 
-  const { data: modules, isLoading: loadingModules, error: modulesError } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
-  const { data: progress, isLoading: loadingProgress, error: progressError } = useSWR("progress", () => progressApi.getAll() as Promise<ProgressRecord[]>);
+  const { data: modules, isLoading: loadingModules, error: modulesError } = useSWR("modules", () =>
+    modulesApi.list() as Promise<ModuleSummary[]>
+  );
+  const { data: progress, isLoading: loadingProgress, error: progressError } = useSWR("progress", () =>
+    progressApi.getAll() as Promise<ProgressRecord[]>
+  );
   const { data: uiData } = useSWR("ui", () => resourcesApi.ui() as Promise<UiContent>);
 
   const isLoading = loadingModules || loadingProgress;
   const loadError = modulesError || progressError;
 
-  // ── Celebration modal ────────────────────────────────────────────────────
   const [showCelebration, setShowCelebration] = useState(false);
 
   const progressMap = new Map<string, ProgressRecord>();
@@ -39,8 +40,6 @@ export default function OverviewPage() {
 
   const currentModule = liveModules.find((m) => !progressMap.get(m.slug)?.module_completed);
 
-  // Fire the celebration modal exactly once per user when all modules are done.
-  // Key is per-user so switching accounts works correctly.
   useEffect(() => {
     if (isLoading) return;
     if (liveModules.length === 0) return;
@@ -49,7 +48,6 @@ export default function OverviewPage() {
     const key = `aapstart:celebrated:${user?.employee_id ?? "guest"}`;
     if (localStorage.getItem(key)) return;
 
-    // Small delay so the page renders first
     const t = setTimeout(() => setShowCelebration(true), 600);
     return () => clearTimeout(t);
   }, [isLoading, completedCount, liveModules.length, user?.employee_id]);
@@ -62,7 +60,6 @@ export default function OverviewPage() {
 
   const nextToUnlockIndex = liveModules.findIndex((_, i) => !isModuleUnlocked(i));
 
-  // Change 1: pick a rotating coach tip
   const coachTip = useMemo(() => pickRandom(COACH_TIPS), []);
 
   const firstName = user?.full_name?.split(" ")[0] ?? "there";
@@ -83,9 +80,9 @@ export default function OverviewPage() {
 
   if (loadError) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 gap-3 text-center">
+      <div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
         <p className="text-[1rem] font-semibold text-red-600">Could not connect to the server</p>
-        <p className="text-[0.82rem] text-text-muted max-w-sm">{loadError.message}</p>
+        <p className="max-w-sm text-[0.82rem] text-text-muted">{loadError.message}</p>
         <button
           onClick={() => window.location.reload()}
           className="mt-2 rounded-lg px-4 py-2 text-[0.82rem] font-semibold text-white"
@@ -98,10 +95,7 @@ export default function OverviewPage() {
   }
 
   return (
-    // Change 2: w-full with no max-width so siderail reaches true far right
     <div className="w-full px-6 py-6 lg:px-8 lg:py-8">
-
-      {/* Completion celebration modal */}
       {showCelebration && (
         <CelebrationModal
           name={user?.full_name ?? firstName}
@@ -110,7 +104,6 @@ export default function OverviewPage() {
         />
       )}
 
-      {/* Hero — full width */}
       <div className="mb-6 animate-fade-up">
         <WelcomeHeader
           name={user?.full_name ?? ""}
@@ -122,26 +115,36 @@ export default function OverviewPage() {
         />
       </div>
 
-      {/* Journey + right siderail */}
       <div className="flex items-start gap-5">
-
-        {/* ── Left: journey list ── */}
         <div className="min-w-0 flex-1 animate-fade-up" style={{ animationDelay: "60ms" }}>
-
-          {/* Change 9: section heading with rocket icon */}
-          <div className="mb-3 flex items-center gap-2">
-            <span className="text-[1.1rem] leading-none">🚀</span>
+          <div className="mb-4 flex items-center gap-2.5">
+            <div
+              className="flex h-7 w-7 items-center justify-center rounded-full"
+              style={{ background: "linear-gradient(135deg, rgba(223,0,42,0.18) 0%, rgba(6,182,212,0.24) 100%)" }}
+            >
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="#0e76bd"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M2 7.5L5.3 4.2 7.2 6.1 10 3.2" />
+                <path d="M8.8 3.2h1.2v1.2" />
+              </svg>
+            </div>
             <div>
-              <p className="text-[0.58rem] font-bold uppercase tracking-[0.18em] text-text-muted">
-                Your Launch Path
-              </p>
-              <h2 className="mt-0.5 text-[1.2rem] font-extrabold tracking-[-0.02em] text-text-primary">
+              <p className="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-[#64748b]">Your launch path</p>
+              <h2 className="mt-0.5 text-[1.2rem] font-extrabold tracking-[-0.02em] text-[#0f172a]">
                 {firstName}&apos;s learning journey
               </h2>
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {liveModules.map((module, index) => {
               const prog = progressMap.get(module.slug);
               const isComplete = prog?.module_completed ?? false;
@@ -150,7 +153,6 @@ export default function OverviewPage() {
               const unlocked = isModuleUnlocked(index);
               const isNextToUnlock = index === nextToUnlockIndex;
 
-              // ── Change 7: Locked module — dramatic "Up Next" glow ──
               if (!unlocked) {
                 return (
                   <div
@@ -159,29 +161,29 @@ export default function OverviewPage() {
                     style={
                       isNextToUnlock
                         ? {
-                            backgroundColor: "#f0f7ff",
-                            border: "1.5px solid rgba(14,118,189,0.35)",
-                            boxShadow: "0 0 0 3px rgba(14,118,189,0.06), 0 2px 12px rgba(14,118,189,0.09)",
+                            background: "linear-gradient(150deg, #edf8ff 0%, #f7fbff 100%)",
+                            border: "1.5px solid rgba(14,118,189,0.34)",
+                            boxShadow: "0 0 0 3px rgba(6,182,212,0.1), 0 7px 20px rgba(14,118,189,0.11)",
                           }
                         : {
-                            backgroundColor: "#f7f3ee",
-                            border: "1px solid rgba(0,0,0,0.05)",
-                            opacity: 0.5,
+                            backgroundColor: "#e9eef7",
+                            border: "1px solid rgba(108, 133, 174, 0.35)",
+                            opacity: 0.82,
                           }
                     }
                   >
-                    {/* Lock / unlock icon */}
                     <div className="mt-0.5 shrink-0">
                       <div
-                        className={cn(
-                          "flex h-7 w-7 items-center justify-center rounded-full",
-                          isNextToUnlock ? "animate-pulse" : ""
-                        )}
-                        style={{
-                          backgroundColor: isNextToUnlock ? "rgba(14,118,189,0.15)" : "rgba(0,0,0,0.06)",
-                        }}
+                        className={cn("flex h-7 w-7 items-center justify-center rounded-full", isNextToUnlock ? "animate-pulse" : "")}
+                        style={{ backgroundColor: isNextToUnlock ? "rgba(6,182,212,0.2)" : "rgba(71, 85, 105, 0.14)" }}
                       >
-                        <svg width="11" height="12" viewBox="0 0 10 11" fill="none" className={isNextToUnlock ? "text-brand-bright" : "text-gray-400"}>
+                        <svg
+                          width="11"
+                          height="12"
+                          viewBox="0 0 10 11"
+                          fill="none"
+                          className={isNextToUnlock ? "text-brand-bright" : "text-slate-500"}
+                        >
                           <rect x="1" y="5" width="8" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
                           <path d="M3 5V3.5a2 2 0 014 0V5" stroke="currentColor" strokeWidth="1.3" />
                         </svg>
@@ -190,37 +192,33 @@ export default function OverviewPage() {
 
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-3">
-                        <p
-                          className="text-[0.93rem] font-semibold leading-snug"
-                          style={{ color: isNextToUnlock ? "#0f1d3c" : "#9ca3af" }}
-                        >
+                        <p className="text-[0.93rem] font-semibold leading-snug" style={{ color: isNextToUnlock ? "#0f1d3c" : "#64748b" }}>
                           {module.title}
                         </p>
-                        {/* Change 7: vivid "Up Next" badge vs plain "Locked" */}
                         {isNextToUnlock ? (
                           <span
-                            className="shrink-0 rounded-[6px] px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.08em]"
-                            style={{ backgroundColor: "rgba(14,118,189,0.13)", color: "#0e76bd" }}
+                            className="shrink-0 rounded-[7px] px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.08em]"
+                            style={{ backgroundColor: "rgba(6,182,212,0.16)", color: "#0e76bd" }}
                           >
-                            🔓 Up Next
+                            Up next
                           </span>
                         ) : (
-                          <span className="shrink-0 rounded-[6px] bg-gray-100 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-[0.08em] text-gray-400">
+                          <span
+                            className="shrink-0 rounded-[7px] px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-[0.08em]"
+                            style={{ backgroundColor: "rgba(100,116,139,0.15)", color: "#64748b" }}
+                          >
                             Locked
                           </span>
                         )}
                       </div>
                       {module.description && (
-                        <p
-                          className="mt-1 line-clamp-2 text-[0.78rem] leading-[1.55]"
-                          style={{ color: isNextToUnlock ? "#4b5563" : "#9ca3af" }}
-                        >
+                        <p className="mt-1 line-clamp-2 text-[0.78rem] leading-[1.55]" style={{ color: isNextToUnlock ? "#475569" : "#64748b" }}>
                           {module.description}
                         </p>
                       )}
                       {isNextToUnlock && (
                         <p className="mt-2 text-[0.72rem] font-semibold" style={{ color: "#0e76bd" }}>
-                          Finish the current module to unlock this one ✨
+                          Finish your current module to unlock this next step.
                         </p>
                       )}
                     </div>
@@ -228,40 +226,62 @@ export default function OverviewPage() {
                 );
               }
 
-              // ── Unlocked module ──
+              const cardStyle = isComplete
+                ? {
+                    background: "linear-gradient(135deg, #f2fcf5 0%, #ffffff 100%)",
+                    border: "1px solid rgba(34,197,94,0.3)",
+                    boxShadow: "0 6px 18px rgba(22, 163, 74, 0.1)",
+                  }
+                : isInProgress
+                  ? {
+                      background: "linear-gradient(135deg, #ecf9ff 0%, #ffffff 100%)",
+                      border: "1px solid rgba(6,182,212,0.36)",
+                      boxShadow: "0 8px 22px rgba(14, 118, 189, 0.12)",
+                    }
+                  : {
+                      background: "linear-gradient(135deg, #fff7f2 0%, #ffffff 100%)",
+                      border: "1px solid rgba(251,146,60,0.32)",
+                      boxShadow: "0 8px 20px rgba(223, 0, 42, 0.08)",
+                    };
+
+              const stateLabel = isComplete ? "Complete" : isInProgress ? "In progress" : isCurrent ? "Up next" : "Ready";
+              const statePillStyle = isComplete
+                ? { backgroundColor: "rgba(34,197,94,0.13)", color: "#16a34a" }
+                : isInProgress
+                  ? { backgroundColor: "rgba(6,182,212,0.15)", color: "#0e76bd" }
+                  : isCurrent
+                    ? { backgroundColor: "rgba(223,0,42,0.12)", color: "#df002a" }
+                    : { backgroundColor: "rgba(251,146,60,0.16)", color: "#c2410c" };
+
               return (
                 <Link
                   key={module.slug}
                   href={`/modules/${module.slug}`}
-                  className="group flex gap-4 rounded-[16px] p-5 transition-all duration-150 hover:-translate-y-px"
-                  style={{
-                    backgroundColor: "#f9fafb",
-                    boxShadow: isCurrent
-                      ? "0 2px 16px rgba(14,118,189,0.14), 0 1px 4px rgba(0,0,0,0.06)"
-                      : isComplete
-                        ? "0 1px 8px rgba(34,197,94,0.12)"
-                        : "0 1px 6px rgba(0,0,0,0.06)",
-                    borderLeft: isComplete
-                      ? "3px solid #22c55e"
-                      : isCurrent
-                        ? "3px solid #0e76bd"
-                        : "3px solid transparent",
-                  }}
+                  className="group flex gap-4 rounded-[16px] p-5 transition-all duration-200 hover:-translate-y-px"
+                  style={cardStyle}
                 >
-                  {/* Status circle */}
                   <div className="mt-0.5 shrink-0">
                     <div
                       className="flex h-7 w-7 items-center justify-center rounded-full text-[0.62rem] font-bold"
                       style={
                         isComplete
-                          ? { backgroundColor: "rgba(34,197,94,0.12)", color: "#22c55e" }
-                          : isCurrent
-                            ? { backgroundColor: "rgba(14,118,189,0.12)", color: "#0e76bd" }
-                            : { backgroundColor: "#f3f4f6", color: "#9ca3af" }
+                          ? { backgroundColor: "rgba(34,197,94,0.16)", color: "#16a34a" }
+                          : isInProgress
+                            ? { backgroundColor: "rgba(6,182,212,0.16)", color: "#0e76bd" }
+                            : { backgroundColor: "rgba(223,0,42,0.1)", color: "#df002a" }
                       }
                     >
                       {isComplete ? (
-                        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                          width="10"
+                          height="10"
+                          viewBox="0 0 12 12"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <path d="M2 6.5l2.5 2.5L10 3" />
                         </svg>
                       ) : (
@@ -270,46 +290,27 @@ export default function OverviewPage() {
                     </div>
                   </div>
 
-                  {/* Content */}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-3">
-                      <p className={cn("text-[0.93rem] font-semibold leading-snug", isComplete ? "text-text-secondary" : "text-text-primary")}>
+                      <p className={cn("text-[0.95rem] font-semibold leading-snug", isComplete ? "text-[#334155]" : "text-[#0f172a]")}>
                         {module.title}
                       </p>
-                      {/* Change 6: vivid badges */}
-                      <div className="flex shrink-0 items-center gap-2">
-                        {isComplete && <Badge variant="complete">✓ Complete</Badge>}
-                        {isInProgress && !isComplete && (
-                          <span
-                            className="rounded-[6px] px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.08em]"
-                            style={{ backgroundColor: "rgba(14,118,189,0.13)", color: "#0e76bd" }}
-                          >
-                            In Progress
-                          </span>
-                        )}
-                        {isCurrent && !isComplete && !isInProgress && (
-                          <span
-                            className="rounded-[6px] px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.08em]"
-                            style={{ backgroundColor: "rgba(14,118,189,0.12)", color: "#0e76bd" }}
-                          >
-                            Up Next
-                          </span>
-                        )}
-                      </div>
+                      <span
+                        className="shrink-0 rounded-[7px] px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.08em]"
+                        style={statePillStyle}
+                      >
+                        {stateLabel}
+                      </span>
                     </div>
                     {module.description && (
-                      <p className="mt-1 line-clamp-2 text-[0.78rem] leading-[1.55] text-text-secondary">
-                        {module.description}
-                      </p>
+                      <p className="mt-1 line-clamp-2 text-[0.8rem] leading-[1.55] text-[#475569]">{module.description}</p>
                     )}
-                    {isComplete && (
-                      <p
-                        className="mt-2 text-[0.73rem] font-semibold transition-all group-hover:underline"
-                        style={{ color: "#22c55e" }}
-                      >
-                        Review module →
-                      </p>
-                    )}
+                    <p
+                      className="mt-2 text-[0.73rem] font-semibold transition-all group-hover:underline"
+                      style={{ color: isComplete ? "#16a34a" : isInProgress ? "#0e76bd" : "#df002a" }}
+                    >
+                      {isComplete ? "Review module" : "Open module"} →
+                    </p>
                   </div>
                 </Link>
               );
@@ -317,129 +318,125 @@ export default function OverviewPage() {
           </div>
         </div>
 
-        {/* ── Right siderail ── */}
-        <div className="w-[295px] shrink-0 space-y-4 animate-fade-up" style={{ animationDelay: "100ms" }}>
-
-          {/* Change 1: Coach Tip → warm light card, not dark navy */}
+        <div className="w-[305px] shrink-0 space-y-4 animate-fade-up" style={{ animationDelay: "100ms" }}>
           <div
             className="overflow-hidden rounded-[16px]"
             style={{
-              backgroundColor: "#fffbf2",
-              border: "1px solid rgba(14,118,189,0.15)",
-              boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+              background: "linear-gradient(180deg, #fff8ec 0%, #fffdf7 100%)",
+              border: "1px solid rgba(244, 114, 182, 0.2)",
+              boxShadow: "0 10px 24px rgba(223, 0, 42, 0.08)",
             }}
           >
-            {/* Accent bar at top */}
-            <div className="h-1 w-full" style={{ background: "linear-gradient(90deg, #0e76bd, #22c55e)" }} />
+            <div className="h-1 w-full" style={{ background: "linear-gradient(90deg, #df002a 0%, #06b6d4 100%)" }} />
             <div className="p-5">
-              <div className="mb-3 flex items-center gap-1.5">
-                <span className="text-[1rem]">💡</span>
+              <div className="mb-3 flex items-center gap-2">
                 <span
-                  className="text-[0.6rem] font-bold uppercase tracking-[0.18em]"
-                  style={{ color: "#0e76bd" }}
+                  className="flex h-6 w-6 items-center justify-center rounded-full"
+                  style={{ backgroundColor: "rgba(223,0,42,0.12)" }}
                 >
-                  Coach Tip
+                  <svg
+                    width="11"
+                    height="11"
+                    viewBox="0 0 12 12"
+                    fill="none"
+                    stroke="#df002a"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M6 1.5v6" />
+                    <path d="M3.5 5.7A3.5 3.5 0 1 0 8.5 5.7" />
+                  </svg>
                 </span>
+                <span className="text-[0.62rem] font-bold uppercase tracking-[0.16em] text-[#be123c]">Coach Tip</span>
               </div>
-              <p className="text-[0.83rem] leading-[1.65] text-text-primary">
-                {coachTip}
-              </p>
-              <p
-                className="mt-3 text-[0.62rem] font-bold uppercase tracking-[0.14em] italic"
-                style={{ color: "#0e76bd" }}
-              >
-                One module at a time. That&apos;s all.
+              <p className="text-[0.84rem] leading-[1.65] text-[#1f2937]">{coachTip}</p>
+              <p className="mt-3 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-[#0e76bd]">
+                You are doing better than you think.
               </p>
             </div>
           </div>
 
-          {/* Change 3: Contact card — warmer, Nicole avatar */}
           <div
             className="overflow-hidden rounded-[16px]"
-            style={{ backgroundColor: "#f9fafb", boxShadow: "0 1px 8px rgba(0,0,0,0.07)" }}
+            style={{
+              background: "linear-gradient(180deg, #ffffff 0%, #f8fbff 100%)",
+              border: "1px solid rgba(14,118,189,0.16)",
+              boxShadow: "0 8px 20px rgba(14,118,189,0.09)",
+            }}
           >
-            {/* Warm tinted header */}
-            <div
-              className="px-5 pt-4 pb-3"
-              style={{ backgroundColor: "rgba(14,118,189,0.04)", borderBottom: "1px solid rgba(14,118,189,0.08)" }}
-            >
-              <p className="text-[0.58rem] font-bold uppercase tracking-[0.16em] text-text-muted">
-                Your HR Support
-              </p>
+            <div className="px-5 pb-3 pt-4" style={{ backgroundColor: "rgba(14,118,189,0.06)", borderBottom: "1px solid rgba(14,118,189,0.1)" }}>
+              <p className="text-[0.58rem] font-bold uppercase tracking-[0.16em] text-[#64748b]">Your HR support</p>
             </div>
 
             <div className="p-5">
-              {/* Nicole's avatar + name */}
               <div className="mb-4 flex items-center gap-3">
                 <div
                   className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[0.72rem] font-bold text-white"
-                  style={{ background: "linear-gradient(135deg, #0e76bd, #1a2a5e)" }}
+                  style={{ background: "linear-gradient(135deg, #df002a 0%, #0e76bd 100%)" }}
                 >
                   NT
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="text-[0.9rem] font-bold leading-tight text-text-primary">Nicole Thornton</p>
+                    <p className="text-[0.92rem] font-bold leading-tight text-[#0f172a]">Nicole Thornton</p>
                     <span
                       className="rounded-[4px] px-1.5 py-0.5 text-[0.54rem] font-bold uppercase tracking-[0.08em]"
-                      style={{ backgroundColor: "rgba(14,118,189,0.1)", color: "#0e76bd" }}
+                      style={{ backgroundColor: "rgba(14,118,189,0.12)", color: "#0e76bd" }}
                     >
                       Primary
                     </span>
                   </div>
-                  <p className="mt-0.5 text-[0.75rem] text-text-muted">HR Manager</p>
+                  <p className="mt-0.5 text-[0.75rem] text-[#64748b]">HR Manager</p>
                 </div>
               </div>
 
+              <p className="mb-3 rounded-[10px] px-3 py-2 text-[0.74rem] leading-[1.5] text-[#334155]" style={{ backgroundColor: "rgba(255,241,242,0.7)" }}>
+                Need help or feeling stuck? Reach out and we will unblock the next step quickly.
+              </p>
+
               <div className="space-y-2.5">
                 <div>
-                  <p className="text-[0.56rem] font-bold uppercase tracking-[0.14em] text-text-muted">Email</p>
-                  <p className="mt-0.5 text-[0.78rem] text-text-primary">nicole.thornton@apirx.com</p>
+                  <p className="text-[0.56rem] font-bold uppercase tracking-[0.14em] text-[#64748b]">Email</p>
+                  <p className="mt-0.5 text-[0.8rem] text-[#0f172a]">nicole.thornton@apirx.com</p>
                 </div>
                 <div>
-                  <p className="text-[0.56rem] font-bold uppercase tracking-[0.14em] text-text-muted">Phone</p>
-                  <p className="mt-0.5 text-[0.78rem] text-text-primary">256-574-7528</p>
+                  <p className="text-[0.56rem] font-bold uppercase tracking-[0.14em] text-[#64748b]">Phone</p>
+                  <p className="mt-0.5 text-[0.8rem] text-[#0f172a]">256-574-7528</p>
                 </div>
               </div>
 
               <div className="mt-4 flex gap-2">
                 <a
                   href="mailto:nicole.thornton@apirx.com"
-                  className="flex-1 rounded-[8px] py-2 text-center text-[0.73rem] font-semibold text-text-secondary transition-colors hover:bg-gray-50"
-                  style={{ border: "1px solid #e5e7eb" }}
+                  className="flex-1 rounded-[8px] py-2 text-center text-[0.73rem] font-semibold text-white transition-all hover:-translate-y-px"
+                  style={{ background: "linear-gradient(135deg, #df002a 0%, #be123c 100%)", boxShadow: "0 8px 18px rgba(223,0,42,0.2)" }}
                 >
                   Email Nicole
                 </a>
                 <a
                   href="tel:2565747528"
-                  className="flex-1 rounded-[8px] py-2 text-center text-[0.73rem] font-semibold text-text-secondary transition-colors hover:bg-gray-50"
-                  style={{ border: "1px solid #e5e7eb" }}
+                  className="flex-1 rounded-[8px] py-2 text-center text-[0.73rem] font-semibold text-[#0e76bd] transition-all hover:-translate-y-px"
+                  style={{ backgroundColor: "#ecf9ff", border: "1px solid rgba(14,118,189,0.25)" }}
                 >
                   Call Nicole
                 </a>
               </div>
 
-              <p className="mt-3 text-[0.7rem] leading-[1.5] text-text-secondary">
-                Primary contact for onboarding questions, benefits timing, time-away routing, and general next-step help.
-              </p>
-
-              <div className="mt-4 pt-3" style={{ borderTop: "1px solid #f0f0f0" }}>
-                <p className="text-[0.56rem] font-bold uppercase tracking-[0.14em] text-text-muted">
-                  Escalation Support
-                </p>
+              <div className="mt-4 border-t pt-3" style={{ borderColor: "rgba(148,163,184,0.2)" }}>
+                <p className="text-[0.56rem] font-bold uppercase tracking-[0.14em] text-[#64748b]">Escalation support</p>
                 <div className="mt-2 flex items-center gap-2">
                   <div
                     className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[0.6rem] font-bold text-white"
-                    style={{ background: "linear-gradient(135deg, #5d9fd2, #1a2a5e)" }}
+                    style={{ background: "linear-gradient(135deg, #0e76bd, #1a2a5e)" }}
                   >
                     BH
                   </div>
-                  <p className="text-[0.82rem] font-semibold text-text-primary">Brandy Hooper</p>
+                  <p className="text-[0.82rem] font-semibold text-[#0f172a]">Brandy Hooper</p>
                 </div>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>

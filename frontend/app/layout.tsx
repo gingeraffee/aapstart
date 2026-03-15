@@ -1,19 +1,20 @@
 import type { Metadata } from "next";
-import { Inter, Josefin_Sans } from "next/font/google";
+import { Manrope, Sora } from "next/font/google";
 import "@/styles/globals.css";
 import { AuthProvider } from "@/lib/context/AuthContext";
 
-const inter = Inter({
+const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-sans",
   display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
 });
 
-const josefinSans = Josefin_Sans({
+const sora = Sora({
   subsets: ["latin"],
-  variable: "--font-josefin",
+  variable: "--font-display",
   display: "swap",
-  weight: ["300", "400", "600", "700"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${josefinSans.variable}`}>
+    <html lang="en" className={`${manrope.variable} ${sora.variable}`}>
       <body className="font-sans">
         <AuthProvider>{children}</AuthProvider>
       </body>

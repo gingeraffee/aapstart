@@ -42,14 +42,16 @@ export function AppShell({ children }: AppShellProps) {
 
   return (
     <div className="flex min-h-screen">
-
-      {/* ── Sidebar ── */}
       <nav
-        className="fixed left-0 top-0 bottom-0 z-40 flex w-[218px] flex-col overflow-y-auto"
-        style={{ background: "linear-gradient(160deg, #071e38 0%, #0a2d52 25%, #0e3a5c 50%, #0d1a2e 75%, #0c131e 100%)", borderRight: "1px solid rgba(255,255,255,0.08)" }}
+        className="fixed bottom-0 left-0 top-0 z-40 flex w-[218px] flex-col overflow-y-auto"
+        style={{
+          background:
+            "radial-gradient(260px 320px at 16% 0%, rgba(6,182,212,0.22) 0%, rgba(6,182,212,0) 55%), radial-gradient(300px 300px at 90% 100%, rgba(223,0,48,0.14) 0%, rgba(223,0,48,0) 58%), linear-gradient(175deg, #08152c 0%, #0d2446 38%, #102f58 62%, #1b2b50 82%, #231f38 100%)",
+          borderRight: "1px solid rgba(133, 178, 231, 0.38)",
+          boxShadow: "18px 0 36px rgba(8, 20, 40, 0.26)",
+        }}
       >
-        {/* Logo */}
-        <div className="px-5 pt-5 pb-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+        <div className="px-5 pb-4 pt-5" style={{ borderBottom: "1px solid rgba(148, 188, 236, 0.24)" }}>
           <Link href="/overview">
             <Image
               src="/logo.png"
@@ -64,36 +66,37 @@ export function AppShell({ children }: AppShellProps) {
           </Link>
         </div>
 
-        {/* Journey list */}
-        <div className="flex-1 overflow-y-auto px-3 pt-4 pb-3">
-          <p className="mb-2 px-2 text-[0.52rem] font-bold uppercase tracking-[0.18em] text-slate-400">
+        <div className="flex-1 overflow-y-auto px-3 pb-3 pt-4">
+          <p className="mb-2 px-2 text-[0.52rem] font-bold uppercase tracking-[0.18em] text-slate-300">
             Your Journey
           </p>
 
-          {/* Change 8: Overview uses a home icon instead of "0" circle */}
           <Link
             href="/overview"
             className={cn(
-              "mb-1 flex items-center gap-2.5 rounded-[8px] px-2.5 py-2 text-[0.76rem] font-medium transition-all duration-150",
+              "mb-1 flex items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-[0.76rem] font-semibold transition-all duration-150",
               pathname === "/overview"
-                ? "bg-brand-bright/20 text-white"
-                : "text-slate-300 hover:bg-white/[0.06] hover:text-white"
+                ? "bg-white/[0.12] text-white shadow-[inset_0_0_0_1px_rgba(56,189,248,0.45),0_8px_18px_rgba(223,0,42,0.22)]"
+                : "text-slate-200 hover:bg-white/[0.08] hover:text-white"
             )}
           >
             <span
               className={cn(
                 "flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full",
-                pathname === "/overview" ? "bg-brand-bright" : ""
+                pathname === "/overview" ? "text-white" : "text-slate-300"
               )}
-              style={pathname !== "/overview" ? { backgroundColor: "rgba(255,255,255,0.1)" } : undefined}
+              style={
+                pathname === "/overview"
+                  ? { background: "linear-gradient(135deg, #df002a 0%, #06b6d4 100%)" }
+                  : { backgroundColor: "rgba(255,255,255,0.14)" }
+              }
             >
-              {/* Home icon */}
               <svg
                 width="10"
                 height="10"
                 viewBox="0 0 12 12"
                 fill="none"
-                className={pathname === "/overview" ? "text-white" : "text-slate-400"}
+                className={pathname === "/overview" ? "text-white" : "text-slate-300"}
                 stroke="currentColor"
                 strokeWidth="1.5"
                 strokeLinecap="round"
@@ -105,7 +108,6 @@ export function AppShell({ children }: AppShellProps) {
             Overview
           </Link>
 
-          {/* Modules with sequential locking */}
           <div className="space-y-0.5">
             {liveModules.map((m, i) => {
               const prog = progress?.find((p) => p.module_slug === m.slug);
@@ -117,18 +119,19 @@ export function AppShell({ children }: AppShellProps) {
                 return (
                   <div
                     key={m.slug}
-                    className="flex cursor-not-allowed items-center gap-2.5 rounded-[8px] px-2.5 py-2"
+                    className="flex cursor-not-allowed items-center gap-2.5 rounded-[10px] px-3 py-2.5"
+                    style={{ backgroundColor: "rgba(255,255,255,0.04)", opacity: 0.75 }}
                   >
                     <span
                       className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full"
-                      style={{ backgroundColor: "rgba(14,118,189,0.12)" }}
+                      style={{ backgroundColor: "rgba(56, 189, 248, 0.18)" }}
                     >
-                      <svg width="8" height="9" viewBox="0 0 8 9" fill="none" style={{ color: "#0e76bd" }}>
+                      <svg width="8" height="9" viewBox="0 0 8 9" fill="none" style={{ color: "#67d5ff" }}>
                         <rect x="1" y="4" width="6" height="5" rx="1" stroke="currentColor" strokeWidth="1.2" />
                         <path d="M2.5 4V2.5a1.5 1.5 0 013 0V4" stroke="currentColor" strokeWidth="1.2" />
                       </svg>
                     </span>
-                    <span className="truncate text-[0.73rem] leading-tight text-slate-400">{m.title}</span>
+                    <span className="truncate text-[0.73rem] leading-tight text-slate-300/80">{m.title}</span>
                   </div>
                 );
               }
@@ -138,23 +141,23 @@ export function AppShell({ children }: AppShellProps) {
                   key={m.slug}
                   href={`/modules/${m.slug}`}
                   className={cn(
-                    "flex items-center gap-2.5 rounded-[8px] px-2.5 py-2 text-[0.76rem] font-medium transition-all duration-150",
+                    "flex items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-[0.76rem] font-semibold transition-all duration-150",
                     isActive
-                      ? "bg-brand-bright/20 text-white"
-                      : "text-slate-300 hover:bg-white/[0.05] hover:text-white"
+                      ? "bg-white/[0.12] text-white shadow-[inset_0_0_0_1px_rgba(56,189,248,0.45),0_8px_18px_rgba(223,0,42,0.2)]"
+                      : "text-slate-200 hover:bg-white/[0.08] hover:text-white"
                   )}
                 >
                   <span
                     className={cn(
                       "flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full text-[0.58rem] font-bold",
-                      isActive ? "bg-brand-bright text-white" : isComplete ? "text-brand-green" : "text-slate-400"
+                      isActive ? "text-white" : isComplete ? "text-brand-green" : "text-slate-300"
                     )}
                     style={
                       isActive
-                        ? undefined
+                        ? { background: "linear-gradient(135deg, #df002a 0%, #06b6d4 100%)" }
                         : isComplete
-                          ? { backgroundColor: "rgba(34, 197, 94, 0.15)" }
-                          : { backgroundColor: "rgba(255,255,255,0.1)" }
+                          ? { backgroundColor: "rgba(34, 197, 94, 0.18)" }
+                          : { backgroundColor: "rgba(255,255,255,0.14)" }
                     }
                   >
                     {isComplete ? (
@@ -171,27 +174,36 @@ export function AppShell({ children }: AppShellProps) {
             })}
           </div>
 
-          {/* 90-Day Roadmap — end of journey path */}
           <Link
             href="/roadmap"
             className={cn(
-              "mt-0.5 flex items-center gap-2.5 rounded-[8px] px-2.5 py-2 text-[0.76rem] font-medium transition-all duration-150",
+              "mt-0.5 flex items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-[0.76rem] font-semibold transition-all duration-150",
               isRoadmapActive
-                ? "bg-brand-bright/20 text-white"
-                : "text-slate-300 hover:bg-white/[0.06] hover:text-white"
+                ? "bg-white/[0.12] text-white shadow-[inset_0_0_0_1px_rgba(56,189,248,0.45),0_8px_18px_rgba(223,0,42,0.2)]"
+                : "text-slate-200 hover:bg-white/[0.08] hover:text-white"
             )}
           >
             <span
               className={cn(
                 "flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full",
-                isRoadmapActive ? "bg-brand-bright" : ""
+                isRoadmapActive ? "text-white" : "text-slate-300"
               )}
-              style={!isRoadmapActive ? { backgroundColor: "rgba(255,255,255,0.1)" } : undefined}
+              style={
+                isRoadmapActive
+                  ? { background: "linear-gradient(135deg, #df002a 0%, #06b6d4 100%)" }
+                  : { backgroundColor: "rgba(255,255,255,0.14)" }
+              }
             >
-              {/* Map icon */}
-              <svg width="10" height="10" viewBox="0 0 12 12" fill="none"
-                className={isRoadmapActive ? "text-white" : "text-slate-400"}
-                stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 12 12"
+                fill="none"
+                className={isRoadmapActive ? "text-white" : "text-slate-300"}
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
                 <path d="M1 2.5l3 1 3-1.5 3 1V10l-3-1-3 1.5-3-1V2.5z" />
                 <path d="M4 3.5v7M8 2v7" />
@@ -201,22 +213,36 @@ export function AppShell({ children }: AppShellProps) {
           </Link>
         </div>
 
-        {/* Admin link */}
         {user?.is_admin && (
-          <div className="px-3 pb-2" style={{ borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "10px" }}>
+          <div className="px-3 pb-2" style={{ borderTop: "1px solid rgba(148, 188, 236, 0.24)", paddingTop: "10px" }}>
             <Link
               href="/admin"
               className={cn(
-                "flex items-center gap-2.5 rounded-[8px] px-2.5 py-2 text-[0.76rem] font-medium transition-all duration-150",
+                "flex items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-[0.76rem] font-semibold transition-all duration-150",
                 pathname === "/admin"
-                  ? "bg-brand-bright/20 text-white"
-                  : "text-slate-400 hover:bg-white/[0.06] hover:text-white"
+                  ? "bg-white/[0.12] text-white shadow-[inset_0_0_0_1px_rgba(56,189,248,0.45),0_8px_18px_rgba(223,0,42,0.2)]"
+                  : "text-slate-300 hover:bg-white/[0.08] hover:text-white"
               )}
             >
-              <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full"
-                style={{ backgroundColor: pathname === "/admin" ? "rgba(14,118,189,0.5)" : "rgba(255,255,255,0.07)" }}>
-                <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
-                  className={pathname === "/admin" ? "text-white" : "text-slate-500"}>
+              <span
+                className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full"
+                style={
+                  pathname === "/admin"
+                    ? { background: "linear-gradient(135deg, #df002a 0%, #06b6d4 100%)" }
+                    : { backgroundColor: "rgba(255,255,255,0.14)" }
+                }
+              >
+                <svg
+                  width="10"
+                  height="10"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={pathname === "/admin" ? "text-white" : "text-slate-300"}
+                >
                   <circle cx="6" cy="4" r="2" />
                   <path d="M2 10c0-2.2 1.8-4 4-4s4 1.8 4 4" />
                 </svg>
@@ -226,8 +252,7 @@ export function AppShell({ children }: AppShellProps) {
           </div>
         )}
 
-        {/* User / sign out */}
-        <div className="px-4 py-4" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+        <div className="px-4 py-4" style={{ borderTop: "1px solid rgba(148, 188, 236, 0.24)" }}>
           {user && (
             <div className="flex items-center gap-2.5">
               <div
@@ -237,13 +262,8 @@ export function AppShell({ children }: AppShellProps) {
                 {initials(user.full_name)}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[0.72rem] font-semibold text-slate-200 leading-tight">
-                  {user.full_name}
-                </p>
-                <button
-                  onClick={() => logout()}
-                  className="text-[0.6rem] text-slate-400 transition-colors hover:text-slate-200"
-                >
+                <p className="truncate text-[0.72rem] font-semibold leading-tight text-slate-100">{user.full_name}</p>
+                <button onClick={() => logout()} className="text-[0.6rem] text-slate-300 transition-colors hover:text-white">
                   Sign out
                 </button>
               </div>
@@ -252,21 +272,25 @@ export function AppShell({ children }: AppShellProps) {
         </div>
       </nav>
 
-      {/* ── Top nav ── */}
       <header
-        className="fixed left-[218px] right-0 top-0 z-30 flex h-14 items-center px-6"
-        style={{ backgroundColor: "#ffffff", borderBottom: "1px solid #e5e7eb" }}
+        className="fixed left-[218px] right-0 top-0 z-30 flex h-14 items-center px-6 backdrop-blur-sm"
+        style={{
+          background:
+            "radial-gradient(900px 120px at 18% -90%, rgba(6,182,212,0.2) 0%, rgba(6,182,212,0) 52%), radial-gradient(700px 130px at 88% -100%, rgba(223,0,48,0.12) 0%, rgba(223,0,48,0) 52%), linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(247,251,255,0.97) 100%)",
+          borderBottom: "1px solid rgba(174, 194, 222, 0.8)",
+        }}
       >
-        {/* Journey / Resource Hub toggle */}
         <div
-          className="absolute left-1/2 -translate-x-1/2 flex rounded-[10px] p-1"
-          style={{ backgroundColor: "#f3f4f6" }}
+          className="absolute left-1/2 flex -translate-x-1/2 rounded-[11px] p-1"
+          style={{ background: "linear-gradient(180deg, #e7eef9 0%, #dfe8f7 100%)", border: "1px solid #d1dcee" }}
         >
           <button
             onClick={() => router.push("/overview")}
             className={cn(
               "rounded-[8px] px-5 py-1.5 text-[0.78rem] font-semibold transition-all duration-150",
-              isJourneyActive ? "bg-white text-brand-bright shadow-sm" : "text-text-muted hover:text-text-secondary"
+              isJourneyActive
+                ? "bg-white text-brand-ink shadow-[0_1px_6px_rgba(15,29,60,0.14)]"
+                : "text-text-muted hover:text-text-secondary"
             )}
           >
             Your Journey
@@ -275,30 +299,47 @@ export function AppShell({ children }: AppShellProps) {
             onClick={() => router.push("/resources")}
             className={cn(
               "rounded-[8px] px-5 py-1.5 text-[0.78rem] font-semibold transition-all duration-150",
-              isResourcesActive ? "bg-white text-brand-bright shadow-sm" : "text-text-muted hover:text-text-secondary"
+              isResourcesActive
+                ? "bg-white text-brand-ink shadow-[0_1px_6px_rgba(15,29,60,0.14)]"
+                : "text-text-muted hover:text-text-secondary"
             )}
           >
             Resource Hub
           </button>
         </div>
 
-        {/* Streak + avatar */}
         <div className="ml-auto flex items-center gap-3">
           <div
             className="flex items-center gap-1.5 rounded-[8px] px-3 py-1.5"
-            style={{ backgroundColor: completedCount > 0 ? "#fff4e6" : "#f9fafb" }}
+            style={{
+              backgroundColor: completedCount > 0 ? "#fff2ea" : "#f4f7fb",
+              border: completedCount > 0 ? "1px solid rgba(223, 0, 42, 0.16)" : "1px solid rgba(148, 163, 184, 0.2)",
+            }}
           >
-            <span className="text-[1rem] leading-none">{completedCount > 0 ? "🔥" : "⚡"}</span>
             <span
-              className="text-[0.82rem] font-extrabold"
-              style={{ color: completedCount > 0 ? "#f97316" : "#6b7280" }}
+              className="flex h-[18px] w-[18px] items-center justify-center rounded-full"
+              style={{
+                background: completedCount > 0
+                  ? "linear-gradient(135deg, rgba(223,0,42,0.18) 0%, rgba(6,182,212,0.25) 100%)"
+                  : "rgba(148,163,184,0.16)",
+              }}
             >
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                className={completedCount > 0 ? "text-brand-alert" : "text-slate-500"}
+              >
+                <path d="M7.4 1.2c.5 1.6.2 2.6-.9 3.3 1.8-.2 3 1 3 2.7 0 2-1.6 3.5-3.6 3.5S2.3 9.2 2.3 7.2c0-1.3.7-2.3 1.9-2.9.4 1 .9 1.5 1.6 1.5.7 0 1.3-.4 1.5-1.2.2-.8.2-1.8.1-3.4z" />
+              </svg>
+            </span>
+            <span className="text-[0.82rem] font-extrabold" style={{ color: completedCount > 0 ? "#df002a" : "#475569" }}>
               {completedCount}
             </span>
-            <span
-              className="text-[0.68rem] font-medium"
-              style={{ color: completedCount > 0 ? "#fb923c" : "#9ca3af" }}
-            >
+            <span className="text-[0.68rem] font-medium" style={{ color: completedCount > 0 ? "#ef4444" : "#64748b" }}>
               done
             </span>
           </div>
@@ -311,13 +352,16 @@ export function AppShell({ children }: AppShellProps) {
         </div>
       </header>
 
-      {/* ── Main area ── */}
       <div
         className="ml-[218px] mt-14 flex min-h-[calc(100vh-3.5rem)] flex-1 flex-col"
-        style={{ backgroundColor: "#e8edf5" }}
+        style={{
+          background:
+            "radial-gradient(1400px 480px at 15% 0%, rgba(6,182,212,0.16) 0%, rgba(6,182,212,0) 45%), radial-gradient(1200px 440px at 95% 0%, rgba(223,0,48,0.1) 0%, rgba(223,0,48,0) 45%), linear-gradient(180deg, #e8eff9 0%, #f5f8fc 100%)",
+        }}
       >
         <main className="flex-1">{children}</main>
       </div>
     </div>
   );
 }
+

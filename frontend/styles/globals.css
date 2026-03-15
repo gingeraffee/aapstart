@@ -1,4 +1,4 @@
-/* Inter + Josefin Sans loaded via next/font/google in layout.tsx */
+/* Manrope + Sora loaded via next/font/google in layout.tsx */
 
 @tailwind base;
 @tailwind components;
@@ -6,11 +6,11 @@
 
 :root {
   color-scheme: light;
-  --accent: #df002a;
-  --brand-ink: #0f1d3c;
-  --brand-action: #3077b9;
-  --brand-deep: #1a2a5e;
-  --brand-sky: #5d9fd2;
+  --accent: #df0030;
+  --brand-ink: #0b1428;
+  --brand-action: #0f7fb3;
+  --brand-deep: #1b2c56;
+  --brand-sky: #38bdf8;
 }
 
 @layer base {
@@ -29,6 +29,7 @@
     html {
       scroll-behavior: auto;
     }
+
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
@@ -40,13 +41,18 @@
     @apply bg-background text-text-primary font-sans;
     min-height: 100vh;
     font-size: 1rem;
-    line-height: 1.7;
+    line-height: 1.65;
+    background-image:
+      radial-gradient(1100px 540px at 14% -5%, rgba(6, 182, 212, 0.14) 0%, rgba(6, 182, 212, 0) 45%),
+      radial-gradient(960px 500px at 92% -10%, rgba(223, 0, 48, 0.09) 0%, rgba(223, 0, 48, 0) 46%),
+      linear-gradient(180deg, #edf3fb 0%, #f5f8fc 100%);
   }
 
   h1, h2, h3, h4 {
-    font-family: var(--font-josefin), "Josefin Sans", "Futura", "Century Gothic", sans-serif;
+    font-family: var(--font-display), "Sora", "Avenir", "Inter", sans-serif;
     text-wrap: balance;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
+    color: #081124;
   }
 
   a {
@@ -54,12 +60,12 @@
   }
 
   ::selection {
-    background: rgba(48, 119, 185, 0.16);
-    color: #132033;
+    background: rgba(6, 182, 212, 0.22);
+    color: #051226;
   }
 
   :focus-visible {
-    @apply outline-none ring-2 ring-brand-action ring-offset-2 ring-offset-white;
+    @apply outline-none ring-2 ring-brand-bright ring-offset-2 ring-offset-white;
   }
 
   ::-webkit-scrollbar {
@@ -178,16 +184,15 @@
     background-size: 100% 54px, 54px 100%;
   }
 
-  /* Dot grid texture — premium SaaS feel */
   .bg-dot-grid {
     background-image: radial-gradient(circle, rgba(180, 195, 215, 0.55) 1px, transparent 1px);
     background-size: 28px 28px;
   }
 
-  /* Noise texture overlay via pseudo-element — apply to parent */
   .bg-noise {
     position: relative;
   }
+
   .bg-noise::before {
     content: "";
     position: absolute;
@@ -200,21 +205,19 @@
     z-index: 0;
   }
 
-  /* Soft inner glow for dark panels */
   .glow-blue {
     box-shadow: inset 0 0 80px rgba(48, 119, 185, 0.12), inset 0 0 40px rgba(93, 159, 210, 0.06);
   }
 
-  /* Dimensional card shadow — stronger than default */
   .shadow-dimensional {
     box-shadow:
-      0 1px 1px rgba(0,0,0,0.04),
-      0 4px 8px rgba(0,0,0,0.05),
-      0 16px 32px rgba(18,33,56,0.09),
-      0 40px 80px rgba(18,33,56,0.07);
+      0 1px 1px rgba(0, 0, 0, 0.03),
+      0 6px 10px rgba(13, 27, 52, 0.06),
+      0 20px 40px rgba(13, 27, 52, 0.11),
+      0 42px 84px rgba(13, 27, 52, 0.08);
   }
 
   .font-heading {
-    font-family: var(--font-josefin), "Josefin Sans", "Futura", "Century Gothic", sans-serif;
+    font-family: var(--font-display), "Sora", "Avenir", "Inter", sans-serif;
   }
 }

@@ -14,9 +14,9 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    "bg-brand-ink text-white hover:bg-[#1a2540] hover:-translate-y-px hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] active:translate-y-0",
+    "text-white hover:-translate-y-px active:translate-y-0",
   secondary:
-    "border border-border bg-surface text-text-primary hover:bg-bg-light hover:-translate-y-px",
+    "border border-border bg-white/90 text-text-primary hover:bg-white hover:-translate-y-px",
   ghost:
     "bg-transparent text-text-secondary hover:bg-black/[0.04] hover:text-text-primary",
   destructive:
@@ -40,6 +40,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-action focus-visible:ring-offset-2 focus-visible:ring-offset-white",
           "disabled:cursor-not-allowed disabled:opacity-50",
           "select-none whitespace-nowrap",
+          variant === "primary" &&
+            "bg-[linear-gradient(135deg,#df0030_0%,#c6002a_45%,#0f7fb3_100%)] shadow-[0_12px_24px_rgba(223,0,48,0.22),0_5px_12px_rgba(15,127,179,0.16)] hover:shadow-[0_16px_30px_rgba(223,0,48,0.26),0_6px_14px_rgba(15,127,179,0.2)]",
           variantClasses[variant],
           sizeClasses[size],
           className
