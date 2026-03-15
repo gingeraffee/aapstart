@@ -30,8 +30,9 @@ export function AppShell({ children }: AppShellProps) {
     ? liveModules.filter((m) => progress.find((p) => p.module_slug === m.slug)?.module_completed).length
     : 0;
 
-  const isJourneyActive = pathname === "/overview" || pathname.startsWith("/modules");
+  const isJourneyActive = pathname === "/overview" || pathname.startsWith("/modules") || pathname === "/roadmap";
   const isResourcesActive = pathname.startsWith("/resources");
+  const isRoadmapActive = pathname === "/roadmap";
 
   const isModuleUnlocked = (index: number) => {
     if (index === 0) return true;
@@ -102,6 +103,35 @@ export function AppShell({ children }: AppShellProps) {
               </svg>
             </span>
             Overview
+          </Link>
+
+          {/* Roadmap link */}
+          <Link
+            href="/roadmap"
+            className={cn(
+              "mb-1 flex items-center gap-2.5 rounded-[8px] px-2.5 py-2 text-[0.76rem] font-medium transition-all duration-150",
+              isRoadmapActive
+                ? "bg-brand-bright/20 text-white"
+                : "text-slate-300 hover:bg-white/[0.06] hover:text-white"
+            )}
+          >
+            <span
+              className={cn(
+                "flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full",
+                isRoadmapActive ? "bg-brand-bright" : ""
+              )}
+              style={!isRoadmapActive ? { backgroundColor: "rgba(255,255,255,0.1)" } : undefined}
+            >
+              {/* Map icon */}
+              <svg width="10" height="10" viewBox="0 0 12 12" fill="none"
+                className={isRoadmapActive ? "text-white" : "text-slate-400"}
+                stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+              >
+                <path d="M1 2.5l3 1 3-1.5 3 1V10l-3-1-3 1.5-3-1V2.5z" />
+                <path d="M4 3.5v7M8 2v7" />
+              </svg>
+            </span>
+            90-Day Roadmap
           </Link>
 
           {/* Modules with sequential locking */}
