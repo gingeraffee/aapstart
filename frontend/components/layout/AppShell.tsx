@@ -45,7 +45,7 @@ export function AppShell({ children }: AppShellProps) {
       {/* ── Sidebar ── */}
       <nav
         className="fixed left-0 top-0 bottom-0 z-40 flex w-[218px] flex-col overflow-y-auto"
-        style={{ background: "linear-gradient(160deg, #0e76bd 0%, #0e3a5c 30%, #0d1a2e 60%, #0d1624 100%)", borderRight: "1px solid rgba(255,255,255,0.08)" }}
+        style={{ background: "linear-gradient(160deg, #071e38 0%, #0a2d52 25%, #0e3a5c 50%, #0d1a2e 75%, #0c131e 100%)", borderRight: "1px solid rgba(255,255,255,0.08)" }}
       >
         {/* Logo */}
         <div className="px-5 pt-5 pb-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
