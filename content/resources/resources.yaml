@@ -9,12 +9,12 @@
 #   filename    Required for type: download — filename inside backend/static/downloads/
 #   category    Must match one of the category IDs below
 #   tracks      Optional. List of track slugs, or omit for all tracks.
-#               Example: tracks: [hr] — only shown to HR employees
+#               Example: tracks: [administrative] — only shown to admin employees
 #
 # HOW TO ADD A RESOURCE:
 #   1. Add an entry below with a unique id.
 #   2. For downloads: place the file in backend/static/downloads/ with the same filename.
-#   3. Redeploy (or restart the backend) for the change to appear.
+#   3. Restart the backend for the change to appear.
 # ─────────────────────────────────────────────────────────────
 
 categories:
@@ -22,10 +22,10 @@ categories:
     label: Quick Links
   - id: policies
     label: Policies
-  - id: forms
-    label: Forms
   - id: hr-systems
     label: HR Systems
+  - id: training
+    label: Training Resources
 
 resources:
   # ── Quick Links ────────────────────────────────────────────────────────────
@@ -50,91 +50,204 @@ resources:
     url: https://www.linkedin.com/learning
     category: quick-links
 
-  - id: aap-start
-    title: AAP Start
-    description: Return to your onboarding portal at any time.
-    type: link
-    url: /overview
-    category: quick-links
-
   # ── Policies ───────────────────────────────────────────────────────────────
-  - id: employee-handbook
-    title: Employee Handbook
-    description: AAP's official policies, expectations, and employee resources.
-    type: download
-    filename: aap-employee-handbook.pdf
-    category: policies
-
   - id: pto-policy
-    title: Time Off Policy
+    title: Paid Time Off Policy
     description: PTO accrual, personal days, and how to request time away.
     type: download
-    filename: aap-pto-policy.pdf
+    filename: POL-02_Paid_Time_Off_Policies_SOP.docx
     category: policies
 
-  - id: code-of-conduct
-    title: Code of Conduct
-    description: Standards for professional behavior and ethical conduct at AAP.
+  - id: attendance-policy
+    title: Attendance Policy Playbook
+    description: AAP's attendance expectations, point system, and procedures.
     type: download
-    filename: aap-code-of-conduct.pdf
+    filename: Policy Playbook_Attendance.docx
     category: policies
 
-  - id: safety-policy
-    title: Workplace Safety Policy
-    description: AAP's safety standards, reporting procedures, and expectations.
+  - id: fmla-policy
+    title: FMLA Policy
+    description: Family and Medical Leave Act — eligibility, process, and forms.
     type: download
-    filename: aap-safety-policy.pdf
+    filename: POL-03_FMLA_SOP.docx
     category: policies
 
-  # ── Forms ──────────────────────────────────────────────────────────────────
-  - id: direct-deposit-form
-    title: Direct Deposit Authorization
-    description: Set up or update your direct deposit for payroll.
+  - id: benefits-eligibility
+    title: Benefits Eligibility
+    description: Overview of available benefits and eligibility requirements.
     type: download
-    filename: aap-direct-deposit-form.pdf
-    category: forms
+    filename: POL-04_Benefits_Eligibility.docx
+    category: policies
 
-  - id: emergency-contact-form
-    title: Emergency Contact Form
-    description: Update your emergency contact information with HR.
+  - id: corrective-action
+    title: Corrective Action Process
+    description: AAP's corrective action steps, documentation, and expectations.
     type: download
-    filename: aap-emergency-contact-form.pdf
-    category: forms
+    filename: POL-05_Corrective_Action_Process_SOP.docx
+    category: policies
 
-  - id: benefits-enrollment-guide
-    title: Benefits Enrollment Guide
-    description: Overview of available benefits and how to enroll.
+  - id: confidentiality-policy
+    title: Confidentiality Policy
+    description: Employee responsibilities around confidential information.
     type: download
-    filename: aap-benefits-enrollment-guide.pdf
-    category: forms
-    tracks: [hr, administrative]
-
-  - id: incident-report-form
-    title: Incident Report Form
-    description: Use this form to report a workplace injury, near-miss, or safety concern.
-    type: download
-    filename: aap-incident-report-form.pdf
-    category: forms
+    filename: POL-06_Confidentiality_SOP.docx
+    category: policies
 
   # ── HR Systems ─────────────────────────────────────────────────────────────
-  - id: bamboohr-guide
-    title: BambooHR Quick Guide
-    description: How to navigate BambooHR — profiles, PTO requests, and time tracking.
+  - id: bamboohr-onboarding
+    title: BambooHR Onboarding Guide
+    description: Step-by-step guide to setting up a new employee in BambooHR.
     type: download
-    filename: bamboohr-quick-guide.pdf
+    filename: HRA-04_Bamboo_Onboarding.docx
     category: hr-systems
+    tracks: [administrative]
 
-  - id: paylocity-guide
-    title: Paylocity Quick Guide
-    description: How to log in, view pay stubs, and navigate your payroll account.
+  - id: bamboohr-recruiting
+    title: Recruiting Support in BambooHR
+    description: How to manage recruiting and applicant tracking in BambooHR.
     type: download
-    filename: paylocity-quick-guide.pdf
+    filename: HRA-02_Recruiting_Support_in_BambooHR_SOP.docx
     category: hr-systems
+    tracks: [administrative]
 
-  - id: linkedin-learning-guide
-    title: LinkedIn Learning Quick Start
-    description: How to activate your account and find assigned training content.
+  - id: payclock-pto
+    title: Enter PTO in Payclock
+    description: How to enter PTO requests in the Payclock system.
     type: download
-    filename: linkedin-learning-quick-start.pdf
+    filename: PC-01_Enter_PTO_Payclock.pdf
     category: hr-systems
-    tracks: [hr, administrative]
+    tracks: [administrative]
+
+  - id: payclock-edit-time
+    title: Edit Time Punches
+    description: How to edit or correct employee time punches in Payclock.
+    type: download
+    filename: PC-02_Edit_Time_Punches.pdf
+    category: hr-systems
+    tracks: [administrative]
+
+  - id: payclock-poll
+    title: Poll the Timeclock
+    description: How to poll the physical timeclock to sync attendance data.
+    type: download
+    filename: PC-03_Poll_the_Timeclock.pdf
+    category: hr-systems
+    tracks: [administrative]
+
+  - id: payclock-new-employee
+    title: Add New Employee to Payclock
+    description: Steps to add a newly hired employee to the Payclock system.
+    type: download
+    filename: PC-04_Add_New_Employee_to_Payclock.pdf
+    category: hr-systems
+    tracks: [administrative]
+
+  - id: payclock-pto-report
+    title: Add PTO via Time Off Taken Report
+    description: How to use the Time Off Taken report to process PTO in Payclock.
+    type: download
+    filename: PC-05_Adding_PTO_Using_Time_Off_Taken_Report.docx
+    category: hr-systems
+    tracks: [administrative]
+
+  - id: payroll-change-report
+    title: View the Payroll Change Report
+    description: How to run and interpret the payroll change report.
+    type: download
+    filename: SOP-BG-02 - View the Payroll Change Report.pdf
+    category: hr-systems
+    tracks: [administrative]
+
+  - id: bamboohr-pto-request
+    title: Edit an Employee PTO Request
+    description: How to edit or approve a PTO request on behalf of an employee.
+    type: download
+    filename: SOP-BH-01 - Edit an Employee PTO Request.pdf
+    category: hr-systems
+    tracks: [administrative]
+
+  # ── Training Resources ─────────────────────────────────────────────────────
+  - id: hr-admin-training-guide
+    title: HR Administrative Assistant Training Guide
+    description: Comprehensive training guide for the HR Administrative Assistant role.
+    type: download
+    filename: HR_Administrative_Assistant_Training_Guide.docx
+    category: training
+    tracks: [administrative]
+
+  - id: hr-admin-cheat-sheet
+    title: HR Admin Assistant Cheat Sheet
+    description: Quick-reference cheat sheet for common HR admin tasks.
+    type: download
+    filename: HR Admin Assistant Cheat Sheet.docx
+    category: training
+    tracks: [administrative]
+
+  - id: hr-admin-quick-reference
+    title: Quick Reference Guide — HR Admin
+    description: Fast-lookup guide for the most common HR admin processes.
+    type: download
+    filename: Quick Reference Guide - HR Admin Assistant.pdf
+    category: training
+    tracks: [administrative]
+
+  - id: hr-training-checklist
+    title: HR Training Checklist
+    description: Checklist of training items to complete during onboarding.
+    type: download
+    filename: HR_Training_Checklist.docx
+    category: training
+    tracks: [administrative]
+
+  - id: hr-sop-job-aids
+    title: HR SOP Job Aids
+    description: Job aids to support day-to-day HR operations and procedures.
+    type: download
+    filename: HR_SOP_Job_Aids.docx
+    category: training
+    tracks: [administrative]
+
+  - id: employee-inquiries-sop
+    title: Employee Inquiries SOP
+    description: How to handle and route incoming employee inquiries.
+    type: download
+    filename: HRA-01_Employee_Inquiries_SOP.docx
+    category: training
+    tracks: [administrative]
+
+  - id: prehire-screenings
+    title: Pre-Hire Screenings SOP
+    description: Procedures for conducting background checks and pre-hire screenings.
+    type: download
+    filename: HRA-03_Prehire_Screenings_SOP.docx
+    category: training
+    tracks: [administrative]
+
+  - id: reference-checks-guide
+    title: New Hire Reference Checks Guide
+    description: How to conduct and document reference checks for new hires.
+    type: download
+    filename: RM-01_New_Hire_Reference_Checks.pdf
+    category: training
+    tracks: [administrative]
+
+  - id: cs-timecard-exceptions
+    title: Timecard Exceptions
+    description: How to handle and document timecard exceptions.
+    type: download
+    filename: CS-01_Timecard_Exceptions.docx
+    category: training
+
+  - id: cs-employee-script
+    title: Employee Script
+    description: Standard scripts for common employee interactions and communications.
+    type: download
+    filename: CS-02_Employee_Script.pdf
+    category: training
+
+  - id: cs-escalation-route
+    title: Escalation Route
+    description: How to escalate employee issues and who to contact at each level.
+    type: download
+    filename: CS-04_Escalation_Route.docx
+    category: training

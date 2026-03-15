@@ -88,3 +88,19 @@ export interface LoginPayload {
 export interface UiContent {
   rotating_headers: string[];
 }
+
+export interface Resource {
+  id: string;
+  title: string;
+  description: string;
+  type: "link" | "download";
+  url?: string;
+  filename?: string;
+  category: string;
+  tracks?: string[];
+}
+
+export interface ResourceCategory {
+  id: string;
+  label: string;
+}

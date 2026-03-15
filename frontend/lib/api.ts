@@ -60,4 +60,24 @@ export const progressApi = {
 
 export const resourcesApi = {
   ui: () => request("/resources/ui"),
+  list: (category?: string, q?: string) => {
+    const params = new URLSearchParams();
+    if (category) params.set("category", category);
+    if (q) params.set("q", q);
+    const qs = params.toString();
+    return request(`/resources${qs ? `?${qs}` : ""}`);
+  },
+  categories: () => request("/resources/categories"),
+  download: async (filename: string, displayName: string) => {
+    const url = `${API_BASE}/resources/download?filename=${encodeURIComponent(filename)}`;
+    const res = await fetch(url, { credentials: "include" });
+    if (!res.ok) throw new ApiError("File not found.", res.status);
+    const blob = await res.blob();
+    const objectUrl = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = objectUrl;
+    a.download = displayName;
+    a.click();
+    URL.revokeObjectURL(objectUrl);
+  },
 };
