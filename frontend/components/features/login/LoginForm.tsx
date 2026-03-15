@@ -38,9 +38,7 @@ export function LoginForm() {
     try {
       await submitLogin(form.full_name, form.employee_id);
     } catch (err) {
-      setError(
-        err instanceof ApiError ? err.message : "Something went wrong. Please try again."
-      );
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -53,9 +51,7 @@ export function LoginForm() {
     try {
       await submitLogin("Dev User", "dev-001");
     } catch (err) {
-      setError(
-        err instanceof ApiError ? err.message : "Something went wrong. Please try again."
-      );
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }

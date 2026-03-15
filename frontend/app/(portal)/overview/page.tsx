@@ -17,11 +17,12 @@ import type { ModuleSummary, ProgressRecord, UiContent } from "@/lib/types";
 export default function OverviewPage() {
   const { user } = useAuth();
 
-  const { data: modules, isLoading: loadingModules } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
-  const { data: progress, isLoading: loadingProgress } = useSWR("progress", () => progressApi.getAll() as Promise<ProgressRecord[]>);
+  const { data: modules, isLoading: loadingModules, error: modulesError } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
+  const { data: progress, isLoading: loadingProgress, error: progressError } = useSWR("progress", () => progressApi.getAll() as Promise<ProgressRecord[]>);
   const { data: uiData } = useSWR("ui", () => resourcesApi.ui() as Promise<UiContent>);
 
   const isLoading = loadingModules || loadingProgress;
+  const loadError = modulesError || progressError;
 
   // ── Celebration modal ────────────────────────────────────────────────────
   const [showCelebration, setShowCelebration] = useState(false);
@@ -76,6 +77,22 @@ export default function OverviewPage() {
     return (
       <div className="flex items-center justify-center py-24">
         <Spinner size="lg" />
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 gap-3 text-center">
+        <p className="text-[1rem] font-semibold text-red-600">Could not connect to the server</p>
+        <p className="text-[0.82rem] text-text-muted max-w-sm">{loadError.message}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-2 rounded-lg px-4 py-2 text-[0.82rem] font-semibold text-white"
+          style={{ background: "#0e76bd" }}
+        >
+          Try again
+        </button>
       </div>
     );
   }
