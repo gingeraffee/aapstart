@@ -201,6 +201,31 @@ export function AppShell({ children }: AppShellProps) {
           </Link>
         </div>
 
+        {/* Admin link */}
+        {user?.is_admin && (
+          <div className="px-3 pb-2" style={{ borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "10px" }}>
+            <Link
+              href="/admin"
+              className={cn(
+                "flex items-center gap-2.5 rounded-[8px] px-2.5 py-2 text-[0.76rem] font-medium transition-all duration-150",
+                pathname === "/admin"
+                  ? "bg-brand-bright/20 text-white"
+                  : "text-slate-400 hover:bg-white/[0.06] hover:text-white"
+              )}
+            >
+              <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full"
+                style={{ backgroundColor: pathname === "/admin" ? "rgba(14,118,189,0.5)" : "rgba(255,255,255,0.07)" }}>
+                <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+                  className={pathname === "/admin" ? "text-white" : "text-slate-500"}>
+                  <circle cx="6" cy="4" r="2" />
+                  <path d="M2 10c0-2.2 1.8-4 4-4s4 1.8 4 4" />
+                </svg>
+              </span>
+              Admin
+            </Link>
+          </div>
+        )}
+
         {/* User / sign out */}
         <div className="px-4 py-4" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
           {user && (
