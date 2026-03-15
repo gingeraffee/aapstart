@@ -57,7 +57,7 @@ export function WelcomeHeader({
     <div
       className="relative overflow-hidden rounded-[20px]"
       style={{
-        background: "linear-gradient(135deg, #ffffff 0%, #f2f8ff 100%)",
+        background: "linear-gradient(135deg, #ffffff 0%, #f5f9ff 100%)",
         boxShadow: "0 4px 24px rgba(14,118,189,0.14), 0 1px 6px rgba(0,0,0,0.08)",
         border: "1px solid rgba(14,118,189,0.18)",
       }}

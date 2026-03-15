@@ -108,9 +108,9 @@ export default function OverviewPage() {
                     style={
                       isNextToUnlock
                         ? {
-                            backgroundColor: "#eaf6ff",
-                            border: "2px solid #0e76bd",
-                            boxShadow: "0 0 0 4px rgba(14,118,189,0.08), 0 2px 12px rgba(14,118,189,0.12)",
+                            backgroundColor: "#f0f7ff",
+                            border: "1.5px solid rgba(14,118,189,0.35)",
+                            boxShadow: "0 0 0 3px rgba(14,118,189,0.06), 0 2px 12px rgba(14,118,189,0.09)",
                           }
                         : {
                             backgroundColor: "#f7f3ee",
@@ -148,8 +148,8 @@ export default function OverviewPage() {
                         {/* Change 7: vivid "Up Next" badge vs plain "Locked" */}
                         {isNextToUnlock ? (
                           <span
-                            className="shrink-0 rounded-[6px] px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.08em] text-white"
-                            style={{ backgroundColor: "#0e76bd" }}
+                            className="shrink-0 rounded-[6px] px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.08em]"
+                            style={{ backgroundColor: "rgba(14,118,189,0.13)", color: "#0e76bd" }}
                           >
                             🔓 Up Next
                           </span>
@@ -184,7 +184,7 @@ export default function OverviewPage() {
                   href={`/modules/${module.slug}`}
                   className="group flex gap-4 rounded-[16px] p-5 transition-all duration-150 hover:-translate-y-px"
                   style={{
-                    backgroundColor: "#ffffff",
+                    backgroundColor: "#f9fafb",
                     boxShadow: isCurrent
                       ? "0 2px 16px rgba(14,118,189,0.14), 0 1px 4px rgba(0,0,0,0.06)"
                       : isComplete
@@ -230,8 +230,8 @@ export default function OverviewPage() {
                         {isComplete && <Badge variant="complete">✓ Complete</Badge>}
                         {isInProgress && !isComplete && (
                           <span
-                            className="rounded-[6px] px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.08em] text-white"
-                            style={{ backgroundColor: "#0e76bd" }}
+                            className="rounded-[6px] px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.08em]"
+                            style={{ backgroundColor: "rgba(14,118,189,0.13)", color: "#0e76bd" }}
                           >
                             In Progress
                           </span>
@@ -304,8 +304,8 @@ export default function OverviewPage() {
 
           {/* Change 3: Contact card — warmer, Nicole avatar */}
           <div
-            className="overflow-hidden rounded-[16px] bg-white"
-            style={{ boxShadow: "0 1px 8px rgba(0,0,0,0.07)" }}
+            className="overflow-hidden rounded-[16px]"
+            style={{ backgroundColor: "#f9fafb", boxShadow: "0 1px 8px rgba(0,0,0,0.07)" }}
           >
             {/* Warm tinted header */}
             <div
