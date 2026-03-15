@@ -25,3 +25,15 @@ export function Spinner({ size = "md", className }: SpinnerProps) {
     </svg>
   );
 }
+
+interface FullPageSpinnerProps {
+  className?: string;
+}
+
+export function FullPageSpinner({ className }: FullPageSpinnerProps) {
+  return (
+    <div className={cn("flex min-h-screen w-full items-center justify-center", className)}>
+      <Spinner size="lg" />
+    </div>
+  );
+}

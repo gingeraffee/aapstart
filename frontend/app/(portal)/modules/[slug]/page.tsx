@@ -198,15 +198,29 @@ export default function ModulePage() {
             </svg>
             Back to my path
           </Link>
-          <div className="flex items-center gap-3">
-            <p className="hidden text-[0.75rem] text-text-muted sm:block">{nextStepLabel}</p>
-            <Button size="lg" onClick={handleContinue}>
-              {continueLabel}
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="ml-1">
-                <path d="M5 2l5 5-5 5" />
-              </svg>
-            </Button>
-          </div>
+          <button
+            onClick={handleContinue}
+            className="inline-flex items-center gap-2 rounded-button px-7 text-[0.88rem] font-bold text-white transition-all duration-200 hover:-translate-y-px active:translate-y-0"
+            style={{
+              height: "2.875rem",
+              background: "linear-gradient(135deg, #0e76bd 0%, #5d9fd2 100%)",
+              opacity: 0.82,
+              boxShadow: "0 4px 14px rgba(14,118,189,0.35), 0 1px 4px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.18)",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.opacity = "1";
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(14,118,189,0.45), 0 2px 6px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.2)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.opacity = "0.82";
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 14px rgba(14,118,189,0.35), 0 1px 4px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.18)";
+            }}
+          >
+            {continueLabel}
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 2l5 5-5 5" />
+            </svg>
+          </button>
         </div>
 
       </div>

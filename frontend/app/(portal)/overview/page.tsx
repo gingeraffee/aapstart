@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import useSWR from "swr";
 import { useAuth } from "@/lib/context/AuthContext";
 import { modulesApi, progressApi, resourcesApi } from "@/lib/api";
 import { WelcomeHeader } from "@/components/features/overview/WelcomeHeader";
+import { CelebrationModal } from "@/components/features/overview/CelebrationModal";
 import { Badge } from "@/components/ui/Badge";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
@@ -22,6 +23,9 @@ export default function OverviewPage() {
 
   const isLoading = loadingModules || loadingProgress;
 
+  // ── Celebration modal ────────────────────────────────────────────────────
+  const [showCelebration, setShowCelebration] = useState(false);
+
   const progressMap = new Map<string, ProgressRecord>();
   progress?.forEach((item) => progressMap.set(item.module_slug, item));
 
@@ -33,6 +37,21 @@ export default function OverviewPage() {
   const completedCount = liveModules.filter((m) => progressMap.get(m.slug)?.module_completed).length;
 
   const currentModule = liveModules.find((m) => !progressMap.get(m.slug)?.module_completed);
+
+  // Fire the celebration modal exactly once per user when all modules are done.
+  // Key is per-user so switching accounts works correctly.
+  useEffect(() => {
+    if (isLoading) return;
+    if (liveModules.length === 0) return;
+    if (completedCount < liveModules.length) return;
+
+    const key = `aapstart:celebrated:${user?.employee_id ?? "guest"}`;
+    if (localStorage.getItem(key)) return;
+
+    // Small delay so the page renders first
+    const t = setTimeout(() => setShowCelebration(true), 600);
+    return () => clearTimeout(t);
+  }, [isLoading, completedCount, liveModules.length, user?.employee_id]);
 
   const isModuleUnlocked = (index: number) => {
     if (index === 0) return true;
@@ -47,6 +66,12 @@ export default function OverviewPage() {
 
   const firstName = user?.full_name?.split(" ")[0] ?? "there";
 
+  const handleCloseCelebration = () => {
+    const key = `aapstart:celebrated:${user?.employee_id ?? "guest"}`;
+    localStorage.setItem(key, "1");
+    setShowCelebration(false);
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-24">
@@ -58,6 +83,26 @@ export default function OverviewPage() {
   return (
     // Change 2: w-full with no max-width so siderail reaches true far right
     <div className="w-full px-6 py-6 lg:px-8 lg:py-8">
+
+      {/* Completion celebration modal */}
+      {showCelebration && (
+        <CelebrationModal
+          name={user?.full_name ?? firstName}
+          completedCount={completedCount}
+          onClose={handleCloseCelebration}
+        />
+      )}
+
+      {/* DEV ONLY — floating trigger button, never shown in production */}
+      {process.env.NODE_ENV === "development" && (
+        <button
+          onClick={() => setShowCelebration(true)}
+          className="fixed bottom-5 right-5 z-40 rounded-full px-4 py-2.5 text-[0.78rem] font-bold text-white shadow-lg transition-all hover:-translate-y-px hover:shadow-xl"
+          style={{ background: "linear-gradient(135deg, #16a34a, #0e76bd)" }}
+        >
+          🎉 Test Modal
+        </button>
+      )}
 
       {/* Hero — full width */}
       <div className="mb-6 animate-fade-up">

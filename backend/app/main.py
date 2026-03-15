@@ -61,10 +61,18 @@ app.include_router(resources_router)
 # ── Startup ───────────────────────────────────────────────────────────────────
 @app.on_event("startup")
 def startup():
+    import os
+    from pathlib import Path
+    from app.content.loader import _modules_cache
+    print(f"[startup] CWD: {os.getcwd()}")
+    print(f"[startup] CONTENT_DIR setting: {settings.content_dir}")
+    resolved = (Path(os.getcwd()) / settings.content_dir).resolve() if not Path(settings.content_dir).is_absolute() else Path(settings.content_dir)
+    print(f"[startup] Resolved content path: {resolved}")
+    print(f"[startup] Content dir exists: {resolved.exists()}")
     init_db()
     load_all_content()
-    print("[OK] Database ready")
-    print("[OK] Content loaded")
+    print(f"[OK] Database ready")
+    print(f"[OK] Content loaded — {len(_modules_cache)} modules found")
 
 
 @app.get("/api/health")

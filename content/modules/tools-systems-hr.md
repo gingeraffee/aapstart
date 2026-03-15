@@ -82,15 +82,39 @@ This module gives you a practical map of the main employee-facing systems you'll
 
 Not every system works the same way for every role, but the ones below belong in every employee's onboarding.
 
-## Your Setup Checklist
+## Let's Get You Set Up
 
-Complete each of these before continuing to the next module.
+Before moving on, complete the setup tasks below for each platform. These take about 10 minutes and are required before your first day wraps up.
+
+---
+
+## 1) [BambooHR](https://aap.bamboohr.com)
+
+AAP uses BambooHR for many important functions — including your employee profile, PTO requests, benefits activity, and the company directory. Getting your profile complete from day one sets you up for everything that follows.
 
 :::checklist
-- [ ] Log in to BambooHR and complete your employee profile at https://aap.bamboohr.com
-- [ ] Register for LinkedIn Learning at https://linkedin.com/learning
-- [ ] Log in to Paylocity and confirm you can view your pay information
-- [ ] Confirm you know how to submit a time-off request in BambooHR
+- [ ] Add a photo to your profile
+- [ ] Enter your emergency contact
+- [ ] Enter your personal details
+- [ ] Confirm you can submit a time-off request
+:::
+
+## 2) [LinkedIn Learning](https://www.linkedin.com/learning)
+
+LinkedIn Learning is AAP's platform for training and professional development. Your account is available starting day one — activate it now so you're ready when assigned learning comes your way.
+
+:::checklist
+- [ ] Register and activate your LinkedIn Learning account
+- [ ] Log in and confirm access to the course library
+:::
+
+## 3) [Paylocity](https://access.paylocity.com)
+
+Paylocity is where you'll access your paycheck details, pay stubs, and payroll information. Confirm access now so there are no surprises on payday.
+
+:::checklist
+- [ ] Log in and confirm you can view your pay information
+- [ ] Locate where your pay stubs are stored
 :::
 
 ---
@@ -98,30 +122,6 @@ Complete each of these before continuing to the next module.
 ## AAP Start
 
 AAP Start is your guided onboarding space. It helps you move through the core learning path, review key expectations, and return to important information later.
-
-## BambooHR
-
-BambooHR is used for employee information and HR-related tasks. You'll use it for your employee profile, PTO requests, benefits-related activity, and company contact information.
-
-:::link
-url: https://aap.bamboohr.com
-label: Open BambooHR
-description: Access your employee profile, PTO requests, and HR information.
-:::
-
-## Paylocity
-
-Paylocity is used for paycheck and payroll information. You can use it to review pay stubs and paycheck details.
-
-## LinkedIn Learning
-
-LinkedIn Learning is part of AAP's training and development environment. You may use it for assigned learning and ongoing professional development. It is available on **day one**.
-
-:::link
-url: https://linkedin.com/learning
-label: Register for LinkedIn Learning
-description: Activate your LinkedIn Learning account for training and development.
-:::
 
 ## Timeclock
 

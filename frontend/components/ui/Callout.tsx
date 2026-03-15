@@ -11,7 +11,7 @@ interface CalloutProps {
 
 const styles: Record<Variant, { label: string; shell: string; icon: string }> = {
   tip: {
-    label: "Helpful context",
+    label: "Coach Tip",
     shell: "border-brand-action/15 bg-brand-action/[0.04]",
     icon: "text-brand-action",
   },

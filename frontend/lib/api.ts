@@ -36,7 +36,7 @@ export const progressApi = {
   acknowledge: (slug: string, ids: string[]) =>
     request(`/progress/${slug}/acknowledge`, {
       method: "POST",
-      body: JSON.stringify({ acknowledgement_ids: ids }),
+      body: JSON.stringify({ acknowledged_ids: ids }),
     }),
   submitQuiz: (slug: string, answers: Record<string, string>) =>
     request(`/progress/${slug}/quiz`, {

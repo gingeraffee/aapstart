@@ -41,9 +41,10 @@ export function ContentBlock({ block }: ContentBlockProps) {
 
     case "callout":
       return (
-        <Callout variant={(block.variant as "tip" | "info" | "warning") ?? "tip"}>
-          {block.content ?? ""}
-        </Callout>
+        <Callout
+          variant={(block.variant as "tip" | "info" | "warning") ?? "tip"}
+          content={block.content ?? ""}
+        />
       );
 
     case "list":
