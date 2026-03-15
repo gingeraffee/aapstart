@@ -17,6 +17,11 @@ class Settings(BaseSettings):
     dev_auth_employee_id: str = "dev-001"
     dev_auth_full_name: str = "Dev User"
     dev_auth_track: str = "hr"
+    # Bootstrap admin — created automatically on first startup if employees table is empty
+    admin_employee_id: str = ""
+    admin_first_name: str = ""
+    admin_last_name: str = ""
+    admin_track: str = "administrative"
 
     class Config:
         env_file = ".env"

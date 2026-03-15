@@ -76,13 +76,30 @@ export interface User {
   last_name: string;
   full_name: string;
   track: string;
+  is_admin: boolean;
+}
+
+export interface EmployeeRecord {
+  id: number;
+  employee_id: string;
+  first_name: string;
+  last_name: string;
+  full_name: string;
+  track: string;
+  is_admin: boolean;
+  created_at: string | null;
+  first_login_at: string | null;
+  progress: {
+    modules_completed: number;
+    total_modules_seen: number;
+    last_active: string | null;
+  };
 }
 
 export interface LoginPayload {
   employee_id: string;
   first_name: string;
   last_name: string;
-  access_code: string;
 }
 
 export interface UiContent {

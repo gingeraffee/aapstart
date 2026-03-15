@@ -26,7 +26,6 @@ export function LoginForm() {
       employee_id: employeeId.trim(),
       first_name,
       last_name,
-      access_code: "AAP",
     });
   }
 

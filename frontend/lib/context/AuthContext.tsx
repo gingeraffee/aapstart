@@ -73,6 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       last_name: data.last_name ?? payload.last_name,
       full_name: data.full_name ?? `${payload.first_name} ${payload.last_name}`.trim(),
       track: data.track ?? "administrative",
+      is_admin: data.is_admin ?? false,
     };
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(loggedInUser));

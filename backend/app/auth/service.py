@@ -1,29 +1,20 @@
 """
 Auth Service
 ============
-Validates login credentials against the Google Sheet Employee Roster,
+Validates login credentials against the Employee table in SQLite,
 then issues a signed JWT stored in an httpOnly cookie.
-
-Google Sheet structure expected:
-  Worksheet: "Employee Roster"
-  Columns:   Employee ID | Full Name | Track
 """
 
 from datetime import datetime, timedelta, timezone
 
-import gspread
 from fastapi import HTTPException, Request, status
-from google.oauth2.service_account import Credentials
 from jose import JWTError, jwt
 
 from app.config import get_settings
+from app.database.connection import SessionLocal
+from app.database.models import Employee
 
 settings = get_settings()
-
-SCOPES = [
-    "https://www.googleapis.com/auth/spreadsheets.readonly",
-    "https://www.googleapis.com/auth/drive.readonly",
-]
 
 VALID_TRACKS = {"hr", "warehouse", "administrative"}
 
@@ -45,93 +36,57 @@ def _get_dev_user() -> dict:
         "employee_id": settings.dev_auth_employee_id.strip(),
         "full_name": settings.dev_auth_full_name.strip(),
         "track": _normalize_track(settings.dev_auth_track),
+        "is_admin": True,
     }
 
 
-def _get_roster() -> list[dict]:
+def validate_login(employee_id: str, first_name: str, last_name: str) -> dict:
     """
-    Fetches all rows from the Employee Roster worksheet.
-    Returns a list of dicts: {employee_id, full_name, track}
-    """
-    try:
-        creds = Credentials.from_service_account_file(
-            settings.google_credentials_file, scopes=SCOPES
-        )
-        client = gspread.authorize(creds)
-        sheet = client.open(settings.google_sheet_name)
-        worksheet = sheet.worksheet("Employee Roster")
-        records = worksheet.get_all_records()
-        return records
-    except FileNotFoundError:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Authentication service unavailable. credentials.json not found.",
-        )
-    except gspread.exceptions.SpreadsheetNotFound:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Authentication service unavailable. Google Sheet not found.",
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Authentication service unavailable: {str(e)}",
-        )
-
-
-def validate_login(employee_id: str, first_name: str, last_name: str, access_code: str) -> dict:
-    """
-    Validates credentials against the Employee Roster.
-    Returns {employee_id, full_name, track} on success.
-    Raises HTTPException on failure.
+    Validates credentials against the employees table.
+    Returns {employee_id, full_name, track, is_admin} on success.
     """
     if settings.dev_auth_bypass:
         return _get_dev_user()
 
-    if access_code.strip().upper() != settings.access_code.strip().upper():
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials.",
-        )
-
     submitted_id = employee_id.strip()
-    submitted_full_name = f"{first_name.strip()} {last_name.strip()}".strip()
+    submitted_first = first_name.strip().lower()
+    submitted_last = last_name.strip().lower()
 
-    roster = _get_roster()
-    match = None
-    for row in roster:
-        row_id = str(row.get("Employee ID", "")).strip()
-        row_name = str(row.get("Full Name", "")).strip()
-        if row_id.lower() == submitted_id.lower() and row_name.lower() == submitted_full_name.lower():
-            match = row
-            break
+    db = SessionLocal()
+    try:
+        employee = db.query(Employee).filter(
+            Employee.employee_id.ilike(submitted_id)
+        ).first()
 
-    if not match:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials.",
-        )
+        if (not employee or
+                employee.first_name.strip().lower() != submitted_first or
+                employee.last_name.strip().lower() != submitted_last):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid credentials. Employee numbers are on your onboarding paperwork and in BambooHR. If you need assistance, please see HR.",
+            )
 
-    raw_track = str(match.get("Track", "")).strip().lower()
-    if raw_track not in VALID_TRACKS:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"Employee track '{raw_track}' is not recognised. Contact HR.",
-        )
+        if not employee.first_login_at:
+            employee.first_login_at = datetime.now(timezone.utc)
+            db.commit()
 
-    return {
-        "employee_id": submitted_id,
-        "full_name": str(match.get("Full Name", "")).strip(),
-        "track": raw_track,
-    }
+        return {
+            "employee_id": employee.employee_id,
+            "full_name": f"{employee.first_name} {employee.last_name}",
+            "track": _normalize_track(employee.track),
+            "is_admin": employee.is_admin,
+        }
+    finally:
+        db.close()
 
 
-def create_token(employee_id: str, full_name: str, track: str) -> str:
+def create_token(employee_id: str, full_name: str, track: str, is_admin: bool = False) -> str:
     expiry = datetime.now(timezone.utc) + timedelta(hours=settings.jwt_expiration_hours)
     payload = {
         "sub": employee_id,
         "full_name": full_name,
         "track": track,
+        "is_admin": is_admin,
         "exp": expiry,
     }
     return jwt.encode(payload, settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
@@ -151,7 +106,7 @@ def decode_token(token: str) -> dict:
 
 
 def get_current_user(request: Request) -> dict:
-    """FastAPI dependency - resolves the current employee from the session cookie."""
+    """FastAPI dependency — resolves the current employee from the session cookie."""
     token = request.cookies.get("aap_session")
     if not token:
         raise HTTPException(
@@ -159,3 +114,14 @@ def get_current_user(request: Request) -> dict:
             detail="Not authenticated.",
         )
     return decode_token(token)
+
+
+def require_admin(request: Request) -> dict:
+    """FastAPI dependency — requires is_admin=True."""
+    user = get_current_user(request)
+    if not user.get("is_admin"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required.",
+        )
+    return user

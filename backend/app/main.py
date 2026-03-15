@@ -8,6 +8,7 @@ from app.auth.router import router as auth_router
 from app.modules.router import router as modules_router
 from app.progress.router import router as progress_router
 from app.resources.router import router as resources_router
+from app.admin.router import router as admin_router
 
 settings = get_settings()
 
@@ -56,6 +57,7 @@ app.include_router(auth_router)
 app.include_router(modules_router)
 app.include_router(progress_router)
 app.include_router(resources_router)
+app.include_router(admin_router)
 
 
 # ── Startup ───────────────────────────────────────────────────────────────────

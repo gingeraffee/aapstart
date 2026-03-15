@@ -11,12 +11,12 @@ def login(payload: LoginRequest, response: Response):
         employee_id=payload.employee_id,
         first_name=payload.first_name,
         last_name=payload.last_name,
-        access_code=payload.access_code,
     )
     token = service.create_token(
         employee_id=user["employee_id"],
         full_name=user["full_name"],
         track=user["track"],
+        is_admin=user.get("is_admin", False),
     )
     response.set_cookie(
         key="aap_session",
@@ -30,6 +30,7 @@ def login(payload: LoginRequest, response: Response):
         employee_id=user["employee_id"],
         full_name=user["full_name"],
         track=user["track"],
+        is_admin=user.get("is_admin", False),
     )
 
 
@@ -39,6 +40,7 @@ def me(current_user: dict = Depends(service.get_current_user)):
         employee_id=current_user["sub"],
         full_name=current_user["full_name"],
         track=current_user["track"],
+        is_admin=current_user.get("is_admin", False),
     )
 
 

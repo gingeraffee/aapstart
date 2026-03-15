@@ -30,6 +30,31 @@ def get_db():
 
 
 def init_db():
-    """Create all tables on startup."""
+    """Create all tables and seed the bootstrap admin account if needed."""
     from app.database import models  # noqa: F401 — import to register models
     Base.metadata.create_all(bind=engine)
+    _seed_admin()
+
+
+def _seed_admin():
+    """Create the first admin account from config if it doesn't exist yet."""
+    from app.config import get_settings
+    from app.database.models import Employee
+    s = get_settings()
+    if not s.admin_employee_id or not s.admin_first_name or not s.admin_last_name:
+        return
+    db = SessionLocal()
+    try:
+        existing = db.query(Employee).filter_by(employee_id=s.admin_employee_id).first()
+        if not existing:
+            db.add(Employee(
+                employee_id=s.admin_employee_id,
+                first_name=s.admin_first_name,
+                last_name=s.admin_last_name,
+                track=s.admin_track,
+                is_admin=True,
+            ))
+            db.commit()
+            print(f"[OK] Admin account seeded: {s.admin_first_name} {s.admin_last_name} ({s.admin_employee_id})")
+    finally:
+        db.close()
