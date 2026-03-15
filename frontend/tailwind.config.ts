@@ -10,6 +10,8 @@ const config: Config = {
     extend: {
       colors: {
         "brand-action": "#3077b9",
+        "brand-bright": "#0e76bd",
+        "brand-green": "#22c55e",
         "brand-deep": "#1a2a5e",
         "brand-alert": "#df002a",
         "brand-ink": "#0f1d3c",

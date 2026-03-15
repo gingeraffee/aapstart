@@ -3,7 +3,7 @@ slug: tools-systems-warehouse
 title: Tools & Systems
 description: A practical guide to the systems and equipment you'll use on the warehouse floor.
 tracks: [warehouse]
-order: 5
+order: 3
 estimatedMinutes: 15
 status: coming_soon
 requiresQuiz: false

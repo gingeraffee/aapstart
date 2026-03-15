@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo } from "react";
 import useSWR from "swr";
 import { useAuth } from "@/lib/context/AuthContext";
 import { modulesApi, progressApi, resourcesApi } from "@/lib/api";
@@ -8,6 +9,8 @@ import { WelcomeHeader } from "@/components/features/overview/WelcomeHeader";
 import { Badge } from "@/components/ui/Badge";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
+import { pickRandom } from "@/lib/utils";
+import { COACH_TIPS } from "@/lib/coachTips";
 import type { ModuleSummary, ProgressRecord, UiContent } from "@/lib/types";
 
 export default function OverviewPage() {
@@ -23,13 +26,26 @@ export default function OverviewPage() {
   progress?.forEach((item) => progressMap.set(item.module_slug, item));
 
   const allModules = modules ?? [];
-  const liveModules = allModules.filter((m) => m.status === "published");
+  const liveModules = allModules
+    .filter((m) => m.status === "published")
+    .sort((a, b) => a.order - b.order);
   const comingSoonCount = allModules.filter((m) => m.status === "coming_soon").length;
   const completedCount = liveModules.filter((m) => progressMap.get(m.slug)?.module_completed).length;
 
-  const currentModule = liveModules.find(
-    (m) => !progressMap.get(m.slug)?.module_completed
-  );
+  const currentModule = liveModules.find((m) => !progressMap.get(m.slug)?.module_completed);
+
+  const isModuleUnlocked = (index: number) => {
+    if (index === 0) return true;
+    const prevSlug = liveModules[index - 1].slug;
+    return progressMap.get(prevSlug)?.module_completed ?? false;
+  };
+
+  const nextToUnlockIndex = liveModules.findIndex((_, i) => !isModuleUnlocked(i));
+
+  // Change 1: pick a rotating coach tip
+  const coachTip = useMemo(() => pickRandom(COACH_TIPS), []);
+
+  const firstName = user?.full_name?.split(" ")[0] ?? "there";
 
   if (isLoading) {
     return (
@@ -39,193 +55,337 @@ export default function OverviewPage() {
     );
   }
 
-  const firstName = user?.full_name?.split(" ")[0] ?? "there";
-
   return (
-    <div className="ml-0 mr-auto w-full max-w-[1100px] pl-6 pr-6 py-6 lg:pr-10 lg:py-10">
-      <div className="flex gap-6 items-start">
+    // Change 2: w-full with no max-width so siderail reaches true far right
+    <div className="w-full px-6 py-6 lg:px-8 lg:py-8">
 
-        {/* ── Left: main content ── */}
-        <div className="flex-1 min-w-0 space-y-5">
+      {/* Hero — full width */}
+      <div className="mb-6 animate-fade-up">
+        <WelcomeHeader
+          name={user?.full_name ?? ""}
+          headers={uiData?.rotating_headers}
+          currentModule={currentModule}
+          completedCount={completedCount}
+          totalCount={liveModules.length}
+          comingSoonCount={comingSoonCount}
+        />
+      </div>
 
-          {/* Hero */}
-          <div className="animate-fade-up">
-            <WelcomeHeader
-              name={user?.full_name ?? ""}
-              headers={uiData?.rotating_headers}
-              currentModule={currentModule}
-              completedCount={completedCount}
-              totalCount={liveModules.length}
-              comingSoonCount={comingSoonCount}
-            />
-          </div>
+      {/* Journey + right siderail */}
+      <div className="flex items-start gap-5">
 
-          {/* Journey list */}
-          <div className="animate-fade-up" style={{ animationDelay: "60ms" }}>
-            <div className="mb-3">
+        {/* ── Left: journey list ── */}
+        <div className="min-w-0 flex-1 animate-fade-up" style={{ animationDelay: "60ms" }}>
+
+          {/* Change 9: section heading with rocket icon */}
+          <div className="mb-3 flex items-center gap-2">
+            <span className="text-[1.1rem] leading-none">🚀</span>
+            <div>
               <p className="text-[0.58rem] font-bold uppercase tracking-[0.18em] text-text-muted">
-                Tracked Path
+                Your Launch Path
               </p>
-              <h2 className="mt-0.5 text-[1.25rem] font-extrabold tracking-[-0.02em] text-text-primary">
-                {firstName}&apos;s launch journey
+              <h2 className="mt-0.5 text-[1.2rem] font-extrabold tracking-[-0.02em] text-text-primary">
+                {firstName}&apos;s learning journey
               </h2>
             </div>
+          </div>
 
-            <div className="space-y-2">
-              {liveModules.map((module, index) => {
-                const prog = progressMap.get(module.slug);
-                const isComplete = prog?.module_completed ?? false;
-                const isInProgress = !isComplete && (prog?.visited || prog?.acknowledgements_completed || prog?.quiz_passed);
-                const isCurrent = module.slug === currentModule?.slug;
+          <div className="space-y-2">
+            {liveModules.map((module, index) => {
+              const prog = progressMap.get(module.slug);
+              const isComplete = prog?.module_completed ?? false;
+              const isInProgress = !isComplete && (prog?.visited || prog?.acknowledgements_completed || prog?.quiz_passed);
+              const isCurrent = module.slug === currentModule?.slug;
+              const unlocked = isModuleUnlocked(index);
+              const isNextToUnlock = index === nextToUnlockIndex;
 
+              // ── Change 7: Locked module — dramatic "Up Next" glow ──
+              if (!unlocked) {
                 return (
-                  <Link
+                  <div
                     key={module.slug}
-                    href={`/modules/${module.slug}`}
-                    className={cn(
-                      "group flex gap-4 rounded-[16px] p-5 transition-all duration-150 hover:-translate-y-px",
-                      isComplete ? "opacity-80" : ""
-                    )}
-                    style={{
-                      backgroundColor: "#ffffff",
-                      boxShadow: isCurrent
-                        ? "0 2px 16px rgba(48,119,185,0.12), 0 1px 4px rgba(0,0,0,0.06)"
-                        : "0 1px 6px rgba(0,0,0,0.06)",
-                      ...(isCurrent ? { borderLeft: "3px solid #3077b9" } : {}),
-                    }}
+                    className="flex gap-4 rounded-[16px] p-5"
+                    style={
+                      isNextToUnlock
+                        ? {
+                            backgroundColor: "#eaf6ff",
+                            border: "2px solid #0e76bd",
+                            boxShadow: "0 0 0 4px rgba(14,118,189,0.08), 0 2px 12px rgba(14,118,189,0.12)",
+                          }
+                        : {
+                            backgroundColor: "#f7f3ee",
+                            border: "1px solid rgba(0,0,0,0.05)",
+                            opacity: 0.5,
+                          }
+                    }
                   >
-                    {/* Status circle */}
+                    {/* Lock / unlock icon */}
                     <div className="mt-0.5 shrink-0">
                       <div
                         className={cn(
-                          "flex h-7 w-7 items-center justify-center rounded-full text-[0.62rem] font-bold",
-                          isComplete
-                            ? "bg-brand-sky/15 text-brand-sky"
-                            : isCurrent
-                              ? "bg-brand-action/15 text-brand-action"
-                              : "bg-gray-100 text-text-muted"
+                          "flex h-7 w-7 items-center justify-center rounded-full",
+                          isNextToUnlock ? "animate-pulse" : ""
                         )}
+                        style={{
+                          backgroundColor: isNextToUnlock ? "rgba(14,118,189,0.15)" : "rgba(0,0,0,0.06)",
+                        }}
                       >
-                        {isComplete ? (
-                          <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M2 6.5l2.5 2.5L10 3" />
-                          </svg>
-                        ) : (
-                          index + 1
-                        )}
+                        <svg width="11" height="12" viewBox="0 0 10 11" fill="none" className={isNextToUnlock ? "text-brand-bright" : "text-gray-400"}>
+                          <rect x="1" y="5" width="8" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
+                          <path d="M3 5V3.5a2 2 0 014 0V5" stroke="currentColor" strokeWidth="1.3" />
+                        </svg>
                       </div>
                     </div>
 
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
+                    <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-3">
                         <p
-                          className={cn(
-                            "font-semibold text-[0.93rem] leading-snug",
-                            isComplete ? "text-text-secondary" : "text-text-primary"
-                          )}
+                          className="text-[0.93rem] font-semibold leading-snug"
+                          style={{ color: isNextToUnlock ? "#0f1d3c" : "#9ca3af" }}
                         >
                           {module.title}
                         </p>
-                        {isComplete && <Badge variant="done">Done</Badge>}
-                        {isInProgress && !isComplete && <Badge variant="active">In Progress</Badge>}
-                        {isCurrent && !isComplete && !isInProgress && (
-                          <Badge variant="active">Up Next</Badge>
+                        {/* Change 7: vivid "Up Next" badge vs plain "Locked" */}
+                        {isNextToUnlock ? (
+                          <span
+                            className="shrink-0 rounded-[6px] px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.08em] text-white"
+                            style={{ backgroundColor: "#0e76bd" }}
+                          >
+                            🔓 Up Next
+                          </span>
+                        ) : (
+                          <span className="shrink-0 rounded-[6px] bg-gray-100 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-[0.08em] text-gray-400">
+                            Locked
+                          </span>
                         )}
                       </div>
                       {module.description && (
-                        <p className="mt-1 text-[0.78rem] leading-[1.55] text-text-secondary line-clamp-2">
+                        <p
+                          className="mt-1 line-clamp-2 text-[0.78rem] leading-[1.55]"
+                          style={{ color: isNextToUnlock ? "#4b5563" : "#9ca3af" }}
+                        >
                           {module.description}
                         </p>
                       )}
+                      {isNextToUnlock && (
+                        <p className="mt-2 text-[0.72rem] font-semibold" style={{ color: "#0e76bd" }}>
+                          Finish the current module to unlock this one ✨
+                        </p>
+                      )}
                     </div>
-                  </Link>
+                  </div>
                 );
-              })}
-            </div>
+              }
+
+              // ── Unlocked module ──
+              return (
+                <Link
+                  key={module.slug}
+                  href={`/modules/${module.slug}`}
+                  className="group flex gap-4 rounded-[16px] p-5 transition-all duration-150 hover:-translate-y-px"
+                  style={{
+                    backgroundColor: "#ffffff",
+                    boxShadow: isCurrent
+                      ? "0 2px 16px rgba(14,118,189,0.14), 0 1px 4px rgba(0,0,0,0.06)"
+                      : isComplete
+                        ? "0 1px 8px rgba(34,197,94,0.12)"
+                        : "0 1px 6px rgba(0,0,0,0.06)",
+                    borderLeft: isComplete
+                      ? "3px solid #22c55e"
+                      : isCurrent
+                        ? "3px solid #0e76bd"
+                        : "3px solid transparent",
+                  }}
+                >
+                  {/* Status circle */}
+                  <div className="mt-0.5 shrink-0">
+                    <div
+                      className="flex h-7 w-7 items-center justify-center rounded-full text-[0.62rem] font-bold"
+                      style={
+                        isComplete
+                          ? { backgroundColor: "rgba(34,197,94,0.12)", color: "#22c55e" }
+                          : isCurrent
+                            ? { backgroundColor: "rgba(14,118,189,0.12)", color: "#0e76bd" }
+                            : { backgroundColor: "#f3f4f6", color: "#9ca3af" }
+                      }
+                    >
+                      {isComplete ? (
+                        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M2 6.5l2.5 2.5L10 3" />
+                        </svg>
+                      ) : (
+                        index + 1
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-3">
+                      <p className={cn("text-[0.93rem] font-semibold leading-snug", isComplete ? "text-text-secondary" : "text-text-primary")}>
+                        {module.title}
+                      </p>
+                      {/* Change 6: vivid badges */}
+                      <div className="flex shrink-0 items-center gap-2">
+                        {isComplete && <Badge variant="complete">✓ Complete</Badge>}
+                        {isInProgress && !isComplete && (
+                          <span
+                            className="rounded-[6px] px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.08em] text-white"
+                            style={{ backgroundColor: "#0e76bd" }}
+                          >
+                            In Progress
+                          </span>
+                        )}
+                        {isCurrent && !isComplete && !isInProgress && (
+                          <span
+                            className="rounded-[6px] px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.08em]"
+                            style={{ backgroundColor: "rgba(14,118,189,0.12)", color: "#0e76bd" }}
+                          >
+                            Up Next
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    {module.description && (
+                      <p className="mt-1 line-clamp-2 text-[0.78rem] leading-[1.55] text-text-secondary">
+                        {module.description}
+                      </p>
+                    )}
+                    {isComplete && (
+                      <p
+                        className="mt-2 text-[0.73rem] font-semibold transition-all group-hover:underline"
+                        style={{ color: "#22c55e" }}
+                      >
+                        Review module →
+                      </p>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
 
-        {/* ── Right panel ── */}
-        <div className="w-[290px] shrink-0 space-y-4 animate-fade-up" style={{ animationDelay: "100ms" }}>
+        {/* ── Right siderail ── */}
+        <div className="w-[295px] shrink-0 space-y-4 animate-fade-up" style={{ animationDelay: "100ms" }}>
 
-          {/* Coach Tip */}
+          {/* Change 1: Coach Tip → warm light card, not dark navy */}
           <div
-            className="rounded-[16px] p-5"
+            className="overflow-hidden rounded-[16px]"
             style={{
-              background: "linear-gradient(140deg, #1a3060 0%, #0d1830 100%)",
-              boxShadow: "0 2px 16px rgba(0,0,0,0.18)",
+              backgroundColor: "#fffbf2",
+              border: "1px solid rgba(14,118,189,0.15)",
+              boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
             }}
           >
-            <div className="flex items-center gap-1.5 mb-3">
-              <span className="text-brand-sky text-[0.6rem] font-bold uppercase tracking-[0.18em]">
-                + Coach Tip
-              </span>
+            {/* Accent bar at top */}
+            <div className="h-1 w-full" style={{ background: "linear-gradient(90deg, #0e76bd, #22c55e)" }} />
+            <div className="p-5">
+              <div className="mb-3 flex items-center gap-1.5">
+                <span className="text-[1rem]">💡</span>
+                <span
+                  className="text-[0.6rem] font-bold uppercase tracking-[0.18em]"
+                  style={{ color: "#0e76bd" }}
+                >
+                  Coach Tip
+                </span>
+              </div>
+              <p className="text-[0.83rem] leading-[1.65] text-text-primary">
+                {coachTip}
+              </p>
+              <p
+                className="mt-3 text-[0.62rem] font-bold uppercase tracking-[0.14em] italic"
+                style={{ color: "#0e76bd" }}
+              >
+                One module at a time. That&apos;s all.
+              </p>
             </div>
-            <p className="text-[0.82rem] leading-[1.6] text-slate-200">
-              <span className="text-brand-sky font-semibold">Did you know:</span> Most people remember more when they connect a policy to a real day-one scenario instead of trying to memorize the wording.
-            </p>
-            <p className="mt-3 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-brand-sky">
-              One module at a time. That&apos;s all.
-            </p>
           </div>
 
-          {/* Contact card */}
+          {/* Change 3: Contact card — warmer, Nicole avatar */}
           <div
-            className="rounded-[16px] bg-white p-5"
+            className="overflow-hidden rounded-[16px] bg-white"
             style={{ boxShadow: "0 1px 8px rgba(0,0,0,0.07)" }}
           >
-            <p className="text-[0.58rem] font-bold uppercase tracking-[0.16em] text-text-muted mb-3">
-              Questions
-            </p>
-
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <p className="font-bold text-[0.9rem] text-text-primary leading-tight">Nicole Thornton</p>
-                <p className="text-[0.75rem] text-text-muted mt-0.5">HR Manager</p>
-              </div>
-              <span className="shrink-0 rounded-[4px] bg-brand-action/10 px-2 py-0.5 text-[0.56rem] font-bold uppercase tracking-[0.08em] text-brand-action">
-                Primary
-              </span>
-            </div>
-
-            <div className="mt-4 space-y-2.5">
-              <div>
-                <p className="text-[0.56rem] font-bold uppercase tracking-[0.14em] text-text-secondary">Email</p>
-                <p className="text-[0.78rem] text-text-primary mt-0.5">nicole.thornton@apirx.com</p>
-              </div>
-              <div>
-                <p className="text-[0.56rem] font-bold uppercase tracking-[0.14em] text-text-secondary">Phone</p>
-                <p className="text-[0.78rem] text-text-primary mt-0.5">256-574-7528</p>
-              </div>
-            </div>
-
-            <div className="mt-4 flex gap-2">
-              <a
-                href="mailto:nicole.thornton@apirx.com"
-                className="flex-1 rounded-[8px] py-2 text-center text-[0.73rem] font-semibold text-text-secondary transition-colors hover:bg-gray-50"
-                style={{ border: "1px solid #e5e7eb" }}
-              >
-                Email Nicole
-              </a>
-              <a
-                href="tel:2565747528"
-                className="flex-1 rounded-[8px] py-2 text-center text-[0.73rem] font-semibold text-text-secondary transition-colors hover:bg-gray-50"
-                style={{ border: "1px solid #e5e7eb" }}
-              >
-                Call Nicole
-              </a>
-            </div>
-
-            <p className="mt-3 text-[0.7rem] leading-[1.5] text-text-secondary">
-              Primary contact for onboarding questions, benefits timing, time-away routing, and general next-step help.
-            </p>
-
-            <div className="mt-4 pt-3" style={{ borderTop: "1px solid #f0f0f0" }}>
-              <p className="text-[0.56rem] font-bold uppercase tracking-[0.14em] text-text-secondary">
-                Escalation Support
+            {/* Warm tinted header */}
+            <div
+              className="px-5 pt-4 pb-3"
+              style={{ backgroundColor: "rgba(14,118,189,0.04)", borderBottom: "1px solid rgba(14,118,189,0.08)" }}
+            >
+              <p className="text-[0.58rem] font-bold uppercase tracking-[0.16em] text-text-muted">
+                Your HR Support
               </p>
-              <p className="mt-1 text-[0.82rem] font-semibold text-text-primary">Brandy Hooper</p>
+            </div>
+
+            <div className="p-5">
+              {/* Nicole's avatar + name */}
+              <div className="mb-4 flex items-center gap-3">
+                <div
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[0.72rem] font-bold text-white"
+                  style={{ background: "linear-gradient(135deg, #0e76bd, #1a2a5e)" }}
+                >
+                  NT
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-[0.9rem] font-bold leading-tight text-text-primary">Nicole Thornton</p>
+                    <span
+                      className="rounded-[4px] px-1.5 py-0.5 text-[0.54rem] font-bold uppercase tracking-[0.08em]"
+                      style={{ backgroundColor: "rgba(14,118,189,0.1)", color: "#0e76bd" }}
+                    >
+                      Primary
+                    </span>
+                  </div>
+                  <p className="mt-0.5 text-[0.75rem] text-text-muted">HR Manager</p>
+                </div>
+              </div>
+
+              <div className="space-y-2.5">
+                <div>
+                  <p className="text-[0.56rem] font-bold uppercase tracking-[0.14em] text-text-muted">Email</p>
+                  <p className="mt-0.5 text-[0.78rem] text-text-primary">nicole.thornton@apirx.com</p>
+                </div>
+                <div>
+                  <p className="text-[0.56rem] font-bold uppercase tracking-[0.14em] text-text-muted">Phone</p>
+                  <p className="mt-0.5 text-[0.78rem] text-text-primary">256-574-7528</p>
+                </div>
+              </div>
+
+              <div className="mt-4 flex gap-2">
+                <a
+                  href="mailto:nicole.thornton@apirx.com"
+                  className="flex-1 rounded-[8px] py-2 text-center text-[0.73rem] font-semibold text-text-secondary transition-colors hover:bg-gray-50"
+                  style={{ border: "1px solid #e5e7eb" }}
+                >
+                  Email Nicole
+                </a>
+                <a
+                  href="tel:2565747528"
+                  className="flex-1 rounded-[8px] py-2 text-center text-[0.73rem] font-semibold text-text-secondary transition-colors hover:bg-gray-50"
+                  style={{ border: "1px solid #e5e7eb" }}
+                >
+                  Call Nicole
+                </a>
+              </div>
+
+              <p className="mt-3 text-[0.7rem] leading-[1.5] text-text-secondary">
+                Primary contact for onboarding questions, benefits timing, time-away routing, and general next-step help.
+              </p>
+
+              <div className="mt-4 pt-3" style={{ borderTop: "1px solid #f0f0f0" }}>
+                <p className="text-[0.56rem] font-bold uppercase tracking-[0.14em] text-text-muted">
+                  Escalation Support
+                </p>
+                <div className="mt-2 flex items-center gap-2">
+                  <div
+                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[0.6rem] font-bold text-white"
+                    style={{ background: "linear-gradient(135deg, #5d9fd2, #1a2a5e)" }}
+                  >
+                    BH
+                  </div>
+                  <p className="text-[0.82rem] font-semibold text-text-primary">Brandy Hooper</p>
+                </div>
+              </div>
             </div>
           </div>
 

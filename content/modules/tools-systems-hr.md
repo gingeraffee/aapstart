@@ -3,7 +3,7 @@ slug: tools-systems-hr
 title: Tools & Systems
 description: Your practical map of the main systems you'll use — with setup tasks to complete before moving on.
 tracks: [hr]
-order: 5
+order: 3
 estimatedMinutes: 15
 status: published
 requiresQuiz: true

@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-type BadgeVariant = "default" | "success" | "warning" | "info" | "muted" | "coming-soon" | "done" | "active" | "locked";
+type BadgeVariant = "default" | "success" | "warning" | "info" | "muted" | "coming-soon" | "done" | "active" | "locked" | "complete";
 
 interface BadgeProps {
   children: React.ReactNode;
@@ -18,6 +18,7 @@ const variantClasses: Record<BadgeVariant, string> = {
   done: "border-0 bg-success-surface text-success",
   active: "border-0 bg-brand-action/10 text-brand-action",
   locked: "border-0 bg-gray-100 text-text-muted",
+  complete: "border-0 bg-green-50 text-green-600",
 };
 
 export function Badge({ children, variant = "default", className }: BadgeProps) {
