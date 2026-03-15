@@ -110,17 +110,6 @@ export default function OverviewPage() {
         />
       )}
 
-      {/* DEV ONLY — floating trigger button, never shown in production */}
-      {process.env.NODE_ENV === "development" && (
-        <button
-          onClick={() => setShowCelebration(true)}
-          className="fixed bottom-5 right-5 z-40 rounded-full px-4 py-2.5 text-[0.78rem] font-bold text-white shadow-lg transition-all hover:-translate-y-px hover:shadow-xl"
-          style={{ background: "linear-gradient(135deg, #16a34a, #0e76bd)" }}
-        >
-          🎉 Test Modal
-        </button>
-      )}
-
       {/* Hero — full width */}
       <div className="mb-6 animate-fade-up">
         <WelcomeHeader
