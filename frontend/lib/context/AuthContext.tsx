@@ -10,14 +10,14 @@ interface AuthContextValue {
   user: User | null;
   loading: boolean;
   login: (payload: LoginPayload) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue>({
   user: null,
   loading: true,
   login: async () => {},
-  logout: () => {},
+  logout: async () => {},
 });
 
 export function useAuth() {
@@ -80,9 +80,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(loggedInUser);
   }, []);
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    try {
+      await fetch(`${API_BASE}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch {
+      // best effort
+    }
     localStorage.removeItem(STORAGE_KEY);
     setUser(null);
+    window.location.href = "/login";
   }, []);
 
   return (
