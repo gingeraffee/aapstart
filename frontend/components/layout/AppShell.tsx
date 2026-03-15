@@ -50,7 +50,7 @@ export function AppShell({ children }: AppShellProps) {
         {/* Logo */}
         <div className="px-5 pt-5 pb-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
           <Link href="/overview">
-            <Image src="/logo.png" alt="AAP Start" width={160} height={82} className="h-14 w-auto" />
+            <Image src="/logo.png" alt="AAP Start" width={170} height={48} className="h-12 w-auto" />
           </Link>
         </div>
 
