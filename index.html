@@ -4,298 +4,568 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AAP Start | Coming Soon</title>
-  <meta
-    name="description"
-    content="AAP Start is a modern onboarding experience designed to make day one smoother, clearer, and more human."
-  />
+  <meta name="description" content="AAP Start is a modern onboarding experience designed to make day one smoother, clearer, and more human." />
   <style>
     :root {
-      --bg-1: #03162f;
-      --bg-2: #071f42;
-      --bg-3: #0a2b59;
-      --text: #f8fbff;
-      --muted: rgba(232, 240, 255, 0.76);
-      --soft: rgba(232, 240, 255, 0.14);
-      --soft-2: rgba(232, 240, 255, 0.08);
-      --accent: #3fd3ff;
-      --accent-2: #7be2ff;
-      --shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+      --bg-ink: #07172f;
+      --text: #f7fbff;
+      --muted: rgba(240, 247, 255, 0.75);
+      --accent: #8ecfff;
+      --accent-strong: #43d5ff;
+      --glow: 0 0 0 1px rgba(142, 207, 255, 0.18), 0 18px 60px rgba(0, 0, 0, 0.34);
+      --scene-pad-x: clamp(28px, 5vw, 72px);
+      --scene-pad-y: clamp(28px, 5vw, 56px);
+      --sidebar-width: clamp(360px, 42vw, 640px);
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
-    html, body {
-      margin: 0;
-      min-height: 100%;
-    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    html { scroll-behavior: smooth; }
 
     body {
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--text);
       background:
-        radial-gradient(circle at 20% 18%, rgba(63, 211, 255, 0.10), transparent 18%),
-        radial-gradient(circle at 78% 82%, rgba(125, 94, 255, 0.10), transparent 20%),
-        linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 50%, #031227 100%);
-      position: relative;
+        radial-gradient(circle at 0% 0%, rgba(67, 213, 255, 0.22), transparent 28%),
+        radial-gradient(circle at 100% 100%, rgba(104, 94, 255, 0.14), transparent 24%),
+        linear-gradient(135deg, #051226 0%, #08182f 52%, #0a1f3d 100%);
       overflow: hidden;
     }
 
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background-image:
-        radial-gradient(rgba(140, 185, 255, 0.12) 0.8px, transparent 0.8px);
-      background-size: 22px 22px;
-      opacity: 0.33;
-      pointer-events: none;
-    }
-
+    body::before,
     body::after {
       content: "";
       position: fixed;
       inset: 0;
-      background:
-        linear-gradient(to bottom, rgba(255,255,255,0.03), transparent 20%, transparent 80%, rgba(255,255,255,0.02));
       pointer-events: none;
     }
 
-    .page {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      padding: 48px 28px;
+    body::before {
+      background-image: radial-gradient(rgba(142, 196, 255, 0.13) 0.8px, transparent 0.8px);
+      background-size: 22px 22px;
+      opacity: 0.28;
+    }
+
+    body::after {
+      background: linear-gradient(to bottom, rgba(255,255,255,0.03), transparent 18%, transparent 82%, rgba(255,255,255,0.02));
+    }
+
+    .shell {
       position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, calc(100% - var(--sidebar-width))) var(--sidebar-width);
+      min-height: 100vh;
       z-index: 1;
     }
 
-    .hero {
-      width: 100%;
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 28px 0;
-    }
-
-    .brand {
-      display: inline-flex;
+    .progress-nav {
+      position: fixed;
+      top: 50%;
+      right: calc(var(--sidebar-width) + 16px);
+      transform: translateY(-50%);
+      z-index: 5;
+      display: flex;
       flex-direction: column;
       gap: 10px;
-      margin-bottom: 72px;
     }
 
-    .brand-mark {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 800;
-      letter-spacing: -0.04em;
-      font-size: 1.3rem;
+    .progress-dot {
+      width: 10px;
+      height: 10px;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.14);
+      cursor: pointer;
+      transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
     }
 
-    .brand-badge {
+    .progress-dot:hover {
+      transform: scale(1.08);
+      background: rgba(255,255,255,0.32);
+    }
+
+    .progress-dot.is-active {
+      background: var(--accent-strong);
+      box-shadow: 0 0 0 1px rgba(67, 213, 255, 0.3), 0 0 18px rgba(67, 213, 255, 0.4);
+    }
+
+    .story-panel {
+      position: relative;
+      height: 100vh;
+      overflow-y: auto;
+      scroll-snap-type: y mandatory;
+      scrollbar-width: none;
+      background:
+        radial-gradient(ellipse 120% 82% at 0% 0%, rgba(67, 213, 255, 0.18) 0%, transparent 58%),
+        linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+    }
+
+    .story-panel::-webkit-scrollbar { display: none; }
+
+    .scene {
+      min-height: 100vh;
+      scroll-snap-align: start;
+      display: flex;
+      align-items: center;
+      padding: var(--scene-pad-y) var(--scene-pad-x);
+      position: relative;
+    }
+
+    .scene-inner {
+      width: min(100%, 700px);
+      position: relative;
+      z-index: 2;
+    }
+
+    .eyebrow {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      width: fit-content;
-      padding: 8px 14px;
+      gap: 10px;
+      margin-bottom: 18px;
+      padding: 10px 14px;
       border-radius: 999px;
       border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.04);
-      color: var(--muted);
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      backdrop-filter: blur(8px);
-    }
-
-    .content {
-      max-width: 760px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(3rem, 8vw, 6.2rem);
-      line-height: 0.96;
-      letter-spacing: -0.07em;
+      background: rgba(255,255,255,0.05);
+      color: var(--accent);
+      font-size: 0.74rem;
       font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      backdrop-filter: blur(12px);
+    }
+
+    h1, h2 {
+      margin: 0;
+      letter-spacing: -0.06em;
+      line-height: 0.98;
       text-wrap: balance;
     }
 
+    h1 { font-size: clamp(3.1rem, 7vw, 5.5rem); max-width: 11ch; }
+    h2 { font-size: clamp(2.2rem, 4.4vw, 3.7rem); max-width: 13ch; }
+
     .accent-line {
-      display: block;
       color: var(--accent);
-      text-shadow: 0 0 24px rgba(63, 211, 255, 0.16);
+      display: block;
+      text-shadow: 0 0 26px rgba(67, 213, 255, 0.16);
     }
 
-    .subcopy {
-      margin-top: 28px;
-      max-width: 640px;
-      font-size: clamp(1.05rem, 2vw, 1.35rem);
-      line-height: 1.65;
+    .lead,
+    .body-copy {
+      margin: 22px 0 0;
+      max-width: 58ch;
+      line-height: 1.72;
       color: var(--muted);
+      text-wrap: pretty;
     }
 
-    .subcopy strong {
-      color: var(--text);
-      font-weight: 700;
-    }
+    .lead { font-size: clamp(1.02rem, 1.4vw, 1.16rem); }
+    .body-copy { font-size: 1rem; }
+    .lead strong,
+    .body-copy strong { color: var(--text); }
 
-    .status-row {
-      margin-top: 32px;
+    .scene-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
+      margin-top: 34px;
     }
 
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 18px;
-      border-radius: 999px;
+    .scene-jump {
+      appearance: none;
       border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.06);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--text);
-      backdrop-filter: blur(10px);
-    }
-
-    .status-pill .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent-2);
-      box-shadow: 0 0 14px rgba(123, 226, 255, 0.7);
-      flex: 0 0 auto;
-    }
-
-    .preview-nav {
-      margin-top: 82px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-      padding-top: 24px;
-      border-top: 1px solid rgba(255,255,255,0.08);
-      max-width: 760px;
-    }
-
-    .preview-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 18px;
+      background: rgba(255,255,255,0.05);
+      color: rgba(247, 251, 255, 0.9);
       border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04));
-      color: rgba(248, 251, 255, 0.88);
-      font-size: 0.95rem;
+      padding: 12px 18px;
+      font-size: 0.9rem;
       font-weight: 700;
-      text-decoration: none;
-      box-shadow: var(--shadow);
-      cursor: default;
-      user-select: none;
+      cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
     }
 
-    .preview-pill span:last-child {
-      color: var(--accent);
-      font-size: 1rem;
-      line-height: 1;
+    .scene-jump:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,0.22);
+      background: rgba(255,255,255,0.08);
     }
 
-    .footer {
-      margin-top: 20px;
-      color: rgba(232, 240, 255, 0.42);
-      font-size: 0.92rem;
+    .scene-grid,
+    .value-list {
+      display: grid;
+      gap: 16px;
+      margin-top: 34px;
     }
 
-    .glow {
-      position: fixed;
+    .feature-grid,
+    .benefit-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .stat-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .card,
+    .stat-card,
+    .value-row {
+      background: linear-gradient(180deg, rgba(255,255,255,0.065), rgba(255,255,255,0.035));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--glow);
+      backdrop-filter: blur(14px);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .card-icon { font-size: 1.35rem; line-height: 1; display: inline-block; margin-bottom: 12px; }
+    .card-title,
+    .stat-number,
+    .value-title { color: var(--text); font-weight: 800; letter-spacing: -0.03em; }
+    .card-title { font-size: 1rem; }
+    .card-copy,
+    .stat-label,
+    .value-copy,
+    .small-note {
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .card-copy,
+    .value-copy { margin-top: 6px; font-size: 0.93rem; }
+    .stat-number { font-size: 1.56rem; }
+    .stat-label {
+      margin-top: 8px;
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: rgba(240, 247, 255, 0.72);
+    }
+
+    .quote-card {
+      margin-top: 18px;
+      padding: 18px 20px;
+      border-radius: 18px;
+      border-left: 3px solid rgba(142, 207, 255, 0.52);
+      background: rgba(255,255,255,0.04);
+      box-shadow: var(--glow);
+      color: rgba(247, 251, 255, 0.88);
+      font-style: italic;
+      line-height: 1.75;
+    }
+
+    .value-row:hover {
+      transform: translateX(3px);
+      border-color: rgba(142, 207, 255, 0.34);
+    }
+
+    .value-title { font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.1em; }
+    .small-note { margin-top: 18px; font-size: 0.84rem; font-style: italic; }
+
+    .launch-panel {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      border-left: 1px solid rgba(15, 29, 60, 0.08);
+      background: linear-gradient(180deg, #f5f7fb 0%, #eef2f7 100%);
+      overflow: hidden;
+    }
+
+    .launch-panel::before,
+    .launch-panel::after {
+      content: "";
+      position: absolute;
       border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.18;
+      filter: blur(70px);
       pointer-events: none;
+      opacity: 0.12;
     }
 
-    .glow.one {
-      width: 380px;
-      height: 380px;
-      background: #1fb6ff;
-      top: -80px;
-      left: -80px;
+    .launch-panel::before {
+      width: 220px;
+      height: 220px;
+      top: -40px;
+      left: -60px;
+      background: rgba(67, 213, 255, 0.18);
     }
 
-    .glow.two {
-      width: 320px;
-      height: 320px;
-      background: #7c5cff;
-      right: -80px;
-      bottom: -40px;
+    .launch-panel::after {
+      width: 260px;
+      height: 260px;
+      right: -90px;
+      bottom: -70px;
+      background: rgba(15, 29, 60, 0.08);
     }
 
-    @media (max-width: 768px) {
-      .page {
-        padding: 28px 20px;
-      }
+    .launch-card {
+      position: relative;
+      z-index: 2;
+      width: min(100%, 392px);
+      padding: 0;
+      border-radius: 28px;
+      background: #ffffff;
+      border: 1px solid rgba(15, 29, 60, 0.08);
+      box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 4px 8px rgba(0,0,0,0.05), 0 20px 40px rgba(18,33,56,0.10), 0 48px 96px rgba(18,33,56,0.08);
+      text-align: center;
+      overflow: hidden;
+    }
 
-      .brand {
-        margin-bottom: 52px;
-      }
+    .launch-card::before {
+      content: "";
+      display: block;
+      height: 6px;
+      background: linear-gradient(90deg, #0f1d3c 0%, #215ea8 50%, #43d5ff 100%);
+    }
 
-      .subcopy {
-        margin-top: 22px;
-      }
+    .logo-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
 
-      .preview-nav {
-        margin-top: 56px;
-      }
+    .launch-card-body {
+      padding: 34px 30px 32px;
+    }
+
+    .logo-image {
+      max-width: min(100%, 276px);
+      max-height: 108px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,0.28));
+    }
+
+    .logo-fallback {
+      display: none;
+      font-size: clamp(2rem, 4vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -0.06em;
+      color: var(--text);
+    }
+
+    .launch-kicker {
+      margin-top: 22px;
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #215ea8;
+    }
+
+    .launch-title {
+      margin: 12px 0 0;
+      font-size: clamp(2rem, 3vw, 2.55rem);
+      line-height: 1.04;
+      letter-spacing: -0.05em;
+      color: #122138;
+    }
+
+    .launch-date {
+      margin-top: 12px;
+      color: #5d6b80;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+
+    .launch-copy {
+      margin: 18px 0 0;
+      color: #6f7c90;
+      line-height: 1.68;
+      font-size: 0.96rem;
+    }
+
+    .launch-divider {
+      width: 72px;
+      height: 1px;
+      margin: 24px auto 0;
+      background: linear-gradient(90deg, transparent, rgba(18,33,56,0.22), transparent);
+    }
+
+    .launch-footer {
+      margin-top: 22px;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #8a95a6;
+    }
+
+    .mobile-hero-card {
+      display: none;
+      margin-top: 32px;
+      padding: 24px 20px;
+      border-radius: 24px;
+      background: #ffffff;
+      border: 1px solid rgba(15, 29, 60, 0.08);
+      box-shadow: var(--glow);
+    }
+
+    .mobile-hero-card .logo-wrap { align-items: flex-start; }
+    .mobile-hero-card .logo-image { max-height: 96px; }
+    .mobile-hero-card .logo-fallback { font-size: 2.1rem; }
+    .mobile-hero-card .launch-kicker,
+    .mobile-hero-card .launch-title,
+    .mobile-hero-card .launch-date,
+    .mobile-hero-card .launch-copy,
+    .mobile-hero-card .launch-footer { text-align: left; }
+    .mobile-hero-card .launch-divider { margin-left: 0; }
+
+    @media (max-width: 1080px) {
+      body { overflow: auto; }
+      .shell { grid-template-columns: 1fr; min-height: auto; }
+      .story-panel { height: auto; overflow: visible; scroll-snap-type: none; }
+      .progress-nav, .launch-panel { display: none; }
+      .scene { min-height: auto; padding-top: 42px; padding-bottom: 42px; }
+      .scene:first-child { min-height: 100vh; display: flex; align-items: center; }
+      .mobile-hero-card { display: block; }
+    }
+
+    @media (max-width: 760px) {
+      .feature-grid, .benefit-grid, .stat-grid { grid-template-columns: 1fr; }
+      .scene-jump { width: 100%; }
+      h1 { max-width: 9ch; }
+      h2 { max-width: 11ch; }
     }
   </style>
 </head>
 <body>
-  <div class="glow one" aria-hidden="true"></div>
-  <div class="glow two" aria-hidden="true"></div>
+  <div class="shell">
+    <nav class="progress-nav" aria-label="Page sections">
+      <button class="progress-dot is-active" type="button" aria-label="Go to scene 1" data-scene="0"></button>
+      <button class="progress-dot" type="button" aria-label="Go to scene 2" data-scene="1"></button>
+      <button class="progress-dot" type="button" aria-label="Go to scene 3" data-scene="2"></button>
+      <button class="progress-dot" type="button" aria-label="Go to scene 4" data-scene="3"></button>
+      <button class="progress-dot" type="button" aria-label="Go to scene 5" data-scene="4"></button>
+    </nav>
 
-  <main class="page">
-    <section class="hero" aria-labelledby="page-title">
-      <div class="brand">
-        <div class="brand-mark">AAP Start</div>
-        <div class="brand-badge">Premium Onboarding</div>
-      </div>
+    <main class="story-panel" id="storyPanel" aria-label="AAP Start preview">
+      <section class="scene" data-scene-index="0">
+        <div class="scene-inner">
+          <div class="eyebrow">AAP Start Preview</div>
+          <h1>Ready for day one?<span class="accent-line">We’re making it smoother.</span></h1>
+          <p class="lead">AAP Start is a modern onboarding experience built to help new hires feel <strong>informed, supported, and actually ready</strong> before the first-day chaos tries to clock in.</p>
 
-      <div class="content">
-        <h1 id="page-title">
-          Ready for day one?
-          <span class="accent-line">We’re making it smoother.</span>
-        </h1>
+          <div class="mobile-hero-card" aria-label="Launch status">
+            <div class="logo-wrap">
+              <img class="logo-image" src="START.png" alt="AAP Start logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+              <div class="logo-fallback">AAP Start</div>
+            </div>
+            <div class="launch-kicker">AAP Start</div>
+            <p class="launch-title">Coming Soon</p>
+            <div class="launch-date">* 03/31/2026</div>
+          </div>
 
-        <p class="subcopy">
-          AAP Start is a modern onboarding experience built to help new hires feel
-          <strong>informed, supported, and actually ready</strong> before the first-day chaos tries
-          to clock in. We’re putting the finishing touches on it now.
-        </p>
-
-        <div class="status-row" aria-label="Launch status">
-          <div class="status-pill">
-            <span class="dot" aria-hidden="true"></span>
-            Launching soon
+          <div class="scene-actions">
+            <button class="scene-jump" type="button" data-target="1">What’s Inside ↓</button>
+            <button class="scene-jump" type="button" data-target="2">About AAP ↓</button>
+            <button class="scene-jump" type="button" data-target="3">Your Benefits ↓</button>
+            <button class="scene-jump" type="button" data-target="4">Life at AAP ↓</button>
           </div>
         </div>
+      </section>
 
-        <div class="preview-nav" aria-label="Portal preview sections">
-          <div class="preview-pill"><span>What’s Inside</span><span>↓</span></div>
-          <div class="preview-pill"><span>About AAP</span><span>↓</span></div>
-          <div class="preview-pill"><span>Your Benefits</span><span>↓</span></div>
-          <div class="preview-pill"><span>Life at AAP</span><span>↓</span></div>
+      <section class="scene" data-scene-index="1">
+        <div class="scene-inner">
+          <div class="eyebrow">What’s Inside</div>
+          <h2>Your first 90 days, mapped out and ready.</h2>
+          <p class="body-copy">Everything a new hire needs to hit the ground running should already be waiting for them. No scavenger hunt. No awkward guessing. Just a clearer path from “welcome aboard” to “I’ve got this.”</p>
+          <div class="scene-grid feature-grid">
+            <article class="card"><div class="card-icon">📚</div><div class="card-title">Guided training modules</div><div class="card-copy">Structured learning content that explains the company, the role, and the work in plain language.</div></article>
+            <article class="card"><div class="card-icon">🗺️</div><div class="card-title">90-day roadmap</div><div class="card-copy">Clear milestones for day one, week one, and the first ninety days, without mystery fog.</div></article>
+            <article class="card"><div class="card-icon">📋</div><div class="card-title">Policies and acknowledgements</div><div class="card-copy">Important documents and required reads in one place instead of drifting around in inbox purgatory.</div></article>
+            <article class="card"><div class="card-icon">🎯</div><div class="card-title">Benefits made clearer</div><div class="card-copy">A friendlier explanation of coverage, enrollment timing, and key choices people usually have to decode themselves.</div></article>
+          </div>
         </div>
+      </section>
 
-        <div class="footer">© 2026 AAP Start. A better beginning is on the way.</div>
+      <section class="scene" data-scene-index="2">
+        <div class="scene-inner">
+          <div class="eyebrow">About AAP</div>
+          <h2>Powering independent pharmacies across America.</h2>
+          <p class="body-copy">AAP exists to support independent community pharmacies with tools, partnership, and solutions that help them stay strong in a changing industry. The portal is designed to connect new hires to that mission from the very beginning.</p>
+          <div class="scene-grid stat-grid">
+            <article class="stat-card"><div class="stat-number">2,100+</div><div class="stat-label">Member Pharmacies</div></article>
+            <article class="stat-card"><div class="stat-number">2009</div><div class="stat-label">Year Founded</div></article>
+            <article class="stat-card"><div class="stat-number">AL</div><div class="stat-label">Home Base</div></article>
+          </div>
+          <div class="quote-card">“AAP provides support and customized solutions for independent community pharmacies to enhance profitability, streamline operations, and improve patient care.”</div>
+        </div>
+      </section>
+
+      <section class="scene" data-scene-index="3">
+        <div class="scene-inner">
+          <div class="eyebrow">Your Benefits</div>
+          <h2>You’re covered. Seriously covered.</h2>
+          <p class="body-copy">Benefits should feel like support, not a decoding challenge. AAP Start gives new hires a cleaner way to understand what is offered, when it begins, and where to go for the next step.</p>
+          <div class="scene-grid benefit-grid">
+            <article class="card"><div class="card-icon">🏥</div><div class="card-title">Medical options</div><div class="card-copy">A clearer view of plan choices, contributions, and the basics that matter on day one.</div></article>
+            <article class="card"><div class="card-icon">💰</div><div class="card-title">401(k) and savings</div><div class="card-copy">Helpful plain-English guidance on retirement benefits and how the company contributes.</div></article>
+            <article class="card"><div class="card-icon">🦷</div><div class="card-title">Dental and vision</div><div class="card-copy">Easy access to the extras that people always ask about after the meeting is already over.</div></article>
+            <article class="card"><div class="card-icon">🌿</div><div class="card-title">Support resources</div><div class="card-copy">From wellness support to everyday resources, the portal helps people find what is useful faster.</div></article>
+          </div>
+          <div class="small-note">Benefits begin the first of the month following 60 days of employment.</div>
+        </div>
+      </section>
+
+      <section class="scene" data-scene-index="4">
+        <div class="scene-inner">
+          <div class="eyebrow">Life at AAP</div>
+          <h2>Where good people do great work.</h2>
+          <p class="body-copy">The goal is not just to give new hires information. It is to help them feel oriented, welcomed, and connected to how the company works and why the work matters.</p>
+          <div class="value-list">
+            <article class="value-row"><div class="value-title">Clarity</div><div class="value-copy">Know what matters, where to go, and what comes next before the first day starts sprinting.</div></article>
+            <article class="value-row"><div class="value-title">Confidence</div><div class="value-copy">Walk in with more context, fewer question marks, and a better sense of how to succeed early.</div></article>
+            <article class="value-row"><div class="value-title">Connection</div><div class="value-copy">See the people, values, and resources behind the work so onboarding feels more human and less mechanical.</div></article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="launch-panel" aria-label="Coming soon message">
+      <div class="launch-card">
+        <div class="launch-card-body">
+          <div class="logo-wrap">
+            <img class="logo-image" src="START.png" alt="AAP Start logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+            <div class="logo-fallback">AAP Start</div>
+          </div>
+          <div class="launch-kicker">AAP Start</div>
+          <p class="launch-title">Coming Soon</p>
+          <div class="launch-date">* 03/31/2026</div>
+        </div>
       </div>
-    </section>
-  </main>
+    </aside>
+  </div>
+
+  <script>
+    (function () {
+      const panel = document.getElementById('storyPanel');
+      const scenes = Array.from(panel.querySelectorAll('.scene'));
+      const dots = Array.from(document.querySelectorAll('.progress-dot'));
+      const jumpButtons = Array.from(document.querySelectorAll('.scene-jump'));
+
+      function setActive(index) {
+        dots.forEach((dot, i) => dot.classList.toggle('is-active', i === index));
+      }
+
+      function scrollToScene(index) {
+        const scene = scenes[index];
+        if (!scene) return;
+        scene.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setActive(index);
+      }
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = Number(entry.target.getAttribute('data-scene-index'));
+            if (!Number.isNaN(index)) setActive(index);
+          }
+        });
+      }, { root: panel, threshold: 0.45 });
+
+      scenes.forEach((scene) => observer.observe(scene));
+      dots.forEach((dot) => dot.addEventListener('click', () => scrollToScene(Number(dot.getAttribute('data-scene')))));
+      jumpButtons.forEach((button) => button.addEventListener('click', () => scrollToScene(Number(button.getAttribute('data-target')))));
+    })();
+  </script>
 </body>
 </html>
