@@ -5,9 +5,10 @@ import type { ContentBlock as ContentBlockType, ChecklistBlockItem } from "@/lib
 
 interface ContentBlockProps {
   block: ContentBlockType;
+  emphasizeLead?: boolean;
 }
 
-export function ContentBlock({ block }: ContentBlockProps) {
+export function ContentBlock({ block, emphasizeLead = false }: ContentBlockProps) {
   switch (block.type) {
     case "heading":
       return (
@@ -28,8 +29,12 @@ export function ContentBlock({ block }: ContentBlockProps) {
         <div
           className={cn(
             "prose-module text-[0.95rem] leading-[1.72] text-text-secondary",
+            emphasizeLead &&
+              "[&_p:first-of-type]:text-[1.04rem] [&_p:first-of-type]:leading-[1.75] [&_p:first-of-type]:text-[#4d6685] [&_p:first-of-type]:max-w-[60ch]",
             "[&_strong]:font-semibold [&_strong]:text-text-primary",
             "[&_a]:text-brand-bright [&_a]:underline-offset-2 [&_a]:hover:underline",
+            "[&_p]:max-w-[66ch]",
+            "[&_li]:max-w-[64ch]",
             "[&_table]:w-full [&_table]:text-[0.88rem] [&_table]:border-collapse",
             "[&_th]:bg-surface-soft [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-left [&_th]:text-[0.75rem] [&_th]:font-bold [&_th]:uppercase [&_th]:tracking-[0.06em] [&_th]:text-text-muted [&_th]:border [&_th]:border-border",
             "[&_td]:px-4 [&_td]:py-2.5 [&_td]:border [&_td]:border-border [&_td]:text-text-secondary",

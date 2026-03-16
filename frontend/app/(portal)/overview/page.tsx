@@ -120,7 +120,7 @@ export default function OverviewPage() {
           <div className="mb-4 flex items-center gap-2.5">
             <div
               className="flex h-7 w-7 items-center justify-center rounded-full"
-              style={{ backgroundColor: "rgba(14,165,233,0.14)" }}
+              style={{ background: "linear-gradient(135deg, rgba(34,211,238,0.24) 0%, rgba(14,165,233,0.12) 100%)" }}
             >
               <svg
                 width="13"
@@ -137,7 +137,10 @@ export default function OverviewPage() {
               </svg>
             </div>
             <div>
-              <p className="text-[0.7rem] font-semibold uppercase tracking-[0.11em] text-[#4f6a8c]">Your launch path</p>
+              <p className="inline-flex items-center gap-2 rounded-full bg-[rgba(27,44,86,0.07)] px-2.5 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.11em] text-[#17365d]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
+                Your launch path
+              </p>
               <h2 className="mt-0.5 text-[1.22rem] font-extrabold tracking-[-0.02em] text-[#0c2341]">
                 {firstName}&apos;s learning journey
               </h2>
@@ -171,12 +174,12 @@ export default function OverviewPage() {
                     style={
                       isNextToUnlock
                         ? {
-                            background: "#ffffff",
+                            background: "linear-gradient(180deg, #fffefb 0%, #fefaf4 100%)",
                             border: "1px solid rgba(107, 188, 244, 0.48)",
                             boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)",
                           }
                         : {
-                            background: "#ffffff",
+                            background: "linear-gradient(180deg, #fffefb 0%, #fefaf4 100%)",
                             border: "1px solid rgba(165, 185, 216, 0.42)",
                             opacity: 0.92,
                           }
@@ -256,33 +259,33 @@ export default function OverviewPage() {
                     }
                   : isCurrent
                     ? {
-                        text: "#7a4d5f",
-                        dot: "rgba(225, 29, 72, 0.13)",
-                        bar: "linear-gradient(90deg,#fda4af_0%,#e11d48_100%)",
-                        accent: "rgba(177, 48, 95, 0.8)",
+                        text: "#bb1d49",
+                        dot: "rgba(223, 0, 48, 0.12)",
+                        bar: "linear-gradient(90deg,#fda4af_0%,#df0030_100%)",
+                        accent: "rgba(223, 0, 48, 0.78)",
                       }
                     : {
-                        text: "#526b8a",
-                        dot: "rgba(148,163,184,0.2)",
-                        bar: "linear-gradient(90deg,#cbd5e1_0%,#94a3b8_100%)",
-                        accent: "rgba(100, 116, 139, 0.74)",
+                        text: "#17365d",
+                        dot: "rgba(27,44,86,0.12)",
+                        bar: "linear-gradient(90deg,#c2d4eb_0%,#7fa9d7_100%)",
+                        accent: "rgba(27, 44, 86, 0.74)",
                       };
 
               const cardStyle = isComplete
                 ? {
-                    background: "#ffffff",
+                    background: "linear-gradient(180deg, #fffefb 0%, #fefaf4 100%)",
                     border: "1px solid rgba(115, 197, 159, 0.5)",
                     boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)",
                   }
                 : isInProgress
                   ? {
-                      background: "#ffffff",
+                      background: "linear-gradient(180deg, #fffefb 0%, #fefaf4 100%)",
                       border: "1px solid rgba(123, 189, 236, 0.5)",
                       boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)",
                     }
                   : {
-                      background: "#ffffff",
-                      border: "1px solid rgba(220, 181, 205, 0.56)",
+                      background: "linear-gradient(180deg, #fffefb 0%, #fefaf4 100%)",
+                      border: isCurrent ? "1px solid rgba(223, 0, 48, 0.3)" : "1px solid rgba(159, 183, 214, 0.58)",
                       boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)",
                     };
 
@@ -320,7 +323,12 @@ export default function OverviewPage() {
 
                   <div className="min-w-0 flex-1">
                     <div className="mb-1 flex items-center justify-between gap-3">
-                      <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[#6b84a3]">{moduleIndexLabel}</p>
+                      <p
+                        className="text-[0.62rem] font-bold uppercase tracking-[0.1em]"
+                        style={{ color: isCurrent ? "#b3234c" : "#17365d" }}
+                      >
+                        {moduleIndexLabel}
+                      </p>
                       <p className="shrink-0 text-[0.67rem] font-semibold uppercase tracking-[0.08em] text-[#6b84a3]">
                         {Math.max(module.estimated_minutes, 1)} min
                       </p>
@@ -359,7 +367,7 @@ export default function OverviewPage() {
           <div
             className="overflow-hidden rounded-[18px]"
             style={{
-              background: "#ffffff",
+              background: "linear-gradient(180deg, #fffefb 0%, #fefaf4 100%)",
               border: "1px solid rgba(126, 185, 235, 0.34)",
               boxShadow: "0 14px 30px rgba(17, 41, 74, 0.12)",
             }}
@@ -424,7 +432,7 @@ export default function OverviewPage() {
                 <a
                   href="mailto:nicole.thornton@apirx.com"
                   className="group block rounded-[10px] border px-3 py-2 text-[0.76rem] font-semibold text-[#1d436b] transition-all duration-200 hover:-translate-y-px"
-                  style={{ borderColor: "rgba(130, 174, 225, 0.48)", backgroundColor: "#ffffff" }}
+                  style={{ borderColor: "rgba(130, 174, 225, 0.48)", backgroundColor: "#fffef8" }}
                 >
                   Email Nicole
                   <span className="mt-0.5 block text-[0.69rem] font-medium text-[#4b6687]">nicole.thornton@apirx.com</span>
@@ -432,7 +440,7 @@ export default function OverviewPage() {
                 <a
                   href="tel:2565747528"
                   className="group block rounded-[10px] border px-3 py-2 text-[0.76rem] font-semibold text-[#1d436b] transition-all duration-200 hover:-translate-y-px"
-                  style={{ borderColor: "rgba(130, 174, 225, 0.48)", backgroundColor: "#ffffff" }}
+                  style={{ borderColor: "rgba(130, 174, 225, 0.48)", backgroundColor: "#fffef8" }}
                 >
                   Call Nicole
                   <span className="mt-0.5 block text-[0.69rem] font-medium text-[#4b6687]">256-574-7528</span>

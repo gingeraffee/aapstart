@@ -55,10 +55,13 @@ export default function RoadmapPage() {
   return (
     <div className="w-full px-6 py-6 lg:px-8 lg:py-8">
       <section
-        className="relative overflow-hidden rounded-[24px] border border-[#c7d9ef] bg-[linear-gradient(180deg,#ffffff_0%,#f5faff_100%)] px-7 py-7 shadow-[0_16px_30px_rgba(12,24,47,0.1)] animate-fade-up"
+        className="relative overflow-hidden rounded-[24px] border border-[#cedced] bg-[linear-gradient(180deg,#fffefb_0%,#fefaf4_100%)] px-7 py-7 shadow-[0_16px_30px_rgba(12,24,47,0.1)] animate-fade-up"
       >
         <div className="absolute right-0 top-0 h-1 w-full bg-[linear-gradient(90deg,#0f7fb3_0%,#06b6d4_48%,#df0030_100%)]" />
-        <p className="text-[0.62rem] font-bold uppercase tracking-[0.16em] text-[#5f7696]">Your 90-day roadmap</p>
+        <p className="inline-flex items-center gap-2 rounded-full bg-[rgba(27,44,86,0.06)] px-3 py-1 text-[0.62rem] font-bold uppercase tracking-[0.16em] text-[#17365d]">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
+          Your 90-day roadmap
+        </p>
         <h1 className="mt-2 text-[clamp(1.6rem,2.8vw,2.25rem)] font-extrabold leading-[1.08] tracking-[-0.03em] text-[#0f1d3c]">
           A guided path from day one to confident ownership
         </h1>
@@ -90,7 +93,7 @@ export default function RoadmapPage() {
           {PHASES.map((phase, idx) => (
             <article
               key={phase.range}
-              className="relative rounded-[20px] border bg-[linear-gradient(180deg,#ffffff_0%,#f9fcff_100%)] px-6 py-6 shadow-[0_12px_22px_rgba(12,24,47,0.09)]"
+              className="relative rounded-[20px] border bg-[linear-gradient(180deg,#fffefb_0%,#fefaf4_100%)] px-6 py-6 shadow-[0_12px_22px_rgba(12,24,47,0.09)]"
               style={{ borderColor: phase.border, animationDelay: `${120 + idx * 70}ms` }}
             >
               <span
@@ -133,7 +136,7 @@ export default function RoadmapPage() {
       </section>
 
       <section
-        className="mt-6 rounded-[14px] border border-[#cfe0f2] bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] px-6 py-4 animate-fade-up"
+        className="mt-6 rounded-[14px] border border-[#d6e3f2] bg-[linear-gradient(180deg,#fffefb_0%,#fefaf4_100%)] px-6 py-4 animate-fade-up"
         style={{ animationDelay: "180ms" }}
       >
         <p className="text-[0.82rem] leading-[1.65] text-[#3f5876]">
@@ -144,4 +147,3 @@ export default function RoadmapPage() {
     </div>
   );
 }
-

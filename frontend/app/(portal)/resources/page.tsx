@@ -59,7 +59,7 @@ function ContactCard({ contact }: { contact: (typeof CONTACTS)[number] }) {
     <div
       className="rounded-[14px] p-4"
       style={{
-        background: "linear-gradient(180deg, #ffffff 0%, #f8fbff 100%)",
+        background: "linear-gradient(180deg, #fffefb 0%, #fefaf4 100%)",
         border: "1px solid rgba(148,163,184,0.24)",
         boxShadow: "0 10px 24px rgba(12, 24, 47, 0.08)",
       }}
@@ -159,7 +159,7 @@ function ResourceCard({ resource }: { resource: Resource }) {
     <div
       className="flex flex-col rounded-[16px] p-5"
       style={{
-        background: "linear-gradient(180deg, #ffffff 0%, #f8fbff 100%)",
+        background: "linear-gradient(180deg, #fffefb 0%, #fefaf4 100%)",
         border: "1px solid rgba(148,163,184,0.22)",
         boxShadow: "0 14px 28px rgba(12, 24, 47, 0.09)",
       }}
@@ -222,7 +222,10 @@ export default function ResourceHubPage() {
     <div className="px-6 py-8">
       <div className="mx-auto max-w-6xl">
         <div className="mb-6">
-          <p className="mb-1 text-[0.58rem] font-bold uppercase tracking-[0.18em] text-[#64748b]">Resource Hub</p>
+          <p className="inline-flex items-center gap-2 rounded-full bg-[rgba(27,44,86,0.06)] px-2.5 py-1 text-[0.58rem] font-bold uppercase tracking-[0.18em] text-[#17365d]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
+            Resource Hub
+          </p>
           <h1 className="text-[1.6rem] font-extrabold leading-tight text-[#0b1220]">Everything you need, in one polished place.</h1>
           <p className="mt-1.5 text-[0.9rem] text-[#64748b]">
             Quick links, downloadable docs, and practical guides to keep your onboarding flow smooth.
@@ -234,7 +237,7 @@ export default function ResourceHubPage() {
             <div
               className="mb-6 flex flex-col gap-3 rounded-[14px] p-4 sm:flex-row sm:items-center sm:justify-between"
               style={{
-                background: "linear-gradient(180deg, #ffffff 0%, #f7fbff 100%)",
+                background: "linear-gradient(180deg, #fffefb 0%, #fefaf4 100%)",
                 border: "1px solid rgba(148,163,184,0.22)",
                 boxShadow: "0 12px 24px rgba(12,24,47,0.07)",
               }}
@@ -248,7 +251,7 @@ export default function ResourceHubPage() {
                   placeholder="Search resources..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-xl border border-[#d6deeb] bg-white py-2 pl-9 pr-4 text-[0.84rem] text-[#0b1220] placeholder:text-[#94a3b8] focus:outline-none focus:ring-2 focus:ring-cyan-200"
+                  className="w-full rounded-xl border border-[#d6deeb] bg-[#fffef8] py-2 pl-9 pr-4 text-[0.84rem] text-[#0b1220] placeholder:text-[#94a3b8] focus:outline-none focus:ring-2 focus:ring-cyan-200"
                 />
               </div>
 
@@ -261,7 +264,7 @@ export default function ResourceHubPage() {
                       "rounded-full px-3.5 py-1.5 text-[0.76rem] font-semibold transition-all duration-150",
                       activeCategory === cat.id
                         ? "bg-[linear-gradient(135deg,#df0030_0%,#0f7fb3_100%)] text-white shadow-[0_8px_18px_rgba(15,127,179,0.2)]"
-                        : "bg-white text-[#475569] hover:bg-[#f1f5f9]"
+                        : "bg-[#fffef8] text-[#475569] hover:bg-[#f8f2ea]"
                     )}
                     style={activeCategory !== cat.id ? { border: "1px solid rgba(148,163,184,0.24)" } : undefined}
                   >
@@ -292,7 +295,10 @@ export default function ResourceHubPage() {
           </div>
 
           <aside className="w-64 shrink-0">
-            <p className="mb-3 text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[#64748b]">Key Contacts</p>
+            <p className="inline-flex items-center gap-2 rounded-full bg-[rgba(27,44,86,0.06)] px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[#17365d]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
+              Key Contacts
+            </p>
             <div className="space-y-3">
               {CONTACTS.map((c) => (
                 <ContactCard key={c.email} contact={c} />

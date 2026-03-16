@@ -40,14 +40,20 @@ export function AppShell({ children }: AppShellProps) {
     return progress?.find((p) => p.module_slug === prevSlug)?.module_completed ?? false;
   };
 
+  const activeNavStyle = {
+    background: "linear-gradient(180deg, rgba(247,251,255,0.98) 0%, rgba(237,246,255,0.96) 100%)",
+    border: "1px solid rgba(112, 176, 235, 0.72)",
+    boxShadow: "inset 3px 0 0 #0ea5d9, inset 0 -1px 0 rgba(223,0,48,0.18), 0 10px 18px rgba(16,35,60,0.16)",
+  } as const;
+
   return (
     <div className="flex min-h-screen">
       <nav
         className="fixed bottom-0 left-0 top-0 z-40 flex w-[248px] flex-col overflow-y-auto"
         style={{
-          background: "linear-gradient(182deg, #dbe6f4 0%, #cfddf0 56%, #c4d4ea 100%)",
-          borderRight: "1px solid rgba(140, 168, 201, 0.78)",
-          boxShadow: "10px 0 22px rgba(14, 33, 58, 0.14)",
+          background: "linear-gradient(182deg, #d6e2f2 0%, #cad8eb 56%, #bfcee4 100%)",
+          borderRight: "1px solid rgba(126, 155, 190, 0.78)",
+          boxShadow: "10px 0 24px rgba(12, 31, 58, 0.17)",
         }}
       >
         <div
@@ -78,28 +84,20 @@ export function AppShell({ children }: AppShellProps) {
             className={cn(
               "mb-1.5 flex items-center gap-2.5 rounded-[12px] px-3.5 py-2.5 text-[0.8rem] font-semibold transition-all duration-200",
               pathname === "/overview"
-                ? "text-[#0f2b4b] shadow-[0_8px_14px_rgba(16,35,60,0.16)]"
-                : "text-[#2f4c6f] hover:bg-white/74 hover:text-[#163052]"
+                ? "text-[#0a2240] shadow-[0_8px_14px_rgba(16,35,60,0.16)]"
+                : "text-[#18395e] hover:bg-white/74 hover:text-[#0f2442]"
             )}
-            style={
-              pathname === "/overview"
-                ? {
-                    background: "linear-gradient(180deg, #f9fcff 0%, #f2f8ff 100%)",
-                    border: "1px solid rgba(151, 184, 221, 0.84)",
-                    boxShadow: "inset 2px 0 0 #0f7fb3, 0 9px 16px rgba(16,35,60,0.15)",
-                  }
-                : undefined
-            }
+            style={pathname === "/overview" ? activeNavStyle : undefined}
           >
             <span
               className={cn(
                 "flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full transition-all",
-                pathname === "/overview" ? "text-[#0f6da3]" : "text-[#3f5d80]"
+                pathname === "/overview" ? "text-[#0a7fbb]" : "text-[#2f537d]"
               )}
               style={
                 pathname === "/overview"
-                  ? { backgroundColor: "rgba(14, 165, 233, 0.14)" }
-                  : { backgroundColor: "rgba(65, 98, 138, 0.16)" }
+                  ? { background: "linear-gradient(135deg, rgba(34,211,238,0.28) 0%, rgba(14,165,233,0.18) 100%)" }
+                  : { backgroundColor: "rgba(40, 74, 116, 0.14)" }
               }
             >
               <svg
@@ -155,31 +153,23 @@ export function AppShell({ children }: AppShellProps) {
                   href={`/modules/${m.slug}`}
                   className={cn(
                     "flex items-center gap-2.5 rounded-[12px] px-3.5 py-2.5 text-[0.8rem] font-semibold transition-all duration-200",
-                isActive
-                      ? "text-[#0f2b4b] shadow-[0_8px_14px_rgba(16,35,60,0.16)]"
-                      : "text-[#2f4c6f] hover:bg-white/74 hover:text-[#163052]"
-                  )}
-                  style={
                     isActive
-                      ? {
-                          background: "linear-gradient(180deg, #f9fcff 0%, #f2f8ff 100%)",
-                          border: "1px solid rgba(151, 184, 221, 0.84)",
-                          boxShadow: "inset 2px 0 0 #0f7fb3, 0 9px 16px rgba(16,35,60,0.15)",
-                        }
-                      : undefined
-                  }
+                      ? "text-[#0a2240] shadow-[0_8px_14px_rgba(16,35,60,0.16)]"
+                      : "text-[#18395e] hover:bg-white/74 hover:text-[#0f2442]"
+                  )}
+                  style={isActive ? activeNavStyle : undefined}
                 >
                   <span
                     className={cn(
                       "flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full text-[0.6rem] font-bold transition-all",
-                      isActive ? "text-[#0f6da3]" : isComplete ? "text-[#2f8768]" : "text-[#3f5d80]"
+                      isActive ? "text-[#0784c4]" : isComplete ? "text-[#2f8768]" : "text-[#2f537d]"
                     )}
                     style={
                       isActive
-                        ? { backgroundColor: "rgba(14, 165, 233, 0.14)" }
+                        ? { background: "linear-gradient(135deg, rgba(34,211,238,0.28) 0%, rgba(14,165,233,0.18) 100%)" }
                         : isComplete
                           ? { backgroundColor: "rgba(52, 211, 153, 0.18)" }
-                          : { backgroundColor: "rgba(65, 98, 138, 0.16)" }
+                          : { backgroundColor: "rgba(40, 74, 116, 0.14)" }
                     }
                   >
                     {isComplete ? (
@@ -210,28 +200,20 @@ export function AppShell({ children }: AppShellProps) {
             className={cn(
               "mt-3 flex items-center gap-2.5 rounded-[12px] border-t border-[#b8cfe8] px-3.5 pb-2.5 pt-4 text-[0.8rem] font-semibold transition-all duration-200",
               isRoadmapActive
-                ? "text-[#0f2b4b] shadow-[0_8px_14px_rgba(16,35,60,0.16)]"
-                : "text-[#2f4c6f] hover:bg-white/74 hover:text-[#163052]"
+                ? "text-[#0a2240] shadow-[0_8px_14px_rgba(16,35,60,0.16)]"
+                : "text-[#18395e] hover:bg-white/74 hover:text-[#0f2442]"
             )}
-            style={
-              isRoadmapActive
-                ? {
-                    background: "linear-gradient(180deg, #f9fcff 0%, #f2f8ff 100%)",
-                    borderColor: "rgba(151, 184, 221, 0.84)",
-                    boxShadow: "inset 2px 0 0 #0f7fb3, 0 9px 16px rgba(16,35,60,0.15)",
-                  }
-                : undefined
-            }
+            style={isRoadmapActive ? { ...activeNavStyle, borderColor: "rgba(112, 176, 235, 0.72)" } : undefined}
           >
             <span
               className={cn(
                 "flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full transition-all",
-                isRoadmapActive ? "text-[#0f6da3]" : "text-[#3f5d80]"
+                isRoadmapActive ? "text-[#0784c4]" : "text-[#2f537d]"
               )}
               style={
                 isRoadmapActive
-                  ? { backgroundColor: "rgba(14, 165, 233, 0.14)" }
-                  : { backgroundColor: "rgba(65, 98, 138, 0.16)" }
+                  ? { background: "linear-gradient(135deg, rgba(34,211,238,0.28) 0%, rgba(14,165,233,0.18) 100%)" }
+                  : { backgroundColor: "rgba(40, 74, 116, 0.14)" }
               }
             >
               <svg
@@ -259,25 +241,17 @@ export function AppShell({ children }: AppShellProps) {
               className={cn(
                 "flex items-center gap-2.5 rounded-[12px] px-3.5 py-2.5 text-[0.79rem] font-semibold transition-all duration-200",
                 pathname === "/admin"
-                  ? "text-[#0f2b4b] shadow-[0_8px_14px_rgba(16,35,60,0.16)]"
-                  : "text-[#2f4c6f] hover:bg-white/74 hover:text-[#163052]"
+                  ? "text-[#0a2240] shadow-[0_8px_14px_rgba(16,35,60,0.16)]"
+                  : "text-[#18395e] hover:bg-white/74 hover:text-[#0f2442]"
               )}
-              style={
-                pathname === "/admin"
-                  ? {
-                      background: "linear-gradient(180deg, #f9fcff 0%, #f2f8ff 100%)",
-                      border: "1px solid rgba(151, 184, 221, 0.84)",
-                      boxShadow: "inset 2px 0 0 #0f7fb3, 0 9px 16px rgba(16,35,60,0.15)",
-                    }
-                  : undefined
-              }
+              style={pathname === "/admin" ? activeNavStyle : undefined}
             >
               <span
                 className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full"
                 style={
                   pathname === "/admin"
-                    ? { backgroundColor: "rgba(14, 165, 233, 0.14)" }
-                    : { backgroundColor: "rgba(65, 98, 138, 0.16)" }
+                    ? { background: "linear-gradient(135deg, rgba(34,211,238,0.28) 0%, rgba(14,165,233,0.18) 100%)" }
+                    : { backgroundColor: "rgba(40, 74, 116, 0.14)" }
                 }
               >
                 <svg
@@ -289,7 +263,7 @@ export function AppShell({ children }: AppShellProps) {
                   strokeWidth="1.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className={pathname === "/admin" ? "text-[#0f6da3]" : "text-[#3f5d80]"}
+                  className={pathname === "/admin" ? "text-[#0784c4]" : "text-[#2f537d]"}
                 >
                   <circle cx="6" cy="4" r="2" />
                   <path d="M2 10c0-2.2 1.8-4 4-4s4 1.8 4 4" />
@@ -340,9 +314,17 @@ export function AppShell({ children }: AppShellProps) {
             className={cn(
               "rounded-[9px] px-5 py-1.5 text-[0.8rem] font-semibold transition-all duration-200",
               isJourneyActive
-                ? "bg-white text-[#0e1d38] shadow-[0_1px_8px_rgba(15,29,60,0.16)]"
-                : "text-[#5b6d87] hover:text-[#1f365f]"
+                ? "text-[#071e39] shadow-[0_1px_8px_rgba(15,29,60,0.16)]"
+                : "text-[#345072] hover:text-[#1f365f]"
             )}
+            style={
+              isJourneyActive
+                ? {
+                    background: "linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(240,248,255,0.96) 100%)",
+                    boxShadow: "inset 0 -2px 0 rgba(223,0,48,0.22), 0 1px 8px rgba(15,29,60,0.16)",
+                  }
+                : undefined
+            }
           >
             Your Journey
           </button>
@@ -351,9 +333,17 @@ export function AppShell({ children }: AppShellProps) {
             className={cn(
               "rounded-[9px] px-5 py-1.5 text-[0.8rem] font-semibold transition-all duration-200",
               isResourcesActive
-                ? "bg-white text-[#0e1d38] shadow-[0_1px_8px_rgba(15,29,60,0.16)]"
-                : "text-[#5b6d87] hover:text-[#1f365f]"
+                ? "text-[#071e39] shadow-[0_1px_8px_rgba(15,29,60,0.16)]"
+                : "text-[#345072] hover:text-[#1f365f]"
             )}
+            style={
+              isResourcesActive
+                ? {
+                    background: "linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(240,248,255,0.96) 100%)",
+                    boxShadow: "inset 0 -2px 0 rgba(223,0,48,0.22), 0 1px 8px rgba(15,29,60,0.16)",
+                  }
+                : undefined
+            }
           >
             Resource Hub
           </button>
@@ -361,8 +351,8 @@ export function AppShell({ children }: AppShellProps) {
 
         <div className="ml-auto flex items-center gap-3">
           <div
-            className="rounded-[10px] px-2.5 py-1 text-[0.74rem] font-semibold text-[#2f5178]"
-            style={{ background: "rgba(14, 165, 233, 0.08)", border: "1px solid rgba(125, 211, 252, 0.3)" }}
+            className="rounded-[10px] px-2.5 py-1 text-[0.74rem] font-semibold text-[#134773]"
+            style={{ background: "linear-gradient(180deg, rgba(34,211,238,0.16) 0%, rgba(14,165,233,0.08) 100%)", border: "1px solid rgba(72, 188, 246, 0.42)" }}
           >
             {completedCount} complete
           </div>
@@ -376,13 +366,29 @@ export function AppShell({ children }: AppShellProps) {
       </header>
 
       <div
-        className="ml-[248px] mt-16 flex min-h-[calc(100vh-4rem)] flex-1 flex-col"
+        className="relative ml-[248px] mt-16 flex min-h-[calc(100vh-4rem)] flex-1 flex-col overflow-hidden"
         style={{
           background:
-            "radial-gradient(1100px 360px at 18% -10%, rgba(26, 77, 126, 0.13) 0%, rgba(26, 77, 126, 0) 58%), linear-gradient(180deg, #e4ecf7 0%, #d6e1f0 100%)",
+            "linear-gradient(90deg, rgba(18, 45, 78, 0.08) 0%, rgba(18, 45, 78, 0) 16%, rgba(18, 45, 78, 0) 84%, rgba(18, 45, 78, 0.08) 100%), radial-gradient(1180px 500px at 48% -14%, rgba(24, 71, 119, 0.16) 0%, rgba(24, 71, 119, 0) 58%), radial-gradient(960px 420px at 85% 4%, rgba(6, 182, 212, 0.1) 0%, rgba(6, 182, 212, 0) 62%), linear-gradient(180deg, #e9f1fa 0%, #f1f6fc 48%, #fbfdff 100%)",
         }}
       >
-        <main className="flex-1">{children}</main>
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage: "radial-gradient(circle, rgba(23, 55, 90, 0.08) 0.55px, transparent 0.7px)",
+            backgroundSize: "34px 34px",
+            opacity: 0.15,
+            mixBlendMode: "soft-light",
+          }}
+        />
+        <div
+          className="pointer-events-none absolute left-1/2 top-10 h-[600px] w-[min(1080px,92%)] -translate-x-1/2 rounded-[44px]"
+          style={{
+            background:
+              "radial-gradient(72% 82% at 50% 38%, rgba(255, 253, 249, 0.74) 0%, rgba(255, 253, 249, 0.26) 56%, rgba(255, 253, 249, 0) 100%), radial-gradient(100% 100% at 50% 0%, rgba(56, 189, 248, 0.08) 0%, rgba(56, 189, 248, 0) 72%)",
+          }}
+        />
+        <main className="relative z-10 flex-1">{children}</main>
       </div>
     </div>
   );

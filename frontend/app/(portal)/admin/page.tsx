@@ -43,7 +43,15 @@ function AddEmployeeForm({ onAdded }: { onAdded: () => void }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-2xl bg-white p-6" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.06)" }}>
+    <form
+      onSubmit={handleSubmit}
+      className="rounded-2xl p-6"
+      style={{
+        background: "linear-gradient(180deg, #fffefb 0%, #fefaf4 100%)",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04)",
+        border: "1px solid rgba(0,0,0,0.06)",
+      }}
+    >
       <h2 className="mb-4 text-[0.95rem] font-bold text-slate-800">Add Employee</h2>
       {error && (
         <div className="mb-4 rounded-lg bg-red-50 px-3.5 py-2.5 text-[0.78rem] text-red-700 border border-red-100">
@@ -185,8 +193,15 @@ export default function AdminPage() {
           { label: "Logged In", value: loggedIn },
           { label: "Started Modules", value: completed },
         ].map(({ label, value }) => (
-          <div key={label} className="rounded-2xl bg-white p-5 text-center"
-            style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.06)" }}>
+          <div
+            key={label}
+            className="rounded-2xl p-5 text-center"
+            style={{
+              background: "linear-gradient(180deg, #fffefb 0%, #fefaf4 100%)",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04)",
+              border: "1px solid rgba(0,0,0,0.06)",
+            }}
+          >
             <p className="text-[1.8rem] font-extrabold text-brand-bright">{value}</p>
             <p className="text-[0.76rem] font-medium text-slate-500">{label}</p>
           </div>
@@ -199,8 +214,14 @@ export default function AdminPage() {
       </div>
 
       {/* Employee table */}
-      <div className="rounded-2xl bg-white"
-        style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.06)" }}>
+      <div
+        className="rounded-2xl"
+        style={{
+          background: "linear-gradient(180deg, #fffefb 0%, #fefaf4 100%)",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04)",
+          border: "1px solid rgba(0,0,0,0.06)",
+        }}
+      >
         <div className="px-6 py-4 border-b border-slate-100">
           <h2 className="text-[0.95rem] font-bold text-slate-800">Employees</h2>
         </div>

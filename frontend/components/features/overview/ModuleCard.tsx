@@ -28,7 +28,7 @@ export function ModuleCard({ module, progress, index, featured = false }: Module
       <div
         className="relative overflow-hidden rounded-[16px] p-6 opacity-75"
         style={{
-          background: "#f8fafc",
+          background: "linear-gradient(180deg, #fffefb 0%, #f7f3ed 100%)",
           border: "1px dashed rgba(148,163,184,0.45)",
         }}
       >
@@ -47,7 +47,7 @@ export function ModuleCard({ module, progress, index, featured = false }: Module
       href={`/modules/${module.slug}`}
       className="group relative block overflow-hidden rounded-[16px] p-6 transition-all duration-200 hover:-translate-y-px"
       style={{
-        background: featured ? "#f3f9ff" : "#ffffff",
+        background: featured ? "linear-gradient(180deg, #f9fcff 0%, #f4f9ff 100%)" : "linear-gradient(180deg, #fffefb 0%, #fefaf4 100%)",
         border: featured ? "1px solid rgba(56,189,248,0.38)" : "1px solid rgba(214,222,235,0.95)",
         boxShadow: featured
           ? "0 12px 24px rgba(12,24,47,0.12)"

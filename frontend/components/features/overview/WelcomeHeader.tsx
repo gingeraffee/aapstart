@@ -57,21 +57,25 @@ export function WelcomeHeader({
     <div
       className="relative overflow-hidden rounded-[24px] p-7 lg:p-8"
       style={{
-        background: "#ffffff",
-        border: "1px solid rgba(139, 174, 224, 0.34)",
+        background: "linear-gradient(180deg, #fffefb 0%, #f8fbff 100%)",
+        border: "1px solid rgba(118, 171, 224, 0.42)",
         boxShadow: "0 18px 38px rgba(18, 39, 71, 0.12), 0 6px 14px rgba(18, 39, 71, 0.08)",
       }}
     >
       <div className="pointer-events-none absolute -right-9 -top-9 h-28 w-28 rounded-full border border-[#cadff5]" />
       <div className="pointer-events-none absolute -right-3 top-4 h-14 w-14 rounded-full border border-[#d3e4f7]" />
+      <div className="pointer-events-none absolute right-12 top-14 h-24 w-24 rounded-full bg-[radial-gradient(circle,rgba(223,0,48,0.08)_0%,rgba(223,0,48,0)_72%)]" />
       <div
         className="absolute inset-x-0 top-0 h-[4px]"
         style={{ background: "linear-gradient(90deg, #0ea5d9 0%, #22d3ee 58%, #d63964 100%)" }}
       />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-[0.58rem] font-bold uppercase tracking-[0.22em] text-[#1f5a92]">AAP Start</p>
-        <div className="text-[0.67rem] font-semibold text-[#20598f]">
+        <p className="inline-flex items-center gap-2 rounded-full bg-[rgba(27,44,86,0.08)] px-3 py-1 text-[0.58rem] font-bold uppercase tracking-[0.22em] text-[#17365d]">
+          <span className="h-2 w-2 rounded-full bg-[#df0030]" />
+          AAP Start
+        </p>
+        <div className="rounded-full border border-[rgba(72,188,246,0.35)] bg-[rgba(14,165,233,0.08)] px-3 py-1 text-[0.67rem] font-semibold text-[#0d5f91]">
           {isComplete ? "All modules complete" : `Day ${activeDay} of ${totalCount || 1}`}
         </div>
       </div>
@@ -90,8 +94,8 @@ export function WelcomeHeader({
             href={ctaHref}
             className="inline-flex items-center gap-2 rounded-[11px] px-4 py-2.5 text-[0.79rem] font-semibold text-white transition-all duration-200 hover:-translate-y-px hover:shadow-[0_10px_20px_rgba(16,45,81,0.24)]"
             style={{
-              background: "linear-gradient(140deg, #143f70 0%, #175c93 100%)",
-              border: "1px solid rgba(110, 173, 234, 0.45)",
+              background: "linear-gradient(140deg, #17365d 0%, #0f7fb3 74%, #21b8e7 100%)",
+              border: "1px solid rgba(98, 185, 241, 0.52)",
               boxShadow: "0 8px 16px rgba(16, 45, 81, 0.22)",
             }}
           >
@@ -117,7 +121,7 @@ export function WelcomeHeader({
 
         <div
           className="inline-flex items-center gap-2 rounded-[11px] px-3 py-2 text-[0.71rem] font-semibold text-[#245784]"
-          style={{ backgroundColor: "rgba(14,165,233,0.1)", border: "1px solid rgba(111, 173, 230, 0.42)" }}
+          style={{ background: "linear-gradient(180deg, rgba(34,211,238,0.14) 0%, rgba(14,165,233,0.08) 100%)", border: "1px solid rgba(111, 173, 230, 0.42)" }}
         >
           <span className="h-2 w-2 rounded-full bg-[#0ea5d9]" />
           {isComplete ? "Journey wrapped" : `${remaining} module${remaining === 1 ? "" : "s"} left`}
@@ -127,8 +131,8 @@ export function WelcomeHeader({
       <div
         className="mt-5 rounded-[15px] px-5 py-3.5"
         style={{
-          background: "#ffffff",
-          border: "1px solid rgba(154, 186, 221, 0.5)",
+          background: "linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(246,250,255,0.95) 100%)",
+          border: "1px solid rgba(129, 175, 222, 0.54)",
           boxShadow: "0 1px 0 rgba(255,255,255,0.65)",
         }}
       >
@@ -143,15 +147,17 @@ export function WelcomeHeader({
 
           <div className="min-w-[230px] flex-1">
             <div className="mb-1.5 flex items-center justify-between">
-              <p className="text-[0.6rem] font-bold uppercase tracking-[0.1em] text-[#5d7391]">Progress</p>
-              <p className="text-[0.78rem] font-extrabold text-[#0f6092]">{pct}%</p>
+              <p className="text-[0.6rem] font-bold uppercase tracking-[0.1em] text-[#17365d]">Progress</p>
+              <p className="text-[0.78rem] font-extrabold text-[#0c78b7]">{pct}%</p>
             </div>
             <div className="relative h-2.5 overflow-hidden rounded-full bg-[#d2e2f3]">
               <div
                 className="h-full rounded-full transition-all duration-700"
                 style={{
                   width: `${Math.max(pct, 6)}%`,
-                  background: "linear-gradient(90deg, #22d3ee 0%, #0ea5d9 52%, #d63964 100%)",
+                  background: pct > 75
+                    ? "linear-gradient(90deg, #22d3ee 0%, #0ea5d9 45%, #d63964 100%)"
+                    : "linear-gradient(90deg, #22d3ee 0%, #0ea5d9 100%)",
                   opacity: pct === 0 ? 0.35 : 1,
                 }}
               />

@@ -88,17 +88,18 @@
   }
 
   .prose-module h2 {
-    @apply text-h2 text-text-primary mt-12 mb-4 first:mt-0;
+    @apply text-h2 text-text-primary mt-16 mb-5 first:mt-0;
   }
 
   .prose-module h3 {
-    @apply text-h3 text-text-primary mt-8 mb-3;
+    @apply text-h3 text-text-primary mt-10 mb-4;
     padding-left: 1rem;
     border-left: 3px solid var(--accent);
   }
 
   .prose-module p {
     @apply mb-5 text-[0.98rem] text-text-secondary;
+    max-width: 66ch;
   }
 
   .prose-module ul,
@@ -109,6 +110,7 @@
   .prose-module ul li,
   .prose-module ol li {
     @apply text-text-secondary;
+    max-width: 64ch;
   }
 
   .prose-module ul li {

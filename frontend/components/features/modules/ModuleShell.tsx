@@ -85,8 +85,8 @@ function StepPill({ step, index }: { step: ModuleStep; index: number }) {
   const styles =
     step.state === "current"
       ? {
-          shell: "text-[#0f5e92]",
-          dot: "border-[#7fc3ec] bg-[#ebf7ff] text-[#0f6da3]",
+          shell: "text-[#0b4f80]",
+          dot: "border-[#60bff0] bg-[linear-gradient(135deg,#d9f7ff_0%,#eaf6ff_100%)] text-[#0784c4]",
           label: String(index + 1),
         }
       : step.state === "complete"
@@ -96,8 +96,8 @@ function StepPill({ step, index }: { step: ModuleStep; index: number }) {
             label: "✓",
           }
         : {
-            shell: "text-[#64748b]",
-            dot: "border-[#d1dfef] bg-[#f2f7fd] text-[#64748b]",
+            shell: "text-[#304e71]",
+            dot: "border-[#c4d5e9] bg-[rgba(27,44,86,0.06)] text-[#304e71]",
             label: String(index + 1),
           };
 
@@ -116,7 +116,7 @@ export function ModulePanel({ children, className, id, noPadding = false }: Modu
     <section
       id={id}
       className={cn(
-        "overflow-hidden rounded-[16px] border border-[#cfdbea] bg-white shadow-[0_12px_22px_rgba(12,24,47,0.1)] transition-shadow duration-200 hover:shadow-[0_15px_26px_rgba(12,24,47,0.12)]",
+        "overflow-hidden rounded-[16px] border border-[#d4deec] bg-[linear-gradient(180deg,#fffefb_0%,#fefaf4_100%)] shadow-[0_12px_22px_rgba(12,24,47,0.1)] transition-shadow duration-200 hover:shadow-[0_15px_26px_rgba(12,24,47,0.12)]",
         !noPadding && "px-7 py-7 md:px-8",
         className
       )}
@@ -136,7 +136,7 @@ export function ModuleFooter({
   helperText,
 }: ModuleFooterProps) {
   return (
-    <div className="flex flex-col gap-3 rounded-[14px] border border-[#cfdbea] bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] px-5 py-4 shadow-[0_10px_18px_rgba(12,24,47,0.08)] sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-3 rounded-[14px] border border-[#d4deec] bg-[linear-gradient(180deg,#fffefb_0%,#fefaf4_100%)] px-5 py-4 shadow-[0_10px_18px_rgba(12,24,47,0.08)] sm:flex-row sm:items-center sm:justify-between">
       <Link href={backHref} className="inline-flex items-center gap-1.5 text-[0.82rem] font-semibold text-text-muted transition-colors hover:text-text-primary">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M9 2L4 7l5 5" />
@@ -198,15 +198,65 @@ export function ModuleShell({
               ))}
             </div>
 
-            <section className="relative overflow-hidden rounded-[20px] border border-[#bfd4eb] bg-[linear-gradient(170deg,#ffffff_0%,#f7fbff_100%)] shadow-[0_16px_28px_rgba(12,24,47,0.12)]">
+            <section className="relative overflow-hidden rounded-[20px] border border-[#c7d8ec] bg-[linear-gradient(170deg,#fffefb_0%,#f8fbff_100%)] shadow-[0_16px_28px_rgba(12,24,47,0.12)]">
               <div className="h-1 w-full bg-[linear-gradient(90deg,#0f7fb3_0%,#06b6d4_52%,#df0030_100%)]" />
-              <div className="px-7 pb-7 pt-6">
-                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-brand-action">
-                  Module {String(moduleOrder).padStart(2, "0")} - {stageLabel}
-                </p>
+              <div
+                className="pointer-events-none absolute -right-20 top-5 h-44 w-44 rounded-full"
+                style={{ background: "radial-gradient(circle, rgba(15,127,179,0.16) 0%, rgba(15,127,179,0) 72%)" }}
+              />
+              <div
+                className="pointer-events-none absolute -left-10 bottom-2 h-28 w-28 rounded-full"
+                style={{ background: "radial-gradient(circle, rgba(223,0,48,0.12) 0%, rgba(223,0,48,0) 72%)" }}
+              />
+              <div
+                className="pointer-events-none absolute right-7 top-8 hidden h-20 w-20 rounded-[16px] md:block"
+                style={{
+                  backgroundImage: "radial-gradient(circle, rgba(19, 98, 154, 0.15) 0.8px, transparent 1px)",
+                  backgroundSize: "11px 11px",
+                }}
+              />
+
+              <div className="relative px-7 pb-9 pt-7 md:px-8 md:pb-10 md:pt-8">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div
+                    className="inline-flex items-center gap-2.5 rounded-full border px-3 py-1.5"
+                    style={{
+                      borderColor: "rgba(108, 165, 219, 0.46)",
+                      background: "linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(244,250,255,0.96) 100%)",
+                    }}
+                  >
+                    <span className="rounded-full bg-[linear-gradient(135deg,#17365d_0%,#0f7fb3_70%,#21b8e7_100%)] px-2.5 py-1 text-[0.63rem] font-bold uppercase tracking-[0.09em] text-white">
+                      Module {String(moduleOrder).padStart(2, "0")}
+                    </span>
+                    <span className="inline-flex items-center gap-2 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[#17365d]">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
+                      {stageLabel}
+                    </span>
+                  </div>
+
+                  <div
+                    className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-[12px] border md:flex"
+                    style={{
+                      borderColor: "rgba(125, 162, 205, 0.46)",
+                      background: "linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(239,248,255,0.9) 100%)",
+                    }}
+                    aria-hidden="true"
+                  >
+                    <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="#0784c4" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="10" cy="10" r="7" />
+                      <circle cx="10" cy="10" r="2.3" />
+                      <path d="M10 3v2.2M17 10h-2.2M10 17v-2.2M3 10h2.2" />
+                    </svg>
+                  </div>
+                </div>
+
                 <h1 className="mt-2 text-[clamp(1.52rem,2.5vw,2.02rem)] font-extrabold leading-[1.14] tracking-[-0.028em] text-[#0d1f3a]">
                   {headline}
                 </h1>
+                <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-[rgba(223,0,48,0.06)] px-3 py-1.5 text-[0.8rem] font-semibold text-[#b3234c]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
+                  Mission for this module: move fast, keep it practical, and lock in the habits that make your next step easy.
+                </p>
                 <p className="mt-2.5 max-w-[700px] text-[0.94rem] leading-[1.72] text-[#334f72]">{description}</p>
                 {contextNote ? (
                   <p className="mt-2 text-[0.8rem] font-medium text-[#4f6787]">
@@ -214,9 +264,9 @@ export function ModuleShell({
                   </p>
                 ) : null}
 
-                <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
+                <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
                   {typeof estimatedMinutes === "number" ? (
-                    <span className="inline-flex items-center gap-1.5 text-[0.77rem] font-medium text-[#5d7391]">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[rgba(27,44,86,0.05)] px-3 py-1.5 text-[0.77rem] font-medium text-[#17365d]">
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
                         <circle cx="6" cy="6" r="4.5" />
                         <path d="M6 3.5v2.5l1.5 1" />
