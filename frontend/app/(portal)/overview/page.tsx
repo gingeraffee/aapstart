@@ -120,7 +120,7 @@ export default function OverviewPage() {
           <div className="mb-4 flex items-center gap-2.5">
             <div
               className="flex h-7 w-7 items-center justify-center rounded-full"
-              style={{ background: "linear-gradient(135deg, rgba(34,211,238,0.22) 0%, rgba(214,51,108,0.18) 100%)" }}
+              style={{ backgroundColor: "rgba(14,165,233,0.12)" }}
             >
               <svg
                 width="13"
@@ -161,12 +161,12 @@ export default function OverviewPage() {
                     style={
                       isNextToUnlock
                         ? {
-                            background: "linear-gradient(160deg, #edf7ff 0%, #f7fbff 100%)",
+                            background: "#f0f8ff",
                             border: "1px solid rgba(107, 188, 244, 0.48)",
                             boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)",
                           }
                         : {
-                            background: "linear-gradient(160deg, #f1f6ff 0%, #f8fbff 100%)",
+                            background: "#f6f9ff",
                             border: "1px solid rgba(165, 185, 216, 0.42)",
                             opacity: 0.9,
                           }
@@ -195,15 +195,15 @@ export default function OverviewPage() {
                         <p className="text-[0.95rem] font-semibold leading-snug text-[#1e3557]">{module.title}</p>
                         {isNextToUnlock ? (
                           <span
-                            className="shrink-0 rounded-[8px] px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.08em]"
-                            style={{ backgroundColor: "rgba(14,165,233,0.14)", color: "#0d6b9d" }}
+                            className="shrink-0 text-[0.62rem] font-semibold uppercase tracking-[0.08em]"
+                            style={{ color: "#0d6b9d" }}
                           >
                             Up next
                           </span>
                         ) : (
                           <span
-                            className="shrink-0 rounded-[8px] px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-[0.08em]"
-                            style={{ backgroundColor: "rgba(148,163,184,0.2)", color: "#64748b" }}
+                            className="shrink-0 text-[0.6rem] font-semibold uppercase tracking-[0.08em]"
+                            style={{ color: "#64748b" }}
                           >
                             Locked
                           </span>
@@ -224,30 +224,30 @@ export default function OverviewPage() {
 
               const cardStyle = isComplete
                 ? {
-                    background: "linear-gradient(160deg, #f1fbf4 0%, #ffffff 100%)",
+                    background: "#f6fdf8",
                     border: "1px solid rgba(52, 211, 153, 0.42)",
                     boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)",
                   }
                 : isInProgress
                   ? {
-                      background: "linear-gradient(160deg, #eef8ff 0%, #ffffff 100%)",
+                      background: "#f3f9ff",
                       border: "1px solid rgba(56, 189, 248, 0.42)",
                       boxShadow: "0 14px 28px rgba(17, 41, 74, 0.13)",
                     }
                   : {
-                      background: "linear-gradient(160deg, #fff9fb 0%, #ffffff 100%)",
+                      background: "#fffbfd",
                       border: "1px solid rgba(244, 114, 182, 0.34)",
                       boxShadow: "0 14px 28px rgba(17, 41, 74, 0.13)",
                     };
 
               const stateLabel = isComplete ? "Complete" : isInProgress ? "In progress" : isCurrent ? "Up next" : "Ready";
-              const statePillStyle = isComplete
-                ? { backgroundColor: "rgba(52,211,153,0.15)", color: "#15803d" }
+              const stateLabelStyle = isComplete
+                ? { color: "#15803d" }
                 : isInProgress
-                  ? { backgroundColor: "rgba(56,189,248,0.15)", color: "#0d6b9d" }
+                  ? { color: "#0d6b9d" }
                   : isCurrent
-                    ? { backgroundColor: "rgba(244,114,182,0.14)", color: "#be185d" }
-                    : { backgroundColor: "rgba(148,163,184,0.18)", color: "#64748b" };
+                    ? { color: "#be185d" }
+                    : { color: "#64748b" };
 
               return (
                 <Link
@@ -292,8 +292,8 @@ export default function OverviewPage() {
                         {module.title}
                       </p>
                       <span
-                        className="shrink-0 rounded-[8px] px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.08em]"
-                        style={statePillStyle}
+                        className="shrink-0 text-[0.62rem] font-semibold uppercase tracking-[0.08em]"
+                        style={stateLabelStyle}
                       >
                         {stateLabel}
                       </span>
@@ -324,12 +324,11 @@ export default function OverviewPage() {
           <div
             className="overflow-hidden rounded-[17px]"
             style={{
-              background: "linear-gradient(165deg, #f6fbff 0%, #edf6ff 100%)",
+              background: "#f5f9ff",
               border: "1px solid rgba(126, 185, 235, 0.34)",
               boxShadow: "0 14px 30px rgba(17, 41, 74, 0.12)",
             }}
           >
-            <div className="h-1 w-full" style={{ background: "linear-gradient(90deg, #22d3ee 0%, #0ea5d9 56%, #d63964 100%)" }} />
             <div className="p-5">
               <div className="mb-3 flex items-center gap-2">
                 <span
@@ -362,7 +361,7 @@ export default function OverviewPage() {
           <div
             className="overflow-hidden rounded-[17px]"
             style={{
-              background: "linear-gradient(165deg, #ffffff 0%, #f3f8ff 100%)",
+              background: "#ffffff",
               border: "1px solid rgba(143, 182, 231, 0.32)",
               boxShadow: "0 14px 30px rgba(17, 41, 74, 0.12)",
             }}
@@ -383,8 +382,8 @@ export default function OverviewPage() {
                   <div className="flex items-center gap-2">
                     <p className="text-[0.92rem] font-bold leading-tight text-[#102343]">Nicole Thornton</p>
                     <span
-                      className="rounded-[4px] px-1.5 py-0.5 text-[0.54rem] font-bold uppercase tracking-[0.08em]"
-                      style={{ backgroundColor: "rgba(56,189,248,0.14)", color: "#0d6b9d" }}
+                      className="text-[0.54rem] font-bold uppercase tracking-[0.08em]"
+                      style={{ color: "#0d6b9d" }}
                     >
                       Primary
                     </span>

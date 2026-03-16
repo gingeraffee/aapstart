@@ -57,10 +57,9 @@ export function WelcomeHeader({
     <div
       className="relative overflow-hidden rounded-[24px] p-7 lg:p-8"
       style={{
-        background:
-          "radial-gradient(600px 240px at 0% -20%, rgba(34,211,238,0.18) 0%, rgba(34,211,238,0) 62%), radial-gradient(420px 220px at 100% -10%, rgba(244,63,94,0.12) 0%, rgba(244,63,94,0) 58%), linear-gradient(150deg, #fbfdff 0%, #f2f8ff 58%, #fff8fa 100%)",
+        background: "linear-gradient(155deg, #fbfdff 0%, #f3f8ff 100%)",
         border: "1px solid rgba(139, 174, 224, 0.34)",
-        boxShadow: "0 22px 50px rgba(18, 39, 71, 0.15), 0 8px 18px rgba(18, 39, 71, 0.08)",
+        boxShadow: "0 18px 38px rgba(18, 39, 71, 0.12), 0 6px 14px rgba(18, 39, 71, 0.08)",
       }}
     >
       <div
@@ -70,17 +69,8 @@ export function WelcomeHeader({
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-[0.58rem] font-bold uppercase tracking-[0.22em] text-[#1f5a92]">AAP Start</p>
-        <div
-          className="inline-flex items-center gap-2 rounded-full px-3 py-1"
-          style={{
-            backgroundColor: "rgba(14,165,233,0.1)",
-            border: "1px solid rgba(14,165,233,0.24)",
-          }}
-        >
-          <span className="h-1.5 w-1.5 rounded-full bg-[#1593c3]" />
-          <span className="text-[0.67rem] font-semibold text-[#20598f]">
-            {isComplete ? "All modules complete" : `Day ${activeDay} of ${totalCount || 1}`}
-          </span>
+        <div className="text-[0.67rem] font-semibold text-[#20598f]">
+          {isComplete ? "All modules complete" : `Day ${activeDay} of ${totalCount || 1}`}
         </div>
       </div>
 
@@ -125,7 +115,7 @@ export function WelcomeHeader({
       <div
         className="mt-6 rounded-[15px] px-5 py-4"
         style={{
-          background: "linear-gradient(170deg, rgba(226,242,255,0.68) 0%, rgba(244,250,255,0.9) 100%)",
+          background: "#f5f9ff",
           border: "1px solid rgba(140, 186, 241, 0.28)",
         }}
       >
