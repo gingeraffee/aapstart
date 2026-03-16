@@ -12,10 +12,10 @@ export function ContentBlock({ block }: ContentBlockProps) {
     case "heading":
       return (
         <h2
-          className="text-[1.08rem] font-extrabold tracking-[-0.02em] text-text-primary"
+          className="text-[1.08rem] font-bold tracking-[-0.015em] text-text-primary"
           style={{
-            paddingBottom: "0.5rem",
-            borderBottom: "2px solid rgba(14,118,189,0.12)",
+            paddingBottom: "0.42rem",
+            borderBottom: "1px solid rgba(14,118,189,0.18)",
             marginTop: "0.25rem",
           }}
         >
@@ -27,7 +27,7 @@ export function ContentBlock({ block }: ContentBlockProps) {
       return (
         <div
           className={cn(
-            "prose-module text-[0.93rem] leading-[1.75] text-text-secondary",
+            "prose-module text-[0.95rem] leading-[1.72] text-text-secondary",
             "[&_strong]:font-semibold [&_strong]:text-text-primary",
             "[&_a]:text-brand-bright [&_a]:underline-offset-2 [&_a]:hover:underline",
             "[&_table]:w-full [&_table]:text-[0.88rem] [&_table]:border-collapse",
@@ -54,7 +54,7 @@ export function ContentBlock({ block }: ContentBlockProps) {
             <li key={index} className="flex items-start gap-3 text-[0.9rem] text-text-secondary leading-[1.65]">
               <span
                 className="mt-[0.45rem] h-[7px] w-[7px] shrink-0 rounded-full"
-                style={{ backgroundColor: "#0e76bd", opacity: 0.7 }}
+                style={{ backgroundColor: "#0f7fb3", opacity: 0.62 }}
               />
               <span>{item}</span>
             </li>
@@ -64,29 +64,40 @@ export function ContentBlock({ block }: ContentBlockProps) {
 
     case "image":
       return (
-        <figure className="space-y-2">
-          <img
-            src={block.src}
-            alt={block.alt ?? ""}
-            className="w-full rounded-[12px] border border-border"
-          />
-          {block.caption && (
-            <figcaption className="text-center text-[0.78rem] text-text-muted">
-              {block.caption}
-            </figcaption>
-          )}
+        <figure
+          className="overflow-hidden rounded-[14px] border p-2"
+          style={{
+            borderColor: "rgba(146, 180, 220, 0.42)",
+            background: "linear-gradient(180deg,#f8fbff_0%,#f1f7ff_100%)",
+            boxShadow: "0 10px 20px rgba(12,24,47,0.08)",
+          }}
+        >
+          <img src={block.src} alt={block.alt ?? ""} className="w-full rounded-[10px] border border-[#d4e0ef]" />
+          {block.caption && <figcaption className="px-1 pt-2 text-[0.76rem] leading-[1.5] text-[#5b7392]">{block.caption}</figcaption>}
         </figure>
       );
 
     case "video":
       return (
-        <div className="aspect-video overflow-hidden rounded-[12px] border border-border">
-          <iframe
-            src={block.src}
-            title={block.alt ?? "Video"}
-            className="h-full w-full"
-            allowFullScreen
-          />
+        <div
+          className="overflow-hidden rounded-[14px] border"
+          style={{
+            borderColor: "rgba(146, 180, 220, 0.45)",
+            background: "linear-gradient(180deg,#f8fbff_0%,#f1f7ff_100%)",
+            boxShadow: "0 10px 20px rgba(12,24,47,0.08)",
+          }}
+        >
+          <div className="border-b border-[#d5e2f2] px-3 py-2">
+            <p className="text-[0.62rem] font-semibold uppercase tracking-[0.11em] text-[#5c7391]">Video brief</p>
+          </div>
+          <div className="aspect-video overflow-hidden">
+            <iframe
+              src={block.src}
+              title={block.alt ?? "Video"}
+              className="h-full w-full"
+              allowFullScreen
+            />
+          </div>
         </div>
       );
 
@@ -103,18 +114,10 @@ export function ContentBlock({ block }: ContentBlockProps) {
           href={block.url ?? "#"}
           target={isDownload ? "_self" : "_blank"}
           rel={isDownload ? undefined : "noopener noreferrer"}
-          className="group flex items-center gap-4 rounded-[14px] px-5 py-4 no-underline transition-all"
+          className="group flex items-center gap-4 rounded-[14px] border px-5 py-4 no-underline transition-all duration-200 hover:-translate-y-px"
           style={{
-            background: "rgba(14,118,189,0.05)",
-            border: "1.5px solid rgba(14,118,189,0.2)",
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLAnchorElement).style.background = "rgba(14,118,189,0.1)";
-            (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(14,118,189,0.35)";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLAnchorElement).style.background = "rgba(14,118,189,0.05)";
-            (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(14,118,189,0.2)";
+            background: "rgba(14,118,189,0.04)",
+            borderColor: "rgba(14,118,189,0.2)",
           }}
         >
           {/* Icon */}
@@ -145,6 +148,11 @@ export function ContentBlock({ block }: ContentBlockProps) {
                 {block.description}
               </p>
             )}
+            {!block.description ? (
+              <p className="mt-0.5 text-[0.74rem] leading-[1.45] text-[#607896]">
+                {isDownload ? "Download and review when needed." : "Opens in a new tab."}
+              </p>
+            ) : null}
           </div>
           {/* Chevron */}
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#0e76bd" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 opacity-50 transition-opacity group-hover:opacity-100">

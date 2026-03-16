@@ -17,19 +17,19 @@ export function ChecklistBlock({ items }: ChecklistBlockProps) {
   const doneCount = checked.filter(Boolean).length;
   const total = items.length;
   const allDone = doneCount === total;
+  const pct = total > 0 ? Math.round((doneCount / total) * 100) : 0;
 
   return (
     <div
       className="overflow-hidden rounded-[16px]"
       style={{
         border: allDone
-          ? "1.5px solid rgba(34,197,94,0.35)"
-          : "1.5px solid rgba(14,118,189,0.18)",
-        background: allDone ? "rgba(34,197,94,0.04)" : "rgba(14,118,189,0.03)",
+          ? "1px solid rgba(34,197,94,0.35)"
+          : "1px solid rgba(14,118,189,0.2)",
+        background: allDone ? "#f4fbf7" : "#f7fbff",
         transition: "border-color 0.3s, background 0.3s",
       }}
     >
-      {/* Header row */}
       <div
         className="flex items-center justify-between px-5 py-3"
         style={{
@@ -37,26 +37,38 @@ export function ChecklistBlock({ items }: ChecklistBlockProps) {
             ? "1px solid rgba(34,197,94,0.18)"
             : "1px solid rgba(14,118,189,0.12)",
           background: allDone
-            ? "rgba(34,197,94,0.07)"
-            : "rgba(14,118,189,0.05)",
+            ? "rgba(34,197,94,0.08)"
+            : "rgba(14,118,189,0.06)",
         }}
       >
         <span
-          className="text-[0.7rem] font-bold uppercase tracking-[0.18em]"
+          className="text-[0.7rem] font-semibold uppercase tracking-[0.13em]"
           style={{ color: allDone ? "#16a34a" : "#0e76bd" }}
         >
-          Setup Checklist
+          Action list
         </span>
         <span
-          className="text-[0.72rem] font-semibold tabular-nums"
+          className="text-[0.72rem] font-medium tabular-nums"
           style={{ color: allDone ? "#16a34a" : "#0e76bd" }}
         >
-          {doneCount}/{total}
-          {allDone && " ✓ All done"}
+          {doneCount} of {total}
+          {allDone && " complete"}
         </span>
       </div>
 
-      {/* Items */}
+      <div className="px-5 pb-3">
+        <div className="h-1.5 overflow-hidden rounded-full bg-[#d7e8fa]">
+          <div
+            className="h-full rounded-full transition-all duration-300"
+            style={{
+              width: `${Math.max(pct, 6)}%`,
+              background: "linear-gradient(90deg,#22d3ee_0%,#0ea5d9_55%,#df0030_100%)",
+              opacity: pct === 0 ? 0.35 : 1,
+            }}
+          />
+        </div>
+      </div>
+
       <div className="divide-y" style={{ borderColor: "rgba(14,118,189,0.08)" }}>
         {items.map((item, i) => (
           <div key={i} className="px-2">

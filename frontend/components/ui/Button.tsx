@@ -41,7 +41,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           "disabled:cursor-not-allowed disabled:opacity-50",
           "select-none whitespace-nowrap",
           variant === "primary" &&
-            "bg-[linear-gradient(135deg,#df0030_0%,#c6002a_45%,#0f7fb3_100%)] shadow-[0_12px_24px_rgba(223,0,48,0.22),0_5px_12px_rgba(15,127,179,0.16)] hover:shadow-[0_16px_30px_rgba(223,0,48,0.26),0_6px_14px_rgba(15,127,179,0.2)]",
+            "bg-[linear-gradient(135deg,#184371_0%,#13629a_100%)] border border-[#6eaeea] shadow-[0_8px_16px_rgba(15,127,179,0.2)] hover:shadow-[0_10px_20px_rgba(15,127,179,0.24)]",
           variantClasses[variant],
           sizeClasses[size],
           className

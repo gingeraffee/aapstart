@@ -95,7 +95,7 @@ export default function OverviewPage() {
   }
 
   return (
-    <div className="w-full px-6 py-6 lg:px-8 lg:py-8">
+    <div className="w-full px-6 py-5 lg:px-8 lg:py-7">
       {showCelebration && (
         <CelebrationModal
           name={user?.full_name ?? firstName}
@@ -104,7 +104,7 @@ export default function OverviewPage() {
         />
       )}
 
-      <div className="mb-6 animate-fade-up">
+      <div className="mb-5 animate-fade-up">
         <WelcomeHeader
           name={user?.full_name ?? ""}
           headers={uiData?.rotating_headers}
@@ -120,7 +120,7 @@ export default function OverviewPage() {
           <div className="mb-4 flex items-center gap-2.5">
             <div
               className="flex h-7 w-7 items-center justify-center rounded-full"
-              style={{ backgroundColor: "rgba(14,165,233,0.12)" }}
+              style={{ backgroundColor: "rgba(14,165,233,0.14)" }}
             >
               <svg
                 width="13"
@@ -137,14 +137,14 @@ export default function OverviewPage() {
               </svg>
             </div>
             <div>
-              <p className="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-[#5f7696]">Your launch path</p>
-              <h2 className="mt-0.5 text-[1.2rem] font-extrabold tracking-[-0.02em] text-[#102343]">
+              <p className="text-[0.7rem] font-semibold uppercase tracking-[0.11em] text-[#4f6a8c]">Your launch path</p>
+              <h2 className="mt-0.5 text-[1.22rem] font-extrabold tracking-[-0.02em] text-[#0c2341]">
                 {firstName}&apos;s learning journey
               </h2>
             </div>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-3.5">
             {liveModules.map((module, index) => {
               const prog = progressMap.get(module.slug);
               const isComplete = prog?.module_completed ?? false;
@@ -152,26 +152,40 @@ export default function OverviewPage() {
               const isCurrent = module.slug === currentModule?.slug;
               const unlocked = isModuleUnlocked(index);
               const isNextToUnlock = index === nextToUnlockIndex;
+              const moduleIndexLabel = `Module ${String(index + 1).padStart(2, "0")}`;
+              const progressPct = isComplete
+                ? 100
+                : prog?.quiz_passed || prog?.acknowledgements_completed
+                  ? 72
+                  : prog?.visited
+                    ? 38
+                    : isCurrent
+                      ? 24
+                      : 10;
 
               if (!unlocked) {
                 return (
                   <div
                     key={module.slug}
-                    className="flex gap-4 rounded-[17px] p-5"
+                    className="relative flex gap-4 overflow-hidden rounded-[17px] p-5 transition-all duration-200"
                     style={
                       isNextToUnlock
                         ? {
-                            background: "#f0f8ff",
+                            background: "#ffffff",
                             border: "1px solid rgba(107, 188, 244, 0.48)",
                             boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)",
                           }
                         : {
-                            background: "#f6f9ff",
+                            background: "#ffffff",
                             border: "1px solid rgba(165, 185, 216, 0.42)",
-                            opacity: 0.9,
+                            opacity: 0.92,
                           }
                     }
                   >
+                    <span
+                      className="absolute inset-y-4 left-3 w-[2px] rounded-full"
+                      style={{ background: isNextToUnlock ? "linear-gradient(180deg,#22d3ee_0%,#0ea5d9_100%)" : "rgba(148,163,184,0.35)" }}
+                    />
                     <div className="mt-0.5 shrink-0">
                       <div
                         className={cn("flex h-7 w-7 items-center justify-center rounded-full", isNextToUnlock ? "animate-pulse" : "")}
@@ -191,26 +205,21 @@ export default function OverviewPage() {
                     </div>
 
                     <div className="min-w-0 flex-1">
+                      <p className="mb-1 text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[#6b84a3]">{moduleIndexLabel}</p>
                       <div className="flex items-start justify-between gap-3">
-                        <p className="text-[0.95rem] font-semibold leading-snug text-[#1e3557]">{module.title}</p>
+                        <p className="text-[0.95rem] font-semibold leading-snug text-[#17304f]">{module.title}</p>
                         {isNextToUnlock ? (
-                          <span
-                            className="shrink-0 text-[0.62rem] font-semibold uppercase tracking-[0.08em]"
-                            style={{ color: "#0d6b9d" }}
-                          >
+                          <span className="shrink-0 text-[0.68rem] font-semibold" style={{ color: "#0d6b9d" }}>
                             Up next
                           </span>
                         ) : (
-                          <span
-                            className="shrink-0 text-[0.6rem] font-semibold uppercase tracking-[0.08em]"
-                            style={{ color: "#64748b" }}
-                          >
+                          <span className="shrink-0 text-[0.68rem] font-medium" style={{ color: "#64748b" }}>
                             Locked
                           </span>
                         )}
                       </div>
                       {module.description && (
-                        <p className="mt-1 line-clamp-2 text-[0.78rem] leading-[1.58] text-[#58708f]">{module.description}</p>
+                        <p className="mt-1 line-clamp-2 text-[0.78rem] leading-[1.58] text-[#4d6788]">{module.description}</p>
                       )}
                       {isNextToUnlock && (
                         <p className="mt-2 text-[0.72rem] font-semibold text-[#0d6b9d]">
@@ -222,50 +231,73 @@ export default function OverviewPage() {
                 );
               }
 
+              const stateLabel = isComplete ? "Completed" : isInProgress ? "In progress" : isCurrent ? "Up next" : "Ready";
+              const stateHelper = isComplete
+                ? "Completed and available to review."
+                : isInProgress
+                  ? "Resume right where you left off."
+                  : isCurrent
+                    ? "Best next step for your journey."
+                    : "Available when you are ready.";
+
+              const tone = isComplete
+                ? {
+                    text: "#2f8768",
+                    dot: "rgba(34,197,94,0.14)",
+                    bar: "linear-gradient(90deg,#34d399_0%,#1fa37d_100%)",
+                    accent: "rgba(33, 161, 123, 0.85)",
+                  }
+                : isInProgress
+                  ? {
+                      text: "#0d6b9d",
+                      dot: "rgba(56,189,248,0.18)",
+                      bar: "linear-gradient(90deg,#22d3ee_0%,#0ea5d9_100%)",
+                      accent: "rgba(14, 127, 179, 0.84)",
+                    }
+                  : isCurrent
+                    ? {
+                        text: "#7a4d5f",
+                        dot: "rgba(225, 29, 72, 0.13)",
+                        bar: "linear-gradient(90deg,#fda4af_0%,#e11d48_100%)",
+                        accent: "rgba(177, 48, 95, 0.8)",
+                      }
+                    : {
+                        text: "#526b8a",
+                        dot: "rgba(148,163,184,0.2)",
+                        bar: "linear-gradient(90deg,#cbd5e1_0%,#94a3b8_100%)",
+                        accent: "rgba(100, 116, 139, 0.74)",
+                      };
+
               const cardStyle = isComplete
                 ? {
-                    background: "#f6fdf8",
-                    border: "1px solid rgba(52, 211, 153, 0.42)",
+                    background: "#ffffff",
+                    border: "1px solid rgba(115, 197, 159, 0.5)",
                     boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)",
                   }
                 : isInProgress
                   ? {
-                      background: "#f3f9ff",
-                      border: "1px solid rgba(56, 189, 248, 0.42)",
-                      boxShadow: "0 14px 28px rgba(17, 41, 74, 0.13)",
+                      background: "#ffffff",
+                      border: "1px solid rgba(123, 189, 236, 0.5)",
+                      boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)",
                     }
                   : {
-                      background: "#fffbfd",
-                      border: "1px solid rgba(244, 114, 182, 0.34)",
-                      boxShadow: "0 14px 28px rgba(17, 41, 74, 0.13)",
+                      background: "#ffffff",
+                      border: "1px solid rgba(220, 181, 205, 0.56)",
+                      boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)",
                     };
-
-              const stateLabel = isComplete ? "Complete" : isInProgress ? "In progress" : isCurrent ? "Up next" : "Ready";
-              const stateLabelStyle = isComplete
-                ? { color: "#15803d" }
-                : isInProgress
-                  ? { color: "#0d6b9d" }
-                  : isCurrent
-                    ? { color: "#be185d" }
-                    : { color: "#64748b" };
 
               return (
                 <Link
                   key={module.slug}
                   href={`/modules/${module.slug}`}
-                  className="group flex gap-4 rounded-[17px] p-5 transition-all duration-200 hover:-translate-y-px hover:shadow-[0_18px_34px_rgba(17,41,74,0.18)]"
+                  className="group relative flex gap-4 overflow-hidden rounded-[16px] p-5 transition-all duration-200 hover:-translate-y-px hover:shadow-[0_14px_24px_rgba(17,41,74,0.15)]"
                   style={cardStyle}
                 >
+                  <span className="absolute inset-y-4 left-3 w-[2px] rounded-full" style={{ background: tone.accent }} />
                   <div className="mt-0.5 shrink-0">
                     <div
                       className="flex h-7 w-7 items-center justify-center rounded-full text-[0.62rem] font-bold"
-                      style={
-                        isComplete
-                          ? { backgroundColor: "rgba(52,211,153,0.16)", color: "#15803d" }
-                          : isInProgress
-                            ? { backgroundColor: "rgba(56,189,248,0.18)", color: "#0d6b9d" }
-                            : { backgroundColor: "rgba(244,114,182,0.16)", color: "#be185d" }
-                      }
+                      style={{ backgroundColor: tone.dot, color: tone.text }}
                     >
                       {isComplete ? (
                         <svg
@@ -287,31 +319,34 @@ export default function OverviewPage() {
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-start justify-between gap-3">
-                      <p className={cn("text-[0.96rem] font-semibold leading-snug", isComplete ? "text-[#1f6140]" : "text-[#102343]")}>
-                        {module.title}
+                    <div className="mb-1 flex items-center justify-between gap-3">
+                      <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[#6b84a3]">{moduleIndexLabel}</p>
+                      <p className="shrink-0 text-[0.67rem] font-semibold uppercase tracking-[0.08em] text-[#6b84a3]">
+                        {Math.max(module.estimated_minutes, 1)} min
                       </p>
-                      <span
-                        className="shrink-0 text-[0.62rem] font-semibold uppercase tracking-[0.08em]"
-                        style={stateLabelStyle}
-                      >
-                        {stateLabel}
-                      </span>
                     </div>
-
-                    <p className="mt-1 text-[0.67rem] font-semibold uppercase tracking-[0.09em] text-[#6b84a3]">
-                      {Math.max(module.estimated_minutes, 1)} min module
-                    </p>
+                    <div className="flex items-start justify-between gap-3">
+                      <p className={cn("text-[0.96rem] font-semibold leading-snug", isComplete ? "text-[#1c5a43]" : "text-[#0e2342]")}>{module.title}</p>
+                      <span className="shrink-0 text-[0.7rem] font-semibold" style={{ color: tone.text }}>{stateLabel}</span>
+                    </div>
 
                     {module.description && (
                       <p className="mt-1.5 line-clamp-2 text-[0.8rem] leading-[1.58] text-[#516a88]">{module.description}</p>
                     )}
 
-                    <p
-                      className="mt-2 text-[0.73rem] font-semibold transition-all group-hover:underline"
-                      style={{ color: isComplete ? "#15803d" : isInProgress ? "#0d6b9d" : "#be185d" }}
-                    >
-                      {isComplete ? "Review module ->" : "Open module ->"}
+                    <div className="mt-2.5 flex items-center justify-between gap-3">
+                      <p className="text-[0.71rem] text-[#4f6889]">{stateHelper}</p>
+                    </div>
+
+                    <div className="mt-3 h-[3px] overflow-hidden rounded-full bg-[#d2e1f2]">
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{ width: `${progressPct}%`, background: tone.bar }}
+                      />
+                    </div>
+
+                    <p className="mt-2 text-[0.73rem] font-semibold transition-all group-hover:underline" style={{ color: tone.text }}>
+                      {isComplete ? "Review module ->" : isInProgress ? "Continue module ->" : "Open module ->"}
                     </p>
                   </div>
                 </Link>
@@ -320,132 +355,92 @@ export default function OverviewPage() {
           </div>
         </div>
 
-        <div className="w-[320px] shrink-0 space-y-4 animate-fade-up max-[1220px]:w-full" style={{ animationDelay: "100ms" }}>
+        <aside className="w-[314px] shrink-0 animate-fade-up max-[1220px]:w-full xl:sticky xl:top-[82px]" style={{ animationDelay: "100ms" }}>
           <div
-            className="overflow-hidden rounded-[17px]"
+            className="overflow-hidden rounded-[18px]"
             style={{
-              background: "#f5f9ff",
+              background: "#ffffff",
               border: "1px solid rgba(126, 185, 235, 0.34)",
               boxShadow: "0 14px 30px rgba(17, 41, 74, 0.12)",
             }}
           >
-            <div className="p-5">
-              <div className="mb-3 flex items-center gap-2">
-                <span
-                  className="flex h-6 w-6 items-center justify-center rounded-full"
-                  style={{ backgroundColor: "rgba(14,165,233,0.12)" }}
-                >
-                  <svg
-                    width="11"
-                    height="11"
-                    viewBox="0 0 12 12"
-                    fill="none"
-                    stroke="#0d6b9d"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+            <div className="h-[3px] w-full bg-[linear-gradient(90deg,#0ea5d9_0%,#22d3ee_62%,#d63964_100%)]" />
+
+            <div className="relative p-5 pb-4">
+              <span className="pointer-events-none absolute -right-5 -top-5 h-16 w-16 rounded-full border border-[#d8e7f8]" />
+              <div className="mb-3 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span
+                    className="flex h-6 w-6 items-center justify-center rounded-full"
+                    style={{ backgroundColor: "rgba(14,165,233,0.12)" }}
                   >
-                    <path d="M6 1.5v6" />
-                    <path d="M3.5 5.7A3.5 3.5 0 1 0 8.5 5.7" />
-                  </svg>
-                </span>
-                <span className="text-[0.62rem] font-bold uppercase tracking-[0.16em] text-[#2d6596]">Coach Tip</span>
+                    <svg
+                      width="11"
+                      height="11"
+                      viewBox="0 0 12 12"
+                      fill="none"
+                      stroke="#0d6b9d"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M6 1.5v6" />
+                      <path d="M3.5 5.7A3.5 3.5 0 1 0 8.5 5.7" />
+                    </svg>
+                  </span>
+                  <span className="text-[0.62rem] font-bold uppercase tracking-[0.15em] text-[#2d6596]">Coach Tip</span>
+                </div>
+                <span className="text-[0.95rem] text-[#8ba4c3]">&quot;</span>
               </div>
-              <p className="text-[0.85rem] leading-[1.66] text-[#243954]">{coachTip}</p>
+              <p className="text-[0.87rem] leading-[1.68] text-[#1a3150]">{coachTip}</p>
               <p className="mt-3 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-[#0d6b9d]">
-                You are doing better than you think.
+                Steady progress, strong start.
               </p>
             </div>
-          </div>
 
-          <div
-            className="overflow-hidden rounded-[17px]"
-            style={{
-              background: "#ffffff",
-              border: "1px solid rgba(143, 182, 231, 0.32)",
-              boxShadow: "0 14px 30px rgba(17, 41, 74, 0.12)",
-            }}
-          >
-            <div className="px-5 pb-3 pt-4" style={{ backgroundColor: "rgba(14,165,233,0.08)", borderBottom: "1px solid rgba(125, 211, 252, 0.18)" }}>
-              <p className="text-[0.58rem] font-bold uppercase tracking-[0.16em] text-[#5f7696]">Your HR support</p>
-            </div>
+            <div className="mx-5 h-px bg-[#d8e5f5]" />
 
-            <div className="p-5">
-              <div className="mb-4 flex items-center gap-3">
+            <div className="p-5 pt-4">
+              <p className="text-[0.59rem] font-bold uppercase tracking-[0.15em] text-[#47688f]">Your support contact</p>
+
+              <div className="mt-3 flex items-center gap-3">
                 <div
                   className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[0.72rem] font-bold text-white"
-                  style={{ background: "linear-gradient(135deg, #1d4ed8 0%, #0ea5d9 75%, #d63964 100%)" }}
+                  style={{ background: "linear-gradient(135deg, #1d4f84 0%, #0ea5d9 100%)" }}
                 >
                   NT
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
-                    <p className="text-[0.92rem] font-bold leading-tight text-[#102343]">Nicole Thornton</p>
-                    <span
-                      className="text-[0.54rem] font-bold uppercase tracking-[0.08em]"
-                      style={{ color: "#0d6b9d" }}
-                    >
-                      Primary
-                    </span>
-                  </div>
+                  <p className="text-[0.9rem] font-bold leading-tight text-[#102343]">Nicole Thornton</p>
                   <p className="mt-0.5 text-[0.75rem] text-[#64748b]">HR Manager</p>
                 </div>
               </div>
 
-              <p className="mb-3 rounded-[10px] px-3 py-2 text-[0.74rem] leading-[1.5] text-[#334155]" style={{ backgroundColor: "rgba(14,165,233,0.08)" }}>
-                Need help or feeling stuck? Reach out and we will unblock the next step quickly.
+              <p className="mt-3 text-[0.77rem] leading-[1.58] text-[#314d6f]">
+                Stuck on a step? Reach out and we will help you move forward quickly.
               </p>
 
-              <div className="space-y-2.5">
-                <div>
-                  <p className="text-[0.56rem] font-bold uppercase tracking-[0.14em] text-[#5f7696]">Email</p>
-                  <p className="mt-0.5 text-[0.8rem] text-[#1f3657]">nicole.thornton@apirx.com</p>
-                </div>
-                <div>
-                  <p className="text-[0.56rem] font-bold uppercase tracking-[0.14em] text-[#5f7696]">Phone</p>
-                  <p className="mt-0.5 text-[0.8rem] text-[#1f3657]">256-574-7528</p>
-                </div>
-              </div>
-
-              <div className="mt-4 flex gap-2">
+              <div className="mt-3 space-y-2.5">
                 <a
                   href="mailto:nicole.thornton@apirx.com"
-                  className="flex-1 rounded-[9px] py-2 text-center text-[0.73rem] font-semibold text-white transition-all hover:-translate-y-px"
-                  style={{
-                    background: "linear-gradient(135deg, #184371 0%, #13629a 100%)",
-                    border: "1px solid rgba(110, 173, 234, 0.38)",
-                    boxShadow: "0 10px 18px rgba(17, 41, 74, 0.22)",
-                  }}
+                  className="group block rounded-[10px] border px-3 py-2 text-[0.76rem] font-semibold text-[#1d436b] transition-all duration-200 hover:-translate-y-px"
+                  style={{ borderColor: "rgba(130, 174, 225, 0.48)", backgroundColor: "#ffffff" }}
                 >
                   Email Nicole
+                  <span className="mt-0.5 block text-[0.69rem] font-medium text-[#4b6687]">nicole.thornton@apirx.com</span>
                 </a>
                 <a
                   href="tel:2565747528"
-                  className="flex-1 rounded-[9px] py-2 text-center text-[0.73rem] font-semibold text-[#0f5f91] transition-all hover:-translate-y-px"
-                  style={{
-                    backgroundColor: "rgba(14,165,233,0.08)",
-                    border: "1px solid rgba(110, 173, 234, 0.38)",
-                  }}
+                  className="group block rounded-[10px] border px-3 py-2 text-[0.76rem] font-semibold text-[#1d436b] transition-all duration-200 hover:-translate-y-px"
+                  style={{ borderColor: "rgba(130, 174, 225, 0.48)", backgroundColor: "#ffffff" }}
                 >
                   Call Nicole
+                  <span className="mt-0.5 block text-[0.69rem] font-medium text-[#4b6687]">256-574-7528</span>
                 </a>
-              </div>
-
-              <div className="mt-4 border-t pt-3" style={{ borderColor: "rgba(148,163,184,0.24)" }}>
-                <p className="text-[0.56rem] font-bold uppercase tracking-[0.14em] text-[#5f7696]">Escalation support</p>
-                <div className="mt-2 flex items-center gap-2">
-                  <div
-                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[0.6rem] font-bold text-white"
-                    style={{ background: "linear-gradient(135deg, #1d4ed8, #0ea5d9)" }}
-                  >
-                    BH
-                  </div>
-                  <p className="text-[0.82rem] font-semibold text-[#1f3657]">Brandy Hooper</p>
-                </div>
               </div>
             </div>
           </div>
-        </div>
+        </aside>
       </div>
     </div>
   );

@@ -89,46 +89,47 @@ export default function ModulePage() {
   });
 
   const continueLabel = hasAcknowledgement
-    ? "Continue to confirmation"
+    ? "Move to confirmation"
     : hasQuiz
-      ? "Continue to quiz"
-      : "Mark complete";
+      ? "Move to quick check"
+      : "Save and complete";
 
   const nextStepLabel = hasAcknowledgement
-    ? "Next: confirmation"
+    ? "Next up: confirmation"
     : hasQuiz
-      ? "Next: quiz"
-      : "Finish this module";
+      ? "Next up: quick check"
+      : "Next up: completion";
 
   const railSections = sections.filter((section) => section.title);
 
   const rail = (
-    <div className="space-y-3">
-      <div className="rounded-[14px] border border-[#d6deeb] bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-4 shadow-[0_12px_22px_rgba(12,24,47,0.08)]">
-        <p className="text-[0.58rem] font-bold uppercase tracking-[0.16em] text-text-muted">On this page</p>
-        <div className="mt-2 space-y-1.5">
-          {railSections.length > 0 ? (
-            railSections.map((section) => (
-              <a
-                key={section.id}
-                href={`#${section.id}`}
-                className="block rounded-[8px] px-2 py-1 text-[0.76rem] font-semibold text-[#475569] transition-colors hover:bg-cyan-50 hover:text-brand-action"
-              >
-                {section.title}
-              </a>
-            ))
-          ) : (
-            <p className="text-[0.75rem] text-text-muted">Scroll to read this module in full.</p>
-          )}
-        </div>
+    <div
+      className="rounded-[15px] border border-[#d2dfef] bg-[linear-gradient(180deg,#ffffff_0%,#f7fbff_100%)] p-4 shadow-[0_12px_22px_rgba(12,24,47,0.08)]"
+    >
+      <p className="text-[0.58rem] font-bold uppercase tracking-[0.16em] text-text-muted">In this module</p>
+      <div className="mt-2.5 space-y-1.5">
+        {railSections.length > 0 ? (
+          railSections.map((section) => (
+            <a
+              key={section.id}
+              href={`#${section.id}`}
+              className="group flex items-start gap-2 rounded-[9px] px-2 py-1.5 text-[0.75rem] text-[#475569] transition-all duration-200 hover:bg-cyan-50/70 hover:text-brand-action"
+            >
+              <span className="mt-[6px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#a5b9d6] transition-colors group-hover:bg-[#0f7fb3]" />
+              <span className="font-semibold leading-[1.3]">{section.title}</span>
+            </a>
+          ))
+        ) : (
+          <p className="text-[0.75rem] text-text-muted">Read through this module to move forward.</p>
+        )}
       </div>
 
-      <div className="rounded-[14px] border border-[#d6deeb] bg-white p-4 shadow-[0_10px_20px_rgba(12,24,47,0.06)]">
-        <p className="text-[0.58rem] font-bold uppercase tracking-[0.16em] text-text-muted">Reading rhythm</p>
-        <p className="mt-1.5 text-[0.74rem] leading-[1.55] text-text-secondary">
-          Keep a steady pace. This module is designed as short, scannable sections so you can build confidence quickly.
-        </p>
-      </div>
+      <div className="my-3 h-px bg-[#d8e5f5]" />
+
+      <p className="text-[0.58rem] font-bold uppercase tracking-[0.16em] text-text-muted">Reading rhythm</p>
+      <p className="mt-1.5 text-[0.74rem] leading-[1.6] text-text-secondary">
+        Take it section by section. Each section is short on purpose so the key ideas stick.
+      </p>
     </div>
   );
 
@@ -143,7 +144,7 @@ export default function ModulePage() {
       headline={currentModule.title}
       description={
         currentModule.description ||
-        "Work through the core ideas below, then continue to the next step once everything is clear."
+        "Work through the key ideas below, then move to the next step when it feels clear."
       }
       estimatedMinutes={currentModule.estimated_minutes}
       steps={steps}

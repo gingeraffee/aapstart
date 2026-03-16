@@ -10,11 +10,11 @@ import { cn } from "@/lib/utils";
 import type { ModuleDetail, QuizFeedback } from "@/lib/types";
 
 const CORRECT_MESSAGES = [
-  "Correct. Great momentum.",
-  "Nice work. Keep going.",
+  "Nice call. Keep that momentum.",
   "Exactly right.",
   "Strong answer.",
   "You got it.",
+  "Great read. Onward.",
 ];
 
 export default function QuizPage() {
@@ -55,6 +55,7 @@ export default function QuizPage() {
   const correctId = questionFeedback?.correct_id;
   const currentWrongAttempts = wrongAttempts[question.id] ?? 0;
   const shouldRevealCorrect = isRevealed && (isCorrect || currentWrongAttempts >= 2);
+  const canRetry = isRevealed && !isCorrect && currentWrongAttempts < 2;
 
   const steps = buildModuleSteps({
     requiresAcknowledgement: hasAcknowledgement,
@@ -63,7 +64,12 @@ export default function QuizPage() {
   });
 
   async function handleTap(optionId: string) {
-    if (isRevealed || submitting) return;
+    if (submitting) return;
+    if (isRevealed && (isCorrect || currentWrongAttempts >= 2)) return;
+
+    if (isRevealed && !isCorrect && currentWrongAttempts < 2) {
+      setRevealed((prev) => ({ ...prev, [question.id]: false }));
+    }
 
     setSelected((prev) => ({ ...prev, [question.id]: optionId }));
     setSubmitting(true);
@@ -87,23 +93,6 @@ export default function QuizPage() {
     } finally {
       setSubmitting(false);
     }
-  }
-
-  function handleRetryCurrent() {
-    setSelected((prev) => {
-      const next = { ...prev };
-      delete next[question.id];
-      return next;
-    });
-
-    setRevealed((prev) => ({ ...prev, [question.id]: false }));
-
-    setFeedback((prev) => {
-      if (!prev) return null;
-      const nextFeedback = { ...prev.feedback };
-      delete nextFeedback[question.id];
-      return { ...prev, feedback: nextFeedback };
-    });
   }
 
   async function handleNext() {
@@ -139,8 +128,8 @@ export default function QuizPage() {
       ]}
       moduleOrder={module.order}
       stageLabel="Quiz"
-      headline="Tap your answer. Feedback is instant."
-      description="Pick the best option, review feedback, and move forward with confidence."
+      headline="Quick check, then keep moving."
+      description="This is a confidence check, not a test. Pick what fits best and we will guide you from there."
       contextNote={module.title}
       estimatedMinutes={Math.max(2, Math.round(questions.length * 0.8))}
       steps={steps}
@@ -148,10 +137,10 @@ export default function QuizPage() {
         <ModuleFooter
           backHref={`/modules/${slug}`}
           backLabel="Back to module"
-          ctaLabel={isLastQuestion ? "Finish quiz" : "Next question"}
+          ctaLabel={isLastQuestion ? "Finish quick check" : "Next prompt"}
           onCtaClick={handleNext}
           disabled={!isRevealed || (!isCorrect && currentWrongAttempts < 2) || submitting}
-          helperText={!isRevealed ? "Choose an answer to reveal feedback." : undefined}
+          helperText={!isRevealed ? "Choose an answer to unlock feedback." : canRetry ? "One more pass and you are through." : undefined}
         />
       }
     >
@@ -164,14 +153,15 @@ export default function QuizPage() {
                   Question {currentQ + 1} of {questions.length}
                 </p>
                 <h2 className="mt-2 text-[1.18rem] font-extrabold tracking-[-0.02em] text-text-primary">{question.text}</h2>
+                <p className="mt-1 text-[0.78rem] text-[#5d7391]">Choose the best answer. You get guidance right away.</p>
               </div>
-              <span className="shrink-0 rounded-[8px] border border-cyan-100 bg-cyan-50 px-3 py-1.5 text-[0.72rem] font-bold tabular-nums text-brand-action">
+              <span className="shrink-0 text-[0.76rem] font-semibold tabular-nums text-[#5d7391]">
                 {currentQ + 1} / {questions.length}
               </span>
             </div>
             <div className="mt-3 h-2 overflow-hidden rounded-full bg-cyan-100">
               <div
-                className="h-full rounded-full bg-[linear-gradient(90deg,#0f7fb3_0%,#06b6d4_52%,#df0030_100%)] transition-all duration-500"
+                className="h-full rounded-full bg-[linear-gradient(90deg,#0f7fb3_0%,#22d3ee_100%)] transition-all duration-500"
                 style={{ width: `${((currentQ + 1) / questions.length) * 100}%` }}
               />
             </div>
@@ -186,14 +176,14 @@ export default function QuizPage() {
                 <button
                   key={option.id}
                   onClick={() => handleTap(option.id)}
-                  disabled={isRevealed || submitting}
+                  disabled={submitting || (isRevealed && (isCorrect || currentWrongAttempts >= 2))}
                   className={cn(
-                    "w-full rounded-[12px] border px-5 py-4 text-left text-[0.88rem] font-medium transition-all duration-200",
+                    "w-full rounded-[12px] border px-4 py-3.5 text-left text-[0.88rem] font-medium transition-all duration-200",
                     !isSelected && !isRevealed && "border-[#d6deeb] bg-white hover:border-brand-action/40 hover:bg-cyan-50/30",
                     isSelected && !isRevealed && "border-brand-action/50 bg-cyan-50/50",
                     submitting && !isSelected && "opacity-55",
                     shouldRevealCorrect && isCorrectOption && "border-emerald-300 bg-emerald-50 text-emerald-700",
-                    isRevealed && isSelected && !isCorrectOption && "border-red-300 bg-red-50 text-red-700",
+                    isRevealed && isSelected && !isCorrectOption && "border-[#efcf9b] bg-[#fff8ec] text-[#8b5a1f]",
                     isRevealed && !isSelected && !(shouldRevealCorrect && isCorrectOption) && "opacity-60"
                   )}
                   style={{ animationDelay: `${index * 40}ms` }}
@@ -205,14 +195,14 @@ export default function QuizPage() {
                         !isSelected && !isRevealed && "border border-[#d1d5db] text-[#64748b]",
                         isSelected && !isRevealed && "bg-brand-action text-white",
                         shouldRevealCorrect && isCorrectOption && "bg-emerald-500 text-white",
-                        isRevealed && isSelected && !isCorrectOption && "bg-red-500 text-white",
+                        isRevealed && isSelected && !isCorrectOption && "bg-[#d9a04b] text-white",
                         isRevealed && !isSelected && !(shouldRevealCorrect && isCorrectOption) && "border border-[#d1d5db] text-[#9ca3af]"
                       )}
                     >
                       {shouldRevealCorrect && isCorrectOption
-                        ? "✓"
+                        ? "OK"
                         : isRevealed && isSelected && !isCorrectOption
-                          ? "×"
+                          ? "!"
                           : String.fromCharCode(65 + index)}
                     </span>
                     <span>{option.text}</span>
@@ -233,24 +223,16 @@ export default function QuizPage() {
                 "rounded-[12px] border px-4 py-3",
                 isCorrect || currentWrongAttempts >= 2
                   ? "border-emerald-200 bg-emerald-50/70"
-                  : "border-red-200 bg-red-50/70"
+                  : "border-[#efcf9b] bg-[#fff8ec]"
               )}
             >
-              <p className={cn("text-[0.82rem] font-semibold", isCorrect || currentWrongAttempts >= 2 ? "text-emerald-700" : "text-red-700")}>
+              <p className={cn("text-[0.82rem] font-semibold", isCorrect || currentWrongAttempts >= 2 ? "text-emerald-700" : "text-[#8b5a1f]")}>
                 {isCorrect
                   ? correctMessage
                   : currentWrongAttempts >= 2
-                    ? "Noted. The correct answer is highlighted, so you can keep moving."
-                    : "Not quite. Try one more time."}
+                    ? "No worries. We highlighted the best answer so you can keep moving."
+                    : "Close. Take one more pass and you are through."}
               </p>
-              {!isCorrect && currentWrongAttempts < 2 ? (
-                <button
-                  onClick={handleRetryCurrent}
-                  className="mt-2 rounded-[8px] border border-red-300 bg-white px-3 py-1.5 text-[0.74rem] font-semibold text-red-700 transition-colors hover:bg-red-50"
-                >
-                  Try again
-                </button>
-              ) : null}
             </div>
           ) : null}
         </div>

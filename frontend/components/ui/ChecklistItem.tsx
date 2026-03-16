@@ -11,8 +11,8 @@ export function ChecklistItem({ label, checked, onChange, className }: Checklist
   return (
     <label
       className={cn(
-        "flex cursor-pointer items-start gap-3 rounded-[10px] p-4 transition-all",
-        checked ? "bg-success-surface" : "hover:bg-bg-light",
+        "flex cursor-pointer items-start gap-3 rounded-[10px] border p-4 transition-all duration-200",
+        checked ? "border-[#9ed9c5] bg-[#f2fbf6]" : "border-[#d6deeb] hover:border-[#b9cce5] hover:bg-bg-light",
         className
       )}
     >
@@ -26,7 +26,7 @@ export function ChecklistItem({ label, checked, onChange, className }: Checklist
         className={cn(
           "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-[5px] border-2 transition-all",
           checked
-            ? "border-success bg-success text-white"
+            ? "border-[#36a582] bg-[#2f8768] text-white"
             : "border-border bg-white"
         )}
       >

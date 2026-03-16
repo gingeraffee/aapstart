@@ -3,95 +3,50 @@
 const PHASES = [
   {
     range: "Days 1-30",
-    label: "Get Grounded",
-    tagline: "Orient yourself, set up your tools, and understand the landscape.",
+    chapter: "Chapter 01",
+    title: "Get Grounded",
+    subtitle: "Set your foundation, build your context, and make your first month feel clear.",
+    focus: "Focus: orientation, access, people, and first priorities.",
     accent: "#0f7fb3",
-    accentSoft: "rgba(15,127,179,0.08)",
-    accentBorder: "rgba(15,127,179,0.25)",
-    number: "01",
-    milestones: [
-      {
-        heading: "Complete your onboarding modules",
-        body: "Work through every module in AAP Start. This is your foundation for confidence and speed.",
-      },
-      {
-        heading: "Get set up in every platform",
-        body: "Activate your accounts in BambooHR, Paylocity, and LinkedIn Learning, then validate access end-to-end.",
-      },
-      {
-        heading: "Meet your team and key contacts",
-        body: "Connect with teammates and support partners so you always know who to contact and when.",
-      },
-      {
-        heading: "Learn the AAP mission and structure",
-        body: "Understand what AAP does, who it serves, and where your role contributes the most value.",
-      },
-      {
-        heading: "Clarify immediate priorities",
-        body: "By week one, you should have clear near-term goals and know what success looks like this month.",
-      },
+    accentSoft: "rgba(15,127,179,0.09)",
+    border: "rgba(15,127,179,0.28)",
+    checkpoints: [
+      "Finish the onboarding modules and lock in the core basics.",
+      "Activate every key platform and test access end to end.",
+      "Build early relationships with your team and support partners.",
+      "Align with your manager on first-month outcomes.",
     ],
   },
   {
     range: "Days 31-60",
-    label: "Find Your Footing",
-    tagline: "Start contributing, build relationships, and grow your confidence.",
-    accent: "#1b2c56",
-    accentSoft: "rgba(27,44,86,0.08)",
-    accentBorder: "rgba(27,44,86,0.24)",
-    number: "02",
-    milestones: [
-      {
-        heading: "Handle routine tasks independently",
-        body: "Process core HR functions with less guidance and better speed.",
-      },
-      {
-        heading: "Deepen policy knowledge",
-        body: "Move from reading policy to applying it in real scenarios and edge cases.",
-      },
-      {
-        heading: "Build cross-functional relationships",
-        body: "Strengthen trust with teams you support so collaboration gets easier.",
-      },
-      {
-        heading: "Attend and contribute to meetings",
-        body: "Share observations, ask sharper questions, and start adding your perspective.",
-      },
-      {
-        heading: "Surface what you are learning",
-        body: "Use check-ins to close knowledge gaps while momentum is high.",
-      },
+    chapter: "Chapter 02",
+    title: "Find Your Rhythm",
+    subtitle: "Start contributing with confidence and turn knowledge into steady execution.",
+    focus: "Focus: independent execution, collaboration, and better judgment.",
+    accent: "#1f4f84",
+    accentSoft: "rgba(31,79,132,0.09)",
+    border: "rgba(31,79,132,0.28)",
+    checkpoints: [
+      "Handle routine responsibilities with less hand-holding.",
+      "Apply policy decisions in real, practical scenarios.",
+      "Contribute actively in team conversations and weekly check-ins.",
+      "Capture what is still unclear and close those gaps quickly.",
     ],
   },
   {
     range: "Days 61-90",
-    label: "Own Your Role",
-    tagline: "Operate with confidence, add real value, and set your trajectory.",
-    accent: "#df0030",
-    accentSoft: "rgba(223,0,48,0.08)",
-    accentBorder: "rgba(223,0,48,0.24)",
-    number: "03",
-    milestones: [
-      {
-        heading: "Operate independently on core functions",
-        body: "Own responsibilities end-to-end with minimal hand-holding.",
-      },
-      {
-        heading: "Identify one improvement opportunity",
-        body: "Bring one practical process improvement backed by what you have observed.",
-      },
-      {
-        heading: "Complete remaining compliance training",
-        body: "Make sure all required learning is completed and recorded.",
-      },
-      {
-        heading: "Establish your regular rhythm",
-        body: "Lock in repeatable workflows that support quality and consistency.",
-      },
-      {
-        heading: "Reflect and set goals for month four",
-        body: "Review wins, lessons learned, and next priorities with your manager.",
-      },
+    chapter: "Chapter 03",
+    title: "Own Your Lane",
+    subtitle: "Operate with consistency, add value, and shape your next chapter.",
+    focus: "Focus: ownership, impact, and month-four direction.",
+    accent: "#c43a5d",
+    accentSoft: "rgba(196,58,93,0.1)",
+    border: "rgba(196,58,93,0.28)",
+    checkpoints: [
+      "Run core responsibilities confidently and consistently.",
+      "Share one improvement idea based on what you observed.",
+      "Close out any required training and compliance items.",
+      "Define your month-four goals with your manager.",
     ],
   },
 ];
@@ -99,77 +54,94 @@ const PHASES = [
 export default function RoadmapPage() {
   return (
     <div className="w-full px-6 py-6 lg:px-8 lg:py-8">
-      <div className="mb-8 animate-fade-up">
-        <p className="mb-1 text-[0.58rem] font-bold uppercase tracking-[0.2em] text-[#64748b]">Your First 90 Days</p>
-        <h1 className="text-[1.7rem] font-extrabold leading-tight tracking-[-0.03em] text-[#0b1220]">A premium roadmap to confident onboarding</h1>
-        <p className="mt-2 max-w-2xl text-[0.9rem] leading-[1.7] text-[#475569]">
-          This is your growth arc, not a compliance checklist. It shows what strong momentum looks like at each stage and keeps your next steps obvious.
+      <section
+        className="relative overflow-hidden rounded-[24px] border border-[#c7d9ef] bg-[linear-gradient(180deg,#ffffff_0%,#f5faff_100%)] px-7 py-7 shadow-[0_16px_30px_rgba(12,24,47,0.1)] animate-fade-up"
+      >
+        <div className="absolute right-0 top-0 h-1 w-full bg-[linear-gradient(90deg,#0f7fb3_0%,#06b6d4_48%,#df0030_100%)]" />
+        <p className="text-[0.62rem] font-bold uppercase tracking-[0.16em] text-[#5f7696]">Your 90-day roadmap</p>
+        <h1 className="mt-2 text-[clamp(1.6rem,2.8vw,2.25rem)] font-extrabold leading-[1.08] tracking-[-0.03em] text-[#0f1d3c]">
+          A guided path from day one to confident ownership
+        </h1>
+        <p className="mt-3 max-w-[760px] text-[0.92rem] leading-[1.72] text-[#445b78]">
+          This is your momentum map for the first three months. Use it to stay oriented, move with intention,
+          and keep your next step obvious.
         </p>
-      </div>
 
-      <div className="space-y-5">
-        {PHASES.map((phase, phaseIdx) => (
-          <div
-            key={phase.range}
-            className="overflow-hidden rounded-[20px] animate-fade-up"
-            style={{
-              background: "linear-gradient(180deg, #ffffff 0%, #f8fbff 100%)",
-              border: `1.5px solid ${phase.accentBorder}`,
-              boxShadow: "0 18px 30px rgba(12, 24, 47, 0.1)",
-              animationDelay: `${phaseIdx * 80}ms`,
-            }}
-          >
-            <div className="h-1.5 w-full" style={{ background: `linear-gradient(90deg, ${phase.accent} 0%, #06b6d4 100%)` }} />
-
+        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          {PHASES.map((phase, idx) => (
             <div
-              className="flex items-center gap-5 px-7 py-5"
-              style={{ backgroundColor: phase.accentSoft, borderBottom: `1px solid ${phase.accentBorder}` }}
+              key={phase.range}
+              className="rounded-[12px] border px-4 py-3"
+              style={{ borderColor: phase.border, backgroundColor: phase.accentSoft, animationDelay: `${idx * 50}ms` }}
             >
-              <div
-                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[12px] text-[1.1rem] font-black text-white"
-                style={{ background: `linear-gradient(135deg, ${phase.accent} 0%, #0f7fb3 100%)` }}
-              >
-                {phase.number}
-              </div>
-              <div>
-                <p className="text-[0.58rem] font-bold uppercase tracking-[0.18em]" style={{ color: phase.accent }}>
+              <p className="text-[0.6rem] font-bold uppercase tracking-[0.12em]" style={{ color: phase.accent }}>
+                {phase.range}
+              </p>
+              <p className="mt-1 text-[0.84rem] font-semibold text-[#112744]">{phase.title}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="relative mt-7 animate-fade-up" style={{ animationDelay: "60ms" }}>
+        <div className="pointer-events-none absolute left-[14px] top-2 hidden h-[calc(100%-1rem)] w-px bg-[linear-gradient(180deg,#9dc7ea_0%,#bcd8ef_50%,#e4d2da_100%)] md:block" />
+
+        <div className="space-y-5">
+          {PHASES.map((phase, idx) => (
+            <article
+              key={phase.range}
+              className="relative rounded-[20px] border bg-[linear-gradient(180deg,#ffffff_0%,#f9fcff_100%)] px-6 py-6 shadow-[0_12px_22px_rgba(12,24,47,0.09)]"
+              style={{ borderColor: phase.border, animationDelay: `${120 + idx * 70}ms` }}
+            >
+              <span
+                className="absolute left-[-18px] top-8 hidden h-5 w-5 rounded-full border-4 bg-white md:block"
+                style={{ borderColor: phase.accent }}
+              />
+
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <p className="text-[0.58rem] font-bold uppercase tracking-[0.15em]" style={{ color: phase.accent }}>
+                    {phase.chapter}
+                  </p>
+                  <h2 className="mt-1 text-[1.22rem] font-extrabold tracking-[-0.02em] text-[#0f1d3c]">{phase.title}</h2>
+                  <p className="mt-1 text-[0.83rem] leading-[1.6] text-[#516985]">{phase.subtitle}</p>
+                </div>
+                <p
+                  className="rounded-[10px] border px-3 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.08em]"
+                  style={{ color: phase.accent, borderColor: phase.border, backgroundColor: phase.accentSoft }}
+                >
                   {phase.range}
                 </p>
-                <h2 className="mt-0.5 text-[1.15rem] font-extrabold tracking-[-0.02em] text-[#0b1220]">{phase.label}</h2>
-                <p className="mt-0.5 text-[0.82rem] text-[#475569]">{phase.tagline}</p>
               </div>
-            </div>
 
-            <div className="divide-y divide-slate-100 px-7">
-              {phase.milestones.map((m, i) => (
-                <div key={i} className="flex gap-4 py-4">
-                  <div className="mt-1 shrink-0">
-                    <div className="h-2 w-2 rounded-full" style={{ backgroundColor: phase.accent, opacity: 0.8 }} />
-                  </div>
-                  <div>
-                    <p className="text-[0.87rem] font-semibold leading-snug text-[#0b1220]">{m.heading}</p>
-                    <p className="mt-1 text-[0.8rem] leading-[1.65] text-[#475569]">{m.body}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
+              <p className="mt-3 text-[0.77rem] font-semibold text-[#25476d]">{phase.focus}</p>
 
-      <div
-        className="mt-6 rounded-[14px] px-6 py-4 animate-fade-up"
-        style={{
-          background: "linear-gradient(180deg, rgba(6,182,212,0.08) 0%, rgba(223,0,48,0.06) 100%)",
-          border: "1px solid rgba(15,127,179,0.2)",
-          animationDelay: "280ms",
-        }}
+              <ul className="mt-4 grid gap-x-5 gap-y-3 md:grid-cols-2">
+                {phase.checkpoints.map((checkpoint) => (
+                  <li key={checkpoint} className="flex items-start gap-2.5 text-[0.83rem] leading-[1.6] text-[#364f6d]">
+                    <span
+                      className="mt-[0.45rem] h-[7px] w-[7px] shrink-0 rounded-full"
+                      style={{ backgroundColor: phase.accent }}
+                    />
+                    <span>{checkpoint}</span>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section
+        className="mt-6 rounded-[14px] border border-[#cfe0f2] bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] px-6 py-4 animate-fade-up"
+        style={{ animationDelay: "180ms" }}
       >
-        <p className="text-[0.8rem] leading-[1.65] text-[#334155]">
-          <span className="font-semibold text-[#0b1220]">Timing note:</span> onboarding modules are expected to be completed in your first week.
-          The 30-60-90 plan reflects your broader growth trajectory across your first three months.
+        <p className="text-[0.82rem] leading-[1.65] text-[#3f5876]">
+          <span className="font-semibold text-[#1d3c61]">How to use this roadmap:</span> revisit it at the start of each week,
+          check your current chapter, and align one clear priority with your manager.
         </p>
-      </div>
+      </section>
     </div>
   );
 }
+

@@ -43,6 +43,9 @@ export default function AcknowledgePage() {
   }
 
   const currentModule = module;
+  const checkedCount = currentModule.acknowledgements.filter((item) => checked[item.id]).length;
+  const ackTotal = currentModule.acknowledgements.length;
+  const ackPct = ackTotal > 0 ? Math.round((checkedCount / ackTotal) * 100) : 0;
   const allChecked = currentModule.acknowledgements.every((item) => checked[item.id]);
 
   const steps = buildModuleSteps({
@@ -60,7 +63,7 @@ export default function AcknowledgePage() {
       await progressApi.acknowledge(slug, currentModule.acknowledgements.map((item) => item.id));
       router.push(hasQuiz ? `/modules/${slug}/quiz` : `/modules/${slug}/complete`);
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError("We could not save this step just yet. Please try once more.");
       setSubmitting(false);
     }
   }
@@ -74,8 +77,8 @@ export default function AcknowledgePage() {
       ]}
       moduleOrder={currentModule.order}
       stageLabel="Confirmation"
-      headline="Confirm the key expectations from this module."
-      description="Check each statement once you understand it so we can safely move you to the final step."
+      headline="Confirm the key takeaways."
+      description="Mark each statement once it feels clear. This keeps your progress accurate and your next step ready."
       contextNote={currentModule.title}
       estimatedMinutes={2}
       steps={steps}
@@ -83,21 +86,40 @@ export default function AcknowledgePage() {
         <ModuleFooter
           backHref={`/modules/${slug}`}
           backLabel="Back to module"
-          ctaLabel={submitting ? "Saving..." : hasQuiz ? "Continue to quiz" : "Complete module"}
+          ctaLabel={submitting ? "Saving..." : hasQuiz ? "Save and continue to quick check" : "Save and complete module"}
           onCtaClick={handleSubmit}
           disabled={!allChecked || submitting}
-          helperText={!allChecked ? "Please confirm all items to continue." : undefined}
+          helperText={!allChecked ? "Confirm each item to continue." : undefined}
         />
       }
     >
-      <ModulePanel>
-        <p className="text-[0.62rem] font-bold uppercase tracking-[0.12em] text-text-muted">Module recap</p>
-        <p className="mt-1 text-[0.95rem] font-semibold text-text-primary">{currentModule.title}</p>
-        {currentModule.description ? <p className="mt-1 text-[0.83rem] text-text-secondary">{currentModule.description}</p> : null}
+      <ModulePanel className="bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)]">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-[0.62rem] font-bold uppercase tracking-[0.12em] text-text-muted">Module recap</p>
+            <p className="mt-1 text-[0.95rem] font-semibold text-text-primary">{currentModule.title}</p>
+            {currentModule.description ? <p className="mt-1 text-[0.83rem] text-text-secondary">{currentModule.description}</p> : null}
+          </div>
+          <div className="rounded-[10px] border border-[#c8dcf2] bg-white px-3 py-2 text-right">
+            <p className="text-[0.66rem] font-semibold uppercase tracking-[0.1em] text-[#5d7391]">Confirmed</p>
+            <p className="mt-0.5 text-[1rem] font-extrabold text-[#0f6da3]">
+              {checkedCount}
+              <span className="ml-1 text-[0.74rem] font-semibold text-[#6a82a2]">of {ackTotal}</span>
+            </p>
+          </div>
+        </div>
+        <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#d6e6f9]">
+          <div
+            className="h-full rounded-full bg-[linear-gradient(90deg,#22d3ee_0%,#0ea5d9_55%,#df0030_100%)] transition-all duration-300"
+            style={{ width: `${Math.max(ackPct, 6)}%`, opacity: ackPct === 0 ? 0.35 : 1 }}
+          />
+        </div>
       </ModulePanel>
 
       <ModulePanel>
-        <p className="mb-4 text-[0.78rem] font-bold text-text-primary">Check each statement to confirm your understanding:</p>
+        <p className="mb-4 text-[0.8rem] font-semibold text-text-primary">
+          Mark each statement once you are comfortable with it:
+        </p>
         <div className="space-y-3">
           {currentModule.acknowledgements.map((ack) => (
             <ChecklistItem
@@ -105,13 +127,13 @@ export default function AcknowledgePage() {
               label={ack.statement}
               checked={checked[ack.id] ?? false}
               onChange={(value) => setChecked((prev) => ({ ...prev, [ack.id]: value }))}
-              className="border border-[#d6deeb] bg-white"
+              className="bg-white"
             />
           ))}
         </div>
       </ModulePanel>
 
-      {error ? <p className="text-[0.88rem] text-brand-alert">{error}</p> : null}
+      {error ? <p className="text-[0.88rem] text-[#9a5f1f]">{error}</p> : null}
     </ModuleShell>
   );
 }
