@@ -156,7 +156,7 @@ export function WelcomeHeader({
               <p className="text-[0.6rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--welcome-progress-label)" }}>Progress</p>
               <p className="text-[0.78rem] font-extrabold" style={{ color: "var(--welcome-progress-value)" }}>{pct}%</p>
             </div>
-            <div className="relative h-2.5 overflow-hidden rounded-full" style={{ background: "var(--welcome-progress-track)" }}>
+            <div className="relative h-4 overflow-hidden rounded-full" style={{ background: "var(--welcome-progress-track)" }}>
               <div
                 className="h-full rounded-full transition-all duration-700"
                 style={{
