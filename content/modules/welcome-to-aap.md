@@ -64,7 +64,7 @@ quiz:
 
 ## Welcome to AAP.
 
-You're joining a company that supports more than 2,000 independent and community pharmacies, and every role helps that mission move forward. Whether your work is operational, administrative, customer-facing, or behind the scenes, it plays a part in helping member pharmacies stay strong, supported, and competitive.
+You're joining a company that helps support more than 2,000 independent and community pharmacies, and every role matters. Whether you're working on the front lines, behind the scenes, or somewhere in between, what you do helps our member pharmacies stay supported, successful, and ready to serve their communities. Watch the video below featuring AAP CEO Jon Copeland for a closer look at what AAP is all about.
 
 :::video
 src: /welcome-to-aap.mp4

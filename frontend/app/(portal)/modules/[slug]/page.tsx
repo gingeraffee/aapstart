@@ -413,35 +413,12 @@ export default function ModulePage() {
         </div>
       </div>
 
-      <div className="rounded-[16px] border border-[rgba(27,44,86,0.16)] bg-[linear-gradient(180deg,rgba(27,44,86,0.06)_0%,rgba(27,44,86,0.01)_100%)] p-4 shadow-[0_10px_20px_rgba(12,24,47,0.07)]">
-        <p className="inline-flex items-center gap-2 rounded-full bg-[rgba(27,44,86,0.08)] px-2.5 py-1 text-[0.58rem] font-bold uppercase tracking-[0.16em] text-[#17365d]">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#0f7fb3]" />
-          Why This Matters
-        </p>
-        <p className="mt-2.5 text-[0.8rem] leading-[1.62] text-[#234465]">{whyThisMatters}</p>
-      </div>
-
       <div className="rounded-[16px] border border-[rgba(223,0,48,0.18)] bg-[linear-gradient(180deg,rgba(223,0,48,0.05)_0%,rgba(223,0,48,0.01)_100%)] p-4 shadow-[0_10px_20px_rgba(12,24,47,0.07)]">
         <p className="inline-flex items-center gap-2 rounded-full bg-[rgba(223,0,48,0.08)] px-2.5 py-1 text-[0.58rem] font-bold uppercase tracking-[0.16em] text-[#b3234c]">
           <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
           Coach Tip
         </p>
         <p className="mt-2.5 text-[0.76rem] leading-[1.62] text-[#5d4964]">{coachTip}</p>
-      </div>
-
-      <div className="rounded-[16px] border border-[#c8daef] bg-[linear-gradient(180deg,#fffefb_0%,#f7fbff_100%)] p-4 shadow-[0_12px_22px_rgba(12,24,47,0.08)]">
-        <p className="inline-flex items-center gap-2 rounded-full bg-[rgba(14,165,233,0.08)] px-2.5 py-1 text-[0.58rem] font-bold uppercase tracking-[0.16em] text-[#0d5f91]">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#0ea5d9]" />
-          By The End
-        </p>
-        <div className="mt-2.5 space-y-2">
-          {outcomeLines.map((line) => (
-            <div key={line} className="flex items-start gap-2.5 text-[0.75rem] leading-[1.55] text-[#274566]">
-              <span className="mt-[0.38rem] h-1.5 w-1.5 shrink-0 rounded-full bg-[#0ea5d9]" />
-              <span>{line}</span>
-            </div>
-          ))}
-        </div>
       </div>
 
       {railSections.length > 0 ? (

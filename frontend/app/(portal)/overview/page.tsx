@@ -180,26 +180,26 @@ export default function OverviewPage() {
                           }
                         : {
                             background: "var(--card-bg)",
-                            border: "1px solid rgba(165, 185, 216, 0.42)",
-                            opacity: 0.92,
+                            border: "1px solid var(--card-border)",
+                            boxShadow: "var(--card-shadow)",
                           }
                     }
                   >
                     <span
                       className="absolute inset-y-4 left-3 w-[2px] rounded-full"
-                      style={{ background: isNextToUnlock ? "linear-gradient(180deg,#22d3ee_0%,#0ea5d9_100%)" : "rgba(148,163,184,0.35)" }}
+                      style={{ background: isNextToUnlock ? "linear-gradient(180deg,#22d3ee_0%,#0ea5d9_100%)" : "linear-gradient(180deg,#22d3ee_0%,#0ea5d9_100%)" }}
                     />
                     <div className="mt-0.5 shrink-0">
                       <div
                         className={cn("flex h-7 w-7 items-center justify-center rounded-full", isNextToUnlock ? "animate-pulse" : "")}
-                        style={{ backgroundColor: isNextToUnlock ? "rgba(34,211,238,0.18)" : "rgba(100,116,139,0.14)" }}
+                        style={{ backgroundColor: isNextToUnlock ? "rgba(34,211,238,0.18)" : "rgba(34,211,238,0.18)" }}
                       >
                         <svg
                           width="11"
                           height="12"
                           viewBox="0 0 10 11"
                           fill="none"
-                          className={isNextToUnlock ? "text-[#0f6da3]" : "text-slate-500"}
+                          className={isNextToUnlock ? "text-[#0f6da3]" : "text-[#0f6da3]"}
                         >
                           <rect x="1" y="5" width="8" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
                           <path d="M3 5V3.5a2 2 0 014 0V5" stroke="currentColor" strokeWidth="1.3" />
