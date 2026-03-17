@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import useSWR from "swr";
 import { useParams } from "next/navigation";
+import confetti from "canvas-confetti";
 import { modulesApi, progressApi } from "@/lib/api";
 import { ModuleFooter, ModulePanel, ModuleShell, buildModuleSteps } from "@/components/features/modules/ModuleShell";
 import { Spinner } from "@/components/ui/Spinner";
@@ -85,6 +87,112 @@ export default function CompletePage() {
     );
 
   const message = CONGRATS_MESSAGES[module.order % CONGRATS_MESSAGES.length];
+
+  const firedRef = useRef(false);
+  useEffect(() => {
+    if (firedRef.current) return;
+    firedRef.current = true;
+
+    // Randomised palettes so every completion feels different
+    const palettes = [
+      ["#0f7fb3", "#22d3ee", "#38bdf8", "#fbbf24", "#34d399", "#a78bfa"],
+      ["#f472b6", "#fbbf24", "#34d399", "#818cf8", "#22d3ee", "#fb923c"],
+      ["#0f7fb3", "#6366f1", "#a78bfa", "#f472b6", "#fbbf24", "#34d399"],
+      ["#22d3ee", "#2dd4bf", "#34d399", "#fbbf24", "#fb923c", "#f87171"],
+      ["#818cf8", "#c084fc", "#f472b6", "#fbbf24", "#22d3ee", "#0f7fb3"],
+    ];
+    const colors = palettes[Math.floor(Math.random() * palettes.length)];
+
+    // Randomised celebration patterns
+    const patterns = [
+      // Pattern 1: Big center burst + side streams
+      () => {
+        confetti({ particleCount: 80, spread: 100, origin: { x: 0.5, y: 0.4 }, colors });
+        streamFromSides(2500);
+      },
+      // Pattern 2: Firework — three staggered bursts from different positions
+      () => {
+        confetti({ particleCount: 50, spread: 70, origin: { x: 0.3, y: 0.5 }, colors });
+        setTimeout(() => confetti({ particleCount: 60, spread: 80, origin: { x: 0.7, y: 0.35 }, colors }), 300);
+        setTimeout(() => confetti({ particleCount: 70, spread: 90, origin: { x: 0.5, y: 0.3 }, colors }), 600);
+        setTimeout(() => streamFromSides(1800), 800);
+      },
+      // Pattern 3: Cannon — rapid-fire small bursts that sweep across
+      () => {
+        for (let i = 0; i < 5; i++) {
+          setTimeout(() => {
+            confetti({
+              particleCount: 25,
+              angle: 90 + (Math.random() * 40 - 20),
+              spread: 45 + Math.random() * 30,
+              origin: { x: 0.15 + i * 0.175, y: 0.6 },
+              colors,
+            });
+          }, i * 180);
+        }
+        setTimeout(() => streamFromSides(1600), 900);
+      },
+      // Pattern 4: Rain — wide, gentle shower from the top
+      () => {
+        confetti({
+          particleCount: 120,
+          spread: 160,
+          origin: { x: 0.5, y: -0.1 },
+          gravity: 0.6,
+          ticks: 300,
+          colors,
+        });
+        setTimeout(() => {
+          confetti({
+            particleCount: 60,
+            spread: 140,
+            origin: { x: 0.5, y: -0.05 },
+            gravity: 0.5,
+            ticks: 250,
+            colors,
+          });
+        }, 700);
+      },
+      // Pattern 5: Popcorn — small pops from random spots
+      () => {
+        for (let i = 0; i < 8; i++) {
+          setTimeout(() => {
+            confetti({
+              particleCount: 15 + Math.floor(Math.random() * 15),
+              spread: 40 + Math.random() * 30,
+              origin: { x: 0.2 + Math.random() * 0.6, y: 0.3 + Math.random() * 0.3 },
+              colors,
+            });
+          }, i * 250);
+        }
+      },
+    ];
+
+    function streamFromSides(duration: number) {
+      const end = Date.now() + duration;
+      const frame = () => {
+        confetti({
+          particleCount: 2 + Math.floor(Math.random() * 3),
+          angle: 55 + Math.random() * 15,
+          spread: 45 + Math.random() * 20,
+          origin: { x: 0, y: 0.5 + Math.random() * 0.2 },
+          colors,
+        });
+        confetti({
+          particleCount: 2 + Math.floor(Math.random() * 3),
+          angle: 110 + Math.random() * 15,
+          spread: 45 + Math.random() * 20,
+          origin: { x: 1, y: 0.5 + Math.random() * 0.2 },
+          colors,
+        });
+        if (Date.now() < end) requestAnimationFrame(frame);
+      };
+      requestAnimationFrame(frame);
+    }
+
+    // Pick a random pattern
+    patterns[Math.floor(Math.random() * patterns.length)]();
+  }, []);
 
   return (
     <ModuleShell
