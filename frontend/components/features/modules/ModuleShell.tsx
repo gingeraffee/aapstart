@@ -269,7 +269,7 @@ export function ModuleShell({
                   </div>
                 </div>
 
-                <h1 className="mt-2 text-[clamp(1.52rem,2.5vw,2.02rem)] font-bold leading-[1.14] tracking-[-0.012em]" style={{ color: "var(--module-headline)", fontFamily: 'Georgia, "Times New Roman", Times, serif' }}>
+                <h1 className="mt-2 text-[clamp(1.52rem,2.5vw,2.02rem)] font-bold leading-[1.14] tracking-[-0.012em]" style={{ color: "var(--module-headline)", fontFamily: '"Manrope", sans-serif' }}>
                   {headline}
                 </h1>
                 <p className="mt-2.5 max-w-[700px] text-[0.94rem] leading-[1.72]" style={{ color: "var(--module-body)" }}>{description}</p>
