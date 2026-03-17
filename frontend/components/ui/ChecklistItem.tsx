@@ -12,7 +12,9 @@ export function ChecklistItem({ label, checked, onChange, className }: Checklist
     <label
       className={cn(
         "flex cursor-pointer items-start gap-3 rounded-[10px] border p-4 transition-all duration-200",
-        checked ? "border-[#9ed9c5] bg-[#f2fbf6]" : "border-[#d6deeb] hover:border-[#b9cce5] hover:bg-bg-light",
+        checked
+          ? "border-[#9ed9c5] bg-[#f2fbf6] dark:border-emerald-800 dark:bg-emerald-900/20"
+          : "border-[#d6deeb] hover:border-[#b9cce5] dark:border-[rgba(30,58,95,0.5)] dark:hover:border-[rgba(56,189,248,0.25)]",
         className
       )}
     >
@@ -27,7 +29,7 @@ export function ChecklistItem({ label, checked, onChange, className }: Checklist
           "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-[5px] border-2 transition-all",
           checked
             ? "border-[#36a582] bg-[#2f8768] text-white"
-            : "border-border bg-white"
+            : "border-border bg-white dark:border-[rgba(30,58,95,0.6)] dark:bg-[rgba(15,25,42,0.5)]"
         )}
       >
         {checked && (
@@ -36,10 +38,7 @@ export function ChecklistItem({ label, checked, onChange, className }: Checklist
           </svg>
         )}
       </span>
-      <span className={cn(
-        "text-[0.88rem] leading-[1.5]",
-        checked ? "text-text-primary" : "text-text-secondary"
-      )}>
+      <span className="text-[0.88rem] leading-[1.5]" style={{ color: checked ? "var(--heading-color)" : "var(--module-body)" }}>
         {label}
       </span>
     </label>

@@ -5,12 +5,46 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import useSWR from "swr";
 import { useAuth } from "@/lib/context/AuthContext";
+import { useTheme } from "@/lib/context/ThemeContext";
 import { modulesApi, progressApi } from "@/lib/api";
 import { cn, initials } from "@/lib/utils";
 import type { ModuleSummary, ProgressRecord } from "@/lib/types";
 
 interface AppShellProps {
   children: React.ReactNode;
+}
+
+function ThemeToggle() {
+  const { theme, toggleTheme } = useTheme();
+  return (
+    <button
+      onClick={toggleTheme}
+      className="flex h-9 w-9 items-center justify-center rounded-[10px] transition-all duration-200 hover:scale-105"
+      style={{
+        background: "var(--toggle-bg, rgba(27,44,86,0.12))",
+        border: "1px solid var(--toggle-border, rgba(130,160,194,0.5))",
+      }}
+      aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+    >
+      {theme === "dark" ? (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--toggle-icon, #345072)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="5" />
+          <line x1="12" y1="1" x2="12" y2="3" />
+          <line x1="12" y1="21" x2="12" y2="23" />
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+          <line x1="1" y1="12" x2="3" y2="12" />
+          <line x1="21" y1="12" x2="23" y2="12" />
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+        </svg>
+      ) : (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--toggle-icon, #345072)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+        </svg>
+      )}
+    </button>
+  );
 }
 
 export function AppShell({ children }: AppShellProps) {
@@ -41,9 +75,9 @@ export function AppShell({ children }: AppShellProps) {
   };
 
   const activeNavStyle = {
-    background: "linear-gradient(180deg, rgba(247,251,255,0.98) 0%, rgba(237,246,255,0.96) 100%)",
-    border: "1px solid rgba(112, 176, 235, 0.72)",
-    boxShadow: "inset 3px 0 0 #0ea5d9, inset 0 -1px 0 rgba(223,0,48,0.18), 0 10px 18px rgba(16,35,60,0.16)",
+    background: "var(--sidebar-active-bg)",
+    border: "1px solid var(--sidebar-active-border)",
+    boxShadow: "var(--sidebar-active-shadow)",
   } as const;
 
   return (
@@ -51,16 +85,16 @@ export function AppShell({ children }: AppShellProps) {
       <nav
         className="fixed bottom-0 left-0 top-0 z-40 flex w-[248px] flex-col overflow-y-auto"
         style={{
-          background: "linear-gradient(182deg, #d6e2f2 0%, #cad8eb 56%, #bfcee4 100%)",
-          borderRight: "1px solid rgba(126, 155, 190, 0.78)",
-          boxShadow: "10px 0 24px rgba(12, 31, 58, 0.17)",
+          background: "var(--sidebar-bg)",
+          borderRight: "1px solid var(--sidebar-border)",
+          boxShadow: "var(--sidebar-shadow)",
         }}
       >
         <div
           className="px-5 pb-4 pt-4"
           style={{
-            borderBottom: "1px solid rgba(153, 182, 218, 0.68)",
-            background: "linear-gradient(180deg, rgba(248,252,255,0.92) 0%, rgba(237,244,252,0.94) 100%)",
+            borderBottom: "1px solid var(--sidebar-logo-border)",
+            background: "var(--sidebar-logo-bg)",
           }}
         >
           <Link href="/overview" className="block">
@@ -75,7 +109,10 @@ export function AppShell({ children }: AppShellProps) {
         </div>
 
         <div className="flex-1 overflow-y-auto px-3.5 pb-3 pt-4">
-          <p className="mb-2.5 px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em] text-[#406286]">
+          <p
+            className="mb-2.5 px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]"
+            style={{ color: "var(--sidebar-label)" }}
+          >
             Your Journey
           </p>
 
@@ -84,21 +121,20 @@ export function AppShell({ children }: AppShellProps) {
             className={cn(
               "mb-1.5 flex items-center gap-2.5 rounded-[12px] px-3.5 py-2.5 text-[0.8rem] font-semibold transition-all duration-200",
               pathname === "/overview"
-                ? "text-[#0a2240] shadow-[0_8px_14px_rgba(16,35,60,0.16)]"
-                : "text-[#18395e] hover:bg-white/74 hover:text-[#0f2442]"
+                ? "shadow-[0_8px_14px_rgba(16,35,60,0.16)]"
+                : ""
             )}
-            style={pathname === "/overview" ? activeNavStyle : undefined}
+            style={{
+              color: pathname === "/overview" ? "var(--sidebar-text-active)" : "var(--sidebar-text)",
+              ...(pathname === "/overview" ? activeNavStyle : undefined),
+            }}
           >
             <span
-              className={cn(
-                "flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full transition-all",
-                pathname === "/overview" ? "text-[#0a7fbb]" : "text-[#2f537d]"
-              )}
-              style={
-                pathname === "/overview"
-                  ? { background: "linear-gradient(135deg, rgba(34,211,238,0.28) 0%, rgba(14,165,233,0.18) 100%)" }
-                  : { backgroundColor: "rgba(40, 74, 116, 0.14)" }
-              }
+              className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full transition-all"
+              style={{
+                color: pathname === "/overview" ? "var(--sidebar-icon-active-text)" : "var(--sidebar-icon-text)",
+                background: pathname === "/overview" ? "var(--sidebar-icon-active-bg)" : "var(--sidebar-icon-bg)",
+              }}
             >
               <svg
                 width="10"
@@ -129,20 +165,20 @@ export function AppShell({ children }: AppShellProps) {
                     key={m.slug}
                     className="flex cursor-not-allowed items-center gap-2.5 rounded-[11px] px-3.5 py-2.5"
                     style={{
-                      backgroundColor: "rgba(250, 253, 255, 0.7)",
-                      border: "1px solid rgba(166, 191, 220, 0.56)",
+                      backgroundColor: "var(--sidebar-locked-bg)",
+                      border: "1px solid var(--sidebar-locked-border)",
                     }}
                   >
                     <span
                       className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full"
-                      style={{ backgroundColor: "rgba(130, 160, 194, 0.22)" }}
+                      style={{ backgroundColor: "var(--sidebar-locked-icon-bg)" }}
                     >
-                      <svg width="8" height="9" viewBox="0 0 8 9" fill="none" style={{ color: "#5f7e9f" }}>
+                      <svg width="8" height="9" viewBox="0 0 8 9" fill="none" style={{ color: "var(--sidebar-locked-icon-text)" }}>
                         <rect x="1" y="4" width="6" height="5" rx="1" stroke="currentColor" strokeWidth="1.2" />
                         <path d="M2.5 4V2.5a1.5 1.5 0 013 0V4" stroke="currentColor" strokeWidth="1.2" />
                       </svg>
                     </span>
-                    <span className="truncate text-[0.76rem] leading-tight text-[#5e7998]">{m.title}</span>
+                    <span className="truncate text-[0.76rem] leading-tight" style={{ color: "var(--sidebar-locked-text)" }}>{m.title}</span>
                   </div>
                 );
               }
@@ -153,24 +189,27 @@ export function AppShell({ children }: AppShellProps) {
                   href={`/modules/${m.slug}`}
                   className={cn(
                     "flex items-center gap-2.5 rounded-[12px] px-3.5 py-2.5 text-[0.8rem] font-semibold transition-all duration-200",
-                    isActive
-                      ? "text-[#0a2240] shadow-[0_8px_14px_rgba(16,35,60,0.16)]"
-                      : "text-[#18395e] hover:bg-white/74 hover:text-[#0f2442]"
+                    isActive ? "shadow-[0_8px_14px_rgba(16,35,60,0.16)]" : ""
                   )}
-                  style={isActive ? activeNavStyle : undefined}
+                  style={{
+                    color: isActive ? "var(--sidebar-text-active)" : "var(--sidebar-text)",
+                    ...(isActive ? activeNavStyle : undefined),
+                  }}
                 >
                   <span
-                    className={cn(
-                      "flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full text-[0.6rem] font-bold transition-all",
-                      isActive ? "text-[#0784c4]" : isComplete ? "text-[#2f8768]" : "text-[#2f537d]"
-                    )}
-                    style={
-                      isActive
-                        ? { background: "linear-gradient(135deg, rgba(34,211,238,0.28) 0%, rgba(14,165,233,0.18) 100%)" }
+                    className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full text-[0.6rem] font-bold transition-all"
+                    style={{
+                      color: isActive
+                        ? "var(--sidebar-icon-active-text)"
                         : isComplete
-                          ? { backgroundColor: "rgba(52, 211, 153, 0.18)" }
-                          : { backgroundColor: "rgba(40, 74, 116, 0.14)" }
-                    }
+                          ? "var(--sidebar-complete-icon-text)"
+                          : "var(--sidebar-icon-text)",
+                      background: isActive
+                        ? "var(--sidebar-icon-active-bg)"
+                        : isComplete
+                          ? "var(--sidebar-complete-icon-bg)"
+                          : "var(--sidebar-icon-bg)",
+                    }}
                   >
                     {isComplete ? (
                       <svg
@@ -198,23 +237,21 @@ export function AppShell({ children }: AppShellProps) {
           <Link
             href="/roadmap"
             className={cn(
-              "mt-3 flex items-center gap-2.5 rounded-[12px] border-t border-[#b8cfe8] px-3.5 pb-2.5 pt-4 text-[0.8rem] font-semibold transition-all duration-200",
-              isRoadmapActive
-                ? "text-[#0a2240] shadow-[0_8px_14px_rgba(16,35,60,0.16)]"
-                : "text-[#18395e] hover:bg-white/74 hover:text-[#0f2442]"
+              "mt-3 flex items-center gap-2.5 rounded-[12px] px-3.5 pb-2.5 pt-4 text-[0.8rem] font-semibold transition-all duration-200",
+              isRoadmapActive ? "shadow-[0_8px_14px_rgba(16,35,60,0.16)]" : ""
             )}
-            style={isRoadmapActive ? { ...activeNavStyle, borderColor: "rgba(112, 176, 235, 0.72)" } : undefined}
+            style={{
+              borderTop: "1px solid var(--sidebar-roadmap-border)",
+              color: isRoadmapActive ? "var(--sidebar-text-active)" : "var(--sidebar-text)",
+              ...(isRoadmapActive ? { ...activeNavStyle, borderColor: "var(--sidebar-active-border)" } : undefined),
+            }}
           >
             <span
-              className={cn(
-                "flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full transition-all",
-                isRoadmapActive ? "text-[#0784c4]" : "text-[#2f537d]"
-              )}
-              style={
-                isRoadmapActive
-                  ? { background: "linear-gradient(135deg, rgba(34,211,238,0.28) 0%, rgba(14,165,233,0.18) 100%)" }
-                  : { backgroundColor: "rgba(40, 74, 116, 0.14)" }
-              }
+              className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full transition-all"
+              style={{
+                color: isRoadmapActive ? "var(--sidebar-icon-active-text)" : "var(--sidebar-icon-text)",
+                background: isRoadmapActive ? "var(--sidebar-icon-active-bg)" : "var(--sidebar-icon-bg)",
+              }}
             >
               <svg
                 width="10"
@@ -235,24 +272,23 @@ export function AppShell({ children }: AppShellProps) {
         </div>
 
         {user?.is_admin && (
-          <div className="px-3.5 pb-2" style={{ borderTop: "1px solid rgba(153, 182, 218, 0.68)", paddingTop: "10px" }}>
+          <div className="px-3.5 pb-2" style={{ borderTop: "1px solid var(--sidebar-divider)", paddingTop: "10px" }}>
             <Link
               href="/admin"
               className={cn(
                 "flex items-center gap-2.5 rounded-[12px] px-3.5 py-2.5 text-[0.79rem] font-semibold transition-all duration-200",
-                pathname === "/admin"
-                  ? "text-[#0a2240] shadow-[0_8px_14px_rgba(16,35,60,0.16)]"
-                  : "text-[#18395e] hover:bg-white/74 hover:text-[#0f2442]"
+                pathname === "/admin" ? "shadow-[0_8px_14px_rgba(16,35,60,0.16)]" : ""
               )}
-              style={pathname === "/admin" ? activeNavStyle : undefined}
+              style={{
+                color: pathname === "/admin" ? "var(--sidebar-text-active)" : "var(--sidebar-text)",
+                ...(pathname === "/admin" ? activeNavStyle : undefined),
+              }}
             >
               <span
                 className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full"
-                style={
-                  pathname === "/admin"
-                    ? { background: "linear-gradient(135deg, rgba(34,211,238,0.28) 0%, rgba(14,165,233,0.18) 100%)" }
-                    : { backgroundColor: "rgba(40, 74, 116, 0.14)" }
-                }
+                style={{
+                  background: pathname === "/admin" ? "var(--sidebar-icon-active-bg)" : "var(--sidebar-icon-bg)",
+                }}
               >
                 <svg
                   width="10"
@@ -263,7 +299,7 @@ export function AppShell({ children }: AppShellProps) {
                   strokeWidth="1.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className={pathname === "/admin" ? "text-[#0784c4]" : "text-[#2f537d]"}
+                  style={{ color: pathname === "/admin" ? "var(--sidebar-icon-active-text)" : "var(--sidebar-icon-text)" }}
                 >
                   <circle cx="6" cy="4" r="2" />
                   <path d="M2 10c0-2.2 1.8-4 4-4s4 1.8 4 4" />
@@ -274,9 +310,16 @@ export function AppShell({ children }: AppShellProps) {
           </div>
         )}
 
-        <div className="px-4 py-4" style={{ borderTop: "1px solid rgba(153, 182, 218, 0.68)" }}>
+        <div className="px-4 py-4" style={{ borderTop: "1px solid var(--sidebar-divider)" }}>
           {user && (
-            <div className="flex items-center gap-2.5 rounded-[12px] border border-[#aec8e4] bg-white/76 px-2.5 py-2 shadow-[0_10px_16px_rgba(16,35,60,0.1)]">
+            <div
+              className="flex items-center gap-2.5 rounded-[12px] px-2.5 py-2"
+              style={{
+                background: "var(--sidebar-user-bg)",
+                border: "1px solid var(--sidebar-user-border)",
+                boxShadow: "var(--sidebar-user-shadow)",
+              }}
+            >
               <div
                 className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[0.62rem] font-bold text-white"
                 style={{ background: "linear-gradient(135deg, #0f6da3, #1e3a66)" }}
@@ -284,8 +327,14 @@ export function AppShell({ children }: AppShellProps) {
                 {initials(user.full_name)}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[0.73rem] font-semibold leading-tight text-[#183555]">{user.full_name}</p>
-                <button onClick={() => logout()} className="text-[0.62rem] text-[#537198] transition-colors hover:text-[#1b3658]">
+                <p className="truncate text-[0.73rem] font-semibold leading-tight" style={{ color: "var(--sidebar-user-name)" }}>{user.full_name}</p>
+                <button
+                  onClick={() => logout()}
+                  className="text-[0.62rem] transition-colors"
+                  style={{ color: "var(--sidebar-user-signout)" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = "var(--sidebar-user-signout-hover)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = "var(--sidebar-user-signout)")}
+                >
                   Sign out
                 </button>
               </div>
@@ -297,34 +346,33 @@ export function AppShell({ children }: AppShellProps) {
       <header
         className="fixed left-[248px] right-0 top-0 z-30 flex h-16 items-center px-6 backdrop-blur-md"
         style={{
-          background: "linear-gradient(180deg, rgba(247,251,255,0.98) 0%, rgba(239,246,253,0.96) 100%)",
-          borderBottom: "1px solid rgba(159, 188, 221, 0.84)",
+          background: "var(--header-bg)",
+          borderBottom: "1px solid var(--header-border)",
         }}
       >
         <div
           className="absolute left-1/2 flex -translate-x-1/2 rounded-[12px] p-1"
           style={{
-            background: "#e8f0fa",
-            border: "1px solid #bdd3ec",
-            boxShadow: "0 4px 10px rgba(20, 45, 79, 0.1)",
+            background: "var(--tab-group-bg)",
+            border: "1px solid var(--tab-group-border)",
+            boxShadow: "var(--tab-group-shadow)",
           }}
         >
           <button
             onClick={() => router.push("/overview")}
             className={cn(
               "rounded-[9px] px-5 py-1.5 text-[0.8rem] font-semibold transition-all duration-200",
-              isJourneyActive
-                ? "text-[#071e39] shadow-[0_1px_8px_rgba(15,29,60,0.16)]"
-                : "text-[#345072] hover:text-[#1f365f]"
+              isJourneyActive ? "shadow-[0_1px_8px_rgba(15,29,60,0.16)]" : ""
             )}
-            style={
-              isJourneyActive
+            style={{
+              color: isJourneyActive ? "var(--tab-text-active)" : "var(--tab-text)",
+              ...(isJourneyActive
                 ? {
-                    background: "linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(240,248,255,0.96) 100%)",
-                    boxShadow: "inset 0 -2px 0 rgba(223,0,48,0.22), 0 1px 8px rgba(15,29,60,0.16)",
+                    background: "var(--tab-active-bg)",
+                    boxShadow: "var(--tab-active-shadow)",
                   }
-                : undefined
-            }
+                : undefined),
+            }}
           >
             Your Journey
           </button>
@@ -332,18 +380,17 @@ export function AppShell({ children }: AppShellProps) {
             onClick={() => router.push("/resources")}
             className={cn(
               "rounded-[9px] px-5 py-1.5 text-[0.8rem] font-semibold transition-all duration-200",
-              isResourcesActive
-                ? "text-[#071e39] shadow-[0_1px_8px_rgba(15,29,60,0.16)]"
-                : "text-[#345072] hover:text-[#1f365f]"
+              isResourcesActive ? "shadow-[0_1px_8px_rgba(15,29,60,0.16)]" : ""
             )}
-            style={
-              isResourcesActive
+            style={{
+              color: isResourcesActive ? "var(--tab-text-active)" : "var(--tab-text)",
+              ...(isResourcesActive
                 ? {
-                    background: "linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(240,248,255,0.96) 100%)",
-                    boxShadow: "inset 0 -2px 0 rgba(223,0,48,0.22), 0 1px 8px rgba(15,29,60,0.16)",
+                    background: "var(--tab-active-bg)",
+                    boxShadow: "var(--tab-active-shadow)",
                   }
-                : undefined
-            }
+                : undefined),
+            }}
           >
             Resource Hub
           </button>
@@ -351,11 +398,12 @@ export function AppShell({ children }: AppShellProps) {
 
         <div className="ml-auto flex items-center gap-3">
           <div
-            className="rounded-[10px] px-2.5 py-1 text-[0.74rem] font-semibold text-[#134773]"
-            style={{ background: "linear-gradient(180deg, rgba(34,211,238,0.16) 0%, rgba(14,165,233,0.08) 100%)", border: "1px solid rgba(72, 188, 246, 0.42)" }}
+            className="rounded-[10px] px-2.5 py-1 text-[0.74rem] font-semibold"
+            style={{ background: "var(--badge-bg)", border: "1px solid var(--badge-border)", color: "var(--badge-text)" }}
           >
             {completedCount} complete
           </div>
+          <ThemeToggle />
           <div
             className="flex h-8 w-8 items-center justify-center rounded-full text-[0.68rem] font-bold text-white"
             style={{ background: "linear-gradient(135deg, #0f6da3, #1e3a66)" }}
@@ -367,25 +415,21 @@ export function AppShell({ children }: AppShellProps) {
 
       <div
         className="relative ml-[248px] mt-16 flex min-h-[calc(100vh-4rem)] flex-1 flex-col overflow-hidden"
-        style={{
-          background:
-            "linear-gradient(90deg, rgba(18, 45, 78, 0.08) 0%, rgba(18, 45, 78, 0) 16%, rgba(18, 45, 78, 0) 84%, rgba(18, 45, 78, 0.08) 100%), radial-gradient(1180px 500px at 48% -14%, rgba(24, 71, 119, 0.16) 0%, rgba(24, 71, 119, 0) 58%), radial-gradient(960px 420px at 85% 4%, rgba(6, 182, 212, 0.1) 0%, rgba(6, 182, 212, 0) 62%), linear-gradient(180deg, #e9f1fa 0%, #f1f6fc 48%, #fbfdff 100%)",
-        }}
+        style={{ background: "var(--content-bg)" }}
       >
         <div
           className="pointer-events-none absolute inset-0"
           style={{
-            backgroundImage: "radial-gradient(circle, rgba(23, 55, 90, 0.08) 0.55px, transparent 0.7px)",
+            backgroundImage: `radial-gradient(circle, var(--dot-grid-color) 0.55px, transparent 0.7px)`,
             backgroundSize: "34px 34px",
-            opacity: 0.15,
+            opacity: "var(--dot-grid-opacity)",
             mixBlendMode: "soft-light",
           }}
         />
         <div
           className="pointer-events-none absolute left-1/2 top-10 h-[600px] w-[min(1080px,92%)] -translate-x-1/2 rounded-[44px]"
           style={{
-            background:
-              "radial-gradient(72% 82% at 50% 38%, rgba(255, 253, 249, 0.74) 0%, rgba(255, 253, 249, 0.26) 56%, rgba(255, 253, 249, 0) 100%), radial-gradient(100% 100% at 50% 0%, rgba(56, 189, 248, 0.08) 0%, rgba(56, 189, 248, 0) 72%)",
+            background: `radial-gradient(72% 82% at 50% 38%, var(--glow-bg-1) 0%, var(--glow-bg-2) 56%, rgba(255,253,249,0) 100%), radial-gradient(100% 100% at 50% 0%, var(--glow-bg-3) 0%, rgba(56,189,248,0) 72%)`,
           }}
         />
         <main className="relative z-10 flex-1">{children}</main>

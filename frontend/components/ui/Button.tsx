@@ -16,9 +16,9 @@ const variantClasses: Record<Variant, string> = {
   primary:
     "text-white hover:-translate-y-px active:translate-y-0",
   secondary:
-    "border border-border bg-white/90 text-text-primary hover:bg-white hover:-translate-y-px",
+    "border border-border bg-white/90 dark:bg-white/10 text-text-primary hover:bg-white dark:hover:bg-white/15 hover:-translate-y-px",
   ghost:
-    "bg-transparent text-text-secondary hover:bg-black/[0.04] hover:text-text-primary",
+    "bg-transparent text-text-secondary hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-text-primary",
   destructive:
     "bg-accent text-white hover:-translate-y-px hover:shadow-[0_4px_12px_rgba(223,0,42,0.2)]",
 };

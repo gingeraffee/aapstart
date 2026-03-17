@@ -17,13 +17,17 @@ export function Card({ children, className, hover = false, padding = "md" }: Car
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-bento border border-border bg-surface shadow-card",
+        "overflow-hidden rounded-bento",
         paddingClasses[padding],
         hover &&
-          "cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-bright hover:shadow-[0_20px_36px_rgba(12,24,47,0.16)]",
+          "cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_20px_36px_rgba(12,24,47,0.16)]",
         className
       )}
-      style={{ backgroundImage: "linear-gradient(180deg, rgba(255,254,251,0.99) 0%, rgba(254,250,244,0.96) 100%)" }}
+      style={{
+        backgroundImage: "var(--card-bg)",
+        border: "1px solid var(--card-border)",
+        boxShadow: "var(--card-shadow)",
+      }}
     >
       {children}
     </div>

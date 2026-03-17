@@ -82,7 +82,7 @@ export default function OverviewPage() {
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
         <p className="text-[1rem] font-semibold text-red-600">Could not connect to the server</p>
-        <p className="max-w-sm text-[0.82rem] text-[#64748b]">{loadError.message}</p>
+        <p className="max-w-sm text-[0.82rem]" style={{ color: "var(--module-context)" }}>{loadError.message}</p>
         <button
           onClick={() => window.location.reload()}
           className="mt-2 rounded-lg px-4 py-2 text-[0.82rem] font-semibold text-white"
@@ -137,11 +137,11 @@ export default function OverviewPage() {
               </svg>
             </div>
             <div>
-              <p className="inline-flex items-center gap-2 rounded-full bg-[rgba(27,44,86,0.07)] px-2.5 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.11em] text-[#17365d]">
+              <p className="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.11em]" style={{ background: "var(--welcome-label-bg)", color: "var(--welcome-label-text)" }}>
                 <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
                 Your launch path
               </p>
-              <h2 className="mt-0.5 text-[1.22rem] font-extrabold tracking-[-0.02em] text-[#0c2341]">
+              <h2 className="mt-0.5 text-[1.22rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>
                 {firstName}&apos;s learning journey
               </h2>
             </div>
@@ -174,12 +174,12 @@ export default function OverviewPage() {
                     style={
                       isNextToUnlock
                         ? {
-                            background: "linear-gradient(180deg, #fffefb 0%, #fefaf4 100%)",
-                            border: "1px solid rgba(107, 188, 244, 0.48)",
+                            background: "var(--card-bg)",
+                            border: "1px solid var(--card-border-featured)",
                             boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)",
                           }
                         : {
-                            background: "linear-gradient(180deg, #fffefb 0%, #fefaf4 100%)",
+                            background: "var(--card-bg)",
                             border: "1px solid rgba(165, 185, 216, 0.42)",
                             opacity: 0.92,
                           }
@@ -208,24 +208,24 @@ export default function OverviewPage() {
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <p className="mb-1 text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[#6b84a3]">{moduleIndexLabel}</p>
+                      <p className="mb-1 text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>{moduleIndexLabel}</p>
                       <div className="flex items-start justify-between gap-3">
-                        <p className="text-[0.95rem] font-semibold leading-snug text-[#17304f]">{module.title}</p>
+                        <p className="text-[0.95rem] font-semibold leading-snug" style={{ color: "var(--welcome-label-text)" }}>{module.title}</p>
                         {isNextToUnlock ? (
-                          <span className="shrink-0 text-[0.68rem] font-semibold" style={{ color: "#0d6b9d" }}>
+                          <span className="shrink-0 text-[0.68rem] font-semibold" style={{ color: "var(--status-progress)" }}>
                             Up next
                           </span>
                         ) : (
-                          <span className="shrink-0 text-[0.68rem] font-medium" style={{ color: "#64748b" }}>
+                          <span className="shrink-0 text-[0.68rem] font-medium" style={{ color: "var(--module-context)" }}>
                             Locked
                           </span>
                         )}
                       </div>
                       {module.description && (
-                        <p className="mt-1 line-clamp-2 text-[0.78rem] leading-[1.58] text-[#4d6788]">{module.description}</p>
+                        <p className="mt-1 line-clamp-2 text-[0.78rem] leading-[1.58]" style={{ color: "var(--card-desc)" }}>{module.description}</p>
                       )}
                       {isNextToUnlock && (
-                        <p className="mt-2 text-[0.72rem] font-semibold text-[#0d6b9d]">
+                        <p className="mt-2 text-[0.72rem] font-semibold" style={{ color: "var(--status-progress)" }}>
                           Finish your current module to unlock this next step.
                         </p>
                       )}
@@ -273,18 +273,18 @@ export default function OverviewPage() {
 
               const cardStyle = isComplete
                 ? {
-                    background: "linear-gradient(180deg, #fffefb 0%, #fefaf4 100%)",
+                    background: "var(--card-bg)",
                     border: "1px solid rgba(115, 197, 159, 0.5)",
                     boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)",
                   }
                 : isInProgress
                   ? {
-                      background: "linear-gradient(180deg, #fffefb 0%, #fefaf4 100%)",
-                      border: "1px solid rgba(123, 189, 236, 0.5)",
+                      background: "var(--card-bg)",
+                      border: "1px solid var(--card-border-featured)",
                       boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)",
                     }
                   : {
-                      background: "linear-gradient(180deg, #fffefb 0%, #fefaf4 100%)",
+                      background: "var(--card-bg)",
                       border: isCurrent ? "1px solid rgba(223, 0, 48, 0.3)" : "1px solid rgba(159, 183, 214, 0.58)",
                       boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)",
                     };
@@ -325,28 +325,28 @@ export default function OverviewPage() {
                     <div className="mb-1 flex items-center justify-between gap-3">
                       <p
                         className="text-[0.62rem] font-bold uppercase tracking-[0.1em]"
-                        style={{ color: isCurrent ? "#b3234c" : "#17365d" }}
+                        style={{ color: isCurrent ? "#b3234c" : "var(--welcome-label-text)" }}
                       >
                         {moduleIndexLabel}
                       </p>
-                      <p className="shrink-0 text-[0.67rem] font-semibold uppercase tracking-[0.08em] text-[#6b84a3]">
+                      <p className="shrink-0 text-[0.67rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--module-context)" }}>
                         {Math.max(module.estimated_minutes, 1)} min
                       </p>
                     </div>
                     <div className="flex items-start justify-between gap-3">
-                      <p className={cn("text-[0.96rem] font-semibold leading-snug", isComplete ? "text-[#1c5a43]" : "text-[#0e2342]")}>{module.title}</p>
+                      <p className="text-[0.96rem] font-semibold leading-snug" style={{ color: isComplete ? "#1c5a43" : "var(--heading-color)" }}>{module.title}</p>
                       <span className="shrink-0 text-[0.7rem] font-semibold" style={{ color: tone.text }}>{stateLabel}</span>
                     </div>
 
                     {module.description && (
-                      <p className="mt-1.5 line-clamp-2 text-[0.8rem] leading-[1.58] text-[#516a88]">{module.description}</p>
+                      <p className="mt-1.5 line-clamp-2 text-[0.8rem] leading-[1.58]" style={{ color: "var(--card-desc)" }}>{module.description}</p>
                     )}
 
                     <div className="mt-2.5 flex items-center justify-between gap-3">
-                      <p className="text-[0.71rem] text-[#4f6889]">{stateHelper}</p>
+                      <p className="text-[0.71rem]" style={{ color: "var(--card-desc)" }}>{stateHelper}</p>
                     </div>
 
-                    <div className="mt-3 h-[3px] overflow-hidden rounded-full bg-[#d2e1f2]">
+                    <div className="mt-3 h-[3px] overflow-hidden rounded-full" style={{ background: "var(--welcome-progress-track)" }}>
                       <div
                         className="h-full rounded-full transition-all duration-500"
                         style={{ width: `${progressPct}%`, background: tone.bar }}
@@ -367,15 +367,15 @@ export default function OverviewPage() {
           <div
             className="overflow-hidden rounded-[18px]"
             style={{
-              background: "linear-gradient(180deg, #fffefb 0%, #fefaf4 100%)",
-              border: "1px solid rgba(126, 185, 235, 0.34)",
+              background: "var(--card-bg)",
+              border: "1px solid var(--card-border-featured)",
               boxShadow: "0 14px 30px rgba(17, 41, 74, 0.12)",
             }}
           >
             <div className="h-[3px] w-full bg-[linear-gradient(90deg,#0ea5d9_0%,#22d3ee_62%,#d63964_100%)]" />
 
             <div className="relative p-5 pb-4">
-              <span className="pointer-events-none absolute -right-5 -top-5 h-16 w-16 rounded-full border border-[#d8e7f8]" />
+              <span className="pointer-events-none absolute -right-5 -top-5 h-16 w-16 rounded-full border" style={{ borderColor: "var(--welcome-circle-border)" }} />
               <div className="mb-3 flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <span
@@ -396,20 +396,20 @@ export default function OverviewPage() {
                       <path d="M3.5 5.7A3.5 3.5 0 1 0 8.5 5.7" />
                     </svg>
                   </span>
-                  <span className="text-[0.62rem] font-bold uppercase tracking-[0.15em] text-[#2d6596]">Coach Tip</span>
+                  <span className="text-[0.62rem] font-bold uppercase tracking-[0.15em]" style={{ color: "var(--status-progress)" }}>Coach Tip</span>
                 </div>
                 <span className="text-[0.95rem] text-[#8ba4c3]">&quot;</span>
               </div>
-              <p className="text-[0.87rem] leading-[1.68] text-[#1a3150]">{coachTip}</p>
-              <p className="mt-3 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-[#0d6b9d]">
+              <p className="text-[0.87rem] leading-[1.68]" style={{ color: "var(--welcome-label-text)" }}>{coachTip}</p>
+              <p className="mt-3 text-[0.66rem] font-semibold uppercase tracking-[0.12em]" style={{ color: "var(--status-progress)" }}>
                 Steady progress, strong start.
               </p>
             </div>
 
-            <div className="mx-5 h-px bg-[#d8e5f5]" />
+            <div className="mx-5 h-px" style={{ background: "var(--module-step-divider)" }} />
 
             <div className="p-5 pt-4">
-              <p className="text-[0.59rem] font-bold uppercase tracking-[0.15em] text-[#47688f]">Your support contact</p>
+              <p className="text-[0.59rem] font-bold uppercase tracking-[0.15em]" style={{ color: "var(--module-context)" }}>Your support contact</p>
 
               <div className="mt-3 flex items-center gap-3">
                 <div
@@ -419,31 +419,31 @@ export default function OverviewPage() {
                   NT
                 </div>
                 <div>
-                  <p className="text-[0.9rem] font-bold leading-tight text-[#102343]">Nicole Thornton</p>
-                  <p className="mt-0.5 text-[0.75rem] text-[#64748b]">HR Manager</p>
+                  <p className="text-[0.9rem] font-bold leading-tight" style={{ color: "var(--heading-color)" }}>Nicole Thornton</p>
+                  <p className="mt-0.5 text-[0.75rem]" style={{ color: "var(--module-context)" }}>HR Manager</p>
                 </div>
               </div>
 
-              <p className="mt-3 text-[0.77rem] leading-[1.58] text-[#314d6f]">
+              <p className="mt-3 text-[0.77rem] leading-[1.58]" style={{ color: "var(--card-desc)" }}>
                 Stuck on a step? Reach out and we will help you move forward quickly.
               </p>
 
               <div className="mt-3 space-y-2.5">
                 <a
                   href="mailto:nicole.thornton@apirx.com"
-                  className="group block rounded-[10px] border px-3 py-2 text-[0.76rem] font-semibold text-[#1d436b] transition-all duration-200 hover:-translate-y-px"
-                  style={{ borderColor: "rgba(130, 174, 225, 0.48)", backgroundColor: "#fffef8" }}
+                  className="group block rounded-[10px] border px-3 py-2 text-[0.76rem] font-semibold transition-all duration-200 hover:-translate-y-px"
+                  style={{ borderColor: "var(--module-pill-border)", backgroundColor: "var(--login-input-bg)", color: "var(--welcome-label-text)" }}
                 >
                   Email Nicole
-                  <span className="mt-0.5 block text-[0.69rem] font-medium text-[#4b6687]">nicole.thornton@apirx.com</span>
+                  <span className="mt-0.5 block text-[0.69rem] font-medium text-[var(--card-desc)]">nicole.thornton@apirx.com</span>
                 </a>
                 <a
                   href="tel:2565747528"
-                  className="group block rounded-[10px] border px-3 py-2 text-[0.76rem] font-semibold text-[#1d436b] transition-all duration-200 hover:-translate-y-px"
-                  style={{ borderColor: "rgba(130, 174, 225, 0.48)", backgroundColor: "#fffef8" }}
+                  className="group block rounded-[10px] border px-3 py-2 text-[0.76rem] font-semibold transition-all duration-200 hover:-translate-y-px"
+                  style={{ borderColor: "var(--module-pill-border)", backgroundColor: "var(--login-input-bg)", color: "var(--welcome-label-text)" }}
                 >
                   Call Nicole
-                  <span className="mt-0.5 block text-[0.69rem] font-medium text-[#4b6687]">256-574-7528</span>
+                  <span className="mt-0.5 block text-[0.69rem] font-medium text-[var(--card-desc)]">256-574-7528</span>
                 </a>
               </div>
             </div>

@@ -25,8 +25,8 @@ export function ChecklistBlock({ items }: ChecklistBlockProps) {
       style={{
         border: allDone
           ? "1px solid rgba(34,197,94,0.35)"
-          : "1px solid rgba(14,118,189,0.2)",
-        background: allDone ? "#f4fbf7" : "#f7fbff",
+          : "1px solid var(--module-panel-border)",
+        background: allDone ? "rgba(34,197,94,0.04)" : "var(--login-input-bg)",
         transition: "border-color 0.3s, background 0.3s",
       }}
     >
@@ -35,10 +35,10 @@ export function ChecklistBlock({ items }: ChecklistBlockProps) {
         style={{
           borderBottom: allDone
             ? "1px solid rgba(34,197,94,0.18)"
-            : "1px solid rgba(14,118,189,0.12)",
+            : "1px solid var(--module-panel-border)",
           background: allDone
             ? "rgba(34,197,94,0.08)"
-            : "rgba(14,118,189,0.06)",
+            : "var(--module-time-bg)",
         }}
       >
         <span
@@ -57,7 +57,7 @@ export function ChecklistBlock({ items }: ChecklistBlockProps) {
       </div>
 
       <div className="px-5 pb-3">
-        <div className="h-1.5 overflow-hidden rounded-full bg-[#d7e8fa]">
+        <div className="h-1.5 overflow-hidden rounded-full" style={{ background: "var(--welcome-progress-track)" }}>
           <div
             className="h-full rounded-full transition-all duration-300"
             style={{

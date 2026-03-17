@@ -136,7 +136,7 @@ export default function LoginPage() {
         {/* ── Scene 2: What's Inside ── */}
         <div className="login-scene snap-start min-h-screen flex items-center relative z-[2] px-8 py-16 lg:px-16">
           <div className="w-full max-w-[560px]">
-            <p className="mb-3 text-[0.62rem] font-bold uppercase tracking-[0.2em] text-brand-sky">What's Inside</p>
+            <p className="mb-3 text-[0.62rem] font-bold uppercase tracking-[0.2em] text-brand-sky">What&apos;s Inside</p>
             <h2 className="text-[clamp(2.05rem,4vw,3.1rem)] font-bold leading-[1.1] text-white">
               Your first 90 days,<br />mapped out and ready.
             </h2>
@@ -146,10 +146,10 @@ export default function LoginPage() {
             </p>
             <div className="mt-8 grid grid-cols-2 gap-4">
               {[
-                { icon: "📚", label: "Guided Training Modules", sub: "Self-paced, built around how you work" },
-                { icon: "🗺️", label: "90-Day Roadmap", sub: "Your 30-60-90 milestones, crystal clear" },
-                { icon: "📋", label: "Handbook + Policies", sub: "Everything you need to know, in one place" },
-                { icon: "🎯", label: "Benefits Breakdown", sub: "Your full benefit plan, explained simply" },
+                { icon: "\ud83d\udcda", label: "Guided Training Modules", sub: "Self-paced, built around how you work" },
+                { icon: "\ud83d\uddfa\ufe0f", label: "90-Day Roadmap", sub: "Your 30-60-90 milestones, crystal clear" },
+                { icon: "\ud83d\udccb", label: "Handbook + Policies", sub: "Everything you need to know, in one place" },
+                { icon: "\ud83c\udfaf", label: "Benefits Breakdown", sub: "Your full benefit plan, explained simply" },
               ].map((p) => (
                 <div
                   key={p.label}
@@ -175,9 +175,9 @@ export default function LoginPage() {
               Powering independent<br />pharmacies across America.
             </h2>
             <p className="mt-4 text-[0.97rem] leading-[1.75] text-white/90">
-              Founded in 2009 from the union of API and United Drugs, AAP became one of America's largest
+              Founded in 2009 from the union of API and United Drugs, AAP became one of America&apos;s largest
               member-owned independent pharmacy cooperatives. We fight to keep community pharmacies
-              competitive, profitable, and thriving — and now you're part of that mission.
+              competitive, profitable, and thriving — and now you&apos;re part of that mission.
             </p>
             <div className="mt-8 grid grid-cols-3 gap-3">
               {[
@@ -193,8 +193,8 @@ export default function LoginPage() {
             </div>
             <div className="mt-5 rounded-[14px] border-l-2 border-brand-sky/50 bg-white/[0.03] px-5 py-4">
               <p className="text-[0.9rem] italic leading-[1.75] text-white/85">
-                "AAP provides support and customized solutions for independent community pharmacies
-                to enhance their profitability, streamline their operations, and improve the quality of patient care."
+                &ldquo;AAP provides support and customized solutions for independent community pharmacies
+                to enhance their profitability, streamline their operations, and improve the quality of patient care.&rdquo;
               </p>
             </div>
           </div>
@@ -205,16 +205,16 @@ export default function LoginPage() {
           <div className="w-full max-w-[560px]">
             <p className="mb-3 text-[0.62rem] font-bold uppercase tracking-[0.2em] text-brand-sky">Your Benefits</p>
             <h2 className="text-[clamp(2.05rem,4vw,3.1rem)] font-bold leading-[1.1] text-white">
-              You're covered.<br />Seriously covered.
+              You&apos;re covered.<br />Seriously covered.
             </h2>
             <div className="mt-7 grid grid-cols-2 gap-3">
               {[
-                { icon: "🏥", title: "Medical", detail: "BlueCross BlueShield of Alabama — PPO or HDHP+HSA with company HSA contribution." },
-                { icon: "💰", title: "401(k) Match", detail: "100% match on first 3%, 50% on next 2%. Fully vested from day one." },
-                { icon: "🦷", title: "Dental + Vision", detail: "Guardian plans. Preventive care covered at 100%." },
-                { icon: "🛡️", title: "Life & AD&D", detail: "Company-paid life insurance up to your annual salary." },
-                { icon: "📱", title: "Free Teladoc", detail: "24/7 telehealth for medical and mental health. Completely free." },
-                { icon: "🌿", title: "EAP + Perks", detail: "Life Matters counseling plus BenefitHub discounts on thousands of brands." },
+                { icon: "\ud83c\udfe5", title: "Medical", detail: "BlueCross BlueShield of Alabama — PPO or HDHP+HSA with company HSA contribution." },
+                { icon: "\ud83d\udcb0", title: "401(k) Match", detail: "100% match on first 3%, 50% on next 2%. Fully vested from day one." },
+                { icon: "\ud83e\uddb7", title: "Dental + Vision", detail: "Guardian plans. Preventive care covered at 100%." },
+                { icon: "\ud83d\udee1\ufe0f", title: "Life & AD&D", detail: "Company-paid life insurance up to your annual salary." },
+                { icon: "\ud83d\udcf1", title: "Free Teladoc", detail: "24/7 telehealth for medical and mental health. Completely free." },
+                { icon: "\ud83c\udf3f", title: "EAP + Perks", detail: "Life Matters counseling plus BenefitHub discounts on thousands of brands." },
               ].map((b) => (
                 <div
                   key={b.title}
@@ -243,7 +243,7 @@ export default function LoginPage() {
               Where good people<br />do great work.
             </h2>
             <p className="mt-4 text-[0.97rem] leading-[1.75] text-white/90">
-              At AAP, you're not a number in a headcount — you're a partner. Your ideas shape how things run.
+              At AAP, you&apos;re not a number in a headcount — you&apos;re a partner. Your ideas shape how things run.
               Your feedback drives real improvement. And your growth is something we actively invest in, not just talk about.
             </p>
             <div className="mt-7 divide-y divide-white/20">
@@ -265,7 +265,7 @@ export default function LoginPage() {
             </div>
 
             <div className="mt-8">
-              <p className="mb-3 text-[0.88rem] text-white/75">You've seen what we're about.</p>
+              <p className="mb-3 text-[0.88rem] text-white/75">You&apos;ve seen what we&apos;re about.</p>
               <button
                 type="button"
                 onClick={() => {
@@ -283,14 +283,16 @@ export default function LoginPage() {
 
       {/* ── Right: fixed login card ── */}
       <section
-        className="hidden lg:flex w-[42%] items-center justify-center bg-[#f0f3f8] px-10 py-10"
+        className="hidden lg:flex w-[42%] items-center justify-center px-10 py-10"
+        style={{ background: "var(--body-bg)" }}
         aria-label="Portal sign in"
       >
         <div className="w-full max-w-[420px]">
           {/* Card */}
           <div
-            className="overflow-hidden rounded-[24px] bg-white animate-fade-up-slow"
+            className="overflow-hidden rounded-[24px] animate-fade-up-slow"
             style={{
+              background: "var(--welcome-stat-bg)",
               boxShadow:
                 "0 1px 1px rgba(0,0,0,0.03), 0 4px 8px rgba(0,0,0,0.05), 0 20px 40px rgba(18,33,56,0.10), 0 48px 96px rgba(18,33,56,0.08)",
               animationDelay: "150ms",
@@ -301,10 +303,10 @@ export default function LoginPage() {
 
             {/* Card body */}
             <div className="px-9 py-9">
-              <h2 className="text-[1.5rem] font-bold tracking-[-0.02em] text-text-primary">
+              <h2 className="text-[1.5rem] font-bold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>
                 Let&apos;s get you in.
               </h2>
-              <p className="mt-2 text-[0.84rem] leading-[1.65] text-text-secondary">
+              <p className="mt-2 text-[0.84rem] leading-[1.65]" style={{ color: "var(--module-body)" }}>
                 Enter your name and employee number to jump into your portal.
               </p>
 
@@ -312,14 +314,14 @@ export default function LoginPage() {
                 <LoginForm />
               </div>
 
-              <p className="mt-5 text-center text-[0.7rem] text-text-muted">
+              <p className="mt-5 text-center text-[0.7rem]" style={{ color: "var(--module-context)" }}>
                 Your employee number is in BambooHR under My Info.
               </p>
             </div>
           </div>
 
           {/* Footer */}
-          <p className="mt-6 text-center text-[0.65rem] text-[#9ca3af]">
+          <p className="mt-6 text-center text-[0.65rem]" style={{ color: "var(--module-context)" }}>
             © 2026 AAP — All rights reserved
           </p>
         </div>
@@ -329,15 +331,16 @@ export default function LoginPage() {
       <div className="flex lg:hidden w-full flex-col items-center justify-center min-h-screen px-6 py-12 bg-brand-ink">
         <Image src="/logo.png" alt="AAP | API logos" width={180} height={45} className="mb-8 h-10 w-auto" priority />
         <div
-          className="w-full max-w-[420px] overflow-hidden rounded-[24px] bg-white"
+          className="w-full max-w-[420px] overflow-hidden rounded-[24px]"
           style={{
+            background: "var(--welcome-stat-bg)",
             boxShadow: "0 20px 60px rgba(0,0,0,0.25), 0 6px 20px rgba(0,0,0,0.15)",
           }}
         >
           <div className="h-1.5 bg-gradient-to-r from-brand-deep via-brand-action to-accent" />
           <div className="px-7 py-8">
-            <h2 className="text-[1.4rem] font-bold text-text-primary">Let&apos;s get you in.</h2>
-            <p className="mt-1.5 text-[0.83rem] text-text-secondary">Enter your name and employee number.</p>
+            <h2 className="text-[1.4rem] font-bold" style={{ color: "var(--heading-color)" }}>Let&apos;s get you in.</h2>
+            <p className="mt-1.5 text-[0.83rem]" style={{ color: "var(--module-body)" }}>Enter your name and employee number.</p>
             <div className="mt-6">
               <LoginForm />
             </div>

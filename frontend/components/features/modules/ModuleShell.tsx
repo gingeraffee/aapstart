@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
@@ -85,24 +85,24 @@ function StepPill({ step, index }: { step: ModuleStep; index: number }) {
   const styles =
     step.state === "current"
       ? {
-          shell: "text-[#0b4f80]",
-          dot: "border-[#60bff0] bg-[linear-gradient(135deg,#d9f7ff_0%,#eaf6ff_100%)] text-[#0784c4]",
+          shell: { color: "var(--status-progress)" },
+          dot: "border-[#60bff0] bg-[linear-gradient(135deg,#d9f7ff_0%,#eaf6ff_100%)] text-[#0784c4] dark:border-[rgba(56,189,248,0.3)] dark:bg-[linear-gradient(135deg,rgba(14,165,233,0.15)_0%,rgba(56,189,248,0.1)_100%)] dark:text-[#38bdf8]",
           label: String(index + 1),
         }
       : step.state === "complete"
         ? {
-            shell: "text-emerald-700",
-            dot: "border-emerald-300 bg-emerald-50 text-emerald-700",
-            label: "✓",
+            shell: { color: "var(--status-complete)" },
+            dot: "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+            label: "\u2713",
           }
         : {
-            shell: "text-[#304e71]",
-            dot: "border-[#c4d5e9] bg-[rgba(27,44,86,0.06)] text-[#304e71]",
+            shell: { color: "var(--module-context)" },
+            dot: "border-[#c4d5e9] bg-[rgba(27,44,86,0.06)] text-[#304e71] dark:border-[rgba(30,58,95,0.5)] dark:bg-[rgba(56,189,248,0.06)] dark:text-[#6b8bb5]",
             label: String(index + 1),
           };
 
   return (
-    <div className={cn("inline-flex items-center gap-2 text-[0.71rem] font-semibold transition-colors duration-200", styles.shell)}>
+    <div className="inline-flex items-center gap-2 text-[0.71rem] font-semibold transition-colors duration-200" style={styles.shell}>
       <span className={cn("flex h-[18px] min-w-[18px] items-center justify-center rounded-full border text-[0.54rem] font-bold uppercase tracking-[0.03em]", styles.dot)}>
         {styles.label}
       </span>
@@ -116,10 +116,15 @@ export function ModulePanel({ children, className, id, noPadding = false }: Modu
     <section
       id={id}
       className={cn(
-        "overflow-hidden rounded-[16px] border border-[#d4deec] bg-[linear-gradient(180deg,#fffefb_0%,#fefaf4_100%)] shadow-[0_12px_22px_rgba(12,24,47,0.1)] transition-shadow duration-200 hover:shadow-[0_15px_26px_rgba(12,24,47,0.12)]",
+        "overflow-hidden rounded-[16px] transition-shadow duration-200",
         !noPadding && "px-7 py-7 md:px-8",
         className
       )}
+      style={{
+        background: "var(--module-panel-bg)",
+        border: "1px solid var(--module-panel-border)",
+        boxShadow: "var(--module-panel-shadow)",
+      }}
     >
       {children}
     </section>
@@ -136,8 +141,15 @@ export function ModuleFooter({
   helperText,
 }: ModuleFooterProps) {
   return (
-    <div className="flex flex-col gap-3 rounded-[14px] border border-[#d4deec] bg-[linear-gradient(180deg,#fffefb_0%,#fefaf4_100%)] px-5 py-4 shadow-[0_10px_18px_rgba(12,24,47,0.08)] sm:flex-row sm:items-center sm:justify-between">
-      <Link href={backHref} className="inline-flex items-center gap-1.5 text-[0.82rem] font-semibold text-text-muted transition-colors hover:text-text-primary">
+    <div
+      className="flex flex-col gap-3 rounded-[14px] px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+      style={{
+        background: "var(--module-footer-bg)",
+        border: "1px solid var(--module-footer-border)",
+        boxShadow: "var(--module-footer-shadow)",
+      }}
+    >
+      <Link href={backHref} className="inline-flex items-center gap-1.5 text-[0.82rem] font-semibold transition-colors" style={{ color: "var(--module-context)" }}>
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M9 2L4 7l5 5" />
         </svg>
@@ -159,7 +171,7 @@ export function ModuleFooter({
             {ctaLabel}
           </Button>
         )}
-        {helperText ? <p className="text-[0.73rem] text-text-muted">{helperText}</p> : null}
+        {helperText ? <p className="text-[0.73rem]" style={{ color: "var(--module-context)" }}>{helperText}</p> : null}
       </div>
     </div>
   );
@@ -183,22 +195,29 @@ export function ModuleShell({
       <div className="mx-auto w-full max-w-[1160px]">
         <div className="flex items-start gap-7">
           <div className="min-w-0 flex-1 space-y-6 animate-fade-up">
-            <div className="flex flex-wrap items-center gap-2 text-[0.8rem] text-text-muted">
+            <div className="flex flex-wrap items-center gap-2 text-[0.8rem]" style={{ color: "var(--module-context)" }}>
               {breadcrumbs.map((item, index) => (
                 <div key={`${item.label}-${index}`} className="flex items-center gap-2">
                   {item.href ? (
-                    <Link href={item.href} className="transition-colors hover:text-text-primary">
+                    <Link href={item.href} className="transition-colors hover:opacity-80">
                       {item.label}
                     </Link>
                   ) : (
-                    <span className="font-semibold text-text-primary">{item.label}</span>
+                    <span className="font-semibold" style={{ color: "var(--heading-color)" }}>{item.label}</span>
                   )}
                   {index < breadcrumbs.length - 1 ? <span>/</span> : null}
                 </div>
               ))}
             </div>
 
-            <section className="relative overflow-hidden rounded-[20px] border border-[#c7d8ec] bg-[linear-gradient(170deg,#fffefb_0%,#f8fbff_100%)] shadow-[0_16px_28px_rgba(12,24,47,0.12)]">
+            <section
+              className="relative overflow-hidden rounded-[20px]"
+              style={{
+                background: "var(--module-header-bg)",
+                border: "1px solid var(--module-header-border)",
+                boxShadow: "var(--module-header-shadow)",
+              }}
+            >
               <div className="h-1 w-full bg-[linear-gradient(90deg,#0f7fb3_0%,#06b6d4_52%,#df0030_100%)]" />
               <div
                 className="pointer-events-none absolute -right-20 top-5 h-44 w-44 rounded-full"
@@ -221,14 +240,14 @@ export function ModuleShell({
                   <div
                     className="inline-flex items-center gap-2.5 rounded-full border px-3 py-1.5"
                     style={{
-                      borderColor: "rgba(108, 165, 219, 0.46)",
-                      background: "linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(244,250,255,0.96) 100%)",
+                      borderColor: "var(--module-pill-border)",
+                      background: "var(--module-pill-bg)",
                     }}
                   >
                     <span className="rounded-full bg-[linear-gradient(135deg,#17365d_0%,#0f7fb3_70%,#21b8e7_100%)] px-2.5 py-1 text-[0.63rem] font-bold uppercase tracking-[0.09em] text-white">
                       Module {String(moduleOrder).padStart(2, "0")}
                     </span>
-                    <span className="inline-flex items-center gap-2 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[#17365d]">
+                    <span className="inline-flex items-center gap-2 text-[0.68rem] font-bold uppercase tracking-[0.12em]" style={{ color: "var(--welcome-label-text)" }}>
                       <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
                       {stageLabel}
                     </span>
@@ -237,8 +256,8 @@ export function ModuleShell({
                   <div
                     className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-[12px] border md:flex"
                     style={{
-                      borderColor: "rgba(125, 162, 205, 0.46)",
-                      background: "linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(239,248,255,0.9) 100%)",
+                      borderColor: "var(--module-icon-border)",
+                      background: "var(--module-icon-bg)",
                     }}
                     aria-hidden="true"
                   >
@@ -250,23 +269,26 @@ export function ModuleShell({
                   </div>
                 </div>
 
-                <h1 className="mt-2 text-[clamp(1.52rem,2.5vw,2.02rem)] font-extrabold leading-[1.14] tracking-[-0.028em] text-[#0d1f3a]">
+                <h1 className="mt-2 text-[clamp(1.52rem,2.5vw,2.02rem)] font-extrabold leading-[1.14] tracking-[-0.028em]" style={{ color: "var(--module-headline)" }}>
                   {headline}
                 </h1>
-                <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-[rgba(223,0,48,0.06)] px-3 py-1.5 text-[0.8rem] font-semibold text-[#b3234c]">
+                <p className="mt-2 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[0.8rem] font-semibold" style={{ background: "rgba(223,0,48,0.06)", color: "#b3234c" }}>
                   <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
                   Mission for this module: move fast, keep it practical, and lock in the habits that make your next step easy.
                 </p>
-                <p className="mt-2.5 max-w-[700px] text-[0.94rem] leading-[1.72] text-[#334f72]">{description}</p>
+                <p className="mt-2.5 max-w-[700px] text-[0.94rem] leading-[1.72]" style={{ color: "var(--module-body)" }}>{description}</p>
                 {contextNote ? (
-                  <p className="mt-2 text-[0.8rem] font-medium text-[#4f6787]">
+                  <p className="mt-2 text-[0.8rem] font-medium" style={{ color: "var(--module-context)" }}>
                     Context: {contextNote}
                   </p>
                 ) : null}
 
                 <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
                   {typeof estimatedMinutes === "number" ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[rgba(27,44,86,0.05)] px-3 py-1.5 text-[0.77rem] font-medium text-[#17365d]">
+                    <span
+                      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[0.77rem] font-medium"
+                      style={{ background: "var(--module-time-bg)", color: "var(--module-time-text)" }}
+                    >
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
                         <circle cx="6" cy="6" r="4.5" />
                         <path d="M6 3.5v2.5l1.5 1" />
@@ -278,7 +300,7 @@ export function ModuleShell({
                     {steps.map((step, index) => (
                       <div key={step.key} className="flex items-center gap-2">
                         <StepPill step={step} index={index} />
-                        {index < steps.length - 1 ? <span className="h-px w-3 rounded-full bg-[#b9cee6]" /> : null}
+                        {index < steps.length - 1 ? <span className="h-px w-3 rounded-full" style={{ background: "var(--module-step-divider)" }} /> : null}
                       </div>
                     ))}
                   </div>

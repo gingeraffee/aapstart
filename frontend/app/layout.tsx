@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Manrope, Sora } from "next/font/google";
 import "@/styles/globals.css";
 import { AuthProvider } from "@/lib/context/AuthContext";
+import { ThemeProvider } from "@/lib/context/ThemeContext";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -24,9 +25,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${manrope.variable} ${sora.variable}`}>
+    <html lang="en" className={`${manrope.variable} ${sora.variable}`} suppressHydrationWarning>
       <body className="font-sans">
-        <AuthProvider>{children}</AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

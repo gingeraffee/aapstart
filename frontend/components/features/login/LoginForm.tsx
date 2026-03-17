@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useAuth } from "@/lib/context/AuthContext";
-import { ApiError } from "@/lib/api";
 
 const DEV_AUTH_BYPASS = process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === "true";
 
@@ -65,7 +64,7 @@ export function LoginForm() {
       )}
 
       <div>
-        <label htmlFor="full_name" className="mb-1.5 block text-[0.68rem] font-bold uppercase tracking-[0.1em] text-text-muted">
+        <label htmlFor="full_name" className="mb-1.5 block text-[0.68rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>
           Full Name
         </label>
         <input
@@ -76,12 +75,17 @@ export function LoginForm() {
           value={form.full_name}
           onChange={(e) => update("full_name", e.target.value)}
           required
-          className="w-full rounded-input border border-border bg-bg-light px-4 py-3 text-[0.88rem] text-text-primary outline-none transition-all placeholder:text-text-muted focus:border-brand-action focus:shadow-[0_0_0_3px_rgba(48,119,185,0.1)]"
+          className="w-full rounded-input px-4 py-3 text-[0.88rem] outline-none transition-all placeholder:opacity-50 focus:shadow-[0_0_0_3px_rgba(48,119,185,0.1)]"
+          style={{
+            background: "var(--login-input-bg)",
+            border: "1px solid var(--login-input-border)",
+            color: "var(--heading-color)",
+          }}
         />
       </div>
 
       <div>
-        <label htmlFor="employee_id" className="mb-1.5 block text-[0.68rem] font-bold uppercase tracking-[0.1em] text-text-muted">
+        <label htmlFor="employee_id" className="mb-1.5 block text-[0.68rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>
           Employee Number
         </label>
         <input
@@ -92,26 +96,37 @@ export function LoginForm() {
           value={form.employee_id}
           onChange={(e) => update("employee_id", e.target.value)}
           required
-          className="w-full rounded-input border border-border bg-bg-light px-4 py-3 text-[0.88rem] text-text-primary outline-none transition-all placeholder:text-text-muted focus:border-brand-action focus:shadow-[0_0_0_3px_rgba(48,119,185,0.1)]"
+          className="w-full rounded-input px-4 py-3 text-[0.88rem] outline-none transition-all placeholder:opacity-50 focus:shadow-[0_0_0_3px_rgba(48,119,185,0.1)]"
+          style={{
+            background: "var(--login-input-bg)",
+            border: "1px solid var(--login-input-border)",
+            color: "var(--heading-color)",
+          }}
         />
       </div>
 
       <button
         type="submit"
         disabled={loading}
-        className="mt-2 w-full rounded-button bg-brand-ink px-4 py-3.5 text-[0.88rem] font-bold text-white transition-all hover:bg-[#1a2540] hover:-translate-y-px hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] disabled:opacity-60 disabled:pointer-events-none"
+        className="mt-2 w-full rounded-button px-4 py-3.5 text-[0.88rem] font-bold text-white transition-all hover:-translate-y-px hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] disabled:opacity-60 disabled:pointer-events-none"
+        style={{ background: "linear-gradient(135deg, #0b1428, #1a2540)" }}
       >
         {loading ? "Signing in..." : "Continue"}
       </button>
 
       {DEV_AUTH_BYPASS && (
-        <div className="rounded-[10px] border border-brand-action/15 bg-brand-action/[0.05] p-4">
-          <p className="text-[0.8rem] font-semibold text-brand-ink">Dev login enabled</p>
+        <div className="rounded-[10px] p-4" style={{ border: "1px solid var(--login-input-border)", background: "var(--login-input-bg)" }}>
+          <p className="text-[0.8rem] font-semibold" style={{ color: "var(--heading-color)" }}>Dev login enabled</p>
           <button
             type="button"
             onClick={handleDevBypass}
             disabled={loading}
-            className="mt-2 w-full rounded-button border border-border bg-surface px-4 py-2.5 text-[0.84rem] font-semibold text-text-primary transition-all hover:bg-bg-light disabled:opacity-60"
+            className="mt-2 w-full rounded-button px-4 py-2.5 text-[0.84rem] font-semibold transition-all disabled:opacity-60"
+            style={{
+              background: "var(--welcome-stat-bg)",
+              border: "1px solid var(--login-input-border)",
+              color: "var(--heading-color)",
+            }}
           >
             Enter with dev profile
           </button>

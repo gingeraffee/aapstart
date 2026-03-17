@@ -12,21 +12,21 @@ interface CalloutProps {
 const styles: Record<Variant, { label: string; shell: string; iconShell: string; iconColor: string }> = {
   tip: {
     label: "Coach note",
-    shell: "border-[#b9d9f2] bg-[#f3faff]",
-    iconShell: "bg-[#ddf0fe]",
-    iconColor: "text-[#0f6da3]",
+    shell: "border-[#b9d9f2] bg-[#f3faff] dark:border-[rgba(56,189,248,0.25)] dark:bg-[rgba(56,189,248,0.06)]",
+    iconShell: "bg-[#ddf0fe] dark:bg-[rgba(56,189,248,0.12)]",
+    iconColor: "text-[#0f6da3] dark:text-[#38bdf8]",
   },
   info: {
     label: "Worth noting",
-    shell: "border-[#d7dff0] bg-[#f8f9fe]",
-    iconShell: "bg-[#e9edfa]",
-    iconColor: "text-[#37507b]",
+    shell: "border-[#d7dff0] bg-[#f8f9fe] dark:border-[rgba(30,58,95,0.5)] dark:bg-[rgba(30,58,95,0.2)]",
+    iconShell: "bg-[#e9edfa] dark:bg-[rgba(30,58,95,0.3)]",
+    iconColor: "text-[#37507b] dark:text-[#94b4d4]",
   },
   warning: {
     label: "Heads up",
-    shell: "border-[#efd7b4] bg-[#fff8eb]",
-    iconShell: "bg-[#fbeecf]",
-    iconColor: "text-[#9a661f]",
+    shell: "border-[#efd7b4] bg-[#fff8eb] dark:border-[rgba(234,179,8,0.25)] dark:bg-[rgba(234,179,8,0.06)]",
+    iconShell: "bg-[#fbeecf] dark:bg-[rgba(234,179,8,0.12)]",
+    iconColor: "text-[#9a661f] dark:text-[#eab308]",
   },
 };
 
@@ -70,11 +70,10 @@ export function Callout({ variant = "tip", children, content, className }: Callo
           <CalloutIcon variant={variant} />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="mb-1.5 text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[#5d7391]">{style.label}</p>
+          <p className="mb-1.5 text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>{style.label}</p>
           <div className="prose-module text-[0.9rem]">{content ? <div dangerouslySetInnerHTML={{ __html: content }} /> : children}</div>
         </div>
       </div>
     </div>
   );
 }
-

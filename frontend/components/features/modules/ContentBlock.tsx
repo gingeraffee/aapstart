@@ -13,10 +13,11 @@ export function ContentBlock({ block, emphasizeLead = false }: ContentBlockProps
     case "heading":
       return (
         <h2
-          className="text-[1.08rem] font-bold tracking-[-0.015em] text-text-primary"
+          className="text-[1.08rem] font-bold tracking-[-0.015em]"
           style={{
+            color: "var(--heading-color)",
             paddingBottom: "0.42rem",
-            borderBottom: "1px solid rgba(14,118,189,0.18)",
+            borderBottom: "1px solid var(--module-pill-border)",
             marginTop: "0.25rem",
           }}
         >
@@ -72,13 +73,13 @@ export function ContentBlock({ block, emphasizeLead = false }: ContentBlockProps
         <figure
           className="overflow-hidden rounded-[14px] border p-2"
           style={{
-            borderColor: "rgba(146, 180, 220, 0.42)",
-            background: "linear-gradient(180deg,#f8fbff_0%,#f1f7ff_100%)",
-            boxShadow: "0 10px 20px rgba(12,24,47,0.08)",
+            borderColor: "var(--module-pill-border)",
+            background: "var(--module-pill-bg)",
+            boxShadow: "var(--card-shadow)",
           }}
         >
-          <img src={block.src} alt={block.alt ?? ""} className="w-full rounded-[10px] border border-[#d4e0ef]" />
-          {block.caption && <figcaption className="px-1 pt-2 text-[0.76rem] leading-[1.5] text-[#5b7392]">{block.caption}</figcaption>}
+          <img src={block.src} alt={block.alt ?? ""} className="w-full rounded-[10px]" style={{ border: "1px solid var(--card-border)" }} />
+          {block.caption && <figcaption className="px-1 pt-2 text-[0.76rem] leading-[1.5]" style={{ color: "var(--module-context)" }}>{block.caption}</figcaption>}
         </figure>
       );
 
@@ -87,13 +88,13 @@ export function ContentBlock({ block, emphasizeLead = false }: ContentBlockProps
         <div
           className="overflow-hidden rounded-[14px] border"
           style={{
-            borderColor: "rgba(146, 180, 220, 0.45)",
-            background: "linear-gradient(180deg,#f8fbff_0%,#f1f7ff_100%)",
-            boxShadow: "0 10px 20px rgba(12,24,47,0.08)",
+            borderColor: "var(--module-pill-border)",
+            background: "var(--module-pill-bg)",
+            boxShadow: "var(--card-shadow)",
           }}
         >
-          <div className="border-b border-[#d5e2f2] px-3 py-2">
-            <p className="text-[0.62rem] font-semibold uppercase tracking-[0.11em] text-[#5c7391]">Video brief</p>
+          <div className="px-3 py-2" style={{ borderBottom: "1px solid var(--card-border)" }}>
+            <p className="text-[0.62rem] font-semibold uppercase tracking-[0.11em]" style={{ color: "var(--module-context)" }}>Video brief</p>
           </div>
           <div className="aspect-video overflow-hidden">
             <iframe

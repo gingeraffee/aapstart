@@ -59,8 +59,8 @@ function ContactCard({ contact }: { contact: (typeof CONTACTS)[number] }) {
     <div
       className="rounded-[14px] p-4"
       style={{
-        background: "linear-gradient(180deg, #fffefb 0%, #fefaf4 100%)",
-        border: "1px solid rgba(148,163,184,0.24)",
+        background: "var(--card-bg)",
+        border: "1px solid var(--card-border)",
         boxShadow: "0 10px 24px rgba(12, 24, 47, 0.08)",
       }}
     >
@@ -75,13 +75,16 @@ function ContactCard({ contact }: { contact: (typeof CONTACTS)[number] }) {
         </div>
 
         <div className="min-w-0">
-          <p className="text-[0.82rem] font-bold leading-tight text-[#0b1220]">{contact.name}</p>
-          <p className="text-[0.72rem] leading-tight text-[#64748b]">{contact.title}</p>
+          <p className="text-[0.82rem] font-bold leading-tight" style={{ color: "var(--heading-color)" }}>{contact.name}</p>
+          <p className="text-[0.72rem] leading-tight" style={{ color: "var(--module-context)" }}>{contact.title}</p>
 
           <div className="mt-2 space-y-1.5">
             <a
               href={`tel:${contact.phone.replace(/\D/g, "")}`}
-              className="flex items-center gap-1.5 text-[0.72rem] text-[#64748b] transition-colors hover:text-[#0b1220]"
+              className="flex items-center gap-1.5 text-[0.72rem] transition-colors"
+              style={{ color: "var(--module-context)" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--heading-color)")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--module-context)")}
             >
               <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M2 2h2.5l1 2.5-1.5 1a7 7 0 003.5 3.5l1-1.5L11 8.5V11a1 1 0 01-1 1C4.477 12 0 7.523 0 3a1 1 0 011-1h1z" />
@@ -90,7 +93,10 @@ function ContactCard({ contact }: { contact: (typeof CONTACTS)[number] }) {
             </a>
             <a
               href={`mailto:${contact.email}`}
-              className="flex items-center gap-1.5 truncate text-[0.72rem] text-[#64748b] transition-colors hover:text-[#0b1220]"
+              className="flex items-center gap-1.5 truncate text-[0.72rem] transition-colors"
+              style={{ color: "var(--module-context)" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--heading-color)")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--module-context)")}
             >
               <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="1" y="2.5" width="10" height="7" rx="1" />
@@ -159,8 +165,8 @@ function ResourceCard({ resource }: { resource: Resource }) {
     <div
       className="flex flex-col rounded-[16px] p-5"
       style={{
-        background: "linear-gradient(180deg, #fffefb 0%, #fefaf4 100%)",
-        border: "1px solid rgba(148,163,184,0.22)",
+        background: "var(--card-bg)",
+        border: "1px solid var(--card-border)",
         boxShadow: "0 14px 28px rgba(12, 24, 47, 0.09)",
       }}
     >
@@ -168,8 +174,8 @@ function ResourceCard({ resource }: { resource: Resource }) {
         <span style={{ color: colors.icon }}>{resource.type === "link" ? <ExternalLinkIcon /> : <DownloadIcon />}</span>
       </div>
 
-      <p className="mb-1 text-[0.9rem] font-semibold leading-snug text-[#0b1220]">{resource.title}</p>
-      <p className="mb-4 flex-1 text-[0.78rem] leading-relaxed text-[#64748b]">{resource.description}</p>
+      <p className="mb-1 text-[0.9rem] font-semibold leading-snug" style={{ color: "var(--heading-color)" }}>{resource.title}</p>
+      <p className="mb-4 flex-1 text-[0.78rem] leading-relaxed" style={{ color: "var(--module-context)" }}>{resource.description}</p>
 
       {resource.type === "link" ? (
         <a
@@ -222,12 +228,12 @@ export default function ResourceHubPage() {
     <div className="px-6 py-8">
       <div className="mx-auto max-w-6xl">
         <div className="mb-6">
-          <p className="inline-flex items-center gap-2 rounded-full bg-[rgba(27,44,86,0.06)] px-2.5 py-1 text-[0.58rem] font-bold uppercase tracking-[0.18em] text-[#17365d]">
+          <p className="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-[0.58rem] font-bold uppercase tracking-[0.18em]" style={{ background: "var(--welcome-label-bg)", color: "var(--welcome-label-text)" }}>
             <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
             Resource Hub
           </p>
-          <h1 className="text-[1.6rem] font-extrabold leading-tight text-[#0b1220]">Everything you need, in one polished place.</h1>
-          <p className="mt-1.5 text-[0.9rem] text-[#64748b]">
+          <h1 className="text-[1.6rem] font-extrabold leading-tight" style={{ color: "var(--heading-color)" }}>Everything you need, in one polished place.</h1>
+          <p className="mt-1.5 text-[0.9rem]" style={{ color: "var(--module-context)" }}>
             Quick links, downloadable docs, and practical guides to keep your onboarding flow smooth.
           </p>
         </div>
@@ -237,13 +243,13 @@ export default function ResourceHubPage() {
             <div
               className="mb-6 flex flex-col gap-3 rounded-[14px] p-4 sm:flex-row sm:items-center sm:justify-between"
               style={{
-                background: "linear-gradient(180deg, #fffefb 0%, #fefaf4 100%)",
-                border: "1px solid rgba(148,163,184,0.22)",
+                background: "var(--card-bg)",
+                border: "1px solid var(--card-border)",
                 boxShadow: "0 12px 24px rgba(12,24,47,0.07)",
               }}
             >
               <div className="relative w-full sm:max-w-xs">
-                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#64748b]">
+                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--module-context)" }}>
                   <SearchIcon />
                 </span>
                 <input
@@ -251,7 +257,8 @@ export default function ResourceHubPage() {
                   placeholder="Search resources..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-xl border border-[#d6deeb] bg-[#fffef8] py-2 pl-9 pr-4 text-[0.84rem] text-[#0b1220] placeholder:text-[#94a3b8] focus:outline-none focus:ring-2 focus:ring-cyan-200"
+                  className="w-full rounded-xl py-2 pl-9 pr-4 text-[0.84rem] focus:outline-none focus:ring-2 focus:ring-cyan-200"
+                  style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)" }}
                 />
               </div>
 
@@ -264,9 +271,9 @@ export default function ResourceHubPage() {
                       "rounded-full px-3.5 py-1.5 text-[0.76rem] font-semibold transition-all duration-150",
                       activeCategory === cat.id
                         ? "bg-[linear-gradient(135deg,#df0030_0%,#0f7fb3_100%)] text-white shadow-[0_8px_18px_rgba(15,127,179,0.2)]"
-                        : "bg-[#fffef8] text-[#475569] hover:bg-[#f8f2ea]"
+                        : ""
                     )}
-                    style={activeCategory !== cat.id ? { border: "1px solid rgba(148,163,184,0.24)" } : undefined}
+                    style={activeCategory !== cat.id ? { background: "var(--login-input-bg)", color: "var(--module-body)", border: "1px solid var(--card-border)" } : undefined}
                   >
                     {cat.label}
                   </button>
@@ -280,9 +287,9 @@ export default function ResourceHubPage() {
               </div>
             ) : !resources || resources.length === 0 ? (
               <div className="flex flex-col items-center py-16 text-center">
-                <p className="text-[0.9rem] font-semibold text-[#64748b]">No resources found</p>
+                <p className="text-[0.9rem] font-semibold" style={{ color: "var(--module-context)" }}>No resources found</p>
                 {debouncedQuery && (
-                  <p className="mt-1 text-[0.8rem] text-[#94a3b8]">Try a different search term or clear the filter.</p>
+                  <p className="mt-1 text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>Try a different search term or clear the filter.</p>
                 )}
               </div>
             ) : (
@@ -295,7 +302,7 @@ export default function ResourceHubPage() {
           </div>
 
           <aside className="w-64 shrink-0">
-            <p className="inline-flex items-center gap-2 rounded-full bg-[rgba(27,44,86,0.06)] px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[#17365d]">
+            <p className="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-[0.14em]" style={{ background: "var(--welcome-label-bg)", color: "var(--welcome-label-text)" }}>
               <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
               Key Contacts
             </p>
