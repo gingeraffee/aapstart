@@ -50,7 +50,7 @@ interface ModuleFooterProps {
 }
 
 const STEP_LABELS: Record<ModuleStepKey, string> = {
-  read: "Read",
+  read: "Learn",
   confirm: "Confirm",
   quiz: "Quiz",
   complete: "Complete",
