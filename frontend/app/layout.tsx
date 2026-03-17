@@ -1,15 +1,11 @@
 import type { Metadata } from "next";
-import { Manrope, Sora } from "next/font/google";
+import { Manrope, Sora, Geist } from "next/font/google";
 import "@/styles/globals.css";
 import { AuthProvider } from "@/lib/context/AuthContext";
 import { ThemeProvider } from "@/lib/context/ThemeContext";
+import { cn } from "@/lib/utils";
 
-const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap",
-  weight: ["400", "500", "600", "700", "800"],
-});
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const sora = Sora({
   subsets: ["latin"],
@@ -25,7 +21,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${manrope.variable} ${sora.variable}`} suppressHydrationWarning>
+    <html lang="en" className={cn(sora.variable, "font-sans", geist.variable)} suppressHydrationWarning>
       <body className="font-sans">
         <ThemeProvider>
           <AuthProvider>{children}</AuthProvider>

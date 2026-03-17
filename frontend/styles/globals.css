@@ -157,6 +157,28 @@
   --toggle-bg: rgba(27, 44, 86, 0.08);
   --toggle-border: rgba(130, 160, 194, 0.4);
   --toggle-icon: #345072;
+
+  /* shadcn/ui tokens — mapped to our design system */
+  --background: #edf3fb;
+  --foreground: #0b1428;
+  --card: #fffefb;
+  --card-foreground: #102343;
+  --popover: #fffefb;
+  --popover-foreground: #0b1428;
+  --primary: #0f7fb3;
+  --primary-foreground: #ffffff;
+  --secondary: #eef4fd;
+  --secondary-foreground: #17365d;
+  --muted: #f5f8fc;
+  --muted-foreground: #64748b;
+  --accent-shadcn: #22d3ee;
+  --accent-shadcn-foreground: #0b1428;
+  --destructive: #df0030;
+  --destructive-foreground: #ffffff;
+  --border-shadcn: #d6deeb;
+  --input: #d6deeb;
+  --ring: #0f7fb3;
+  --radius: 0.625rem;
 }
 
 [data-theme="dark"] {
@@ -311,6 +333,27 @@
   --toggle-bg: rgba(56, 189, 248, 0.1);
   --toggle-border: rgba(56, 189, 248, 0.3);
   --toggle-icon: #38bdf8;
+
+  /* shadcn/ui tokens — mapped to our design system */
+  --background: #080f1c;
+  --foreground: #e2e8f0;
+  --card: #111d30;
+  --card-foreground: #e2e8f0;
+  --popover: #111d30;
+  --popover-foreground: #e2e8f0;
+  --primary: #38bdf8;
+  --primary-foreground: #0b1428;
+  --secondary: #0c1929;
+  --secondary-foreground: #94b4d4;
+  --muted: #0c1929;
+  --muted-foreground: #6b8bb5;
+  --accent-shadcn: #22d3ee;
+  --accent-shadcn-foreground: #e2e8f0;
+  --destructive: #ef4466;
+  --destructive-foreground: #ffffff;
+  --border-shadcn: rgba(30, 58, 95, 0.7);
+  --input: rgba(30, 58, 95, 0.6);
+  --ring: #38bdf8;
 }
 
 @layer base {
@@ -323,6 +366,7 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     scroll-behavior: smooth;
+    @apply font-sans;
   }
 
   @media (prefers-reduced-motion: reduce) {
