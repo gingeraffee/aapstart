@@ -20,60 +20,46 @@ acknowledgements:
   - id: ack-4
     statement: I understand the purpose of AAP Start and how it is designed to support my onboarding.
 
-# DRAFT — Please review and edit these quiz questions before publishing.
 quiz:
   questions:
     - id: q1
-      text: What type of organization is AAP?
+      text: AAP members are best described as:
       options:
         - id: a
-          text: A publicly traded pharmacy chain
+          text: Franchise locations managed by AAP corporate
         - id: b
-          text: A member-owned cooperative that supports independent and community pharmacies
+          text: Independent and community pharmacies that AAP supports
         - id: c
-          text: A federal healthcare program
+          text: Hospital systems partnered with AAP for distribution
         - id: d
-          text: A regional pharmacy retailer
+          text: Pharmacy chains that merged to form AAP
       correctId: b
 
     - id: q2
-      text: What year was AAP formed?
+      text: What is the relationship between AAP and API?
       options:
         - id: a
-          text: 2001
+          text: API is an external vendor that AAP contracts for deliveries
         - id: b
-          text: 2005
+          text: AAP and API are separate companies with a referral agreement
         - id: c
-          text: 2009
+          text: API is AAP's warehouse and distribution subsidiary
         - id: d
-          text: 2015
+          text: API manages AAP's member pharmacy locations
       correctId: c
 
     - id: q3
-      text: "API is best described as:"
+      text: Which of the following is NOT a goal of AAP Start?
       options:
         - id: a
-          text: An HR software platform
+          text: Helping you understand the basics of working at AAP
         - id: b
-          text: AAP's warehouse and distribution subsidiary
+          text: Replacing ongoing training from your supervisor
         - id: c
-          text: A member pharmacy in the cooperative
+          text: Giving you a clear overview of important expectations
         - id: d
-          text: An external pharmacy training company
+          text: Helping you know where to go for help
       correctId: b
-
-    - id: q4
-      text: Who should you contact for general onboarding or HR questions?
-      options:
-        - id: a
-          text: Brandy Hooper, VP of HR
-        - id: b
-          text: Your direct supervisor only
-        - id: c
-          text: Nicole Thornton, HR Manager
-        - id: d
-          text: LinkedIn Learning support
-      correctId: c
 ---
 
 ## Welcome to AAP.
