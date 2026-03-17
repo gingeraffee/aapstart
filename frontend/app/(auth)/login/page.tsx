@@ -101,8 +101,9 @@ export default function LoginPage() {
 
           {/* Hero copy */}
           <div className="flex-1 flex flex-col justify-center max-w-[560px] animate-fade-up-slow" style={{ animationDelay: "80ms" }}>
-            <h1 className="text-[clamp(2.9rem,5.5vw,4.4rem)] font-bold leading-[1.04] text-white">
-              Ready for day one?<br />
+            <h1 className="text-[clamp(2.4rem,4.6vw,4.4rem)] font-bold leading-[1.04] text-white">
+              <span className="whitespace-nowrap">Ready for day one?</span>
+              <br /><br />
               <em className="not-italic text-[#8ecfff]">You are now.</em>
             </h1>
             <p className="mt-5 text-[1.02rem] leading-[1.75] text-white/85">
