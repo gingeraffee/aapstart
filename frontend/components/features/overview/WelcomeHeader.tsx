@@ -153,8 +153,8 @@ export function WelcomeHeader({
 
           <div className="min-w-[230px] flex-1">
             <div className="mb-1.5 flex items-center justify-between">
-              <p className="text-[0.6rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--welcome-progress-label)" }}>Progress</p>
-              <p className="text-[0.78rem] font-extrabold" style={{ color: "var(--welcome-progress-value)" }}>{pct}%</p>
+              <p className="text-[0.75rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--welcome-progress-label)" }}>Progress</p>
+              <p className="text-[1rem] font-extrabold" style={{ color: "var(--welcome-progress-value)" }}>{pct}%</p>
             </div>
             <div className="relative h-4 overflow-hidden rounded-full" style={{ background: "var(--welcome-progress-track)" }}>
               <div
