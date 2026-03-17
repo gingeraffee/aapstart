@@ -208,21 +208,21 @@ export default function OverviewPage() {
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <p className="mb-1 text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>{moduleIndexLabel}</p>
+                      <p className="mb-1 text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--welcome-label-text)" }}>{moduleIndexLabel}</p>
                       <div className="flex items-start justify-between gap-3">
-                        <p className="text-[0.95rem] font-semibold leading-snug" style={{ color: "var(--welcome-label-text)" }}>{module.title}</p>
+                        <p className="text-[0.95rem] font-semibold leading-snug" style={{ color: "var(--heading-color)" }}>{module.title}</p>
                         {isNextToUnlock ? (
                           <span className="shrink-0 text-[0.68rem] font-semibold" style={{ color: "var(--status-progress)" }}>
                             Up next
                           </span>
                         ) : (
-                          <span className="shrink-0 text-[0.68rem] font-medium" style={{ color: "var(--module-context)" }}>
+                          <span className="shrink-0 text-[0.68rem] font-medium" style={{ color: "var(--heading-color)" }}>
                             Locked
                           </span>
                         )}
                       </div>
                       {module.description && (
-                        <p className="mt-1 line-clamp-2 text-[0.78rem] leading-[1.58]" style={{ color: "var(--card-desc)" }}>{module.description}</p>
+                        <p className="mt-1 line-clamp-2 text-[0.78rem] leading-[1.58]" style={{ color: "var(--heading-color)" }}>{module.description}</p>
                       )}
                       {isNextToUnlock && (
                         <p className="mt-2 text-[0.72rem] font-semibold" style={{ color: "var(--status-progress)" }}>
