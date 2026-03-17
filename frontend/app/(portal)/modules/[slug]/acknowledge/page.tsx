@@ -86,7 +86,7 @@ export default function AcknowledgePage() {
         <ModuleFooter
           backHref={`/modules/${slug}`}
           backLabel="Back to module"
-          ctaLabel={submitting ? "Saving..." : hasQuiz ? "Save and continue to quick check" : "Save and complete module"}
+          ctaLabel={submitting ? "Saving..." : hasQuiz ? "Let's Test!" : "Save and complete module"}
           onCtaClick={handleSubmit}
           disabled={!allChecked || submitting}
           helperText={!allChecked ? "Confirm each item to continue." : undefined}

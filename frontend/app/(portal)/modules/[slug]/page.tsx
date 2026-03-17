@@ -4,11 +4,47 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import useSWR from "swr";
 import { modulesApi, progressApi } from "@/lib/api";
+import { useAuth } from "@/lib/context/AuthContext";
 import { ContentBlock } from "@/components/features/modules/ContentBlock";
 import { ModuleFooter, ModulePanel, ModuleShell, buildModuleSteps } from "@/components/features/modules/ModuleShell";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
 import type { ContentBlock as ModuleContentBlock, ModuleDetail, ModuleSummary, ProgressRecord } from "@/lib/types";
+
+const CONGRATS_MESSAGES: ((name: string, moduleTitle: string) => { headline: string; body: string })[] = [
+  (name, title) => ({
+    headline: `Crushed it, ${name}.`,
+    body: `"${title}" is done and dusted. You just leveled up your AAP knowledge — and honestly, you made it look easy.`,
+  }),
+  (name) => ({
+    headline: `Look at you go, ${name}.`,
+    body: `Another module down, another step closer to feeling like you've been here for years. Spoiler: you're already ahead of the curve.`,
+  }),
+  (name, title) => ({
+    headline: `${name}, that's a wrap.`,
+    body: `You just locked in "${title}" like a pro. Your future self is going to thank you for paying attention.`,
+  }),
+  (name) => ({
+    headline: `Gold star, ${name}.`,
+    body: `Module complete. Knowledge acquired. Confidence boosted. That's what we like to see on day one.`,
+  }),
+  (name, title) => ({
+    headline: `Nailed it, ${name}.`,
+    body: `"${title}" — done. You're building the foundation that makes everything else click. Keep that energy.`,
+  }),
+  (name) => ({
+    headline: `${name} is on a roll.`,
+    body: `Every module you finish makes the next one easier. You're stacking wins and it shows.`,
+  }),
+  (name, title) => ({
+    headline: `That's how it's done, ${name}.`,
+    body: `"${title}" is officially in the books. The team's getting a good one — we can already tell.`,
+  }),
+  (name) => ({
+    headline: `Boom. Done, ${name}.`,
+    body: `You're moving through onboarding like you've got somewhere to be. (You do — it's called your new role, and you're going to be great at it.)`,
+  }),
+];
 
 function stripHtml(input: string): string {
   return input.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
@@ -229,7 +265,10 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
 export default function ModulePage() {
   const { slug } = useParams<{ slug: string }>();
   const router = useRouter();
+  const { user } = useAuth();
   const [reflectionChecks, setReflectionChecks] = useState([false, false, false]);
+  const [showCongrats, setShowCongrats] = useState(false);
+  const [congratsMsg, setCongratsMsg] = useState<{ headline: string; body: string } | null>(null);
 
   const { data: module, isLoading, error } = useSWR(`module:${slug}`, () => modulesApi.get(slug) as Promise<ModuleDetail>);
   const { data: moduleCatalog } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
@@ -315,17 +354,31 @@ export default function ModulePage() {
     current: "read",
   });
 
-  const continueLabel = hasAcknowledgement
-    ? "Move to confirmation"
-    : hasQuiz
-      ? "Move to quick check"
-      : "Save and complete";
+  const continueLabel = "I'm Finished!";
 
   const nextStepLabel = hasAcknowledgement
     ? "Next up: confirmation"
     : hasQuiz
-      ? "Next up: quick check"
+      ? "Next up: quiz"
       : "Next up: completion";
+
+  function handleFinished() {
+    const firstName = user?.first_name ?? "there";
+    const msg = CONGRATS_MESSAGES[Math.floor(Math.random() * CONGRATS_MESSAGES.length)];
+    setCongratsMsg(msg(firstName, currentModule.title));
+    setShowCongrats(true);
+  }
+
+  function handleCongratsConfirm() {
+    setShowCongrats(false);
+    if (hasAcknowledgement) {
+      router.push(`/modules/${slug}/acknowledge`);
+    } else if (hasQuiz) {
+      router.push(`/modules/${slug}/quiz`);
+    } else {
+      router.push(`/modules/${slug}/complete`);
+    }
+  }
 
   const railSections = sections.filter((section) => section.title);
   const reflectionPrompts = [
@@ -500,7 +553,7 @@ export default function ModulePage() {
         { label: currentModule.title },
       ]}
       moduleOrder={currentModule.order}
-      stageLabel="Read"
+      stageLabel="Learn"
       headline={currentModule.title}
       description={
         currentModule.description ||
@@ -515,20 +568,55 @@ export default function ModulePage() {
           backLabel="Back to my path"
           ctaLabel={continueLabel}
           helperText={nextStepLabel}
-          onCtaClick={() => {
-            if (hasAcknowledgement) {
-              router.push(`/modules/${slug}/acknowledge`);
-              return;
-            }
-            if (hasQuiz) {
-              router.push(`/modules/${slug}/quiz`);
-              return;
-            }
-            router.push(`/modules/${slug}/complete`);
-          }}
+          onCtaClick={handleFinished}
         />
       }
     >
+      {showCongrats && congratsMsg ? (
+        <>
+          <style>{`
+            @keyframes congrats-in {
+              0% { opacity: 0; transform: translateY(12px) scale(0.97); }
+              100% { opacity: 1; transform: translateY(0) scale(1); }
+            }
+            @keyframes congrats-bg-in {
+              0% { opacity: 0; }
+              100% { opacity: 1; }
+            }
+          `}</style>
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ backgroundColor: "rgba(15, 32, 58, 0.58)", backdropFilter: "blur(5px)", animation: "congrats-bg-in 200ms ease-out both" }}
+          >
+            <div
+              className="relative w-full max-w-[440px] overflow-hidden rounded-[24px] border border-[#c2daf1] bg-[linear-gradient(180deg,#ffffff_0%,#f6fbff_100%)] shadow-[0_24px_56px_rgba(9,20,41,0.24)]"
+              style={{ animation: "congrats-in 280ms ease-out both" }}
+            >
+              <div className="h-1 w-full bg-[linear-gradient(90deg,#0f7fb3_0%,#06b6d4_52%,#df0030_100%)]" />
+              <div className="px-8 pb-8 pt-7 text-center">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-[#9dd2ef] bg-[#eaf6ff] text-[#0f6da3]">
+                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d="M4 12.5 9.5 18 20 6" />
+                  </svg>
+                </div>
+                <h2 className="text-[1.6rem] font-extrabold leading-[1.12] tracking-[-0.025em] text-[#0f1d3c]">
+                  {congratsMsg.headline}
+                </h2>
+                <p className="mt-3 text-[0.88rem] leading-[1.68] text-[#445b78]">
+                  {congratsMsg.body}
+                </p>
+                <button
+                  onClick={handleCongratsConfirm}
+                  className="mt-6 w-full rounded-[12px] border border-[#6eaeea] bg-[linear-gradient(135deg,#184371_0%,#13629a_100%)] py-3 text-[0.9rem] font-bold text-white transition-all duration-200 hover:-translate-y-px hover:shadow-[0_10px_18px_rgba(15,127,179,0.24)]"
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : null}
+
       <div className="space-y-8">
         {sections[0] ? renderSection(sections[0], 0, "featured") : null}
 
