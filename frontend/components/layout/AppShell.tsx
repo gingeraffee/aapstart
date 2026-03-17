@@ -95,6 +95,7 @@ export function AppShell({ children }: AppShellProps) {
           style={{
             borderBottom: "1px solid var(--sidebar-logo-border)",
             background: "var(--sidebar-logo-bg)",
+            boxShadow: "0 4px 12px rgba(12, 24, 47, 0.08), 0 1px 3px rgba(12, 24, 47, 0.05)",
           }}
         >
           <Link href="/overview" className="block">
@@ -163,11 +164,7 @@ export function AppShell({ children }: AppShellProps) {
                 return (
                   <div
                     key={m.slug}
-                    className="flex cursor-not-allowed items-center gap-2.5 rounded-[11px] px-3.5 py-2.5"
-                    style={{
-                      backgroundColor: "var(--sidebar-locked-bg)",
-                      border: "1px solid var(--sidebar-locked-border)",
-                    }}
+                    className="flex cursor-not-allowed items-center gap-2.5 rounded-[11px] px-3.5 py-2.5 opacity-60"
                   >
                     <span
                       className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full"
