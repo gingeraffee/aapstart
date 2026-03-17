@@ -20,59 +20,71 @@ acknowledgements:
   - id: ack-4
     statement: I understand AAP's conduct expectations, including appropriate use of company systems.
 
-# DRAFT — Please review and edit these quiz questions before publishing.
 quiz:
   questions:
     - id: q1
-      text: What must happen before overtime is worked?
+      text: A coworker asks you to stay late to help finish a project. What should you do before working the extra hours?
       options:
         - id: a
-          text: Nothing — just work the extra hours
+          text: Stay and log the time — you'll get paid either way
         - id: b
-          text: It must be approved in advance
+          text: Get overtime approved before working it
         - id: c
-          text: Submit a request to HR within 24 hours
+          text: Work the hours and submit a request to HR afterward
         - id: d
-          text: Notify payroll by end of the pay period
+          text: Check with payroll to confirm your overtime rate first
       correctId: b
 
     - id: q2
-      text: How many paid rest periods are provided to full-time nonexempt employees each workday?
+      text: What is the goal of AAP's corrective action process?
       options:
         - id: a
-          text: One 30-minute break
+          text: To create a formal record that leads to termination
         - id: b
-          text: One 15-minute break
+          text: To address issues clearly and consistently so employees know where they stand
         - id: c
-          text: Two 15-minute breaks
+          text: To document patterns that justify reducing an employee's pay grade
         - id: d
-          text: Three 10-minute breaks
-      correctId: c
+          text: To ensure repeated issues are handled only during performance reviews
+      correctId: b
 
     - id: q3
-      text: Who is generally your first point of contact for routine attendance or timekeeping questions?
+      text: You realize at the end of your shift that you forgot to clock in this morning. What should you do?
       options:
         - id: a
-          text: HR Manager
+          text: Clock in now and adjust your hours in the system yourself
         - id: b
-          text: VP of HR
+          text: Wait until payday to see if it was caught automatically
         - id: c
-          text: Your direct supervisor
+          text: Notify your supervisor right away so it can be corrected
         - id: d
-          text: Payroll department
+          text: Submit a correction request through BambooHR before your next shift
       correctId: c
 
     - id: q4
-      text: "AAP's corrective action process is intended to:"
+      text: Which of the following is true about AAP's attendance expectations?
       options:
         - id: a
-          text: Punish employees for minor mistakes
+          text: Attendance issues only matter if they result in missed deadlines
         - id: b
-          text: Address issues clearly and consistently, not leave people guessing
+          text: The attendance point system applies to all employees equally
         - id: c
-          text: Replace informal feedback entirely
+          text: Attendance issues should be communicated promptly and follow reporting procedures
         - id: d
-          text: Only apply after a formal HR complaint
+          text: Supervisors track attendance informally and address it during reviews
+      correctId: c
+
+    - id: q5
+      text: AAP's expectations around social media use apply when:
+      options:
+        - id: a
+          text: You mention AAP or coworkers by name in a post
+        - id: b
+          text: Your posts could affect the workplace or the company's reputation
+        - id: c
+          text: You use social media on company devices during work hours
+        - id: d
+          text: You connect with coworkers on professional networking sites
       correctId: b
 ---
 

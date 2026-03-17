@@ -20,59 +20,45 @@ acknowledgements:
   - id: ack-4
     statement: I understand that I can raise concerns without fear of retaliation.
 
-# DRAFT — Please review and edit these quiz questions before publishing.
 quiz:
   questions:
     - id: q1
-      text: Which of the following behaviors is explicitly NOT acceptable at AAP?
+      text: A coworker files a complaint about something that happened on your team. What does AAP's policy protect them from?
       options:
         - id: a
-          text: Raising a concern directly with your supervisor
+          text: Being reassigned to a different department
         - id: b
-          text: Contacting HR about a sensitive issue
+          text: Having to repeat the complaint to multiple people
         - id: c
-          text: Retaliating against someone who made a good-faith report
+          text: Retaliation from anyone involved
         - id: d
-          text: Asking a colleague for help with a task
+          text: Receiving follow-up questions from HR
       correctId: c
 
     - id: q2
-      text: Who is generally your first point of contact for day-to-day workplace concerns?
+      text: According to AAP's expectations, when is the best time to raise a workplace concern?
       options:
         - id: a
-          text: Brandy Hooper, VP of HR
+          text: After you've gathered all the facts and documented everything
         - id: b
-          text: Your direct supervisor
+          text: Once the situation has clearly become a pattern
         - id: c
-          text: A co-worker you trust
+          text: Early, before the issue has a chance to grow
         - id: d
-          text: LinkedIn Learning support
-      correctId: b
+          text: Only when you're certain it violates a specific policy
+      correctId: c
 
     - id: q3
-      text: When should you contact HR instead of — or in addition to — your supervisor?
+      text: "AAP's conduct standards apply:"
       options:
         - id: a
-          text: When you have a question about your work schedule
+          text: Only during scheduled work hours
         - id: b
-          text: When you are not comfortable going to your supervisor, or the issue involves conduct, harassment, or retaliation
+          text: Only when interacting with member pharmacies
         - id: c
-          text: Only when your supervisor tells you to
+          text: Whenever you are representing AAP, including in professional and digital contexts
         - id: d
-          text: When you need help logging into a work system
-      correctId: b
-
-    - id: q4
-      text: "AAP's conduct expectations require employees to:"
-      options:
-        - id: a
-          text: Report every minor concern in writing
-        - id: b
-          text: Avoid all communication with HR
-        - id: c
-          text: Conduct themselves in accordance with the law and refrain from dishonest, unethical, or illegal conduct
-        - id: d
-          text: Only raise concerns with their supervisor, never HR
+          text: Only after your introductory period ends
       correctId: c
 ---
 
