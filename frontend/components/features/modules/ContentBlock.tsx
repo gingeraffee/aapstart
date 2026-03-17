@@ -83,7 +83,8 @@ export function ContentBlock({ block, emphasizeLead = false }: ContentBlockProps
         </figure>
       );
 
-    case "video":
+    case "video": {
+      const isEmbed = block.src?.startsWith("http") && !block.src?.endsWith(".mp4");
       return (
         <div
           className="overflow-hidden rounded-[14px] border"
@@ -93,19 +94,27 @@ export function ContentBlock({ block, emphasizeLead = false }: ContentBlockProps
             boxShadow: "var(--card-shadow)",
           }}
         >
-          <div className="px-3 py-2" style={{ borderBottom: "1px solid var(--card-border)" }}>
-            <p className="text-[0.62rem] font-semibold uppercase tracking-[0.11em]" style={{ color: "var(--module-context)" }}>Video brief</p>
-          </div>
           <div className="aspect-video overflow-hidden">
-            <iframe
-              src={block.src}
-              title={block.alt ?? "Video"}
-              className="h-full w-full"
-              allowFullScreen
-            />
+            {isEmbed ? (
+              <iframe
+                src={block.src}
+                title={block.alt ?? "Video"}
+                className="h-full w-full"
+                allowFullScreen
+              />
+            ) : (
+              <video
+                src={block.src}
+                title={block.alt ?? "Video"}
+                className="h-full w-full object-contain bg-black"
+                controls
+                preload="metadata"
+              />
+            )}
           </div>
         </div>
       );
+    }
 
     case "checklist":
       return (

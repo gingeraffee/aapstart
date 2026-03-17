@@ -56,25 +56,6 @@ export default function LoginPage() {
   return (
     <div className="flex h-screen overflow-hidden bg-brand-ink">
 
-      {/* ── Scroll progress dots ── */}
-      <nav
-        className="fixed right-3 top-1/2 z-50 -translate-y-1/2 hidden lg:flex flex-col gap-2"
-        aria-label="Page sections"
-      >
-        {Array.from({ length: SCENE_COUNT }, (_, i) => (
-          <button
-            key={i}
-            onClick={() => scrollToScene(i)}
-            aria-label={`Go to section ${i + 1}`}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              activeScene === i
-                ? "w-2 bg-brand-sky"
-                : "w-2 bg-white/20 hover:bg-white/40"
-            }`}
-          />
-        ))}
-      </nav>
-
       {/* ── Left: scrollable story panel ── */}
       <section
         ref={storyPanelRef}
@@ -86,6 +67,14 @@ export default function LoginPage() {
           backgroundImage: "radial-gradient(ellipse 130% 75% at 0% 0%, rgba(48,119,185,0.80) 0%, transparent 72%)",
         }}
       >
+        <div
+          className="pointer-events-none fixed inset-y-0 left-0 z-[1] w-full lg:w-[58%]"
+          style={{
+            backgroundImage: "radial-gradient(circle, rgba(14,165,233,0.35) 0.6px, transparent 0.7px)",
+            backgroundSize: "34px 34px",
+            opacity: 0.7,
+          }}
+        />
 
         {/* ── Scene 1: Hero ── */}
         <div className="login-scene snap-start h-screen flex flex-col relative z-[2] px-8 py-8 lg:px-16 lg:py-10">
@@ -101,7 +90,7 @@ export default function LoginPage() {
 
           {/* Hero copy */}
           <div className="flex-1 flex flex-col justify-center max-w-[560px] animate-fade-up-slow" style={{ animationDelay: "80ms" }}>
-            <h1 className="text-[clamp(2.4rem,4.6vw,4.4rem)] font-bold leading-[1.04] text-white">
+            <h1 className="text-[clamp(2.4rem,4.6vw,4.4rem)] font-bold leading-[1.04] text-white" style={{ fontFamily: "'Manrope', sans-serif" }}>
               <span className="whitespace-nowrap">Ready for day one?</span>
               <br /><br />
               <em className="not-italic text-[#8ecfff]">You are now.</em>

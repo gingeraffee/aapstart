@@ -75,7 +75,7 @@ quiz:
       correctId: c
 
     - id: q5
-      text: AAP's expectations around social media use apply when:
+      text: "AAP's expectations around social media use apply when:"
       options:
         - id: a
           text: You mention AAP or coworkers by name in a post

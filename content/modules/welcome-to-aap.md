@@ -23,7 +23,7 @@ acknowledgements:
 quiz:
   questions:
     - id: q1
-      text: AAP members are best described as:
+      text: "AAP members are best described as:"
       options:
         - id: a
           text: Franchise locations managed by AAP corporate
@@ -65,6 +65,11 @@ quiz:
 ## Welcome to AAP.
 
 You're joining a company that supports more than 2,000 independent and community pharmacies, and every role helps that mission move forward. Whether your work is operational, administrative, customer-facing, or behind the scenes, it plays a part in helping member pharmacies stay strong, supported, and competitive.
+
+:::video
+src: /welcome-to-aap.mp4
+alt: Welcome to AAP
+:::
 
 ## Who AAP Is
 

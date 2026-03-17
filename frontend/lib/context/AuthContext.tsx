@@ -81,16 +81,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const logout = useCallback(async () => {
-    try {
-      await fetch(`${API_BASE}/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
-    } catch {
-      // best effort
-    }
     localStorage.removeItem(STORAGE_KEY);
     setUser(null);
+    // Fire backend logout as best-effort, don't wait for it
+    fetch(`${API_BASE}/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+    }).catch(() => {});
     window.location.href = "/login";
   }, []);
 

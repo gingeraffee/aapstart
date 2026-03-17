@@ -509,15 +509,6 @@ export default function ModulePage() {
           </h2>
         )}
 
-        {keyLine ? (
-          <div className={cn("mb-6 rounded-[12px] px-4 py-3", isFeatured ? "border border-[rgba(14,127,179,0.2)] bg-[rgba(14,127,179,0.05)]" : "border-l-[3px] border-[#df0030] bg-[rgba(223,0,48,0.04)]")}>
-            <p className={cn("text-[0.63rem] font-bold uppercase tracking-[0.13em]", isFeatured ? "text-[#0f6799]" : "text-[#b3234c]")}>
-              {isFeatured ? "Key takeaway" : "Worth holding onto"}
-            </p>
-            <p className="mt-1.5 max-w-[58ch] text-[0.88rem] font-medium leading-[1.58] text-[#214566]">{keyLine}</p>
-          </div>
-        ) : null}
-
         <div className="space-y-0">
           {section.blocks.map((block, blockIndex) => (
             <div key={`${section.id}-${blockIndex}`} className="animate-fade-up" style={{ animationDelay: `${Math.min(blockIndex, 8) * 25}ms` }}>
@@ -547,31 +538,7 @@ export default function ModulePage() {
   };
 
   return (
-    <ModuleShell
-      breadcrumbs={[
-        { label: "My Path", href: "/overview" },
-        { label: currentModule.title },
-      ]}
-      moduleOrder={currentModule.order}
-      stageLabel="Learn"
-      headline={currentModule.title}
-      description={
-        currentModule.description ||
-        "Work through the key ideas below, then move to the next step when it feels clear."
-      }
-      estimatedMinutes={currentModule.estimated_minutes}
-      steps={steps}
-      rail={rail}
-      footer={
-        <ModuleFooter
-          backHref="/overview"
-          backLabel="Back to my path"
-          ctaLabel={continueLabel}
-          helperText={nextStepLabel}
-          onCtaClick={handleFinished}
-        />
-      }
-    >
+    <>
       {showCongrats && congratsMsg ? (
         <>
           <style>{`
@@ -617,7 +584,32 @@ export default function ModulePage() {
         </>
       ) : null}
 
-      <div className="space-y-8">
+      <ModuleShell
+        breadcrumbs={[
+          { label: "My Path", href: "/overview" },
+          { label: currentModule.title },
+        ]}
+        moduleOrder={currentModule.order}
+        stageLabel="Learn"
+        headline={currentModule.title}
+        description={
+          currentModule.description ||
+          "Work through the key ideas below, then move to the next step when it feels clear."
+        }
+        estimatedMinutes={currentModule.estimated_minutes}
+        steps={steps}
+        rail={rail}
+        footer={
+          <ModuleFooter
+            backHref="/overview"
+            backLabel="Back to my path"
+            ctaLabel={continueLabel}
+            helperText={nextStepLabel}
+            onCtaClick={handleFinished}
+          />
+        }
+      >
+        <div className="space-y-8">
         {sections[0] ? renderSection(sections[0], 0, "featured") : null}
 
         <section className="max-w-[860px] px-1 py-1">
@@ -725,5 +717,6 @@ export default function ModulePage() {
         </ModulePanel>
       </div>
     </ModuleShell>
+    </>
   );
 }

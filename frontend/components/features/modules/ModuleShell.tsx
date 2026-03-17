@@ -272,10 +272,6 @@ export function ModuleShell({
                 <h1 className="mt-2 text-[clamp(1.52rem,2.5vw,2.02rem)] font-extrabold leading-[1.14] tracking-[-0.028em]" style={{ color: "var(--module-headline)" }}>
                   {headline}
                 </h1>
-                <p className="mt-2 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[0.8rem] font-semibold" style={{ background: "rgba(223,0,48,0.06)", color: "#b3234c" }}>
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
-                  Mission for this module: move fast, keep it practical, and lock in the habits that make your next step easy.
-                </p>
                 <p className="mt-2.5 max-w-[700px] text-[0.94rem] leading-[1.72]" style={{ color: "var(--module-body)" }}>{description}</p>
                 {contextNote ? (
                   <p className="mt-2 text-[0.8rem] font-medium" style={{ color: "var(--module-context)" }}>
