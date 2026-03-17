@@ -95,7 +95,7 @@ export default function OverviewPage() {
   }
 
   return (
-    <div className="w-full px-6 py-5 lg:px-8 lg:py-7">
+    <div className="w-full px-6 py-5 font-sans lg:px-8 lg:py-7">
       {showCelebration && (
         <CelebrationModal
           name={user?.full_name ?? firstName}
@@ -409,7 +409,7 @@ export default function OverviewPage() {
             <div className="mx-5 h-px" style={{ background: "var(--module-step-divider)" }} />
 
             <div className="p-5 pt-4">
-              <p className="text-[0.59rem] font-bold uppercase tracking-[0.15em]" style={{ color: "var(--module-context)" }}>Your support contact</p>
+              <p className="text-[0.59rem] font-bold uppercase tracking-[0.15em]" style={{ color: "var(--module-context)" }}>Your People Person</p>
 
               <div className="mt-3 flex items-center gap-3">
                 <div
@@ -453,3 +453,4 @@ export default function OverviewPage() {
     </div>
   );
 }
+

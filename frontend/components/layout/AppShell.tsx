@@ -164,7 +164,7 @@ export function AppShell({ children }: AppShellProps) {
                 return (
                   <div
                     key={m.slug}
-                    className="flex cursor-not-allowed items-center gap-2.5 rounded-[11px] px-3.5 py-2.5 opacity-60"
+                    className="flex cursor-not-allowed items-center gap-2.5 rounded-[11px] px-3.5 py-2.5"
                   >
                     <span
                       className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full"
@@ -434,3 +434,4 @@ export function AppShell({ children }: AppShellProps) {
     </div>
   );
 }
+

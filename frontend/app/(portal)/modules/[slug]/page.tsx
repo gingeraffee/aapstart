@@ -82,72 +82,6 @@ function splitTextBlockByHeadings(block: ModuleContentBlock): ModuleContentBlock
   });
 }
 
-function sectionBeat(sectionTitle: string | undefined, sectionIndex: number) {
-  const title = (sectionTitle ?? "").toLowerCase();
-
-  if (!sectionTitle || sectionIndex === 0 || title.includes("welcome") || title.includes("intro")) {
-    return {
-      label: "Intro",
-      subtitle: "Start with the context so the rest clicks faster.",
-      tone: "cyan" as const,
-    };
-  }
-
-  if (title.includes("who") || title.includes("about") || title.includes("aap")) {
-    return {
-      label: "Who AAP Is",
-      subtitle: "The organization behind the work and why it exists.",
-      tone: "navy" as const,
-    };
-  }
-
-  if (title.includes("mission") || title.includes("vision") || title.includes("values")) {
-    return {
-      label: "Mission And Values",
-      subtitle: "The standards that shape how we make decisions.",
-      tone: "red" as const,
-    };
-  }
-
-  if (title.includes("role") || title.includes("impact") || title.includes("means for")) {
-    return {
-      label: "For Your Role",
-      subtitle: "Translate the big picture into your day-to-day work.",
-      tone: "cyan" as const,
-    };
-  }
-
-  return {
-    label: `Story Beat ${String(sectionIndex + 1).padStart(2, "0")}`,
-    subtitle: "Take this section in one focused pass before moving on.",
-    tone: sectionIndex % 3 === 0 ? ("cyan" as const) : sectionIndex % 3 === 1 ? ("navy" as const) : ("red" as const),
-  };
-}
-
-function toneStyles(tone: "cyan" | "navy" | "red") {
-  if (tone === "navy") {
-    return {
-      shell: "border-[rgba(69,93,133,0.28)] bg-[linear-gradient(180deg,rgba(27,44,86,0.06)_0%,rgba(27,44,86,0.01)_100%)]",
-      chip: "bg-[#1b2c56] text-white",
-      icon: "text-[#1b2c56] bg-[rgba(27,44,86,0.12)]",
-    };
-  }
-
-  if (tone === "red") {
-    return {
-      shell: "border-[rgba(196,35,74,0.24)] bg-[linear-gradient(180deg,rgba(223,0,48,0.06)_0%,rgba(223,0,48,0.01)_100%)]",
-      chip: "bg-[#c4234a] text-white",
-      icon: "text-[#c4234a] bg-[rgba(223,0,48,0.1)]",
-    };
-  }
-
-  return {
-    shell: "border-[rgba(14,127,179,0.25)] bg-[linear-gradient(180deg,rgba(14,127,179,0.08)_0%,rgba(14,127,179,0.01)_100%)]",
-    chip: "bg-[#0f7fb3] text-white",
-    icon: "text-[#0f7fb3] bg-[rgba(14,127,179,0.12)]",
-  };
-}
-
 function sectionKeyLine(blocks: ModuleContentBlock[]): string | null {
   const firstText = blocks.find((block) => block.type === "text" && block.content)?.content;
   if (!firstText) return null;
@@ -446,36 +380,10 @@ export default function ModulePage() {
     sectionIndex: number,
     style: "featured" | "open"
   ) => {
-    const beat = sectionBeat(section.title, sectionIndex);
-    const tone = toneStyles(beat.tone);
-    const keyLine = sectionKeyLine(section.blocks);
     const isFeatured = style === "featured";
 
     const content = (
       <>
-        <div className={cn(isFeatured ? "mb-5 rounded-[14px] border px-4 py-3" : "mb-5", isFeatured && tone.shell)}>
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-start gap-2.5">
-              <span className={cn("mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px]", tone.icon)}>
-                <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <circle cx="8" cy="8" r="5.3" />
-                  <path d="M8 5.3v2.9l2 1.2" />
-                </svg>
-              </span>
-              <div>
-                <p className={cn("inline-flex rounded-full px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.09em]", tone.chip)}>
-                  {beat.label}
-                </p>
-                <p className="mt-1.5 max-w-[54ch] text-[0.76rem] leading-[1.5] text-[#465f7e]">{beat.subtitle}</p>
-              </div>
-            </div>
-
-            <span className="shrink-0 text-[0.62rem] font-bold uppercase tracking-[0.11em] text-[#6a809d]">
-              {String(sectionIndex + 1).padStart(2, "0")}
-            </span>
-          </div>
-        </div>
-
         {section.title ? (
           <h2 className={cn("font-extrabold tracking-[-0.025em] text-[#0d1f3a]", isFeatured ? "mb-3 text-[1.34rem]" : "mb-4 text-[1.48rem]")}>
             {section.title}
@@ -501,14 +409,14 @@ export default function ModulePage() {
 
     if (isFeatured) {
       return (
-        <ModulePanel key={section.id} id={section.id} className="scroll-mt-24 max-w-[820px]">
+        <ModulePanel key={section.id} id={section.id} className="scroll-mt-24 w-full">
           {content}
         </ModulePanel>
       );
     }
 
     return (
-      <section key={section.id} id={section.id} className="scroll-mt-24 max-w-[760px] px-1 py-4 md:py-7">
+      <section key={section.id} id={section.id} className="scroll-mt-24 w-full px-1 py-4 md:py-7">
         {content}
       </section>
     );
@@ -697,3 +605,4 @@ export default function ModulePage() {
     </>
   );
 }
+

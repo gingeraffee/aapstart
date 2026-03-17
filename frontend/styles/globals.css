@@ -37,7 +37,7 @@
   --sidebar-locked-border: rgba(166, 191, 220, 0.56);
   --sidebar-locked-icon-bg: rgba(130, 160, 194, 0.22);
   --sidebar-locked-icon-text: #5f7e9f;
-  --sidebar-locked-text: #5e7998;
+  --sidebar-locked-text: var(--sidebar-text);
   --sidebar-divider: rgba(153, 182, 218, 0.68);
   --sidebar-roadmap-border: #b8cfe8;
   --sidebar-user-bg: rgba(255, 255, 255, 0.76);
@@ -213,7 +213,7 @@
   --sidebar-locked-border: rgba(30, 58, 95, 0.5);
   --sidebar-locked-icon-bg: rgba(56, 189, 248, 0.08);
   --sidebar-locked-icon-text: #4a6a8f;
-  --sidebar-locked-text: #4a6a8f;
+  --sidebar-locked-text: var(--sidebar-text);
   --sidebar-divider: rgba(30, 58, 95, 0.6);
   --sidebar-roadmap-border: rgba(30, 58, 95, 0.5);
   --sidebar-user-bg: rgba(15, 25, 42, 0.8);
@@ -430,6 +430,7 @@
 @layer components {
   .prose-module {
     color: var(--brand-ink);
+    font-family: var(--font-sans), "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     @apply leading-relaxed;
   }
 

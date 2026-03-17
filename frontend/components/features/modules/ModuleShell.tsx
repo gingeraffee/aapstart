@@ -191,7 +191,7 @@ export function ModuleShell({
   footer,
 }: ModuleShellProps) {
   return (
-    <div className="w-full px-6 py-7 lg:px-8 lg:py-9">
+    <div className="w-full px-6 py-7 font-sans lg:px-8 lg:py-9">
       <div className="mx-auto w-full max-w-[1160px]">
         <div className="flex items-start gap-7">
           <div className="min-w-0 flex-1 space-y-6 animate-fade-up">
@@ -269,7 +269,7 @@ export function ModuleShell({
                   </div>
                 </div>
 
-                <h1 className="mt-2 text-[clamp(1.52rem,2.5vw,2.02rem)] font-extrabold leading-[1.14] tracking-[-0.028em]" style={{ color: "var(--module-headline)" }}>
+                <h1 className="mt-2 text-[clamp(1.52rem,2.5vw,2.02rem)] font-bold leading-[1.14] tracking-[-0.012em]" style={{ color: "var(--module-headline)", fontFamily: 'Georgia, "Times New Roman", Times, serif' }}>
                   {headline}
                 </h1>
                 <p className="mt-2.5 max-w-[700px] text-[0.94rem] leading-[1.72]" style={{ color: "var(--module-body)" }}>{description}</p>

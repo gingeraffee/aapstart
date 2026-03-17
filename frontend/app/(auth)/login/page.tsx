@@ -21,26 +21,37 @@ export default function LoginPage() {
     }
   }, [user, loading, router]);
 
-  useEffect(() => {
+  const updateActiveSceneFromScroll = () => {
     const panel = storyPanelRef.current;
     if (!panel) return;
 
-    const scenes = panel.querySelectorAll<HTMLElement>(".login-scene");
+    const scenes = Array.from(panel.querySelectorAll<HTMLElement>(".login-scene"));
+    if (!scenes.length) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const idx = Array.from(scenes).indexOf(entry.target as HTMLElement);
-            if (idx !== -1) setActiveScene(idx);
-          }
-        });
-      },
-      { root: panel, threshold: 0.4 }
-    );
+    const panelRect = panel.getBoundingClientRect();
+    const panelMidpoint = panelRect.top + panelRect.height / 2;
+    let nearestIndex = 0;
+    let nearestDistance = Number.POSITIVE_INFINITY;
 
-    scenes.forEach((scene) => observer.observe(scene));
-    return () => observer.disconnect();
+    scenes.forEach((scene, index) => {
+      const sceneRect = scene.getBoundingClientRect();
+      const sceneMidpoint = sceneRect.top + sceneRect.height / 2;
+      const distance = Math.abs(sceneMidpoint - panelMidpoint);
+      if (distance < nearestDistance) {
+        nearestDistance = distance;
+        nearestIndex = index;
+      }
+    });
+
+    setActiveScene((prev) => (prev === nearestIndex ? prev : nearestIndex));
+  };
+
+  useEffect(() => {
+    updateActiveSceneFromScroll();
+    window.addEventListener("resize", updateActiveSceneFromScroll);
+    return () => {
+      window.removeEventListener("resize", updateActiveSceneFromScroll);
+    };
   }, []);
 
   function scrollToScene(index: number) {
@@ -59,6 +70,7 @@ export default function LoginPage() {
       {/* ── Left: scrollable story panel ── */}
       <section
         ref={storyPanelRef}
+        onScroll={updateActiveSceneFromScroll}
         aria-label="Portal introduction"
         className="relative w-full lg:w-[58%] overflow-y-scroll snap-y snap-mandatory text-white scrollbar-hide"
         style={{
@@ -75,6 +87,36 @@ export default function LoginPage() {
             opacity: 0.7,
           }}
         />
+
+        <div className="fixed right-[43.5%] top-1/2 z-[3] hidden -translate-y-1/2 lg:flex">
+          <div
+            className="flex flex-col items-center gap-2 rounded-full border px-2 py-2"
+            style={{
+              borderColor: "rgba(56, 189, 248, 0.45)",
+              background: "rgba(8, 20, 42, 0.42)",
+              boxShadow: "0 10px 28px rgba(2, 10, 24, 0.45), 0 0 0 1px rgba(56, 189, 248, 0.18) inset",
+              backdropFilter: "blur(6px)",
+            }}
+            aria-label="Login story scenes"
+          >
+            {Array.from({ length: SCENE_COUNT }).map((_, index) => {
+              const isActive = index === activeScene;
+              return (
+                <button
+                  key={`scene-indicator-${index}`}
+                  type="button"
+                  onClick={() => scrollToScene(index)}
+                  aria-label={`Go to scene ${index + 1}`}
+                  className="h-2.5 w-2.5 rounded-full transition-all duration-200"
+                  style={{
+                    background: isActive ? "#22d3ee" : "rgba(103, 232, 249, 0.3)",
+                    boxShadow: isActive ? "0 0 0 2px rgba(34, 211, 238, 0.2), 0 0 14px rgba(34, 211, 238, 0.55)" : "none",
+                  }}
+                />
+              );
+            })}
+          </div>
+        </div>
 
         {/* ── Scene 1: Hero ── */}
         <div className="login-scene snap-start h-screen flex flex-col relative z-[2] px-8 py-8 lg:px-16 lg:py-10">

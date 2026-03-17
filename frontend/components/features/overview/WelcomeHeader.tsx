@@ -120,9 +120,6 @@ export function WelcomeHeader({
               <path d="M6.5 2.5L10 6l-3.5 3.5" />
             </svg>
           </Link>
-          <p className="text-[0.73rem] font-medium" style={{ color: "var(--welcome-subtext)" }}>
-            {currentModule ? `Up next: ${currentModule.title}` : "Every module in this journey is complete."}
-          </p>
         </div>
 
         <div
