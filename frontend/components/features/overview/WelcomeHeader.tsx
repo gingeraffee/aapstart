@@ -162,8 +162,8 @@ export function WelcomeHeader({
                 style={{
                   width: `${Math.max(pct, 6)}%`,
                   background: pct > 75
-                    ? "linear-gradient(90deg, #22d3ee 0%, #0ea5d9 45%, #d63964 100%)"
-                    : "linear-gradient(90deg, #22d3ee 0%, #0ea5d9 100%)",
+                    ? "linear-gradient(90deg, #0b1e3d 0%, #0ea5d9 45%, #22d3ee 100%)"
+                    : "linear-gradient(90deg, #0b1e3d 0%, #0ea5d9 60%, #22d3ee 100%)",
                   opacity: pct === 0 ? 0.35 : 1,
                 }}
               />

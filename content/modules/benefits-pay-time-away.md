@@ -3,7 +3,7 @@ slug: benefits-pay-time-away
 title: Benefits, Pay & Time Away
 description: Payroll basics, benefits eligibility timing, PTO, and holiday eligibility at AAP.
 tracks: [all]
-order: 5
+order: 6
 estimatedMinutes: 12
 status: published
 requiresQuiz: true

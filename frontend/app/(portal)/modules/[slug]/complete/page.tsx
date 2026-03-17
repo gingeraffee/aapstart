@@ -9,20 +9,6 @@ import { ModuleFooter, ModulePanel, ModuleShell, buildModuleSteps } from "@/comp
 import { Spinner } from "@/components/ui/Spinner";
 import type { ModuleDetail, ModuleSummary, ProgressRecord } from "@/lib/types";
 
-const CONGRATS_MESSAGES = [
-  {
-    headline: "Nice finish.",
-    sub: "You are building real momentum, one clear step at a time.",
-  },
-  {
-    headline: "Another one complete.",
-    sub: "Your rhythm is showing. Keep going while it feels fresh.",
-  },
-  {
-    headline: "Strong close.",
-    sub: "You are moving through onboarding with focus and confidence.",
-  },
-];
 
 export default function CompletePage() {
   const { slug } = useParams<{ slug: string }>();
@@ -85,8 +71,6 @@ export default function CompletePage() {
         ctaLabel={allDone ? "View full journey" : "Return to overview"}
       />
     );
-
-  const message = CONGRATS_MESSAGES[module.order % CONGRATS_MESSAGES.length];
 
   const firedRef = useRef(false);
   useEffect(() => {
@@ -234,10 +218,6 @@ export default function CompletePage() {
         </div>
       </ModulePanel>
 
-      <ModulePanel className="bg-[linear-gradient(180deg,#ffffff_0%,#f7fbff_100%)]">
-        <p className="text-[0.92rem] font-semibold text-text-primary">{message.headline}</p>
-        <p className="mt-1 text-[0.84rem] leading-[1.6] text-text-secondary">{message.sub}</p>
-      </ModulePanel>
     </ModuleShell>
   );
 }

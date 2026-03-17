@@ -1,9 +1,9 @@
 ---
 slug: support-leave-resources
-title: Support, Leave & Resources
-description: Leave pathways, accommodation support, workers' compensation, and the Employee Assistance Program.
+title: Where to Go
+description: Leave pathways, the Employee Assistance Program, and who to contact when you need help.
 tracks: [all]
-order: 6
+order: 5
 estimatedMinutes: 10
 status: published
 requiresQuiz: true
@@ -13,8 +13,6 @@ requiresAcknowledgement: true
 acknowledgements:
   - id: ack-1
     statement: I understand that not all time away follows the same rules and that HR should be involved early for leave questions.
-  - id: ack-2
-    statement: I understand that work-related injuries should be reported immediately to my supervisor.
   - id: ack-3
     statement: I understand that the Employee Assistance Program is available to me starting on day one.
   - id: ack-4
@@ -49,19 +47,6 @@ quiz:
           text: After 90 days
       correctId: c
 
-    - id: q3
-      text: When should a work-related injury be reported?
-      options:
-        - id: a
-          text: Only if it requires medical attention
-        - id: b
-          text: Within 48 hours
-        - id: c
-          text: Immediately, no matter how minor it may seem
-        - id: d
-          text: At the end of the workday
-      correctId: c
-
     - id: q4
       text: Who is the escalation contact for HR issues that go beyond Nicole Thornton?
       options:
@@ -93,21 +78,19 @@ This applies especially to:
 - Injury follow-up when HR involvement is needed
 - Issues you are not comfortable raising through the usual path
 
-## Medical Leave and FMLA
+## Who to Know
 
-If you think you may need medical leave or have questions about FMLA, involve HR early. These situations are handled through a formal process and should not be handled through casual hallway conversations.
+AAP has an open-door policy. You are always welcome to raise a question or concern with anyone on this list — the order below is just a general guide for where to start.
+
+- **Your Supervisor** — your first point of contact for day-to-day questions, scheduling, and routine support needs
+- **HR Administrative Assistant** — can help with paperwork, benefits enrollment questions, and pointing you in the right direction
+- **IT Technicians** — your go-to for equipment issues, system access, password resets, and anything technology-related
+- **Nicole Thornton, HR Manager** — handles leave, accommodations, workplace concerns, and anything that needs HR involvement
+- **Brandy Hooper, VP of HR** — escalation path when a situation requires senior leadership or when you are not comfortable going through the usual channels
 
 :::callout tip
-If a medical or leave situation comes up, contact HR as early as possible. Early involvement makes things easier, not harder.
+You do not need to follow this list in order. If something feels urgent, sensitive, or you are just not sure where to start — go directly to whoever you feel most comfortable reaching out to. That is what open-door means.
 :::
-
-## Accommodation Support
-
-If you need support related to a medical condition or accommodation, HR should be involved so the situation can be handled appropriately and in accordance with applicable requirements.
-
-## Workers' Compensation
-
-AAP provides workers' compensation coverage for work-related injuries or illnesses. **Work-related injuries should be reported immediately** — no matter how minor they may seem — to your supervisor.
 
 ## Employee Assistance Program
 
@@ -123,8 +106,3 @@ Contact HR when:
 - The issue involves harassment, bullying, retaliation, or other sensitive concerns
 - Something is too specific, too personal, or too important for a guess
 
-## Need Help?
-
-- **Supervisor** — first stop for most routine support questions
-- **Nicole Thornton, HR Manager** — next contact for HR support
-- **Brandy Hooper, VP of HR** — escalation path when needed

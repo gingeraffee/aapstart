@@ -259,15 +259,15 @@ export default function OverviewPage() {
                     }
                   : isCurrent
                     ? {
-                        text: "#bb1d49",
-                        dot: "rgba(223, 0, 48, 0.12)",
-                        bar: "linear-gradient(90deg,#fda4af_0%,#df0030_100%)",
-                        accent: "rgba(223, 0, 48, 0.78)",
+                        text: "#0d6b9d",
+                        dot: "rgba(14,165,233,0.18)",
+                        bar: "linear-gradient(90deg,#0b1e3d_0%,#0ea5d9_60%,#22d3ee_100%)",
+                        accent: "rgba(14, 165, 233, 0.85)",
                       }
                     : {
                         text: "#17365d",
                         dot: "rgba(27,44,86,0.12)",
-                        bar: "linear-gradient(90deg,#c2d4eb_0%,#7fa9d7_100%)",
+                        bar: "linear-gradient(90deg,#0b1e3d_0%,#7fa9d7_100%)",
                         accent: "rgba(27, 44, 86, 0.74)",
                       };
 
@@ -285,7 +285,7 @@ export default function OverviewPage() {
                     }
                   : {
                       background: "var(--card-bg)",
-                      border: isCurrent ? "1px solid rgba(223, 0, 48, 0.3)" : "1px solid rgba(159, 183, 214, 0.58)",
+                      border: isCurrent ? "1px solid rgba(14, 165, 233, 0.4)" : "1px solid rgba(159, 183, 214, 0.58)",
                       boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)",
                     };
 
@@ -325,7 +325,7 @@ export default function OverviewPage() {
                     <div className="mb-1 flex items-center justify-between gap-3">
                       <p
                         className="text-[0.62rem] font-bold uppercase tracking-[0.1em]"
-                        style={{ color: isCurrent ? "#b3234c" : "var(--welcome-label-text)" }}
+                        style={{ color: isCurrent ? "#0d6b9d" : "var(--welcome-label-text)" }}
                       >
                         {moduleIndexLabel}
                       </p>
