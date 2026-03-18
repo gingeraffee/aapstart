@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import useSWR from "swr";
 import { modulesApi, progressApi } from "@/lib/api";
 import { useAuth } from "@/lib/context/AuthContext";
 import { ContentBlock } from "@/components/features/modules/ContentBlock";
-import { ModuleFooter, ModulePanel, ModuleShell, buildModuleSteps } from "@/components/features/modules/ModuleShell";
+import { ModulePanel, ModuleShell, buildModuleSteps } from "@/components/features/modules/ModuleShell";
+import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
 import type { ContentBlock as ModuleContentBlock, ModuleDetail, ModuleSummary, ProgressRecord } from "@/lib/types";
@@ -147,24 +149,70 @@ function buildOutcomeLines(
 function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledgement: boolean) {
   const title = moduleTitle.toLowerCase();
 
-  if (title.includes("welcome") || title.includes("aap")) {
+  if (title.includes("how work works")) {
     return [
       {
-        eyebrow: "Reality Check",
-        title: "What AAP is and is not",
-        body: "AAP is a member-first support system for independent pharmacies. It is not a faceless corporate machine, and your work helps keep that difference real.",
+        eyebrow: "Heads Up",
+        title: "You'll reference this one more than once",
+        body: "This module covers the practical stuff — attendance, PTO, dress code, and what happens if something goes sideways. Worth paying attention to now so it's not a surprise later.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Good To Know",
+        title: "The policies here are actually fair",
+        body: "AAP's attendance system has built-in ways to recover points, and the PTO policy gets better the longer you're here. It's worth understanding how it works in your favor.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Real Talk",
+        title: "When in doubt, ask early",
+        body: "Whether it's a scheduling conflict, a question about your paycheck, or something that doesn't feel right — raising it early is always the right move. That's what the open door policy is for.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  if (title.includes("how we show up")) {
+    return [
+      {
+        eyebrow: "Heads Up",
+        title: "This one's about behavior, not tasks",
+        body: "This module covers how people are expected to show up at AAP — professionally, ethically, and respectfully. It's less about what you do and more about how you do it.",
         tone: "navy" as const,
       },
       {
         eyebrow: "People Here Value",
-        title: "Clarity, ownership, and follow-through",
-        body: "People tend to notice the teammates who ask good questions, stay helpful under pressure, and make the next step easier for someone else.",
+        title: "Useful beats impressive",
+        body: "Good questions, steady follow-through, and sound judgment matter more than having all the answers. Nobody expects you to know everything yet.",
         tone: "cyan" as const,
       },
       {
-        eyebrow: "New Hire FAQ",
-        title: "What am I supposed to remember right now?",
-        body: "Not everything. The win this week is understanding the shape of the business, where to ask for help, and what your role connects to.",
+        eyebrow: "Good To Know",
+        title: "You're more ready than you think",
+        body: "If you can explain the main ideas back to someone, you are probably more ready than you think.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  if (title.includes("welcome") || title.includes("aap")) {
+    return [
+      {
+        eyebrow: "Reality Check",
+        title: "What AAP actually is",
+        body: "AAP is a co-op — 2,000+ independent pharmacies that pool resources so they can compete with the big chains. API is the distribution powerhouse, AAP is the competitive support side, and your role is part of what keeps both moving.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "What Gets Noticed",
+        title: "It's simpler than you'd think",
+        body: "Ask good questions. Follow through. Make the next person's job slightly easier than you found it. That's genuinely it. The people who stand out here aren't louder — they're just more reliable.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "First Week Goal",
+        title: "Don't memorize everything",
+        body: "You're not supposed to have it all figured out. The job this week is to understand the shape of the place — where decisions get made, where to ask for help, and how your role connects to the rest.",
         tone: "red" as const,
       },
     ];
@@ -267,6 +315,75 @@ export default function ModulePage() {
   }
 
   const sections = output.filter((section) => section.title || section.blocks.length > 0);
+
+  // Override "What This Module Covers" for How Work Works
+  if (currentModule.title.toLowerCase().includes("how work works")) {
+    const coverSection = sections.find(
+      (s) => s.title?.toLowerCase().includes("what this module covers")
+    );
+    if (coverSection) {
+      coverSection.title = "The stuff worth knowing before day one";
+      coverSection.blocks = [
+        {
+          type: "text",
+          content:
+            "<p>This module covers the practical side of working at AAP. By the end you'll know how performance is measured, how attendance works, what to wear, how to request time off, and who to go to when you need help. No surprises.</p>",
+        },
+      ];
+    }
+  }
+
+  // Override "What This Module Covers" for How We Show Up
+  if (currentModule.title.toLowerCase().includes("how we show up")) {
+    const coverSection = sections.find(
+      (s) => s.title?.toLowerCase().includes("what this module covers")
+    );
+    if (coverSection) {
+      coverSection.title = "Good People Who Do Great Work";
+      coverSection.blocks = [
+        {
+          type: "text",
+          content:
+            "<p>This module is about how people are expected to show up at AAP — not just what they do, but how they do it. That covers professionalism, ethics, accountability, and what to do when something doesn't feel right.</p>" +
+            '<p style="color:#4d6788">Watch Jon Copeland explain how employees make a difference every day...</p>',
+        },
+        {
+          type: "video",
+          src: "/videos/aap-values.mp4",
+          alt: "AAP Values",
+        },
+      ];
+    }
+  }
+
+  // Override "Mission, Vision, and Values" section content
+  const missionSection = sections.find(
+    (s) => s.title?.toLowerCase().includes("mission") && s.title?.toLowerCase().includes("values")
+  );
+  if (missionSection) {
+    missionSection.blocks = [
+      {
+        type: "text",
+        content:
+          "<p>AAP exists to help independent pharmacies stay profitable, competitive, and focused on patient care — so the corner drugstore can keep doing what the big chains can't: actually knowing their customers.</p>",
+      },
+      {
+        type: "text",
+        content: "<p><strong>Here's what that looks like in practice:</strong></p>",
+      },
+      {
+        type: "list",
+        items: [
+          "Customer focus — Every decision runs through one question: does this help the pharmacies we serve? Not eventually. Now.",
+          "Integrity — We say what we mean, do what we say, and don't dress up bad news. Independent pharmacies trust us with their business — that's not something we take lightly.",
+          "Respect — For our pharmacies, our coworkers and most importantly the patients depending on us. Everyone in this chain matters.",
+          "Excellence — Good enough isn't a finish line. The pharmacies we support are competing against billion-dollar chains — they need us sharp.",
+          "Ownership — If you see something that needs handling, you handle it. We don't have a department for passing the buck.",
+        ],
+      } as ModuleContentBlock,
+    ];
+  }
+
   const firstKeyLine = sectionKeyLine(sections[0]?.blocks ?? []);
   const liveModules = (moduleCatalog ?? [])
     .filter((item) => item.status === "published")
@@ -386,7 +503,7 @@ export default function ModulePage() {
       <>
         {section.title ? (
           <h2 className={cn("font-extrabold tracking-[-0.025em] text-[#0d1f3a]", isFeatured ? "mb-3 text-[1.34rem]" : "mb-4 text-[1.48rem]")}>
-            {section.title}
+            {section.title.replace(/\?$/, "")}
           </h2>
         ) : (
           <h2 className={cn("font-extrabold tracking-[-0.025em] text-[#0d1f3a]", isFeatured ? "mb-3 text-[1.34rem]" : "mb-4 text-[1.48rem]")}>
@@ -416,7 +533,7 @@ export default function ModulePage() {
     }
 
     return (
-      <section key={section.id} id={section.id} className="scroll-mt-24 w-full px-1 py-4 md:py-7">
+      <section key={section.id} id={section.id} className="scroll-mt-24 w-full px-1 py-1 md:py-2">
         {content}
       </section>
     );
@@ -484,49 +601,41 @@ export default function ModulePage() {
         estimatedMinutes={currentModule.estimated_minutes}
         steps={steps}
         rail={rail}
-        footer={
-          <ModuleFooter
-            backHref="/overview"
-            backLabel="Back to my path"
-            ctaLabel={continueLabel}
-            helperText={nextStepLabel}
-            onCtaClick={handleFinished}
-          />
-        }
+        footer={null}
       >
-        <div className="space-y-8">
+        <div className="space-y-2">
         {sections[0] ? renderSection(sections[0], 0, "featured") : null}
 
-        <section className="max-w-[860px] px-1 py-1">
-          <div className="mb-5">
+        <section
+          className="relative overflow-hidden"
+          style={{
+            padding: "2rem 2.5rem 2.25rem",
+            background: "rgba(10, 22, 40, 0.04)",
+            borderTop: "0.5px solid rgba(10, 22, 40, 0.08)",
+            borderBottom: "0.5px solid rgba(10, 22, 40, 0.08)",
+          }}
+        >
+          <div
+            className="pointer-events-none absolute -right-16 -top-8 h-36 w-36 rounded-full"
+            style={{ background: "radial-gradient(circle, rgba(15,127,179,0.10) 0%, rgba(15,127,179,0) 72%)" }}
+          />
+          <div
+            className="pointer-events-none absolute -left-8 bottom-0 h-24 w-24 rounded-full"
+            style={{ background: "radial-gradient(circle, rgba(223,0,48,0.07) 0%, rgba(223,0,48,0) 72%)" }}
+          />
+          <div className="relative mb-5">
             <p className="inline-flex items-center gap-2 rounded-full bg-[rgba(27,44,86,0.06)] px-3 py-1 text-[0.62rem] font-bold uppercase tracking-[0.14em] text-[#17365d]">
               <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
               Human Notes
             </p>
-            <h2 className="mt-3 text-[1.42rem] font-extrabold tracking-[-0.03em] text-[#0d1f3a]">
+            <h2 className="mt-3 text-[1.42rem] font-medium tracking-[-0.03em] text-[#0d1f3a]">
               The part new hires usually want someone to just say out loud
             </h2>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-3">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem" }}>
             {humanMoments.map((moment) => (
-              <div
-                key={moment.title}
-                className={cn(
-                  "rounded-[16px] px-4 py-4 shadow-[0_10px_20px_rgba(12,24,47,0.06)]",
-                  moment.tone === "navy" && "bg-[linear-gradient(180deg,rgba(27,44,86,0.06)_0%,rgba(27,44,86,0.01)_100%)]",
-                  moment.tone === "cyan" && "bg-[linear-gradient(180deg,rgba(14,127,179,0.08)_0%,rgba(14,127,179,0.01)_100%)]",
-                  moment.tone === "red" && "bg-[linear-gradient(180deg,rgba(223,0,48,0.06)_0%,rgba(223,0,48,0.01)_100%)]"
-                )}
-                style={{
-                  border:
-                    moment.tone === "navy"
-                      ? "1px solid rgba(27,44,86,0.16)"
-                      : moment.tone === "cyan"
-                        ? "1px solid rgba(14,127,179,0.18)"
-                        : "1px solid rgba(223,0,48,0.16)",
-                }}
-              >
+              <div key={moment.title}>
                 <p
                   className="text-[0.62rem] font-bold uppercase tracking-[0.12em]"
                   style={{
@@ -547,9 +656,25 @@ export default function ModulePage() {
 
         {sections.slice(1).map((section, index) => renderSection(section, index + 1, "open"))}
 
-        <ModulePanel className="scroll-mt-24">
-          <div className="mb-4 flex items-start gap-2.5 rounded-[14px] border border-[rgba(223,0,48,0.2)] bg-[linear-gradient(180deg,rgba(223,0,48,0.05)_0%,rgba(223,0,48,0.01)_100%)] px-4 py-3">
-            <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-[rgba(223,0,48,0.1)] text-[#c4234a]">
+        <ModulePanel className="relative scroll-mt-24 !overflow-hidden !px-4 !py-3 !pt-0">
+          <div className="mb-3 h-1 w-full bg-[linear-gradient(90deg,#0f7fb3_0%,#06b6d4_52%,#df0030_100%)]" />
+          <div
+            className="pointer-events-none absolute -right-12 top-2 h-32 w-32 rounded-full"
+            style={{ background: "radial-gradient(circle, rgba(15,127,179,0.10) 0%, rgba(15,127,179,0) 72%)" }}
+          />
+          <div
+            className="pointer-events-none absolute -left-6 bottom-4 h-20 w-20 rounded-full"
+            style={{ background: "radial-gradient(circle, rgba(223,0,48,0.06) 0%, rgba(223,0,48,0) 72%)" }}
+          />
+          <div
+            className="pointer-events-none absolute right-4 top-4 hidden h-14 w-14 rounded-[12px] md:block"
+            style={{
+              backgroundImage: "radial-gradient(circle, rgba(19, 98, 154, 0.10) 0.8px, transparent 1px)",
+              backgroundSize: "11px 11px",
+            }}
+          />
+          <div className="relative mb-4 flex items-start gap-2.5 rounded-[14px] border border-[rgba(27,44,86,0.14)] bg-[linear-gradient(180deg,rgba(27,44,86,0.04)_0%,rgba(27,44,86,0.01)_100%)] px-4 py-3">
+            <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-[rgba(27,44,86,0.08)] text-[#17365d]">
               <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                 <path d="M8 2.5v6.6" />
                 <path d="M5.2 9.2A3.2 3.2 0 1 0 10.8 9.2" />
@@ -557,16 +682,16 @@ export default function ModulePage() {
               </svg>
             </span>
             <div>
-              <p className="inline-flex rounded-full bg-[#c4234a] px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.09em] text-white">
+              <p className="inline-flex rounded-full bg-[#17365d] px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.09em] text-white">
                 Quick Reflection
               </p>
-              <p className="mt-1.5 text-[0.78rem] leading-[1.5] text-[#5f4962]">
+              <p className="mt-1.5 text-[0.78rem] leading-[1.5] text-[#4d6788]">
                 45-second self-check before you move to the next step.
               </p>
             </div>
           </div>
 
-          <div className="space-y-2.5">
+          <div className="relative space-y-2">
             {reflectionPrompts.map((prompt, index) => (
               <button
                 key={prompt}
@@ -596,9 +721,29 @@ export default function ModulePage() {
             ))}
           </div>
 
-          <p className="mt-3 text-[0.74rem] text-[#607996]">
+          <p className="relative mt-2 text-[0.74rem] text-[#607996]">
             {hasQuiz ? "Next stop: quick knowledge check." : "Next stop: confirmation and completion."}
           </p>
+
+          <div
+            className="relative mt-4 h-px w-full"
+            style={{ background: "linear-gradient(90deg, rgba(27,44,86,0.14) 0%, rgba(27,44,86,0.04) 60%, transparent 100%)" }}
+          />
+
+          <div className="relative mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <Link href="/overview" className="inline-flex items-center gap-1.5 text-[0.82rem] font-semibold transition-colors" style={{ color: "var(--module-context)" }}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 2L4 7l5 5" />
+              </svg>
+              Back to my path
+            </Link>
+            <div className="flex flex-col items-end gap-1.5">
+              <Button onClick={handleFinished} className="h-[2.8rem] px-6 text-[0.88rem]">
+                {continueLabel}
+              </Button>
+              <p className="text-[0.73rem]" style={{ color: "var(--module-context)" }}>{nextStepLabel}</p>
+            </div>
+          </div>
         </ModulePanel>
       </div>
     </ModuleShell>

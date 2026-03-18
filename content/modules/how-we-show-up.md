@@ -70,33 +70,19 @@ At AAP, how people show up matters. That includes professionalism, respectful be
 
 ## Respect and Professionalism
 
-AAP expects employees to contribute to a workplace that is respectful, professional, and safe for others. That means communicating directly, treating people with dignity, listening well, and handling conflict in a constructive way.
+AAP is a place where people are expected to treat each other well — communicating directly, assuming good intent, and handling the inevitable bumps without letting them turn into something bigger. The values aren't just wall art. They show up in how we talk to each other every day.
 
-The non-negotiables:
+A few things that are never okay:
 
-- Harassment is not tolerated
-- Bullying and disrespectful behavior are not acceptable
-- Retaliation for good-faith reporting is not acceptable
-- Dishonest, unethical, or illegal conduct is not acceptable
+- Harassment of any kind
+- Bullying or disrespectful behavior
+- Retaliation against someone who reported something in good faith
+- Dishonest, unethical, or illegal conduct
 
 ## Ethics and Conduct
 
-Employees are expected to use good judgment, protect trust, and conduct themselves in a way that reflects well on the company and the people it serves. Employees are expected to conduct business in accordance with the law and to refrain from illegal, dishonest, or unethical conduct.
-
-## Speaking Up
-
-Most workplace concerns should be raised early rather than left to grow.
-
-In most situations, your **supervisor** is the first point of contact. If you are not comfortable going to your supervisor, or the issue is sensitive, contact **HR**. Employees can raise concerns and make reports without fear of reprisal.
-
-:::callout tip
-When something feels off, earlier is almost always better. You don't need to have all the details to ask a question.
-:::
+Good judgment isn't complicated — it's just asking yourself whether you'd be comfortable if your supervisor could see exactly what you're doing and why. Protect the trust people place in you, handle company information like it matters, and keep it legal. That's the whole thing.
 
 ## Need Help?
 
-Start with your supervisor for most day-to-day concerns. Contact HR if:
-
-- You are not comfortable going to your supervisor
-- The issue involves workplace conduct, harassment, bullying, or retaliation
-- The issue needs sensitive handling or formal review
+Start with your supervisor for most day-to-day concerns. If the situation involves conduct, harassment, or something that needs formal handling, HR is the right call. Any concern raised in good faith will never be held against you.
