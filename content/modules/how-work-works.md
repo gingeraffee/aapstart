@@ -1,7 +1,7 @@
 ---
 slug: how-work-works
 title: How Work Works
-description: The practical side of working at AAP — what's expected, how time off works, and everything in between.
+description: "This module covers how performance is measured, what to wear, the open door policy, and conduct and overtime expectations. The practical stuff — so nothing catches you off guard."
 tracks: [all]
 order: 4
 estimatedMinutes: 12
@@ -12,11 +12,11 @@ requiresAcknowledgement: true
 # DRAFT — Please review and edit these acknowledgement statements before publishing.
 acknowledgements:
   - id: ack-1
-    statement: I understand that overtime must be approved before it is worked.
+    statement: I understand that I cannot exceed 2.0 points in the first 60 days.
   - id: ack-2
-    statement: I understand the open door process and when to involve HR.
+    statement: I understand the AAP dress code.
   - id: ack-3
-    statement: I understand AAP's conduct expectations, including appropriate use of company systems.
+    statement: I understand that corrective action decisions are based upon supervisor discretion.
 
 quiz:
   questions:
@@ -60,9 +60,9 @@ quiz:
       correctId: a
 ---
 
-## What This Module Covers
+## The Stuff Everyone Assumes You Know
 
-This module covers the practical side of working at AAP: day-to-day expectations, attendance, and how concerns are handled.
+This module covers how performance is measured, what to wear, the open door policy, and conduct and overtime expectations. The practical stuff — so nothing catches you off guard.
 
 ## What To Do (and what not to do)
 
@@ -111,9 +111,15 @@ AAP uses a no-fault point system for attendance — which means no one's judging
 | No call / no show | 1.5 points |
 | Two consecutive no call / no shows | Presumed resignation |
 
+:::aside
+The 5-minute grace period isn't a daily strategy. Routinely clocking in at 5:05 will still get flagged.
+:::
+
 **Thresholds**
 
-First 60 days: don't exceed 2.0 points. After that, 8.0 points in a calendar year is the termination threshold.
+First 60 days: don't exceed 2.0 points.
+
+After that, 8.0 points in a calendar year is the termination threshold — but don't worry, we will always let you know when you're in the danger zone.
 
 **Point Rolloff**
 
@@ -130,50 +136,18 @@ Three consecutive months with no tardies or unexcused absences earns you a $75 b
 
 If you're going to be late or absent, report it within 15 minutes of your scheduled shift start. Log it in BambooHR, or contact your supervisor or HR directly if you don't have access.
 
-## PTO and Time Away
+## Social Media and AAP
 
-AAP offers vacation, personal leave, and paid holidays. Here's the breakdown — eligibility starts after your first 60 days.
+Your personal social media accounts are yours — but anything you post can reflect on AAP, especially if your profile identifies you as an employee. AAP doesn't monitor your accounts, but the company does expect you to use good judgment.
 
-**Vacation**
+A few things to keep in mind:
 
-Available to regular full-time employees. Accrual is based on your anniversary date and is paid out at termination.
+- Don't share confidential company information, internal documents, or non-public business details
+- Avoid posting anything that could be seen as harassment, discrimination, or a threat — even if it's meant as a joke
+- If you mention AAP or your role, make it clear the views are your own
+- Think before you post: if it would make your supervisor uncomfortable reading it aloud in a meeting, it probably doesn't belong online
 
-| Years of Service | Annual Vacation Hours |
-|-----------------|----------------------|
-| 60 days – 1st anniversary | 24 hours (3 days) |
-| 1st – 2nd anniversary | 40 hours (5 days) |
-| 2nd – 3rd anniversary | 56 hours (7 days) |
-| 3rd – 5th anniversary | 80 hours (10 days) |
-| 5th – 9th anniversary | 120 hours (15 days) |
-| 10th – 19th anniversary | 136 hours (17 days) |
-| 20th anniversary and beyond | 152 hours (19 days) |
-
-Minimum increment: 2 hours. Need more than 5 consecutive days? That requires written approval from the Company President.
-
-**Personal Leave**
-
-Available to all employees after the 60-day waiting period. Does not carry over and is not paid out at termination.
-
-| Employee Type | Personal Leave |
-|--------------|----------------|
-| Full-time, first year | 24 hours (3 days) |
-| Full-time, after 1 year | 32 hours (4 days) |
-| Full-time, after 5 years | 40 hours (5 days) |
-| Part-time | 1 hour per 30 hours worked |
-
-Minimum increment: 1 hour. Accrual date is your full-time hire date — if you converted from part-time, your original hire date does not count.
-
-**Holidays**
-
-AAP observes the following paid holidays:
-
-New Year's Day · Memorial Day · Independence Day · Labor Day · Thanksgiving · Day after Thanksgiving · Christmas Eve · Christmas Day
-
-Day after Thanksgiving and Christmas Eve may be substituted with a Floating Holiday. Holidays falling on Saturday are observed the Friday before. Holidays falling on Sunday are observed the Monday after. If you're required to work a holiday, you'll receive a Floating Holiday to use within 90 days.
-
-**Requesting Time Off**
-
-Planned time off: submit your request by 5:00 PM the day before. Unplanned absence: notify your supervisor before your scheduled start time on each day you're out. Log everything in BambooHR.
+This isn't about limiting your voice. It's about protecting your reputation and the company's. When in doubt, leave it out.
 
 ## Dress Code
 
@@ -187,10 +161,28 @@ AAP expects a clean, neat, and work-appropriate appearance. Comfort is fine — 
 The shoe and clothing rules aren't arbitrary — they're about keeping the warehouse secure and everyone safe. If you need a snack or a drink, the break room is fully stocked and always available.
 :::
 
-:::track [hr]
+:::track [administrative]
 AAP expects a clean, neat, and professional appearance. Business casual is the standard Monday through Thursday.
 
 Fridays are casual — jeans and a t-shirt are welcome. Just keep it clean and presentable. Jeans with holes or tears aren't permitted, even on Fridays.
+:::
+
+:::track [hr]
+**Dress Code (Administrative)**
+
+AAP expects a clean, neat, and professional appearance. Business casual is the standard Monday through Thursday.
+
+Fridays are casual — jeans and a t-shirt are welcome. Just keep it clean and presentable. Jeans with holes or tears aren't permitted, even on Fridays.
+
+**Dress Code (Warehouse)**
+
+The warehouse team follows a slightly different standard since it's a physical environment. Here's what applies on the floor:
+
+- Closed-toe, closed-heel shoes only
+- No hats, head coverings, or bulky jackets
+- No food or drinks on the warehouse floor
+
+The shoe and clothing rules are about keeping the warehouse secure and everyone safe.
 :::
 
 ## Open Door Policy
