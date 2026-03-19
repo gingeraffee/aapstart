@@ -196,6 +196,29 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
     ];
   }
 
+  if (title.includes("benefits")) {
+    return [
+      {
+        eyebrow: "In The Loop",
+        title: "BambooHR + Paylocity = your command center",
+        body: "Your time off, pay, and benefits all live here. Two systems, one source of truth — learn them early and you'll never have to chase anyone down for answers.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Stay Curious",
+        title: "Benefits have deadlines that don't care about your busy week",
+        body: "Enrollment windows close, PTO doesn't always roll over, and the point system is always running. The questions you put off today have a way of becoming problems next month.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Good To Know",
+        title: "You won't remember this. Bookmark it anyway.",
+        body: "Accrual rates, point thresholds, holiday schedules — this isn't stuff you memorize. It's stuff you reference at 4pm on a Friday when something feels off.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
   if (title.includes("welcome") || title.includes("aap")) {
     return [
       {
@@ -443,6 +466,42 @@ export default function ModulePage() {
     },
   ] : [];
 
+  // Gut Check scenarios for Benefits, Pay & Time Away
+  const benefitsGutChecks = currentModule.title.toLowerCase().includes("benefits") ? [
+    {
+      scenario: "You need to leave 2 hours early on Friday for a dentist appointment. What's the smallest amount of personal leave you can use?",
+      options: [
+        { id: "a", text: "Half a day" },
+        { id: "b", text: "2 hours" },
+        { id: "c", text: "1 hour" },
+        { id: "d", text: "You have to take the full day" },
+      ],
+      correctId: "c",
+      explanation: "Personal leave can be used in 1-hour increments — so you only need to use exactly what you need. Vacation time, on the other hand, has a 2-hour minimum.",
+    },
+    {
+      scenario: "A paid holiday falls during your first month on the job. What happens?",
+      options: [
+        { id: "a", text: "You get holiday pay like everyone else" },
+        { id: "b", text: "You work the holiday and get overtime" },
+        { id: "c", text: "You get the day off but without pay" },
+        { id: "d", text: "You get a floating holiday to use later" },
+      ],
+      correctId: "c",
+      explanation: "Holiday pay doesn't kick in until after 60 calendar days of full-time employment. You'll still get the day off if AAP is closed, but it won't be paid until you hit that milestone.",
+    },
+    {
+      scenario: "You want to take a week-long trip for your anniversary. You have the PTO balance. What else do you need?",
+      options: [
+        { id: "a", text: "Nothing — just submit it in BambooHR" },
+        { id: "b", text: "A verbal okay from your supervisor" },
+        { id: "c", text: "Written approval from the Company President" },
+        { id: "d", text: "HR has to sign off on anything over 3 days" },
+      ],
+      correctId: "c",
+      explanation: "Any vacation request over 5 consecutive days requires written approval from the Company President. Having the PTO balance isn't enough — plan ahead for that extra step.",
+    },
+  ] : [];
 
   // Override "What This Module Covers" for How We Show Up
   if (currentModule.title.toLowerCase().includes("how we show up")) {
@@ -647,6 +706,11 @@ export default function ModulePage() {
         {isFeatured && howWorkWorksGutChecks.length > 0 && (
           <div className="mt-6 animate-fade-up" style={{ animationDelay: "150ms" }}>
             <GutCheckBlock scenarios={howWorkWorksGutChecks} />
+          </div>
+        )}
+        {isFeatured && benefitsGutChecks.length > 0 && (
+          <div className="mt-6 animate-fade-up" style={{ animationDelay: "150ms" }}>
+            <GutCheckBlock scenarios={benefitsGutChecks} />
           </div>
         )}
       </>
