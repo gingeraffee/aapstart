@@ -221,6 +221,17 @@ def _parse_directive(block: str) -> dict | None:
         props = _parse_key_value(inner)
         return {"type": block_type, **props}
 
+    if block_type == "aside":
+        props = _parse_key_value(inner)
+        header_text = props.pop("header", "")
+        body_lines = [l for l in inner.split("\n")
+                      if not l.strip().startswith(("header:", "icon:", "border:"))]
+        body_content = _render_md("\n".join(body_lines)) if body_lines else ""
+        return {"type": "aside", "content": body_content, "label": header_text, **props}
+
+    if block_type == "qrcode":
+        return {"type": "qrcode", **_parse_key_value(inner)}
+
     return None
 
 

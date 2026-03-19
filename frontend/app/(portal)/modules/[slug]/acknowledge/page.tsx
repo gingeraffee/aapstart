@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 import { modulesApi, progressApi } from "@/lib/api";
 import { ChecklistItem } from "@/components/ui/ChecklistItem";
 import { ModuleFooter, ModulePanel, ModuleShell, buildModuleSteps } from "@/components/features/modules/ModuleShell";
@@ -12,6 +12,7 @@ import type { ModuleDetail } from "@/lib/types";
 export default function AcknowledgePage() {
   const { slug } = useParams<{ slug: string }>();
   const router = useRouter();
+  const { mutate } = useSWRConfig();
 
   const { data: module, isLoading } = useSWR(`module:${slug}`, () => modulesApi.get(slug) as Promise<ModuleDetail>);
 
@@ -61,6 +62,7 @@ export default function AcknowledgePage() {
 
     try {
       await progressApi.acknowledge(slug, currentModule.acknowledgements.map((item) => item.id));
+      await mutate("progress");
       router.push(hasQuiz ? `/modules/${slug}/quiz` : `/modules/${slug}/complete`);
     } catch {
       setError("We could not save this step just yet. Please try once more.");

@@ -3,7 +3,7 @@ slug: your-first-90-days-warehouse
 title: Your First 30 Days
 description: What to expect in your first month — who to go to, what your 30-day check-in looks like, and how to build strong habits early.
 tracks: [warehouse]
-order: 11
+order: 12
 estimatedMinutes: 10
 status: published
 requiresQuiz: false

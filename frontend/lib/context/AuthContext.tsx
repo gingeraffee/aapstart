@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect, useCallback } from "rea
 import type { User, LoginPayload } from "@/lib/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api";
+const DEV_AUTH_BYPASS = process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === "true";
 const STORAGE_KEY = "aapstart_user";
 
 interface AuthContextValue {
@@ -41,6 +42,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = useCallback(async (payload: LoginPayload) => {
+    // Dev bypass: skip API call entirely, create a local-only user
+    if (DEV_AUTH_BYPASS) {
+      const devUser: User = {
+        employee_id: payload.employee_id,
+        first_name: payload.first_name,
+        last_name: payload.last_name,
+        full_name: `${payload.first_name} ${payload.last_name}`.trim(),
+        track: "administrative",
+        is_admin: false,
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(devUser));
+      setUser(devUser);
+      return;
+    }
+
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10_000);
     let res: Response;

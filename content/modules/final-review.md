@@ -3,7 +3,7 @@ slug: final-review
 title: Final Review
 description: A brief recap of your onboarding journey and your final acknowledgements before you're ready to go.
 tracks: [hr, warehouse, administrative]
-order: 12
+order: 13
 estimatedMinutes: 10
 status: published
 requiresQuiz: true
@@ -31,25 +31,25 @@ quiz:
         - id: a
           text: To maximize shareholder returns through operational efficiency
         - id: b
-          text: To provide quality services while maintaining high standards of integrity and professionalism
-        - id: c
           text: To grow into new markets as quickly as possible
+        - id: c
+          text: To provide quality services while maintaining high standards of integrity and professionalism
         - id: d
           text: To achieve 100% automated workflows by 2030
-      correctId: b
+      correctId: c
 
     - id: q2
       text: Who should you contact first with HR-related questions?
       options:
         - id: a
-          text: A coworker who has been here the longest
+          text: Nicole Thornton, HR Manager
         - id: b
           text: The payroll department directly
         - id: c
-          text: Nicole Thornton, HR Manager
+          text: A coworker who has been here the longest
         - id: d
           text: Your employee portal chatbot
-      correctId: c
+      correctId: a
 
     - id: q3
       text: If you have a conflict with a coworker that you haven't been able to resolve yourselves, what is the appropriate next step?
@@ -59,10 +59,10 @@ quiz:
         - id: b
           text: Post about it on social media to get outside perspective
         - id: c
-          text: Bring it to your supervisor or HR
-        - id: d
           text: File a formal complaint with a government agency immediately
-      correctId: c
+        - id: d
+          text: Bring it to your supervisor or HR
+      correctId: d
 
     - id: q4
       text: Which of the following best describes AAP's expectation for professional conduct?
@@ -83,12 +83,12 @@ quiz:
         - id: a
           text: To provide a rigid rule book that covers every possible situation
         - id: b
-          text: To serve as a reference for policies, expectations, and resources available to employees
+          text: To document each employee's performance history
         - id: c
           text: To replace conversations with your supervisor about day-to-day expectations
         - id: d
-          text: To document each employee's performance history
-      correctId: b
+          text: To serve as a reference for policies, expectations, and resources available to employees
+      correctId: d
 ---
 
 ## You Made It

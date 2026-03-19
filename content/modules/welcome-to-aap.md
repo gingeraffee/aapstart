@@ -38,14 +38,14 @@ quiz:
       text: What is the relationship between AAP and API?
       options:
         - id: a
-          text: API is an external vendor that AAP contracts for deliveries
-        - id: b
-          text: AAP and API are separate companies with a referral agreement
-        - id: c
           text: API is AAP's warehouse and distribution subsidiary
-        - id: d
+        - id: b
+          text: API is an external vendor that AAP contracts for deliveries
+        - id: c
           text: API manages AAP's member pharmacy locations
-      correctId: c
+        - id: d
+          text: AAP and API are separate companies with a referral agreement
+      correctId: a
 
     - id: q3
       text: Which of the following is NOT a goal of AAP Start?
@@ -53,12 +53,12 @@ quiz:
         - id: a
           text: Helping you understand the basics of working at AAP
         - id: b
-          text: Replacing ongoing training from your supervisor
-        - id: c
           text: Giving you a clear overview of important expectations
-        - id: d
+        - id: c
           text: Helping you know where to go for help
-      correctId: b
+        - id: d
+          text: Replacing ongoing training from your supervisor
+      correctId: d
 ---
 
 ## Welcome to AAP.
