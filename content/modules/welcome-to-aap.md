@@ -9,16 +9,15 @@ status: published
 requiresQuiz: true
 requiresAcknowledgement: true
 
-# DRAFT — Please review and edit these acknowledgement statements before publishing.
 acknowledgements:
   - id: ack-1
-    statement: I understand that AAP is a member-owned cooperative that supports independent and community pharmacies.
-  - id: ack-2
-    statement: I understand that API is AAP's warehouse and distribution subsidiary.
-  - id: ack-3
-    statement: I know that Nicole Thornton is my first contact for general onboarding and HR questions.
-  - id: ack-4
     statement: I understand the purpose of AAP Start and how it is designed to support my onboarding.
+  - id: ack-2
+    statement: I understand that AAP is a member-owned cooperative that supports independent community pharmacies.
+  - id: ack-3
+    statement: I understand that API is AAP's warehouse and distribution subsidiary.
+  - id: ack-4
+    statement: I know who to contact first for HR and onboarding questions.
 
 quiz:
   questions:
