@@ -3,7 +3,7 @@ slug: support-leave-resources
 title: Where to Go
 description: Leave pathways, the Employee Assistance Program, and who to contact when you need help.
 tracks: [all]
-order: 5
+order: 7
 estimatedMinutes: 10
 status: published
 requiresQuiz: true
@@ -27,25 +27,25 @@ quiz:
         - id: a
           text: Only after your supervisor approves it
         - id: b
-          text: Involve HR early — especially for medical leave, accommodations, or protected leave
+          text: Only if the leave is longer than two weeks
         - id: c
           text: After 90 days of employment
         - id: d
-          text: Only if the leave is longer than two weeks
-      correctId: b
+          text: Involve HR early — especially for medical leave, accommodations, or protected leave
+      correctId: d
 
     - id: q2
       text: When is the Employee Assistance Program (EAP) available?
       options:
         - id: a
-          text: After 30 days
+          text: On day one
         - id: b
           text: After 60 days
         - id: c
-          text: On day one
+          text: After 30 days
         - id: d
           text: After 90 days
-      correctId: c
+      correctId: a
 
     - id: q4
       text: Who is the escalation contact for HR issues that go beyond Nicole Thornton?
@@ -53,12 +53,12 @@ quiz:
         - id: a
           text: Your direct supervisor
         - id: b
-          text: Brandy Hooper, VP of HR
-        - id: c
           text: A co-worker in HR
+        - id: c
+          text: Brandy Hooper, VP of HR
         - id: d
           text: LinkedIn Learning support
-      correctId: b
+      correctId: c
 ---
 
 ## What This Module Covers

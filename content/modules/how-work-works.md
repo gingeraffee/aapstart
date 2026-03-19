@@ -12,12 +12,10 @@ requiresAcknowledgement: true
 # DRAFT — Please review and edit these acknowledgement statements before publishing.
 acknowledgements:
   - id: ack-1
-    statement: I understand AAP's attendance expectations and how the point system works.
-  - id: ack-2
     statement: I understand that overtime must be approved before it is worked.
-  - id: ack-3
+  - id: ack-2
     statement: I understand the open door process and when to involve HR.
-  - id: ack-4
+  - id: ack-3
     statement: I understand AAP's conduct expectations, including appropriate use of company systems.
 
 quiz:
@@ -28,64 +26,38 @@ quiz:
         - id: a
           text: Stay and log the time — you'll get paid either way
         - id: b
-          text: Get overtime approved before working it
+          text: Check with payroll to confirm your overtime rate first
         - id: c
           text: Work the hours and submit a request to HR afterward
         - id: d
-          text: Check with payroll to confirm your overtime rate first
-      correctId: b
+          text: Get overtime approved before working it
+      correctId: d
 
     - id: q2
       text: What is the goal of AAP's corrective action process?
       options:
         - id: a
-          text: To create a formal record that leads to termination
-        - id: b
           text: To address issues clearly and consistently so employees know where they stand
+        - id: b
+          text: To create a formal record that leads to termination
         - id: c
           text: To document patterns that justify reducing an employee's pay grade
         - id: d
           text: To ensure repeated issues are handled only during performance reviews
-      correctId: b
+      correctId: a
 
     - id: q3
-      text: You realize at the end of your shift that you forgot to clock in this morning. What should you do?
-      options:
-        - id: a
-          text: Clock in now and adjust your hours in the system yourself
-        - id: b
-          text: Wait until payday to see if it was caught automatically
-        - id: c
-          text: Notify your supervisor right away so it can be corrected
-        - id: d
-          text: Submit a correction request through BambooHR before your next shift
-      correctId: c
-
-    - id: q4
-      text: Which of the following is true about AAP's attendance expectations?
-      options:
-        - id: a
-          text: Attendance issues only matter if they result in missed deadlines
-        - id: b
-          text: The attendance point system applies to all employees equally
-        - id: c
-          text: Attendance issues should be communicated promptly and follow reporting procedures
-        - id: d
-          text: Supervisors track attendance informally and address it during reviews
-      correctId: c
-
-    - id: q5
       text: "AAP's expectations around social media use apply when:"
       options:
         - id: a
-          text: You mention AAP or coworkers by name in a post
-        - id: b
           text: Your posts could affect the workplace or the company's reputation
+        - id: b
+          text: You mention AAP or coworkers by name in a post
         - id: c
           text: You use social media on company devices during work hours
         - id: d
           text: You connect with coworkers on professional networking sites
-      correctId: b
+      correctId: a
 ---
 
 ## What This Module Covers
