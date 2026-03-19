@@ -14,7 +14,7 @@ acknowledgements:
   - id: ack-1
     statement: I understand that harassment, bullying, and retaliation are not acceptable at AAP.
   - id: ack-2
-    statement: I understand that my supervisor is my first point of contact for most workplace concerns.
+    statement: I agree to the AAP Code of Conduct and Ethics.
   - id: ack-3
     statement: I understand when to involve HR instead of or in addition to my supervisor.
   - id: ack-4
@@ -28,12 +28,12 @@ quiz:
         - id: a
           text: Being reassigned to a different department
         - id: b
-          text: Having to repeat the complaint to multiple people
-        - id: c
           text: Retaliation from anyone involved
+        - id: c
+          text: Having to repeat the complaint to multiple people
         - id: d
           text: Receiving follow-up questions from HR
-      correctId: c
+      correctId: b
 
     - id: q2
       text: According to AAP's expectations, when is the best time to raise a workplace concern?
@@ -43,23 +43,23 @@ quiz:
         - id: b
           text: Once the situation has clearly become a pattern
         - id: c
-          text: Early, before the issue has a chance to grow
-        - id: d
           text: Only when you're certain it violates a specific policy
-      correctId: c
+        - id: d
+          text: Early, before the issue has a chance to grow
+      correctId: d
 
     - id: q3
       text: "AAP's conduct standards apply:"
       options:
         - id: a
-          text: Only during scheduled work hours
+          text: Whenever you are representing AAP, including in professional and digital contexts
         - id: b
           text: Only when interacting with member pharmacies
         - id: c
-          text: Whenever you are representing AAP, including in professional and digital contexts
+          text: Only during scheduled work hours
         - id: d
           text: Only after your introductory period ends
-      correctId: c
+      correctId: a
 ---
 
 ## What This Module Covers

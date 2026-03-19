@@ -3,7 +3,7 @@ slug: safety-warehouse
 title: Safety & OSHA — Warehouse
 description: Practical safety for the warehouse floor — PPE, hazard communication, safe lifting, equipment, emergency procedures, and incident reporting.
 tracks: [warehouse]
-order: 8
+order: 9
 estimatedMinutes: 20
 status: published
 requiresQuiz: true
@@ -23,25 +23,25 @@ quiz:
         - id: a
           text: Lift quickly, keep the load away from your body, twist to place it
         - id: b
-          text: Assess the load, bend at the knees, lift with your legs, keep the load close to your body
+          text: Always use equipment regardless of load size
         - id: c
           text: Bend at the waist, lift fast to reduce strain, twist to position
         - id: d
-          text: Always use equipment regardless of load size
-      correctId: b
+          text: Assess the load, bend at the knees, lift with your legs, keep the load close to your body
+      correctId: d
 
     - id: q2
       text: Where can you find detailed information about a hazardous chemical used in your work area?
       options:
         - id: a
-          text: Ask a coworker who has worked here longer
-        - id: b
           text: The Safety Data Sheet (SDS)
+        - id: b
+          text: Ask a coworker who has worked here longer
         - id: c
           text: The product label only
         - id: d
           text: The employee handbook
-      correctId: b
+      correctId: a
 
     - id: q3
       text: You see a coworker operating a forklift and are not sure they are certified. What should you do?

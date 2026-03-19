@@ -3,7 +3,7 @@ slug: where-you-make-an-impact-warehouse
 title: Where You Make an Impact
 description: How the warehouse runs, how product flows, and where your role fits into the bigger picture.
 tracks: [warehouse]
-order: 9
+order: 10
 estimatedMinutes: 15
 status: published
 requiresQuiz: false

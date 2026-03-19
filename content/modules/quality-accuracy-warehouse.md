@@ -3,7 +3,7 @@ slug: quality-accuracy-warehouse
 title: Quality & Accuracy
 description: Why getting it right matters, where errors happen, and how to catch and correct problems before they compound.
 tracks: [warehouse]
-order: 10
+order: 11
 estimatedMinutes: 12
 status: published
 requiresQuiz: false

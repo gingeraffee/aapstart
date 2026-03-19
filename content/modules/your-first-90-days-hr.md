@@ -3,7 +3,7 @@ slug: your-first-90-days-hr
 title: Your First 90 Days
 description: What to expect — and what's expected of you — during your first three months as an HR Administrative Assistant at AAP.
 tracks: [hr]
-order: 9
+order: 10
 estimatedMinutes: 15
 status: published
 requiresQuiz: true
@@ -29,12 +29,12 @@ quiz:
         - id: a
           text: Leading HR meetings independently
         - id: b
-          text: Completing onboarding, learning systems, and observing HR processes
-        - id: c
           text: Managing the full recruitment cycle
+        - id: c
+          text: Completing onboarding, learning systems, and observing HR processes
         - id: d
           text: Independently handling all employee relations issues
-      correctId: b
+      correctId: c
 
     - id: q2
       text: "By the end of your first 60 days, you should be able to:"
@@ -42,25 +42,25 @@ quiz:
         - id: a
           text: Run all payroll processing without supervision
         - id: b
-          text: Handle routine HR tasks with increasing independence
+          text: Conduct performance reviews for other employees
         - id: c
           text: Take over all onboarding responsibilities from your supervisor
         - id: d
-          text: Conduct performance reviews for other employees
-      correctId: b
+          text: Handle routine HR tasks with increasing independence
+      correctId: d
 
     - id: q3
       text: What is a key relationship-building goal during the first 90 days?
       options:
         - id: a
-          text: Replacing all existing HR workflows with your own approach
-        - id: b
           text: Learning who key stakeholders are and building trust with colleagues
+        - id: b
+          text: Replacing all existing HR workflows with your own approach
         - id: c
           text: Avoiding asking questions to appear self-sufficient
         - id: d
           text: Limiting interaction to your immediate supervisor only
-      correctId: b
+      correctId: a
 
     - id: q4
       text: If you are unsure about an HR policy or process during your first 90 days, what should you do?
@@ -68,12 +68,12 @@ quiz:
         - id: a
           text: Make your best guess and proceed
         - id: b
-          text: Ask a coworker outside of HR
-        - id: c
           text: Ask your supervisor before acting
+        - id: c
+          text: Ask a coworker outside of HR
         - id: d
           text: Wait until your 90-day review to bring it up
-      correctId: c
+      correctId: b
 ---
 
 ## What This Module Covers

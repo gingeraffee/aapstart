@@ -1,6 +1,8 @@
 import { cn } from "@/lib/utils";
 import { Callout } from "@/components/ui/Callout";
 import { ChecklistBlock } from "@/components/features/modules/ChecklistBlock";
+import { AsideCard } from "@/components/features/modules/AsideCard";
+import { QRCodeBlock } from "@/components/features/modules/QRCodeBlock";
 import type { ContentBlock as ContentBlockType, ChecklistBlockItem } from "@/lib/types";
 
 interface ContentBlockProps {
@@ -176,6 +178,22 @@ export function ContentBlock({ block, emphasizeLead = false }: ContentBlockProps
         </a>
       );
     }
+
+    case "aside":
+      return (
+        <AsideCard
+          header={block.label ?? ""}
+          content={block.content ?? ""}
+        />
+      );
+
+    case "qrcode":
+      return (
+        <QRCodeBlock
+          url={block.url ?? ""}
+          label={block.label}
+        />
+      );
 
     default:
       return null;

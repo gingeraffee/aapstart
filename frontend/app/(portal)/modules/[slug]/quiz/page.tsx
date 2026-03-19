@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 import { modulesApi, progressApi } from "@/lib/api";
 import { ModuleFooter, ModulePanel, ModuleShell, buildModuleSteps } from "@/components/features/modules/ModuleShell";
 import { Spinner } from "@/components/ui/Spinner";
@@ -20,6 +20,7 @@ const CORRECT_MESSAGES = [
 export default function QuizPage() {
   const { slug } = useParams<{ slug: string }>();
   const router = useRouter();
+  const { mutate } = useSWRConfig();
 
   const { data: module, isLoading } = useSWR(`module:${slug}`, () => modulesApi.get(slug) as Promise<ModuleDetail>);
 
@@ -107,6 +108,7 @@ export default function QuizPage() {
           }
         });
         await progressApi.submitQuiz(slug, correctAnswers);
+        await mutate("progress");
       } catch {
         // Best effort before navigation.
       } finally {

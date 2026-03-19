@@ -181,8 +181,8 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
         tone: "navy" as const,
       },
       {
-        eyebrow: "People Here Value",
-        title: "Useful beats impressive",
+        eyebrow: "Stay Curious",
+        title: "No dumb questions",
         body: "Good questions, steady follow-through, and sound judgment matter more than having all the answers. Nobody expects you to know everything yet.",
         tone: "cyan" as const,
       },
@@ -226,8 +226,8 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
       tone: "navy" as const,
     },
     {
-      eyebrow: "People Here Value",
-      title: "Useful beats impressive",
+      eyebrow: "Stay Curious",
+      title: "No dumb questions",
       body: "At this stage, good questions, steady follow-through, and practical judgment usually matter more than trying to sound like you already know everything.",
       tone: "cyan" as const,
     },
@@ -327,7 +327,7 @@ export default function ModulePage() {
         {
           type: "text",
           content:
-            "<p>This module covers the practical side of working at AAP. By the end you'll know how performance is measured, how attendance works, what to wear, how to request time off, and who to go to when you need help. No surprises.</p>",
+            "<p>This module covers the practical side of working at AAP. By the end you'll know how performance is measured, what to wear, the open door policy, and expectations around overtime and conduct. No surprises.</p>",
         },
       ];
     }
@@ -434,7 +434,7 @@ export default function ModulePage() {
   const railSections = sections.filter((section) => section.title);
   const reflectionPrompts = [
     "I can explain the key point of this module in plain language.",
-    "I know what this means for my role in the next 30 days.",
+    "I know the ethical standards for all employees.",
     hasQuiz ? "I feel ready for the quick knowledge check next." : "I know my next action after this module.",
   ];
 

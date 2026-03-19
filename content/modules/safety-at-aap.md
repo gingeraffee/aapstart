@@ -3,7 +3,7 @@ slug: safety-at-aap
 title: Safety at AAP
 description: Universal safety expectations — reporting, hazards, and good judgment in the workplace.
 tracks: [all]
-order: 7
+order: 8
 estimatedMinutes: 8
 status: published
 requiresQuiz: true
@@ -25,14 +25,14 @@ quiz:
       text: "If a work-related injury occurs, you should:"
       options:
         - id: a
-          text: Wait until your next scheduled check-in to mention it
+          text: Report it immediately to your supervisor, no matter how minor it seems
         - id: b
           text: Handle it yourself unless it seems serious
         - id: c
-          text: Report it immediately to your supervisor, no matter how minor it seems
+          text: Wait until your next scheduled check-in to mention it
         - id: d
           text: File a report at the end of the week
-      correctId: c
+      correctId: a
 
     - id: q2
       text: Who should you notify first about immediate safety concerns?
@@ -40,12 +40,12 @@ quiz:
         - id: a
           text: HR directly
         - id: b
-          text: Your supervisor
+          text: Corporate security
         - id: c
           text: A coworker
         - id: d
-          text: Corporate security
-      correctId: b
+          text: Your supervisor
+      correctId: d
 
     - id: q3
       text: Which of the following is a core safety expectation at AAP?
@@ -53,12 +53,12 @@ quiz:
         - id: a
           text: Only warehouse employees are responsible for safety
         - id: b
-          text: Safety training is optional for office staff
-        - id: c
           text: Obey safety rules, use caution, and report unsafe conditions promptly
+        - id: c
+          text: Safety training is optional for office staff
         - id: d
           text: Wait for a supervisor to identify a hazard before reporting
-      correctId: c
+      correctId: b
 ---
 
 ## What This Module Covers
