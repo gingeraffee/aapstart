@@ -96,13 +96,13 @@ export default function AcknowledgePage() {
       }
     >
       <ModulePanel className="bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)]">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0 flex-1">
             <p className="text-[0.62rem] font-bold uppercase tracking-[0.12em] text-text-muted">Module recap</p>
             <p className="mt-1 text-[0.95rem] font-semibold text-text-primary">{currentModule.title}</p>
             {currentModule.description ? <p className="mt-1 text-[0.83rem] text-text-secondary">{currentModule.description}</p> : null}
           </div>
-          <div className="rounded-[10px] border border-[#c8dcf2] bg-white px-3 py-2 text-right">
+          <div className="shrink-0 rounded-[10px] border border-[#c8dcf2] bg-white px-3 py-2 text-right">
             <p className="text-[0.66rem] font-semibold uppercase tracking-[0.1em] text-[#5d7391]">Confirmed</p>
             <p className="mt-0.5 text-[1rem] font-extrabold text-[#0f6da3]">
               {checkedCount}

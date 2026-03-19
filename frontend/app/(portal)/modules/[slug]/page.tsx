@@ -7,6 +7,7 @@ import useSWR from "swr";
 import { modulesApi, progressApi } from "@/lib/api";
 import { useAuth } from "@/lib/context/AuthContext";
 import { ContentBlock } from "@/components/features/modules/ContentBlock";
+import { GutCheckBlock } from "@/components/features/modules/GutCheckBlock";
 import { ModulePanel, ModuleShell, buildModuleSteps } from "@/components/features/modules/ModuleShell";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
@@ -182,7 +183,7 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
       },
       {
         eyebrow: "Stay Curious",
-        title: "No dumb questions",
+        title: "It's okay to ask questions",
         body: "Good questions, steady follow-through, and sound judgment matter more than having all the answers. Nobody expects you to know everything yet.",
         tone: "cyan" as const,
       },
@@ -227,7 +228,7 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
     },
     {
       eyebrow: "Stay Curious",
-      title: "No dumb questions",
+      title: "It's okay to ask questions",
       body: "At this stage, good questions, steady follow-through, and practical judgment usually matter more than trying to sound like you already know everything.",
       tone: "cyan" as const,
     },
@@ -316,22 +317,132 @@ export default function ModulePage() {
 
   const sections = output.filter((section) => section.title || section.blocks.length > 0);
 
-  // Override "What This Module Covers" for How Work Works
+  // Override first section for How Work Works
   if (currentModule.title.toLowerCase().includes("how work works")) {
     const coverSection = sections.find(
-      (s) => s.title?.toLowerCase().includes("what this module covers")
+      (s) => s.title?.toLowerCase().includes("stuff everyone assumes") || s.title?.toLowerCase().includes("what this module covers")
     );
     if (coverSection) {
-      coverSection.title = "The stuff worth knowing before day one";
+      coverSection.title = "The Stuff Everyone Assumes You Know";
       coverSection.blocks = [
         {
           type: "text",
           content:
-            "<p>This module covers the practical side of working at AAP. By the end you'll know how performance is measured, what to wear, the open door policy, and expectations around overtime and conduct. No surprises.</p>",
+            "<p>Policies are more useful when you can see them in action. This module pairs the fine print with real scenarios so you walk away with context, not just rules.</p>",
+        },
+        {
+          type: "text",
+          content:
+            '<p style="color:#4d6788; margin-top: 0.5rem;">Don\'t worry — we aren\'t judging. This is just to give you some real-life context before we dive into the policies.</p>',
         },
       ];
     }
   }
+
+  // Override Attendance and Timekeeping subsections for How Work Works
+  if (currentModule.title.toLowerCase().includes("how work works")) {
+    const attendanceSection = sections.find(
+      (s) => s.title?.toLowerCase().includes("attendance") && s.title?.toLowerCase().includes("timekeeping")
+    );
+    if (attendanceSection) {
+      // Keep blocks up to but NOT including the aside, then rebuild from there
+      const existingBlocks = attendanceSection.blocks;
+      const asideIndex = existingBlocks.findIndex((b) => b.type === "aside");
+      const keepBlocks = asideIndex >= 0 ? existingBlocks.slice(0, asideIndex) : existingBlocks;
+
+      attendanceSection.blocks = [
+        ...keepBlocks,
+        // Thresholds heading + aside card + table all in one text block to avoid divider collision
+        {
+          type: "text",
+          content: `<div style="overflow:hidden;">
+            <div style="float:right; width:220px; margin-left:20px; margin-bottom:16px; border-left:3px solid #22d3ee; border-radius:0 8px 8px 0; background:var(--color-background-secondary, #f8fbff); padding:0.875rem 1.25rem;">
+              <p style="font-size:11px; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; color:var(--color-text-tertiary, #607896); margin-bottom:0.4rem;">WORTH NOTING</p>
+              <p style="font-size:13px; color:var(--color-text-primary, #112744); line-height:1.6;">The 5-minute grace period isn't a daily strategy. Routinely clocking in at 5:05 will still get flagged.</p>
+            </div>
+            <p style="font-size:0.95rem; font-weight:700; color:var(--heading-color, #112744); margin-bottom:0.6rem;">Thresholds</p>
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <div style="display:flex; align-items:flex-start; gap:10px;">
+                <span style="color:#22d3ee; font-weight:700; font-size:0.88rem; min-width:18px;">1.</span>
+                <span style="font-size:0.88rem; color:var(--color-text-secondary, #4d6788); line-height:1.65;"><strong style="color:var(--color-text-primary, #112744);">First 60 days</strong> — Don't exceed 2.0 points.</span>
+              </div>
+              <div style="display:flex; align-items:flex-start; gap:10px;">
+                <span style="color:#22d3ee; font-weight:700; font-size:0.88rem; min-width:18px;">2.</span>
+                <span style="font-size:0.88rem; color:var(--color-text-secondary, #4d6788); line-height:1.65;"><strong style="color:var(--color-text-primary, #112744);">After 60 days</strong> — 8.0 points in a calendar year is the termination threshold.</span>
+              </div>
+            </div>
+          </div>`,
+        },
+        // Point Rolloff
+        {
+          type: "text",
+          content: `<p style="font-size:0.95rem; font-weight:700; color:var(--heading-color, #112744); margin-bottom:0.4rem;">Point Rolloff</p>
+          <p>Points don't stick around forever. There are two ways they come off:</p>
+          <div style="display:flex; flex-direction:column; gap:12px; margin-top:0.75rem;">
+            <div style="display:flex; align-items:flex-start; gap:10px;">
+              <span style="color:#22d3ee; font-weight:700; font-size:0.88rem; min-width:18px;">1.</span>
+              <span style="font-size:0.88rem; color:var(--color-text-secondary, #4d6788); line-height:1.65;">Go two consecutive months without a tardy or unexcused absence and 1.0 point drops off automatically.</span>
+            </div>
+            <div style="display:flex; align-items:flex-start; gap:10px;">
+              <span style="color:#22d3ee; font-weight:700; font-size:0.88rem; min-width:18px;">2.</span>
+              <span style="font-size:0.88rem; color:var(--color-text-secondary, #4d6788); line-height:1.65;">Any point that hasn't rolled off early will fall off on the first of the same month the following year.</span>
+            </div>
+          </div>
+          <div style="height:0.75rem;"></div>`,
+        },
+        // Perfect Attendance Bonus (demoted label)
+        {
+          type: "text",
+          content: `<p style="font-size:11px; font-weight:500; text-transform:uppercase; letter-spacing:0.08em; color:var(--color-text-secondary, #607896); margin-bottom:0.4rem;">Perfect Attendance Bonus</p>
+          <p style="font-size:0.88rem; color:var(--color-text-secondary, #4d6788); line-height:1.65;">Three consecutive months with no tardies or unexcused absences earns you a $75 bonus on your first check of the following month. Yes, really.</p>`,
+        },
+        // Reporting (demoted label)
+        {
+          type: "text",
+          content: `<p style="font-size:11px; font-weight:500; text-transform:uppercase; letter-spacing:0.08em; color:var(--color-text-secondary, #607896); margin-bottom:0.4rem;">Reporting</p>
+          <p style="font-size:0.88rem; color:var(--color-text-secondary, #4d6788); line-height:1.65;">If you're going to be late or absent, report it within 15 minutes of your scheduled shift start. Log it in BambooHR, or contact your supervisor or HR directly if you don't have access.</p>`,
+        },
+      ];
+    }
+  }
+
+  // Gut Check scenarios for How Work Works
+  const howWorkWorksGutChecks = currentModule.title.toLowerCase().includes("how work works") ? [
+    {
+      scenario: "Your shift ends at 5:00 and your supervisor asks you to stay until 6:30 to help finish a rush order. What's the right move?",
+      options: [
+        { id: "a", text: "Stay and log the extra time — you'll get paid either way" },
+        { id: "b", text: "Stay, but don't clock the extra time since it was a favor" },
+        { id: "c", text: "Get overtime approved before working the extra hours" },
+        { id: "d", text: "Tell your supervisor you can't stay without 24 hours notice" },
+      ],
+      correctId: "c",
+      explanation: "Overtime must always be approved before it's worked. Even if your supervisor asks directly, the approval step still applies. It protects both of you.",
+    },
+    {
+      scenario: "You've been clocking in at 8:04 every morning for the past two weeks. Your shift starts at 8:00. Are you in the clear?",
+      options: [
+        { id: "a", text: "Yes — it's within the 5-minute grace period" },
+        { id: "b", text: "No — routinely using the grace period can still get flagged" },
+        { id: "c", text: "Yes — as long as you're within 5 minutes, there's no consequence" },
+        { id: "d", text: "No — anything after 8:00 is an automatic half-point" },
+      ],
+      correctId: "b",
+      explanation: "The 5-minute grace period isn't a daily strategy. Routinely clocking in at the edge will get noticed and may result in corrective action, even if no individual day triggers a point.",
+    },
+    {
+      scenario: "A coworker makes an offhand comment that feels disrespectful, but it wasn't directed at you. You're not sure if it's worth bringing up. What do you do?",
+      options: [
+        { id: "a", text: "Ignore it — it wasn't about you" },
+        { id: "b", text: "Confront the coworker directly and tell them to stop" },
+        { id: "c", text: "Mention it to your supervisor or HR — that's what the open door policy is for" },
+        { id: "d", text: "Wait and see if it happens again before doing anything" },
+      ],
+      correctId: "c",
+      explanation: "The open door policy exists for exactly this kind of situation. You don't have to wait for something to escalate. Raising it early — with your supervisor or HR — is always the right call.",
+    },
+  ] : [];
+
 
   // Override "What This Module Covers" for How We Show Up
   if (currentModule.title.toLowerCase().includes("how we show up")) {
@@ -432,11 +543,17 @@ export default function ModulePage() {
   }
 
   const railSections = sections.filter((section) => section.title);
-  const reflectionPrompts = [
-    "I can explain the key point of this module in plain language.",
-    "I know the ethical standards for all employees.",
-    hasQuiz ? "I feel ready for the quick knowledge check next." : "I know my next action after this module.",
-  ];
+  const reflectionPrompts = currentModule.title.toLowerCase().includes("how work works")
+    ? [
+        "I understand the Open Door policy.",
+        "I understand how my success is measured.",
+        "I understand how points are accrued or removed.",
+      ]
+    : [
+        "I can explain the key point of this module in plain language.",
+        "I know the ethical standards for all employees.",
+        hasQuiz ? "I feel ready for the quick knowledge check next." : "I know my next action after this module.",
+      ];
 
   const rail = (
     <div className="space-y-3">
@@ -502,13 +619,19 @@ export default function ModulePage() {
     const content = (
       <>
         {section.title ? (
-          <h2 className={cn("font-extrabold tracking-[-0.025em] text-[#0d1f3a]", isFeatured ? "mb-3 text-[1.34rem]" : "mb-4 text-[1.48rem]")}>
-            {section.title.replace(/\?$/, "")}
-          </h2>
+          <div className={cn("flex items-center gap-3", isFeatured ? "mb-3" : "mb-4")}>
+            <span className="h-5 w-[3px] shrink-0 rounded-full" style={{ background: "linear-gradient(180deg, #22d3ee 0%, #0ea5d9 100%)" }} />
+            <h2 className={cn("font-extrabold tracking-[-0.025em] text-[#0d1f3a]", isFeatured ? "text-[1.34rem]" : "text-[1.48rem]")}>
+              {section.title.replace(/\?$/, "")}
+            </h2>
+          </div>
         ) : (
-          <h2 className={cn("font-extrabold tracking-[-0.025em] text-[#0d1f3a]", isFeatured ? "mb-3 text-[1.34rem]" : "mb-4 text-[1.48rem]")}>
-            Start Here
-          </h2>
+          <div className={cn("flex items-center gap-3", isFeatured ? "mb-3" : "mb-4")}>
+            <span className="h-5 w-[3px] shrink-0 rounded-full" style={{ background: "linear-gradient(180deg, #22d3ee 0%, #0ea5d9 100%)" }} />
+            <h2 className={cn("font-extrabold tracking-[-0.025em] text-[#0d1f3a]", isFeatured ? "text-[1.34rem]" : "text-[1.48rem]")}>
+              Start Here
+            </h2>
+          </div>
         )}
 
         <div className="space-y-0">
@@ -521,6 +644,11 @@ export default function ModulePage() {
             </div>
           ))}
         </div>
+        {isFeatured && howWorkWorksGutChecks.length > 0 && (
+          <div className="mt-6 animate-fade-up" style={{ animationDelay: "150ms" }}>
+            <GutCheckBlock scenarios={howWorkWorksGutChecks} />
+          </div>
+        )}
       </>
     );
 

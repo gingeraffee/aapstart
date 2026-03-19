@@ -14,17 +14,18 @@ export function ContentBlock({ block, emphasizeLead = false }: ContentBlockProps
   switch (block.type) {
     case "heading":
       return (
-        <h2
-          className="text-[1.08rem] font-bold tracking-[-0.015em]"
-          style={{
-            color: "var(--heading-color)",
-            paddingBottom: "0.42rem",
-            borderBottom: "1px solid var(--module-pill-border)",
-            marginTop: "0.25rem",
-          }}
-        >
-          {block.content ?? ""}
-        </h2>
+        <div className="flex items-center gap-2.5" style={{ marginTop: "0.25rem" }}>
+          <span
+            className="h-4 w-[3px] shrink-0 rounded-full"
+            style={{ background: "linear-gradient(180deg, #22d3ee 0%, #0ea5d9 100%)" }}
+          />
+          <h2
+            className="text-[1.08rem] font-bold tracking-[-0.015em]"
+            style={{ color: "var(--heading-color)" }}
+          >
+            {block.content ?? ""}
+          </h2>
+        </div>
       );
 
     case "text":
@@ -129,6 +130,7 @@ export function ContentBlock({ block, emphasizeLead = false }: ContentBlockProps
       return (
         <a
           href={block.url ?? "#"}
+          download={isDownload ? "" : undefined}
           target={isDownload ? "_self" : "_blank"}
           rel={isDownload ? undefined : "noopener noreferrer"}
           className="group flex items-center gap-4 rounded-[14px] border px-5 py-4 no-underline transition-all duration-200 hover:-translate-y-px"
@@ -192,6 +194,20 @@ export function ContentBlock({ block, emphasizeLead = false }: ContentBlockProps
         <QRCodeBlock
           url={block.url ?? ""}
           label={block.label}
+        />
+      );
+
+    case "track_block":
+      return (
+        <div
+          className={cn(
+            "prose-module text-[0.95rem] leading-[1.72] text-text-secondary",
+            "[&_strong]:font-semibold [&_strong]:text-text-primary",
+            "[&_a]:text-brand-bright [&_a]:underline-offset-2 [&_a]:hover:underline",
+            "[&_p]:max-w-none",
+            "[&_li]:max-w-none",
+          )}
+          dangerouslySetInnerHTML={{ __html: block.content ?? "" }}
         />
       );
 
