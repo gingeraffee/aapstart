@@ -33,7 +33,7 @@ def _normalize_track(track: str) -> str:
 
 def _get_dev_user() -> dict:
     return {
-        "employee_id": settings.dev_auth_employee_id.strip(),
+        "sub": settings.dev_auth_employee_id.strip(),
         "full_name": settings.dev_auth_full_name.strip(),
         "track": _normalize_track(settings.dev_auth_track),
         "is_admin": True,
@@ -109,6 +109,8 @@ def get_current_user(request: Request) -> dict:
     """FastAPI dependency — resolves the current employee from the session cookie."""
     token = request.cookies.get("aap_session")
     if not token:
+        if settings.dev_auth_bypass:
+            return _get_dev_user()
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Not authenticated.",
