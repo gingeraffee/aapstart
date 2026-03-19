@@ -27,14 +27,14 @@ quiz:
       text: What system is used for HR tasks, PTO requests, and employee profile information?
       options:
         - id: a
-          text: Paylocity
-        - id: b
           text: BambooHR
+        - id: b
+          text: Paylocity
         - id: c
           text: LinkedIn Learning
         - id: d
           text: AAP Start
-      correctId: b
+      correctId: a
 
     - id: q2
       text: Where can you access your pay stubs and paycheck details?
@@ -42,12 +42,12 @@ quiz:
         - id: a
           text: BambooHR
         - id: b
-          text: LinkedIn Learning
-        - id: c
           text: Paylocity
+        - id: c
+          text: LinkedIn Learning
         - id: d
           text: Your supervisor's inbox
-      correctId: c
+      correctId: b
 
     - id: q3
       text: "LinkedIn Learning is described as:"
@@ -57,10 +57,10 @@ quiz:
         - id: b
           text: AAP's payroll platform
         - id: c
-          text: A training and professional development platform
-        - id: d
           text: The system used for PTO requests
-      correctId: c
+        - id: d
+          text: A training and professional development platform
+      correctId: d
 
     - id: q4
       text: Who is your first contact for password, login, or access issues?
@@ -68,12 +68,12 @@ quiz:
         - id: a
           text: Nicole Thornton, HR Manager
         - id: b
-          text: Your supervisor
-        - id: c
           text: LinkedIn Learning support
+        - id: c
+          text: Your supervisor
         - id: d
           text: Paylocity help desk
-      correctId: b
+      correctId: c
 ---
 
 ## What This Module Covers

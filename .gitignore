@@ -32,3 +32,4 @@ backend/data/progress.db
 
 # Large original media files
 *-original.mp4
+frontend/public/videos/aap-values.mp4
