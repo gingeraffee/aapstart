@@ -2,7 +2,7 @@ export const COACH_TIPS: string[] = [
   "Day one jitters are completely normal. Every single person on this team has been exactly where you are right now.",
   "Benefits enrollment has a deadline. Don't let it sneak past you — check the enrollment window in your onboarding materials.",
   "When in doubt, ask. No question is too small when you're still learning the ropes.",
-  "AAP has been around since 1956. You're joining a long legacy of people who care deeply about independent pharmacy.",
+  "AAP has been around since 2009. You're joining a legacy of people who care deeply about independent pharmacy.",
   "The fastest way to feel settled? Learn two people's names and one thing each of them is proud of.",
   "Your time-away requests go through your manager first, then HR. Module 4 walks you through the full flow.",
   "Pharmacy is a relationship business — and so is working inside AAP. Relationships here are real currency.",

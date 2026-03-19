@@ -7,7 +7,7 @@ import useSWR from "swr";
 import { useAuth } from "@/lib/context/AuthContext";
 import { useTheme } from "@/lib/context/ThemeContext";
 import { modulesApi, progressApi } from "@/lib/api";
-import { cn, initials } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import type { ModuleSummary, ProgressRecord } from "@/lib/types";
 
 interface AppShellProps {
@@ -91,7 +91,7 @@ export function AppShell({ children }: AppShellProps) {
         }}
       >
         <div
-          className="px-5 pb-4 pt-4"
+          className="flex items-center justify-center px-5 pb-4 pt-4"
           style={{
             borderBottom: "1px solid var(--sidebar-logo-border)",
             background: "var(--sidebar-logo-bg)",
@@ -307,34 +307,29 @@ export function AppShell({ children }: AppShellProps) {
           </div>
         )}
 
-        <div className="px-4 py-4" style={{ borderTop: "1px solid var(--sidebar-divider)" }}>
+        <div className="px-3.5 py-4" style={{ borderTop: "1px solid var(--sidebar-divider)" }}>
           {user && (
-            <div
-              className="flex items-center gap-2.5 rounded-[12px] px-2.5 py-2"
-              style={{
-                background: "var(--sidebar-user-bg)",
-                border: "1px solid var(--sidebar-user-border)",
-                boxShadow: "var(--sidebar-user-shadow)",
-              }}
-            >
-              <div
-                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[0.62rem] font-bold text-white"
-                style={{ background: "linear-gradient(135deg, #0f6da3, #1e3a66)" }}
+            <div className="space-y-2.5">
+              <p className="truncate px-2.5 text-center text-[0.73rem] font-semibold leading-tight" style={{ color: "var(--sidebar-user-name)" }}>{user.full_name}</p>
+              <button
+                onClick={() => logout()}
+                className="flex w-full items-center justify-center gap-2 rounded-[10px] px-3.5 py-2 text-[0.78rem] font-semibold transition-all duration-200"
+                style={{
+                  background: "linear-gradient(135deg, #0f6da3, #1e3a66)",
+                  border: "1px solid var(--sidebar-user-border)",
+                  boxShadow: "0 2px 8px rgba(12, 24, 47, 0.15), 0 1px 3px rgba(12, 24, 47, 0.1), inset 0 1px 0 rgba(255,255,255,0.08)",
+                  color: "#ffffff",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.9")}
+                onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
               >
-                {initials(user.full_name)}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-[0.73rem] font-semibold leading-tight" style={{ color: "var(--sidebar-user-name)" }}>{user.full_name}</p>
-                <button
-                  onClick={() => logout()}
-                  className="text-[0.62rem] transition-colors"
-                  style={{ color: "var(--sidebar-user-signout)" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = "var(--sidebar-user-signout-hover)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = "var(--sidebar-user-signout)")}
-                >
-                  Sign out
-                </button>
-              </div>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                Sign out
+              </button>
             </div>
           )}
         </div>
@@ -401,12 +396,6 @@ export function AppShell({ children }: AppShellProps) {
             {completedCount} complete
           </div>
           <ThemeToggle />
-          <div
-            className="flex h-8 w-8 items-center justify-center rounded-full text-[0.68rem] font-bold text-white"
-            style={{ background: "linear-gradient(135deg, #0f6da3, #1e3a66)" }}
-          >
-            {initials(user?.full_name ?? "")}
-          </div>
         </div>
       </header>
 
