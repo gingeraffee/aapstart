@@ -1,79 +1,67 @@
 ---
 slug: where-you-make-an-impact-warehouse
 title: Where You Make an Impact
-description: How the warehouse runs, how product flows, and where your role fits into the bigger picture.
-tracks: [warehouse]
-order: 10
-estimatedMinutes: 15
+description: How your role creates real impact every day at AAP.
+tracks: [all]
+order: 8
+estimatedMinutes: 12
 status: published
 requiresQuiz: false
 requiresAcknowledgement: false
 ---
 
-## What This Module Covers
+## Why This Module Matters
 
-This is the "how the place actually works" tour.
+Every role at AAP supports patients, pharmacies, and teammates. This module connects your day-to-day work to the bigger mission so you can see where your decisions matter most.
 
-You will learn the flow of product through the warehouse, how your role fits into that flow, and what good work looks like at each step. When people understand the full picture, they make better decisions in their own lane — and cause fewer headaches in everyone else's.
+## Shared Impact Across Every Team
 
-## How the Warehouse Works
+No matter your track, your impact comes from the same fundamentals:
 
-A warehouse is basically one big chain reaction. One step feeds the next. When one part goes sideways, the rest of the operation feels it.
+- Accuracy in the details
+- Professional, respectful communication
+- Timely follow-through
+- Escalating issues early instead of letting them grow
 
-At the most basic level, the flow looks like this:
+:::track [hr]
+## HR Track: People, Process, and Trust
 
-**Receiving → Putaway → Picking → Packing → Shipping**
+In HR, your impact shows up in how well people are supported.
 
-Every role supports that movement. Even if you spend most of your time in one area, understanding the full flow helps you work smarter and catch problems sooner.
+- You help employees get accurate information quickly.
+- You keep records and workflows compliant and organized.
+- You support onboarding and employee changes that affect the whole company.
+- You protect confidentiality while still being approachable and responsive.
 
-## Receiving
-
-Receiving is where the day's story begins.
-
-This is where product arrives, gets checked, and enters the building the right way. Accuracy matters here because mistakes at receiving have a talent for haunting the rest of the warehouse later.
-
-## Putaway
-
-Putaway sounds simple until something ends up in the wrong location and becomes a scavenger hunt.
-
-The job is not just moving product. It is placing product in the correct location, confirming it properly, and setting up the next step for success. Good putaway saves time. Bad putaway creates legends for all the wrong reasons.
-
-## Picking
-
-Picking is where accuracy gets very real, very fast.
-
-The goal is not "close enough." The goal is the right item, right quantity, right order. Customers never celebrate a nearly correct shipment, and neither do operations teams.
-
-## Packing
-
-Packing is the last checkpoint before the order leaves your hands and lands in someone else's world.
-
-This is where attention to detail matters: correct contents, correct packaging, correct label, correct handling. It is part quality control, part final exam.
-
-## Shipping
-
-Shipping is where everything leaves the building — and there is a lot less room for "oops."
-
-Loads need to be accurate, complete, and ready to go on time. Once something moves out the door, mistakes get more expensive and more annoying.
-
-## Cycle Counts and Inventory
-
-Inventory accuracy is everybody's business, not just a spreadsheet problem with steel-toe boots.
-
-When counts are off, orders get delayed, time gets wasted, and trust in the system starts wobbling. Catching an issue early is never nitpicky. It is operationally beautiful.
-
-## Shift Expectations and Standards
-
-Show up ready. Work safely. Follow process. Keep your area clean. Ask before guessing. Check in when you finish a task.
-
-That is the heartbeat of a strong shift. Nothing flashy — just solid, consistent work that keeps the whole floor moving.
-
-:::callout tip
-Even if your role is mostly in one area, knowing what happens before and after your step makes you better at your own job. The whole chain matters.
+When HR operations run smoothly, everyone else can do their job with less friction.
 :::
 
-## The Bigger Picture
+:::track [administrative]
+## Administrative Track: Operational Reliability
 
-AAP serves over 2,100 independent pharmacies across the country. Every accurate order, every correctly packed shipment, every problem caught before it leaves the building supports a community pharmacy staying competitive — and a patient getting what they need.
+In administrative roles, your impact is operational consistency.
 
-That is where you make an impact.
+- You keep communication clear and organized.
+- You maintain systems, files, and schedules that other teams depend on.
+- You reduce delays by catching issues early and routing them correctly.
+- You create structure that helps work move faster and cleaner.
+
+Good administrative execution creates momentum across the business.
+:::
+
+:::track [warehouse]
+## Warehouse Track: Speed With Accuracy
+
+In the warehouse, your impact is visible in every order that ships correctly and on time.
+
+- You protect quality through careful handling and checks.
+- You keep product moving by following process and staying organized.
+- You prevent errors that affect pharmacies, patients, and internal teams.
+- You contribute to a safer workplace through consistent safety habits.
+
+Warehouse performance is one of the strongest signals of trust in our operation.
+:::
+
+## What Good Looks Like
+
+At AAP, impact is not about doing everything at once. It is about doing the right things consistently, asking good questions, and improving over time.

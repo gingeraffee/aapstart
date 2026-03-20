@@ -56,7 +56,7 @@ def load_all_content():
 def get_modules_for_track(track: str) -> list[dict]:
     """
     Return ordered module list for a given track.
-    - HR sees ALL modules across every track.
+    - HR sees shared modules, HR-specific modules, and management process modules.
     - Management sees ONLY modules with tracks: [management].
     - Other tracks see 'all' modules plus their track-specific modules.
     Excludes draft modules (status == 'draft').
@@ -68,8 +68,9 @@ def get_modules_for_track(track: str) -> list[dict]:
         mod_tracks = module.get("tracks", ["all"])
 
         if track == "hr":
-            # HR reviewers see everything
-            result.append(_module_summary(module, track))
+            # HR sees shared modules, HR-specific modules, and management process modules.
+            if "all" in mod_tracks or "hr" in mod_tracks or "management" in mod_tracks:
+                result.append(_module_summary(module, track))
         elif track == "management":
             # Management only sees management-specific modules
             if "management" in mod_tracks:
@@ -86,7 +87,8 @@ def get_modules_for_track(track: str) -> list[dict]:
 def get_module(slug: str, track: str) -> dict | None:
     """
     Return full module data for a given slug, filtered for the employee's track.
-    HR can access any module. Management can only access management modules.
+    HR can access shared modules, HR-specific modules, and management modules.
+    Management can only access management modules.
     Quiz correct answers are stripped — never sent to the frontend.
     """
     module = _modules_cache.get(slug)
@@ -96,8 +98,8 @@ def get_module(slug: str, track: str) -> dict | None:
     mod_tracks = module.get("tracks", ["all"])
 
     if track == "hr":
-        # HR can access everything
-        pass
+        if "all" not in mod_tracks and "hr" not in mod_tracks and "management" not in mod_tracks:
+            return None
     elif track == "management":
         if "management" not in mod_tracks:
             return None
@@ -388,3 +390,4 @@ def _load_ui():
         if filepath.exists():
             with open(filepath, "r", encoding="utf-8") as f:
                 _ui_cache[key] = yaml.safe_load(f) or []
+

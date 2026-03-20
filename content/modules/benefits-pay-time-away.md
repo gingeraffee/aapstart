@@ -3,7 +3,7 @@ slug: benefits-pay-time-away
 title: Benefits, Pay & Time Away
 description: Payroll basics, benefits eligibility timing, PTO, and holiday eligibility at AAP.
 tracks: [all]
-order: 5
+order: 4
 estimatedMinutes: 12
 status: published
 requiresQuiz: true
@@ -253,3 +253,4 @@ For pay, benefits, or time-off questions: start with your supervisor for day-to-
 - Start with your **supervisor** for routine operational questions
 - Contact **Nicole Thornton, HR Manager** for HR-related support
 - Use the **Resource Hub** for detailed plan materials and reference documents
+

@@ -5,7 +5,7 @@ description: How your work as an HR Administrative Assistant directly supports t
 tracks: [hr]
 order: 9
 estimatedMinutes: 10
-status: coming_soon
+status: draft
 requiresQuiz: false
 requiresAcknowledgement: false
 ---
@@ -15,3 +15,4 @@ requiresAcknowledgement: false
 This module is under development and will be available shortly.
 
 It will walk you through how the HR Administrative Assistant role supports AAP employees and leadership — from onboarding coordination to records management to day-to-day employee support.
+

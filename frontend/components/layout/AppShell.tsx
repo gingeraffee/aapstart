@@ -123,7 +123,8 @@ export function AppShell({ children }: AppShellProps) {
         </div>
 
         <div className="flex-1 overflow-y-auto px-3.5 pb-3 pt-4">
-          {/* Overview link — always shown */}
+          {/* Overview link for non-management tracks */}
+          {!isManagement && (
           <Link
             href="/overview"
             className={cn(
@@ -159,16 +160,23 @@ export function AppShell({ children }: AppShellProps) {
             </span>
             Overview
           </Link>
+          )}
 
           {/* ── Your Journey section (warehouse, administrative, HR) ── */}
           {showJourney && (
-            <>
-              <p
-                className="mb-2.5 mt-3 px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]"
+            <details open={!isHR} className="group mt-3 [&_summary::-webkit-details-marker]:hidden">
+              <summary
+                className="mb-2.5 flex cursor-pointer list-none items-center justify-between px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]"
                 style={{ color: "var(--sidebar-label)" }}
               >
-                Your Journey
-              </p>
+                <span>Your Journey</span>
+                <span className="flex items-center gap-2">
+                  <span className="rounded-full px-2 py-0.5 text-[0.5rem]" style={{ background: "var(--sidebar-icon-bg)", color: "var(--sidebar-text)" }}>
+                    {journeyModules.length}
+                  </span>
+                  <span className="text-[0.7rem] transition-transform duration-200 group-open:rotate-90">&gt;</span>
+                </span>
+              </summary>
 
               <div className="space-y-1">
                 {journeyModules.map((m, i) => {
@@ -283,24 +291,24 @@ export function AppShell({ children }: AppShellProps) {
                 </span>
                 90-Day Roadmap
               </Link>
-            </>
+            </details>
           )}
 
           {/* ── Management Processes section (management + HR) ── */}
           {showManagementSection && managementModules.length > 0 && (
-            <>
-              <p
-                className={cn(
-                  "mb-2.5 px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]",
-                  showJourney ? "mt-5 border-t pt-4" : "mt-3"
-                )}
-                style={{
-                  color: "var(--sidebar-label)",
-                  ...(showJourney ? { borderColor: "var(--sidebar-divider)" } : undefined),
-                }}
+            <details open={isManagement} className={cn("group [&_summary::-webkit-details-marker]:hidden", showJourney ? "mt-5 border-t pt-4" : "mt-3")} style={showJourney ? { borderColor: "var(--sidebar-divider)" } : undefined}>
+              <summary
+                className="mb-2.5 flex cursor-pointer list-none items-center justify-between px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]"
+                style={{ color: "var(--sidebar-label)" }}
               >
-                Management Processes
-              </p>
+                <span>Management Processes</span>
+                <span className="flex items-center gap-2">
+                  <span className="rounded-full px-2 py-0.5 text-[0.5rem]" style={{ background: "var(--sidebar-icon-bg)", color: "var(--sidebar-text)" }}>
+                    {managementModules.length}
+                  </span>
+                  <span className="text-[0.7rem] transition-transform duration-200 group-open:rotate-90">&gt;</span>
+                </span>
+              </summary>
 
               <div className="space-y-1">
                 {managementModules.map((m) => {
@@ -344,7 +352,7 @@ export function AppShell({ children }: AppShellProps) {
                   );
                 })}
               </div>
-            </>
+            </details>
           )}
         </div>
 

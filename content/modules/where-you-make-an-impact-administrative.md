@@ -5,7 +5,7 @@ description: How your work in an administrative role directly supports the AAP t
 tracks: [administrative]
 order: 9
 estimatedMinutes: 10
-status: coming_soon
+status: draft
 requiresQuiz: false
 requiresAcknowledgement: false
 ---
@@ -15,3 +15,4 @@ requiresAcknowledgement: false
 This module is under development and will be available shortly.
 
 It will walk you through how administrative support roles connect to the broader AAP mission and how your day-to-day work keeps operations running smoothly.
+

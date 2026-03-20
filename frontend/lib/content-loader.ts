@@ -77,8 +77,10 @@ export function getModulesForTrack(track: string) {
     if (mod.status === "draft") continue;
 
     if (track === "hr") {
-      // HR reviewers see everything
-      result.push(moduleSummary(mod));
+      // HR sees shared modules, HR-specific modules, and management process modules.
+      if (mod.tracks.includes("all") || mod.tracks.includes("hr") || mod.tracks.includes("management")) {
+        result.push(moduleSummary(mod));
+      }
     } else if (track === "management") {
       // Management only sees management-specific modules
       if (mod.tracks.includes("management")) {
@@ -101,7 +103,7 @@ export function getModule(slug: string, track: string) {
   if (!mod) return null;
 
   if (track === "hr") {
-    // HR can access everything
+    if (!mod.tracks.includes("all") && !mod.tracks.includes("hr") && !mod.tracks.includes("management")) return null;
   } else if (track === "management") {
     if (!mod.tracks.includes("management")) return null;
   } else {
@@ -313,3 +315,4 @@ function moduleForClient(mod: RawModule, track: string) {
     acknowledgements: mod.acknowledgements,
   };
 }
+

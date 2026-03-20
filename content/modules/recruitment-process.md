@@ -3,7 +3,7 @@ slug: recruitment-process
 title: Recruitment Process
 description: A guide to the hiring manager recruitment process at AAP and API — from identifying a need to extending an offer.
 tracks: [management]
-order: 11
+order: 101
 estimatedMinutes: 10
 status: published
 requiresQuiz: false
@@ -80,3 +80,4 @@ url: /downloads/manager-recruiting-process.docx
 label: Download the Full Recruitment Process Guide
 description: The complete hiring manager recruitment guide with detailed steps, forms, and interview resources.
 :::
+

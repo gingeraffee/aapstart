@@ -1,9 +1,9 @@
 ---
 slug: support-leave-resources
-title: Where to Go
+title: Where To Go
 description: Leave pathways, the Employee Assistance Program, and who to contact when you need help.
 tracks: [all]
-order: 7
+order: 6
 estimatedMinutes: 10
 status: published
 requiresQuiz: true
@@ -105,4 +105,6 @@ Contact HR when:
 - You are not comfortable going to your supervisor
 - The issue involves harassment, bullying, retaliation, or other sensitive concerns
 - Something is too specific, too personal, or too important for a guess
+
+
 

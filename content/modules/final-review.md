@@ -3,7 +3,7 @@ slug: final-review
 title: Final Review
 description: A brief recap of your onboarding journey and your final acknowledgements before you're ready to go.
 tracks: [hr, warehouse, administrative]
-order: 13
+order: 11
 estimatedMinutes: 10
 status: published
 requiresQuiz: true
@@ -150,3 +150,4 @@ Please review and confirm each of the following statements before completing you
 Once you submit your final acknowledgements and pass the review quiz, your onboarding is complete.
 
 Welcome to the team. We're glad you're here.
+

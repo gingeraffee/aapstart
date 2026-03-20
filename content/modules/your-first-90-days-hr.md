@@ -1,6 +1,6 @@
 ---
 slug: your-first-90-days-hr
-title: Your First 90 Days
+title: Your First 30 Days
 description: What to expect — and what's expected of you — during your first three months as an HR Administrative Assistant at AAP.
 tracks: [hr]
 order: 10
@@ -160,3 +160,5 @@ HR work often involves confidential or sensitive information. When in doubt abou
 
 For HR policy questions: **Nicole Thornton, HR Manager**
 For system access issues: **Start with your supervisor**
+
+

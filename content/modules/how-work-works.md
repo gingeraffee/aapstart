@@ -3,7 +3,7 @@ slug: how-work-works
 title: How Work Works
 description: "This module covers how performance is measured, what to wear, the open door policy, and conduct and overtime expectations. The practical stuff — so nothing catches you off guard."
 tracks: [all]
-order: 4
+order: 3
 estimatedMinutes: 12
 status: published
 requiresQuiz: true
@@ -202,3 +202,4 @@ If something comes up — a question, a concern, or something that just doesn't 
 | Your supervisor | Day-to-day expectations, attendance follow-up, timekeeping, coaching, everyday questions |
 | HR | Policy guidance, employee records, leave and support resources, sensitive workplace concerns, issues you're not comfortable raising to your supervisor |
 | You | Reporting attendance issues promptly, recording time accurately, following company policies, speaking up when something needs attention |
+

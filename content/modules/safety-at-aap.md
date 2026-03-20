@@ -3,7 +3,7 @@ slug: safety-at-aap
 title: Safety at AAP
 description: Universal safety expectations — reporting, hazards, and good judgment in the workplace.
 tracks: [all]
-order: 8
+order: 7
 estimatedMinutes: 8
 status: published
 requiresQuiz: true
@@ -95,3 +95,18 @@ AAP also has policies related to visitors, computer and email use, workplace mon
 ## Need Help?
 
 Start with your **supervisor** for immediate safety concerns. Use **HR** when the issue requires follow-up, support, or escalation.
+
+
+:::track [warehouse]
+## Warehouse Safety & OSHA Highlights
+
+Warehouse teams have additional safety requirements on top of the shared AAP expectations.
+
+- Closed-toe, closed-heel footwear is required on the floor.
+- Report all injuries and near-misses immediately to your supervisor.
+- Do not operate forklifts or pallet jacks unless you are currently certified.
+- Use safe lifting form: assess the load, bend at the knees, keep the load close, and avoid twisting.
+- Review Safety Data Sheets (SDS) before handling unfamiliar materials.
+
+If any task feels unsafe, stop and escalate before continuing.
+:::

@@ -3,7 +3,7 @@ slug: quality-accuracy-warehouse
 title: Quality & Accuracy
 description: Why getting it right matters, where errors happen, and how to catch and correct problems before they compound.
 tracks: [warehouse]
-order: 11
+order: 9
 estimatedMinutes: 12
 status: published
 requiresQuiz: false
@@ -69,3 +69,4 @@ The goal is not just fixing the order in front of you. The goal is understanding
 The people doing the work usually spot the problems first.
 
 If a step is confusing, a process keeps causing errors, or something feels clunky for no good reason — say something. Good ideas do not only live in conference rooms. If you notice a pattern, bring it to your supervisor. That kind of attention is what makes operations better over time.
+

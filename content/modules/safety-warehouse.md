@@ -5,7 +5,7 @@ description: Practical safety for the warehouse floor — PPE, hazard communicat
 tracks: [warehouse]
 order: 9
 estimatedMinutes: 20
-status: published
+status: draft
 requiresQuiz: true
 requiresAcknowledgement: true
 acknowledgements:
@@ -277,3 +277,4 @@ Safety at AAP is not extra. It is built into the job.
 Wear the required PPE. Lift smart. Use equipment correctly. Know the emergency plan. Report injuries and near-misses immediately. Never work impaired. When in doubt, stop and ask.
 
 That is not just compliance. That is how good teams work.
+

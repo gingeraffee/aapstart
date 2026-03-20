@@ -3,7 +3,7 @@ slug: your-first-90-days-warehouse
 title: Your First 30 Days
 description: What to expect in your first month — who to go to, what your 30-day check-in looks like, and how to build strong habits early.
 tracks: [warehouse]
-order: 12
+order: 10
 estimatedMinutes: 10
 status: published
 requiresQuiz: false
@@ -74,3 +74,4 @@ Nothing here is glamorous. But this is the stuff that makes someone dependable, 
 :::callout tip
 Consistent and reliable beats fast and inconsistent every single time. Speed comes with repetition. Accuracy and habits come with intention.
 :::
+
