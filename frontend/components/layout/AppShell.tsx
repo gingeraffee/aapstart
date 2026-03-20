@@ -164,7 +164,7 @@ export function AppShell({ children }: AppShellProps) {
 
           {/* ── Your Journey section (warehouse, administrative, HR) ── */}
           {showJourney && (
-            <details open className="group mt-3 [&_summary::-webkit-details-marker]:hidden">
+            <details open={!isHR} className="group mt-3 [&_summary::-webkit-details-marker]:hidden">
               <summary
                 className={cn("mb-2.5 flex list-none items-center justify-between px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]", isHR ? "cursor-pointer" : "cursor-default")}
                 style={{ color: "var(--sidebar-label)" }}
@@ -299,7 +299,7 @@ export function AppShell({ children }: AppShellProps) {
 
           {/* ── Management Processes section (management + HR) ── */}
           {showManagementSection && managementModules.length > 0 && (
-            <details open={isManagement} className={cn("group [&_summary::-webkit-details-marker]:hidden", showJourney ? "mt-5 border-t pt-4" : "mt-3")} style={showJourney ? { borderColor: "var(--sidebar-divider)" } : undefined}>
+            <details open className={cn("group [&_summary::-webkit-details-marker]:hidden", showJourney ? "mt-5 border-t pt-4" : "mt-3")} style={showJourney ? { borderColor: "var(--sidebar-divider)" } : undefined}>
               <summary
                 className={cn("mb-2.5 flex list-none items-center justify-between px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]", isHR ? "cursor-pointer" : "cursor-default")}
                 style={{ color: "var(--sidebar-label)" }}
@@ -519,6 +519,7 @@ export function AppShell({ children }: AppShellProps) {
     </div>
   );
 }
+
 
 
 
