@@ -164,17 +164,20 @@ export function AppShell({ children }: AppShellProps) {
 
           {/* ── Your Journey section (warehouse, administrative, HR) ── */}
           {showJourney && (
-            <details open={!isHR} className="group mt-3 [&_summary::-webkit-details-marker]:hidden">
+            <details open className="group mt-3 [&_summary::-webkit-details-marker]:hidden">
               <summary
-                className="mb-2.5 flex cursor-pointer list-none items-center justify-between px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]"
+                className={cn("mb-2.5 flex list-none items-center justify-between px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]", isHR ? "cursor-pointer" : "cursor-default")}
                 style={{ color: "var(--sidebar-label)" }}
+                onClick={(e) => {
+                  if (!isHR) e.preventDefault();
+                }}
               >
                 <span>Your Journey</span>
                 <span className="flex items-center gap-2">
                   <span className="rounded-full px-2 py-0.5 text-[0.5rem]" style={{ background: "var(--sidebar-icon-bg)", color: "var(--sidebar-text)" }}>
                     {journeyModules.length}
                   </span>
-                  <span className="text-[0.7rem] transition-transform duration-200 group-open:rotate-90">&gt;</span>
+                  <span className={cn("text-[0.7rem] transition-transform duration-200", isHR ? "group-open:rotate-90" : "hidden")}>&gt;</span>
                 </span>
               </summary>
 
@@ -298,15 +301,18 @@ export function AppShell({ children }: AppShellProps) {
           {showManagementSection && managementModules.length > 0 && (
             <details open={isManagement} className={cn("group [&_summary::-webkit-details-marker]:hidden", showJourney ? "mt-5 border-t pt-4" : "mt-3")} style={showJourney ? { borderColor: "var(--sidebar-divider)" } : undefined}>
               <summary
-                className="mb-2.5 flex cursor-pointer list-none items-center justify-between px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]"
+                className={cn("mb-2.5 flex list-none items-center justify-between px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]", isHR ? "cursor-pointer" : "cursor-default")}
                 style={{ color: "var(--sidebar-label)" }}
+                onClick={(e) => {
+                  if (!isHR) e.preventDefault();
+                }}
               >
                 <span>Management Processes</span>
                 <span className="flex items-center gap-2">
                   <span className="rounded-full px-2 py-0.5 text-[0.5rem]" style={{ background: "var(--sidebar-icon-bg)", color: "var(--sidebar-text)" }}>
                     {managementModules.length}
                   </span>
-                  <span className="text-[0.7rem] transition-transform duration-200 group-open:rotate-90">&gt;</span>
+                  <span className={cn("text-[0.7rem] transition-transform duration-200", isHR ? "group-open:rotate-90" : "hidden")}>&gt;</span>
                 </span>
               </summary>
 
@@ -513,4 +519,6 @@ export function AppShell({ children }: AppShellProps) {
     </div>
   );
 }
+
+
 
