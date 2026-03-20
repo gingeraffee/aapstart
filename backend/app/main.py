@@ -9,11 +9,15 @@ from app.modules.router import router as modules_router
 from app.progress.router import router as progress_router
 from app.resources.router import router as resources_router
 from app.admin.router import router as admin_router
+from fastapi.middleware.cors import CORSMiddleware
 
 settings = get_settings()
 
 ALLOWED_ORIGINS = {
     settings.frontend_url,
+    "https://aap-start-frontend.onrender.com",
+    "https://www.aapstart.com",
+    "https://aapstart.com",
     "http://localhost:3000", "http://localhost:3001", "http://localhost:3002",
     "http://127.0.0.1:3000", "http://127.0.0.1:3001", "http://127.0.0.1:3002",
 }
