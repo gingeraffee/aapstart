@@ -75,8 +75,20 @@ export function getModulesForTrack(track: string) {
   const result: Record<string, unknown>[] = [];
   for (const mod of cache.values()) {
     if (mod.status === "draft") continue;
-    if (mod.tracks.includes("all") || mod.tracks.includes(track)) {
+
+    if (track === "hr") {
+      // HR reviewers see everything
       result.push(moduleSummary(mod));
+    } else if (track === "management") {
+      // Management only sees management-specific modules
+      if (mod.tracks.includes("management")) {
+        result.push(moduleSummary(mod));
+      }
+    } else {
+      // Warehouse / administrative see 'all' + their own track
+      if (mod.tracks.includes("all") || mod.tracks.includes(track)) {
+        result.push(moduleSummary(mod));
+      }
     }
   }
   result.sort((a, b) => (a.order as number) - (b.order as number));
@@ -87,7 +99,15 @@ export function getModule(slug: string, track: string) {
   const cache = getCache();
   const mod = cache.get(slug);
   if (!mod) return null;
-  if (!mod.tracks.includes("all") && !mod.tracks.includes(track)) return null;
+
+  if (track === "hr") {
+    // HR can access everything
+  } else if (track === "management") {
+    if (!mod.tracks.includes("management")) return null;
+  } else {
+    if (!mod.tracks.includes("all") && !mod.tracks.includes(track)) return null;
+  }
+
   return moduleForClient(mod, track);
 }
 
@@ -257,6 +277,7 @@ function moduleSummary(mod: RawModule) {
     slug: mod.slug,
     title: mod.title,
     description: mod.description,
+    tracks: mod.tracks,
     order: mod.order,
     estimated_minutes: mod.estimated_minutes,
     status: mod.status,
@@ -268,6 +289,7 @@ function moduleSummary(mod: RawModule) {
 function moduleForClient(mod: RawModule, track: string) {
   const contentBlocks = mod.content_blocks.filter((b) => {
     if (b.type !== "track_block") return true;
+    if (track === "hr") return true; // HR reviewers see all track-specific content
     const tracks = (b.tracks as string[]) || [];
     return tracks.includes("all") || tracks.includes(track);
   });

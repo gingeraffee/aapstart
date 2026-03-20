@@ -6,6 +6,7 @@ class ModuleSummary(BaseModel):
     slug: str
     title: str
     description: str
+    tracks: list[str]
     order: int
     estimated_minutes: int
     status: str

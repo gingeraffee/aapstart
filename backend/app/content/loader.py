@@ -56,16 +56,29 @@ def load_all_content():
 def get_modules_for_track(track: str) -> list[dict]:
     """
     Return ordered module list for a given track.
-    Includes 'all' modules plus track-specific modules.
+    - HR sees ALL modules across every track.
+    - Management sees ONLY modules with tracks: [management].
+    - Other tracks see 'all' modules plus their track-specific modules.
     Excludes draft modules (status == 'draft').
     """
     result = []
     for module in _modules_cache.values():
-        tracks = module.get("tracks", ["all"])
-        if "all" in tracks or track in tracks:
-            if module.get("status") != "draft":
-                # Strip content_blocks and quiz answers — overview list only needs metadata
+        if module.get("status") == "draft":
+            continue
+        mod_tracks = module.get("tracks", ["all"])
+
+        if track == "hr":
+            # HR reviewers see everything
+            result.append(_module_summary(module, track))
+        elif track == "management":
+            # Management only sees management-specific modules
+            if "management" in mod_tracks:
                 result.append(_module_summary(module, track))
+        else:
+            # Warehouse / administrative see 'all' + their own track
+            if "all" in mod_tracks or track in mod_tracks:
+                result.append(_module_summary(module, track))
+
     result.sort(key=lambda m: m.get("order", 99))
     return result
 
@@ -73,15 +86,24 @@ def get_modules_for_track(track: str) -> list[dict]:
 def get_module(slug: str, track: str) -> dict | None:
     """
     Return full module data for a given slug, filtered for the employee's track.
+    HR can access any module. Management can only access management modules.
     Quiz correct answers are stripped — never sent to the frontend.
     """
     module = _modules_cache.get(slug)
     if not module:
         return None
 
-    tracks = module.get("tracks", ["all"])
-    if "all" not in tracks and track not in tracks:
-        return None  # Employee's track cannot access this module
+    mod_tracks = module.get("tracks", ["all"])
+
+    if track == "hr":
+        # HR can access everything
+        pass
+    elif track == "management":
+        if "management" not in mod_tracks:
+            return None
+    else:
+        if "all" not in mod_tracks and track not in mod_tracks:
+            return None
 
     return _module_for_client(module, track)
 
@@ -92,6 +114,8 @@ def get_ui_content() -> dict:
 
 def get_resources(track: str) -> list[dict]:
     all_resources = _resources_cache.get("resources", [])
+    if track == "hr":
+        return all_resources  # HR reviewers see all resources
     return [
         r for r in all_resources
         if "all" in r.get("tracks", ["all"]) or track in r.get("tracks", [])
@@ -291,6 +315,7 @@ def _module_summary(module: dict, track: str | None = None) -> dict:
         "slug": module["slug"],
         "title": module["title"],
         "description": module["description"],
+        "tracks": module.get("tracks", ["all"]),
         "order": module["order"],
         "estimated_minutes": module["estimated_minutes"],
         "status": module["status"],
@@ -333,6 +358,8 @@ def _module_for_client(module: dict, track: str) -> dict:
 def _block_visible_for_track(block: dict, track: str) -> bool:
     if block.get("type") != "track_block":
         return True
+    if track == "hr":
+        return True  # HR reviewers see all track-specific content
     tracks = block.get("tracks", [])
     return "all" in tracks or track in tracks
 

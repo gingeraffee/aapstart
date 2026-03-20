@@ -15,6 +15,7 @@ import type { ModuleSummary, ProgressRecord, UiContent } from "@/lib/types";
 export default function OverviewPage() {
   const { user } = useAuth();
   const isManagement = user?.track === "management";
+  const isHR = user?.track === "hr";
 
   const { data: modules, isLoading: loadingModules, error: modulesError } = useSWR("modules", () =>
     modulesApi.list() as Promise<ModuleSummary[]>
@@ -36,31 +37,37 @@ export default function OverviewPage() {
   const liveModules = allModules
     .filter((m) => m.status === "published")
     .sort((a, b) => a.order - b.order);
-  const comingSoonCount = allModules.filter((m) => m.status === "coming_soon").length;
-  const completedCount = liveModules.filter((m) => progressMap.get(m.slug)?.module_completed).length;
 
-  const currentModule = liveModules.find((m) => !progressMap.get(m.slug)?.module_completed);
+  // Split into journey modules and management modules
+  const journeyModules = liveModules.filter((m) => !m.tracks?.includes("management"));
+  const managementModules = liveModules.filter((m) => m.tracks?.includes("management"));
+
+  const comingSoonCount = allModules.filter((m) => m.status === "coming_soon").length;
+  const completedCount = journeyModules.filter((m) => progressMap.get(m.slug)?.module_completed).length;
+
+  const currentModule = journeyModules.find((m) => !progressMap.get(m.slug)?.module_completed);
 
   useEffect(() => {
+    if (isManagement) return; // No celebration for management track
     if (isLoading) return;
-    if (liveModules.length === 0) return;
-    if (completedCount < liveModules.length) return;
+    if (journeyModules.length === 0) return;
+    if (completedCount < journeyModules.length) return;
 
     const key = `aapstart:celebrated:${user?.employee_id ?? "guest"}`;
     if (localStorage.getItem(key)) return;
 
     const t = setTimeout(() => setShowCelebration(true), 600);
     return () => clearTimeout(t);
-  }, [isLoading, completedCount, liveModules.length, user?.employee_id]);
+  }, [isManagement, isLoading, completedCount, journeyModules.length, user?.employee_id]);
 
-  const isModuleUnlocked = (index: number) => {
-    if (isManagement) return true;
+  const isJourneyModuleUnlocked = (index: number) => {
+    if (isHR) return true;
     if (index === 0) return true;
-    const prevSlug = liveModules[index - 1].slug;
+    const prevSlug = journeyModules[index - 1].slug;
     return progressMap.get(prevSlug)?.module_completed ?? false;
   };
 
-  const nextToUnlockIndex = liveModules.findIndex((_, i) => !isModuleUnlocked(i));
+  const nextToUnlockIndex = journeyModules.findIndex((_, i) => !isJourneyModuleUnlocked(i));
 
   const coachTip = useMemo(() => pickRandom(COACH_TIPS), []);
 
@@ -96,6 +103,109 @@ export default function OverviewPage() {
     );
   }
 
+  // ── Management Overview ────────────────────────────────────────────────────
+  if (isManagement) {
+    return (
+      <div className="w-full px-6 py-5 font-sans lg:px-8 lg:py-7">
+        <div className="mb-6 animate-fade-up">
+          <div className="mb-1 flex items-center gap-2.5">
+            <div
+              className="flex h-7 w-7 items-center justify-center rounded-full"
+              style={{ background: "linear-gradient(135deg, rgba(27,44,86,0.18) 0%, rgba(14,165,233,0.12) 100%)" }}
+            >
+              <svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="#1b2c56" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M2 3h8M2 6h8M2 9h5" />
+              </svg>
+            </div>
+            <div>
+              <p className="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.11em]" style={{ background: "var(--welcome-label-bg)", color: "var(--welcome-label-text)" }}>
+                Management Training
+              </p>
+            </div>
+          </div>
+          <h1 className="mt-2 text-[1.5rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>
+            Welcome, {firstName}
+          </h1>
+          <p className="mt-2 max-w-2xl text-[0.9rem] leading-[1.7]" style={{ color: "var(--card-desc)" }}>
+            This portal contains process guides and reference materials designed to support you in your management role at AAP. Each document walks through a specific process step by step so you have a clear, consistent resource to reference when needed.
+          </p>
+        </div>
+
+        <div className="animate-fade-up" style={{ animationDelay: "60ms" }}>
+          <div className="mb-4 flex items-center gap-2">
+            <h2 className="text-[1.1rem] font-bold tracking-[-0.01em]" style={{ color: "var(--heading-color)" }}>
+              Process Guides
+            </h2>
+            <span className="rounded-full px-2 py-0.5 text-[0.66rem] font-semibold" style={{ background: "var(--welcome-label-bg)", color: "var(--welcome-label-text)" }}>
+              {managementModules.length} {managementModules.length === 1 ? "guide" : "guides"}
+            </span>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            {managementModules.map((module) => (
+              <Link
+                key={module.slug}
+                href={`/modules/${module.slug}`}
+                className="group relative overflow-hidden rounded-[16px] p-5 transition-all duration-200 hover:-translate-y-px hover:shadow-[0_14px_24px_rgba(17,41,74,0.15)]"
+                style={{
+                  background: "var(--card-bg)",
+                  border: "1px solid var(--card-border)",
+                  boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)",
+                }}
+              >
+                <span className="absolute inset-y-4 left-3 w-[2px] rounded-full" style={{ background: "rgba(27, 44, 86, 0.5)" }} />
+                <div className="pl-2">
+                  <div className="mb-1 flex items-center justify-between gap-3">
+                    <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--welcome-label-text)" }}>
+                      Process Guide
+                    </p>
+                    <p className="shrink-0 text-[0.67rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--module-context)" }}>
+                      {Math.max(module.estimated_minutes, 1)} min read
+                    </p>
+                  </div>
+                  <p className="text-[0.96rem] font-semibold leading-snug" style={{ color: "var(--heading-color)" }}>{module.title}</p>
+                  {module.description && (
+                    <p className="mt-1.5 line-clamp-2 text-[0.8rem] leading-[1.58]" style={{ color: "var(--card-desc)" }}>{module.description}</p>
+                  )}
+                  <p className="mt-3 text-[0.73rem] font-semibold transition-all group-hover:underline" style={{ color: "#17365d" }}>
+                    View guide -&gt;
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          {managementModules.length === 0 && (
+            <div className="rounded-[16px] p-8 text-center" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}>
+              <p className="text-[0.88rem] font-semibold" style={{ color: "var(--heading-color)" }}>Process guides are being developed.</p>
+              <p className="mt-1 text-[0.8rem]" style={{ color: "var(--card-desc)" }}>Check back soon for new management training materials.</p>
+            </div>
+          )}
+        </div>
+
+        <div className="mt-8 animate-fade-up" style={{ animationDelay: "120ms" }}>
+          <Link
+            href="/resources"
+            className="group inline-flex items-center gap-2 rounded-[12px] px-4 py-2.5 text-[0.82rem] font-semibold transition-all duration-200 hover:-translate-y-px"
+            style={{
+              background: "var(--card-bg)",
+              border: "1px solid var(--card-border)",
+              boxShadow: "0 4px 12px rgba(17, 41, 74, 0.08)",
+              color: "var(--heading-color)",
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M2 3h8M2 6h8M2 9h5" />
+            </svg>
+            Browse Resource Hub
+            <span className="transition-transform group-hover:translate-x-0.5">&rarr;</span>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Journey Overview (warehouse, administrative, HR) ───────────────────────
   return (
     <div className="w-full px-6 py-5 font-sans lg:px-8 lg:py-7">
       {showCelebration && (
@@ -112,7 +222,7 @@ export default function OverviewPage() {
           headers={uiData?.rotating_headers}
           currentModule={currentModule}
           completedCount={completedCount}
-          totalCount={liveModules.length}
+          totalCount={journeyModules.length}
           comingSoonCount={comingSoonCount}
         />
       </div>
@@ -141,21 +251,21 @@ export default function OverviewPage() {
             <div>
               <p className="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.11em]" style={{ background: "var(--welcome-label-bg)", color: "var(--welcome-label-text)" }}>
                 <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
-                {isManagement ? "Management resources" : "Your launch path"}
+                Your launch path
               </p>
               <h2 className="mt-0.5 text-[1.22rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>
-                {isManagement ? "Module Reference Library" : <>{firstName}&apos;s learning journey</>}
+                {firstName}&apos;s learning journey
               </h2>
             </div>
           </div>
 
           <div className="space-y-3.5">
-            {liveModules.map((module, index) => {
+            {journeyModules.map((module, index) => {
               const prog = progressMap.get(module.slug);
               const isComplete = prog?.module_completed ?? false;
               const isInProgress = !isComplete && (prog?.visited || prog?.acknowledgements_completed || prog?.quiz_passed);
               const isCurrent = module.slug === currentModule?.slug;
-              const unlocked = isModuleUnlocked(index);
+              const unlocked = isJourneyModuleUnlocked(index);
               const isNextToUnlock = index === nextToUnlockIndex;
               const moduleIndexLabel = `Module ${String(index + 1).padStart(2, "0")}`;
               const progressPct = isComplete
@@ -189,19 +299,19 @@ export default function OverviewPage() {
                   >
                     <span
                       className="absolute inset-y-4 left-3 w-[2px] rounded-full"
-                      style={{ background: isNextToUnlock ? "linear-gradient(180deg,#22d3ee_0%,#0ea5d9_100%)" : "linear-gradient(180deg,#22d3ee_0%,#0ea5d9_100%)" }}
+                      style={{ background: "linear-gradient(180deg,#22d3ee_0%,#0ea5d9_100%)" }}
                     />
                     <div className="mt-0.5 shrink-0">
                       <div
                         className={cn("flex h-7 w-7 items-center justify-center rounded-full", isNextToUnlock ? "animate-pulse" : "")}
-                        style={{ backgroundColor: isNextToUnlock ? "rgba(34,211,238,0.18)" : "rgba(34,211,238,0.18)" }}
+                        style={{ backgroundColor: "rgba(34,211,238,0.18)" }}
                       >
                         <svg
                           width="11"
                           height="12"
                           viewBox="0 0 10 11"
                           fill="none"
-                          className={isNextToUnlock ? "text-[#0f6da3]" : "text-[#0f6da3]"}
+                          className="text-[#0f6da3]"
                         >
                           <rect x="1" y="5" width="8" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
                           <path d="M3 5V3.5a2 2 0 014 0V5" stroke="currentColor" strokeWidth="1.3" />
@@ -363,6 +473,64 @@ export default function OverviewPage() {
               );
             })}
           </div>
+
+          {/* ── Management Processes section (HR only) ── */}
+          {isHR && managementModules.length > 0 && (
+            <div className="mt-10">
+              <div className="mb-4 flex items-center gap-2.5">
+                <div
+                  className="flex h-7 w-7 items-center justify-center rounded-full"
+                  style={{ background: "linear-gradient(135deg, rgba(27,44,86,0.18) 0%, rgba(14,165,233,0.12) 100%)" }}
+                >
+                  <svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="#1b2c56" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M2 3h8M2 6h8M2 9h5" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.11em]" style={{ background: "var(--welcome-label-bg)", color: "var(--welcome-label-text)" }}>
+                    Management Training
+                  </p>
+                  <h2 className="mt-0.5 text-[1.22rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>
+                    Management Processes
+                  </h2>
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                {managementModules.map((module) => (
+                  <Link
+                    key={module.slug}
+                    href={`/modules/${module.slug}`}
+                    className="group relative overflow-hidden rounded-[16px] p-5 transition-all duration-200 hover:-translate-y-px hover:shadow-[0_14px_24px_rgba(17,41,74,0.15)]"
+                    style={{
+                      background: "var(--card-bg)",
+                      border: "1px solid var(--card-border)",
+                      boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)",
+                    }}
+                  >
+                    <span className="absolute inset-y-4 left-3 w-[2px] rounded-full" style={{ background: "rgba(27, 44, 86, 0.5)" }} />
+                    <div className="pl-2">
+                      <div className="mb-1 flex items-center justify-between gap-3">
+                        <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--welcome-label-text)" }}>
+                          Process Guide
+                        </p>
+                        <p className="shrink-0 text-[0.67rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--module-context)" }}>
+                          {Math.max(module.estimated_minutes, 1)} min read
+                        </p>
+                      </div>
+                      <p className="text-[0.96rem] font-semibold leading-snug" style={{ color: "var(--heading-color)" }}>{module.title}</p>
+                      {module.description && (
+                        <p className="mt-1.5 line-clamp-2 text-[0.8rem] leading-[1.58]" style={{ color: "var(--card-desc)" }}>{module.description}</p>
+                      )}
+                      <p className="mt-3 text-[0.73rem] font-semibold transition-all group-hover:underline" style={{ color: "#17365d" }}>
+                        View guide -&gt;
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {!isManagement && <aside className="w-[314px] shrink-0 animate-fade-up max-[1220px]:w-full xl:sticky xl:top-[82px]" style={{ animationDelay: "100ms" }}>
@@ -455,4 +623,3 @@ export default function OverviewPage() {
     </div>
   );
 }
-

@@ -53,6 +53,7 @@ export function AppShell({ children }: AppShellProps) {
   const router = useRouter();
 
   const isManagement = user?.track === "management";
+  const isHR = user?.track === "hr";
 
   const { data: modules } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
   const { data: progress } = useSWR("progress", () => progressApi.getAll() as Promise<ProgressRecord[]>);
@@ -62,18 +63,27 @@ export function AppShell({ children }: AppShellProps) {
     .filter((m) => m.status === "published")
     .sort((a, b) => a.order - b.order);
 
+  // Split modules into journey (non-management) and management sections
+  const journeyModules = liveModules.filter((m) => !m.tracks?.includes("management"));
+  const managementModules = liveModules.filter((m) => m.tracks?.includes("management"));
+
+  // Show journey section for non-management tracks
+  const showJourney = !isManagement;
+  // Show management section for management and HR tracks
+  const showManagementSection = isManagement || isHR;
+
   const completedCount = progress
-    ? liveModules.filter((m) => progress.find((p) => p.module_slug === m.slug)?.module_completed).length
+    ? journeyModules.filter((m) => progress.find((p) => p.module_slug === m.slug)?.module_completed).length
     : 0;
 
   const isJourneyActive = pathname === "/overview" || pathname.startsWith("/modules") || pathname === "/roadmap";
   const isResourcesActive = pathname.startsWith("/resources");
   const isRoadmapActive = pathname === "/roadmap";
 
-  const isModuleUnlocked = (index: number) => {
-    if (isManagement) return true;
+  const isJourneyModuleUnlocked = (index: number) => {
+    if (isHR) return true;
     if (index === 0) return true;
-    const prevSlug = liveModules[index - 1].slug;
+    const prevSlug = journeyModules[index - 1].slug;
     return progress?.find((p) => p.module_slug === prevSlug)?.module_completed ?? false;
   };
 
@@ -113,13 +123,7 @@ export function AppShell({ children }: AppShellProps) {
         </div>
 
         <div className="flex-1 overflow-y-auto px-3.5 pb-3 pt-4">
-          <p
-            className="mb-2.5 px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]"
-            style={{ color: "var(--sidebar-label)" }}
-          >
-            {isManagement ? "Modules" : "Your Journey"}
-          </p>
-
+          {/* Overview link — always shown */}
           <Link
             href="/overview"
             className={cn(
@@ -156,119 +160,192 @@ export function AppShell({ children }: AppShellProps) {
             Overview
           </Link>
 
-          <div className="space-y-1">
-            {liveModules.map((m, i) => {
-              const prog = progress?.find((p) => p.module_slug === m.slug);
-              const isComplete = prog?.module_completed ?? false;
-              const isActive = pathname.startsWith(`/modules/${m.slug}`);
-              const unlocked = isModuleUnlocked(i);
+          {/* ── Your Journey section (warehouse, administrative, HR) ── */}
+          {showJourney && (
+            <>
+              <p
+                className="mb-2.5 mt-3 px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]"
+                style={{ color: "var(--sidebar-label)" }}
+              >
+                Your Journey
+              </p>
 
-              if (!unlocked) {
-                return (
-                  <div
-                    key={m.slug}
-                    className="flex cursor-not-allowed items-center gap-2.5 rounded-[11px] px-3.5 py-2.5"
-                  >
-                    <span
-                      className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full"
-                      style={{ backgroundColor: "var(--sidebar-locked-icon-bg)" }}
+              <div className="space-y-1">
+                {journeyModules.map((m, i) => {
+                  const prog = progress?.find((p) => p.module_slug === m.slug);
+                  const isComplete = prog?.module_completed ?? false;
+                  const isActive = pathname.startsWith(`/modules/${m.slug}`);
+                  const unlocked = isJourneyModuleUnlocked(i);
+
+                  if (!unlocked) {
+                    return (
+                      <div
+                        key={m.slug}
+                        className="flex cursor-not-allowed items-center gap-2.5 rounded-[11px] px-3.5 py-2.5"
+                      >
+                        <span
+                          className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full"
+                          style={{ backgroundColor: "var(--sidebar-locked-icon-bg)" }}
+                        >
+                          <svg width="8" height="9" viewBox="0 0 8 9" fill="none" style={{ color: "var(--sidebar-locked-icon-text)" }}>
+                            <rect x="1" y="4" width="6" height="5" rx="1" stroke="currentColor" strokeWidth="1.2" />
+                            <path d="M2.5 4V2.5a1.5 1.5 0 013 0V4" stroke="currentColor" strokeWidth="1.2" />
+                          </svg>
+                        </span>
+                        <span className="truncate text-[0.76rem] leading-tight" style={{ color: "var(--sidebar-locked-text)" }}>{m.title}</span>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <Link
+                      key={m.slug}
+                      href={`/modules/${m.slug}`}
+                      className={cn(
+                        "flex items-center gap-2.5 rounded-[12px] px-3.5 py-2.5 text-[0.8rem] font-semibold transition-all duration-200",
+                        isActive ? "shadow-[0_8px_14px_rgba(16,35,60,0.16)]" : ""
+                      )}
+                      style={{
+                        color: isActive ? "var(--sidebar-text-active)" : "var(--sidebar-text)",
+                        ...(isActive ? activeNavStyle : undefined),
+                      }}
                     >
-                      <svg width="8" height="9" viewBox="0 0 8 9" fill="none" style={{ color: "var(--sidebar-locked-icon-text)" }}>
-                        <rect x="1" y="4" width="6" height="5" rx="1" stroke="currentColor" strokeWidth="1.2" />
-                        <path d="M2.5 4V2.5a1.5 1.5 0 013 0V4" stroke="currentColor" strokeWidth="1.2" />
-                      </svg>
-                    </span>
-                    <span className="truncate text-[0.76rem] leading-tight" style={{ color: "var(--sidebar-locked-text)" }}>{m.title}</span>
-                  </div>
-                );
-              }
+                      <span
+                        className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full text-[0.6rem] font-bold transition-all"
+                        style={{
+                          color: isActive
+                            ? "var(--sidebar-icon-active-text)"
+                            : isComplete
+                              ? "var(--sidebar-complete-icon-text)"
+                              : "var(--sidebar-icon-text)",
+                          background: isActive
+                            ? "var(--sidebar-icon-active-bg)"
+                            : isComplete
+                              ? "var(--sidebar-complete-icon-bg)"
+                              : "var(--sidebar-icon-bg)",
+                        }}
+                      >
+                        {isComplete ? (
+                          <svg
+                            width="8"
+                            height="8"
+                            viewBox="0 0 10 10"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M2 5.5l2 2L8 2.5" />
+                          </svg>
+                        ) : (
+                          i + 1
+                        )}
+                      </span>
+                      <span className="truncate leading-tight">{m.title}</span>
+                    </Link>
+                  );
+                })}
+              </div>
 
-              return (
-                <Link
-                  key={m.slug}
-                  href={`/modules/${m.slug}`}
-                  className={cn(
-                    "flex items-center gap-2.5 rounded-[12px] px-3.5 py-2.5 text-[0.8rem] font-semibold transition-all duration-200",
-                    isActive ? "shadow-[0_8px_14px_rgba(16,35,60,0.16)]" : ""
-                  )}
+              <Link
+                href="/roadmap"
+                className={cn(
+                  "mt-3 flex items-center gap-2.5 rounded-[12px] px-3.5 pb-2.5 pt-4 text-[0.8rem] font-semibold transition-all duration-200",
+                  isRoadmapActive ? "shadow-[0_8px_14px_rgba(16,35,60,0.16)]" : ""
+                )}
+                style={{
+                  borderTop: "1px solid var(--sidebar-roadmap-border)",
+                  color: isRoadmapActive ? "var(--sidebar-text-active)" : "var(--sidebar-text)",
+                  ...(isRoadmapActive ? { ...activeNavStyle, borderColor: "var(--sidebar-active-border)" } : undefined),
+                }}
+              >
+                <span
+                  className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full transition-all"
                   style={{
-                    color: isActive ? "var(--sidebar-text-active)" : "var(--sidebar-text)",
-                    ...(isActive ? activeNavStyle : undefined),
+                    color: isRoadmapActive ? "var(--sidebar-icon-active-text)" : "var(--sidebar-icon-text)",
+                    background: isRoadmapActive ? "var(--sidebar-icon-active-bg)" : "var(--sidebar-icon-bg)",
                   }}
                 >
-                  <span
-                    className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full text-[0.6rem] font-bold transition-all"
-                    style={{
-                      color: isActive
-                        ? "var(--sidebar-icon-active-text)"
-                        : isComplete
-                          ? "var(--sidebar-complete-icon-text)"
-                          : "var(--sidebar-icon-text)",
-                      background: isActive
-                        ? "var(--sidebar-icon-active-bg)"
-                        : isComplete
-                          ? "var(--sidebar-complete-icon-bg)"
-                          : "var(--sidebar-icon-bg)",
-                    }}
+                  <svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 12 12"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   >
-                    {isComplete ? (
-                      <svg
-                        width="8"
-                        height="8"
-                        viewBox="0 0 10 10"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M2 5.5l2 2L8 2.5" />
-                      </svg>
-                    ) : (
-                      i + 1
-                    )}
-                  </span>
-                  <span className="truncate leading-tight">{m.title}</span>
-                </Link>
-              );
-            })}
-          </div>
+                    <path d="M1 2.5l3 1 3-1.5 3 1V10l-3-1-3 1.5-3-1V2.5z" />
+                    <path d="M4 3.5v7M8 2v7" />
+                  </svg>
+                </span>
+                90-Day Roadmap
+              </Link>
+            </>
+          )}
 
-          <Link
-            href="/roadmap"
-            className={cn(
-              "mt-3 flex items-center gap-2.5 rounded-[12px] px-3.5 pb-2.5 pt-4 text-[0.8rem] font-semibold transition-all duration-200",
-              isRoadmapActive ? "shadow-[0_8px_14px_rgba(16,35,60,0.16)]" : ""
-            )}
-            style={{
-              borderTop: "1px solid var(--sidebar-roadmap-border)",
-              color: isRoadmapActive ? "var(--sidebar-text-active)" : "var(--sidebar-text)",
-              ...(isRoadmapActive ? { ...activeNavStyle, borderColor: "var(--sidebar-active-border)" } : undefined),
-            }}
-          >
-            <span
-              className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full transition-all"
-              style={{
-                color: isRoadmapActive ? "var(--sidebar-icon-active-text)" : "var(--sidebar-icon-text)",
-                background: isRoadmapActive ? "var(--sidebar-icon-active-bg)" : "var(--sidebar-icon-bg)",
-              }}
-            >
-              <svg
-                width="10"
-                height="10"
-                viewBox="0 0 12 12"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+          {/* ── Management Processes section (management + HR) ── */}
+          {showManagementSection && managementModules.length > 0 && (
+            <>
+              <p
+                className={cn(
+                  "mb-2.5 px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]",
+                  showJourney ? "mt-5 border-t pt-4" : "mt-3"
+                )}
+                style={{
+                  color: "var(--sidebar-label)",
+                  ...(showJourney ? { borderColor: "var(--sidebar-divider)" } : undefined),
+                }}
               >
-                <path d="M1 2.5l3 1 3-1.5 3 1V10l-3-1-3 1.5-3-1V2.5z" />
-                <path d="M4 3.5v7M8 2v7" />
-              </svg>
-            </span>
-            90-Day Roadmap
-          </Link>
+                Management Processes
+              </p>
+
+              <div className="space-y-1">
+                {managementModules.map((m) => {
+                  const isActive = pathname.startsWith(`/modules/${m.slug}`);
+
+                  return (
+                    <Link
+                      key={m.slug}
+                      href={`/modules/${m.slug}`}
+                      className={cn(
+                        "flex items-center gap-2.5 rounded-[12px] px-3.5 py-2.5 text-[0.8rem] font-semibold transition-all duration-200",
+                        isActive ? "shadow-[0_8px_14px_rgba(16,35,60,0.16)]" : ""
+                      )}
+                      style={{
+                        color: isActive ? "var(--sidebar-text-active)" : "var(--sidebar-text)",
+                        ...(isActive ? activeNavStyle : undefined),
+                      }}
+                    >
+                      <span
+                        className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full transition-all"
+                        style={{
+                          color: isActive ? "var(--sidebar-icon-active-text)" : "var(--sidebar-icon-text)",
+                          background: isActive ? "var(--sidebar-icon-active-bg)" : "var(--sidebar-icon-bg)",
+                        }}
+                      >
+                        <svg
+                          width="10"
+                          height="10"
+                          viewBox="0 0 12 12"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M2 3h8M2 6h8M2 9h5" />
+                        </svg>
+                      </span>
+                      <span className="truncate leading-tight">{m.title}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </>
+          )}
         </div>
 
         {user?.is_admin && (
@@ -369,7 +446,7 @@ export function AppShell({ children }: AppShellProps) {
                 : undefined),
             }}
           >
-            {isManagement ? "Modules" : "Your Journey"}
+            {isManagement ? "Training" : "Your Journey"}
           </button>
           <button
             onClick={() => router.push("/resources")}
@@ -392,12 +469,14 @@ export function AppShell({ children }: AppShellProps) {
         </div>
 
         <div className="ml-auto flex items-center gap-3">
-          <div
-            className="rounded-[10px] px-2.5 py-1 text-[0.74rem] font-semibold"
-            style={{ background: "var(--badge-bg)", border: "1px solid var(--badge-border)", color: "var(--badge-text)" }}
-          >
-            {completedCount} complete
-          </div>
+          {!isManagement && (
+            <div
+              className="rounded-[10px] px-2.5 py-1 text-[0.74rem] font-semibold"
+              style={{ background: "var(--badge-bg)", border: "1px solid var(--badge-border)", color: "var(--badge-text)" }}
+            >
+              {completedCount} complete
+            </div>
+          )}
           <ThemeToggle />
         </div>
       </header>
