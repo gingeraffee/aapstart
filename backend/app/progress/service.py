@@ -70,7 +70,14 @@ def mark_visited(db: Session, employee_id: str, module_slug: str, track: str):
     if not record.visited:
         record.visited = True
         record.visited_at = _now()
-    _check_completion(record, module_meta)
+
+    # Management track: auto-complete on visit (no quiz/ack gating)
+    if track == "management" and not record.module_completed:
+        record.module_completed = True
+        record.completed_at = _now()
+    else:
+        _check_completion(record, module_meta)
+
     db.commit()
     db.refresh(record)
     return record

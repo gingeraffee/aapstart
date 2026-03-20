@@ -65,7 +65,7 @@ def get_modules_for_track(track: str) -> list[dict]:
         if "all" in tracks or track in tracks:
             if module.get("status") != "draft":
                 # Strip content_blocks and quiz answers — overview list only needs metadata
-                result.append(_module_summary(module))
+                result.append(_module_summary(module, track))
     result.sort(key=lambda m: m.get("order", 99))
     return result
 
@@ -284,8 +284,9 @@ def _parse_key_value(content: str) -> dict:
 
 # ── Summary / client views ────────────────────────────────────────────────────
 
-def _module_summary(module: dict) -> dict:
+def _module_summary(module: dict, track: str | None = None) -> dict:
     """Lightweight version for the overview module list."""
+    is_management = track == "management"
     return {
         "slug": module["slug"],
         "title": module["title"],
@@ -293,20 +294,22 @@ def _module_summary(module: dict) -> dict:
         "order": module["order"],
         "estimated_minutes": module["estimated_minutes"],
         "status": module["status"],
-        "requires_quiz": module["requires_quiz"],
-        "requires_acknowledgement": module["requires_acknowledgement"],
+        "requires_quiz": False if is_management else module["requires_quiz"],
+        "requires_acknowledgement": False if is_management else module["requires_acknowledgement"],
     }
 
 
 def _module_for_client(module: dict, track: str) -> dict:
     """Full module with content blocks, track-filtered. Quiz answers stripped."""
+    is_management = track == "management"
+
     content_blocks = [
         b for b in module["content_blocks"]
         if _block_visible_for_track(b, track)
     ]
 
     quiz_client = None
-    if module.get("quiz"):
+    if module.get("quiz") and not is_management:
         quiz_client = {
             "questions": [
                 {
@@ -320,10 +323,10 @@ def _module_for_client(module: dict, track: str) -> dict:
         }
 
     return {
-        **_module_summary(module),
+        **_module_summary(module, track),
         "content_blocks": content_blocks,
         "quiz": quiz_client,
-        "acknowledgements": module.get("acknowledgements", []),
+        "acknowledgements": [] if is_management else module.get("acknowledgements", []),
     }
 
 

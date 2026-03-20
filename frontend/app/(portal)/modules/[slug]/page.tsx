@@ -276,6 +276,8 @@ export default function ModulePage() {
   const [showCongrats, setShowCongrats] = useState(false);
   const [congratsMsg, setCongratsMsg] = useState<{ headline: string; body: string } | null>(null);
 
+  const isManagement = user?.track === "management";
+
   const { data: module, isLoading, error } = useSWR(`module:${slug}`, () => modulesApi.get(slug) as Promise<ModuleDetail>);
   const { data: moduleCatalog } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
   const { data: progress } = useSWR("progress", () => progressApi.getAll() as Promise<ProgressRecord[]>);
@@ -616,6 +618,7 @@ export default function ModulePage() {
 
   const rail = (
     <div className="space-y-3">
+      {!isManagement && (
       <div className="rounded-[16px] border border-[rgba(97,171,230,0.34)] bg-[linear-gradient(180deg,#fffefb_0%,#f6fbff_100%)] p-4 shadow-[0_12px_22px_rgba(12,24,47,0.08)]">
         <p className="inline-flex items-center gap-2 rounded-full bg-[rgba(27,44,86,0.06)] px-2.5 py-1 text-[0.58rem] font-bold uppercase tracking-[0.16em] text-[#17365d]">
           <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
@@ -639,7 +642,9 @@ export default function ModulePage() {
           />
         </div>
       </div>
+      )}
 
+      {!isManagement && (
       <div className="rounded-[16px] border border-[rgba(223,0,48,0.18)] bg-[linear-gradient(180deg,rgba(223,0,48,0.05)_0%,rgba(223,0,48,0.01)_100%)] p-4 shadow-[0_10px_20px_rgba(12,24,47,0.07)]">
         <p className="inline-flex items-center gap-2 rounded-full bg-[rgba(223,0,48,0.08)] px-2.5 py-1 text-[0.58rem] font-bold uppercase tracking-[0.16em] text-[#b3234c]">
           <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
@@ -647,6 +652,7 @@ export default function ModulePage() {
         </p>
         <p className="mt-2.5 text-[0.76rem] leading-[1.62] text-[#5d4964]">{coachTip}</p>
       </div>
+      )}
 
       {railSections.length > 0 ? (
         <div className="rounded-[16px] border border-[#d6e2ef] bg-[linear-gradient(180deg,#fffefb_0%,#f9fbfe_100%)] p-4 shadow-[0_10px_20px_rgba(12,24,47,0.06)]">
@@ -703,12 +709,12 @@ export default function ModulePage() {
             </div>
           ))}
         </div>
-        {isFeatured && howWorkWorksGutChecks.length > 0 && (
+        {!isManagement && isFeatured && howWorkWorksGutChecks.length > 0 && (
           <div className="mt-6 animate-fade-up" style={{ animationDelay: "150ms" }}>
             <GutCheckBlock scenarios={howWorkWorksGutChecks} />
           </div>
         )}
-        {isFeatured && benefitsGutChecks.length > 0 && (
+        {!isManagement && isFeatured && benefitsGutChecks.length > 0 && (
           <div className="mt-6 animate-fade-up" style={{ animationDelay: "150ms" }}>
             <GutCheckBlock scenarios={benefitsGutChecks} />
           </div>
@@ -733,7 +739,7 @@ export default function ModulePage() {
 
   return (
     <>
-      {showCongrats && congratsMsg ? (
+      {!isManagement && showCongrats && congratsMsg ? (
         <>
           <style>{`
             @keyframes congrats-in {
@@ -798,6 +804,7 @@ export default function ModulePage() {
         <div className="space-y-2">
         {sections[0] ? renderSection(sections[0], 0, "featured") : null}
 
+        {!isManagement && (
         <section
           className="relative overflow-hidden"
           style={{
@@ -845,9 +852,25 @@ export default function ModulePage() {
             ))}
           </div>
         </section>
+        )}
 
         {sections.slice(1).map((section, index) => renderSection(section, index + 1, "open"))}
 
+        {isManagement ? (
+        <ModulePanel className="relative scroll-mt-24 !overflow-hidden !px-4 !py-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <Link href="/overview" className="inline-flex items-center gap-1.5 text-[0.82rem] font-semibold transition-colors" style={{ color: "var(--module-context)" }}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 2L4 7l5 5" />
+              </svg>
+              Back to modules
+            </Link>
+            <Button onClick={() => router.push("/overview")} className="h-[2.8rem] px-6 text-[0.88rem]">
+              Done
+            </Button>
+          </div>
+        </ModulePanel>
+        ) : (
         <ModulePanel className="relative scroll-mt-24 !overflow-hidden !px-4 !py-3 !pt-0">
           <div className="mb-3 h-1 w-full bg-[linear-gradient(90deg,#0f7fb3_0%,#06b6d4_52%,#df0030_100%)]" />
           <div
@@ -937,6 +960,7 @@ export default function ModulePage() {
             </div>
           </div>
         </ModulePanel>
+        )}
       </div>
     </ModuleShell>
     </>

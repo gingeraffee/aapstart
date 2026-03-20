@@ -52,6 +52,8 @@ export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
 
+  const isManagement = user?.track === "management";
+
   const { data: modules } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
   const { data: progress } = useSWR("progress", () => progressApi.getAll() as Promise<ProgressRecord[]>);
 
@@ -69,6 +71,7 @@ export function AppShell({ children }: AppShellProps) {
   const isRoadmapActive = pathname === "/roadmap";
 
   const isModuleUnlocked = (index: number) => {
+    if (isManagement) return true;
     if (index === 0) return true;
     const prevSlug = liveModules[index - 1].slug;
     return progress?.find((p) => p.module_slug === prevSlug)?.module_completed ?? false;
@@ -114,7 +117,7 @@ export function AppShell({ children }: AppShellProps) {
             className="mb-2.5 px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]"
             style={{ color: "var(--sidebar-label)" }}
           >
-            Your Journey
+            {isManagement ? "Modules" : "Your Journey"}
           </p>
 
           <Link
@@ -366,7 +369,7 @@ export function AppShell({ children }: AppShellProps) {
                 : undefined),
             }}
           >
-            Your Journey
+            {isManagement ? "Modules" : "Your Journey"}
           </button>
           <button
             onClick={() => router.push("/resources")}

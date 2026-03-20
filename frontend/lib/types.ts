@@ -70,12 +70,14 @@ export interface QuizFeedback {
   feedback: Record<string, { correct: boolean; correct_id: string }>;
 }
 
+export type Track = "hr" | "warehouse" | "administrative" | "management";
+
 export interface User {
   employee_id: string;
   first_name: string;
   last_name: string;
   full_name: string;
-  track: string;
+  track: Track;
   is_admin: boolean;
 }
 

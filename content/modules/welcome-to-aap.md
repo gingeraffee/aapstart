@@ -63,7 +63,9 @@ quiz:
 
 ## Welcome to AAP.
 
-You're joining a company that helps support more than 2,000 independent and community pharmacies, and every role matters. Whether you're working on the front lines, behind the scenes, or somewhere in between, what you do helps our member pharmacies stay supported, successful, and ready to serve their communities. Watch the video below featuring AAP CEO Jon Copeland for a closer look at what AAP is all about.
+You're joining a company that exists to support more than 2,000 independent and community pharmacies across the country. Behind every one of those pharmacies is a community — patients who rely on them, owners who built them, staff who show up every day. What you do here connects to all of that, whether your work happens at a desk, on a warehouse floor, or somewhere in between.
+
+Before you dive in, hear it directly from AAP CEO Jon Copeland. Watch the video below for a look at who we are and where we're headed.
 
 :::video
 src: /welcome-to-aap.mp4
@@ -72,38 +74,36 @@ alt: Welcome to AAP
 
 ## Who AAP Is
 
-American Associated Pharmacies, or AAP, is a member-owned cooperative that supports independent and community pharmacies. AAP was formed in 2009 through the joining of two pharmacy organizations, and API continues to operate as AAP's warehouse and distribution arm.
+American Associated Pharmacies — AAP — is a member-owned cooperative. That means the pharmacies we serve aren't just our customers; they're our members and our reason for existing. AAP came together in 2009 through the joining of two pharmacy organizations, and has been growing its reach and impact ever since. API, our warehouse and distribution subsidiary, is the operational backbone that keeps product moving and members supplied.
 
 ## Mission, Vision, and Values
 
-AAP's mission is to provide support and customized solutions for independent and community pharmacies to enhance profitability, streamline operations, and improve the quality of patient care.
+AAP's mission is to provide support and customized solutions for independent and community pharmacies — helping them run more profitably, operate more efficiently, and deliver better care to their patients.
 
-Its vision is helping independent pharmacies thrive in a competitive healthcare market.
+The vision is straightforward: help independent pharmacies not just survive, but thrive in a competitive healthcare market.
 
-AAP's values emphasize:
+And the values aren't just words on a wall. They're how we expect to show up — for our members, for each other, and for the work.
 
-- Customer focus
-- Integrity
-- Respect
-- Excellence
-- Ownership
+**Customer Focus** — Every decision runs through the same filter: does this make things better for our member pharmacies and the patients they serve? If the answer is no, we rethink it.
+
+**Integrity** — We do what we say we're going to do. When something goes sideways, we own it and fix it. No finger-pointing, no runaround.
+
+**Respect** — This place works because people actually work together. That means treating your coworkers, your members, and your community like they matter — because they do.
+
+**Excellence** — Good enough isn't the goal. We're always looking for ways to do the work better, smarter, and with more care than the last time.
+
+**Ownership** — You don't have to have "manager" in your title to take responsibility. If you see something that needs doing, you do it. That's the cooperative spirit in action.
 
 ## What AAP Start Is For
 
-AAP Start is here to make your first stretch of onboarding clearer and easier to follow. The goal is to help you understand how AAP works, what's expected of you, where to go for help, and what to expect as you get settled in.
+Onboarding can feel like drinking from a fire hose. AAP Start exists to turn that down to a manageable stream. Over the next several modules, you'll get a clear picture of how AAP operates, what's expected of you, where to find what you need, and what the first 90 days actually look like.
 
-AAP Start is designed to help you:
-
-- Understand the basics of working at AAP
-- Learn where key tools and systems live
-- Get a clear overview of important expectations and policies
-- Know where to go for help
-- Feel more confident in your first 90 days
+You are not expected to memorize everything on day one. The goal is to get you oriented — grounded enough to do your job with confidence and know where to look when you need a refresher.
 
 :::callout tip
-You are not expected to memorize everything on day one. The goal is to help you get oriented, know the basics, and know where to look when you need a refresher.
+AAP Start is a starting point, not a substitute for your supervisor. Use it to get your footing, then keep the conversation going with your team.
 :::
 
 ## Need Help?
 
-For general onboarding, policy, benefits, or employee-record questions, contact **Nicole Thornton, HR Manager**. For higher-level escalation, contact **Brandy Hooper, VP of HR**. Your supervisor is also an important first point of contact for day-to-day support.
+For anything related to onboarding, HR policies, benefits, or your employee record, reach out to **Nicole Thornton, HR Manager**. For higher-level questions or escalations, contact **Brandy Hooper, VP of HR**. And for day-to-day support, your supervisor is always your first stop.

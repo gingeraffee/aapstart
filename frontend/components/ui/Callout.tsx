@@ -61,7 +61,7 @@ function CalloutIcon({ variant }: { variant: Variant }) {
 }
 
 export function Callout({ variant = "tip", children, content, className }: CalloutProps) {
-  const style = styles[variant];
+  const style = styles[variant] ?? styles.tip;
 
   return (
     <div className={cn("my-6 rounded-[13px] border p-4", style.shell, className)}>

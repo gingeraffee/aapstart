@@ -14,6 +14,7 @@ import type { ModuleSummary, ProgressRecord, UiContent } from "@/lib/types";
 
 export default function OverviewPage() {
   const { user } = useAuth();
+  const isManagement = user?.track === "management";
 
   const { data: modules, isLoading: loadingModules, error: modulesError } = useSWR("modules", () =>
     modulesApi.list() as Promise<ModuleSummary[]>
@@ -53,6 +54,7 @@ export default function OverviewPage() {
   }, [isLoading, completedCount, liveModules.length, user?.employee_id]);
 
   const isModuleUnlocked = (index: number) => {
+    if (isManagement) return true;
     if (index === 0) return true;
     const prevSlug = liveModules[index - 1].slug;
     return progressMap.get(prevSlug)?.module_completed ?? false;
@@ -139,10 +141,10 @@ export default function OverviewPage() {
             <div>
               <p className="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.11em]" style={{ background: "var(--welcome-label-bg)", color: "var(--welcome-label-text)" }}>
                 <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
-                Your launch path
+                {isManagement ? "Management resources" : "Your launch path"}
               </p>
               <h2 className="mt-0.5 text-[1.22rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>
-                {firstName}&apos;s learning journey
+                {isManagement ? "Module Reference Library" : <>{firstName}&apos;s learning journey</>}
               </h2>
             </div>
           </div>
@@ -363,7 +365,7 @@ export default function OverviewPage() {
           </div>
         </div>
 
-        <aside className="w-[314px] shrink-0 animate-fade-up max-[1220px]:w-full xl:sticky xl:top-[82px]" style={{ animationDelay: "100ms" }}>
+        {!isManagement && <aside className="w-[314px] shrink-0 animate-fade-up max-[1220px]:w-full xl:sticky xl:top-[82px]" style={{ animationDelay: "100ms" }}>
           <div
             className="overflow-hidden rounded-[18px]"
             style={{
@@ -448,7 +450,7 @@ export default function OverviewPage() {
               </div>
             </div>
           </div>
-        </aside>
+        </aside>}
       </div>
     </div>
   );

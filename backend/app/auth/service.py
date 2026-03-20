@@ -16,7 +16,7 @@ from app.database.models import Employee
 
 settings = get_settings()
 
-VALID_TRACKS = {"hr", "warehouse", "administrative"}
+VALID_TRACKS = {"hr", "warehouse", "administrative", "management"}
 
 
 def _normalize_track(track: str) -> str:
@@ -25,7 +25,7 @@ def _normalize_track(track: str) -> str:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=(
-                "DEV_AUTH_TRACK must be one of hr, warehouse, or administrative."
+                "DEV_AUTH_TRACK must be one of hr, warehouse, administrative, or management."
             ),
         )
     return normalized

@@ -9,7 +9,7 @@ from app.database.models import Employee, UserProgress
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
-VALID_TRACKS = {"hr", "warehouse", "administrative"}
+VALID_TRACKS = {"hr", "warehouse", "administrative", "management"}
 
 
 # ── Schemas ───────────────────────────────────────────────────────────────────

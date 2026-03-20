@@ -9,11 +9,12 @@ import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
 import type { EmployeeRecord } from "@/lib/types";
 
-const TRACKS = ["hr", "warehouse", "administrative"] as const;
+const TRACKS = ["hr", "warehouse", "administrative", "management"] as const;
 const TRACK_LABELS: Record<string, string> = {
   hr: "HR",
   warehouse: "Warehouse",
   administrative: "Administrative",
+  management: "Management",
 };
 
 // ── Add Employee Form ─────────────────────────────────────────────────────────
@@ -251,6 +252,7 @@ export default function AdminPage() {
                         "inline-flex rounded-full px-2.5 py-0.5 text-[0.7rem] font-semibold",
                         emp.track === "hr" ? "bg-blue-50 text-blue-700" :
                         emp.track === "warehouse" ? "bg-amber-50 text-amber-700" :
+                        emp.track === "management" ? "bg-emerald-50 text-emerald-700" :
                         "bg-purple-50 text-purple-700"
                       )}>
                         {TRACK_LABELS[emp.track] ?? emp.track}
