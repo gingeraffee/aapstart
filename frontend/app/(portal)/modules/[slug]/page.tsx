@@ -212,8 +212,8 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
       },
       {
         eyebrow: "Good To Know",
-        title: "You won't remember this. Bookmark it anyway.",
-        body: "Accrual rates, point thresholds, holiday schedules — this isn't stuff you memorize. It's stuff you reference at 4pm on a Friday when something feels off.",
+        title: "Your attendance record started the day you did",
+        body: "The point system doesn't pause for bad weeks. But it does reward good ones — two clean months drops a point, and three in a row earns you $75. The math works in your favor if you let it.",
         tone: "red" as const,
       },
     ];

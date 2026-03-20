@@ -31,13 +31,19 @@ def _normalize_track(track: str) -> str:
     return normalized
 
 
-def _get_dev_user() -> dict:
-    return {
-        "sub": settings.dev_auth_employee_id.strip(),
+def _get_dev_user(*, for_token: bool = False) -> dict:
+    eid = settings.dev_auth_employee_id.strip()
+    base = {
         "full_name": settings.dev_auth_full_name.strip(),
         "track": _normalize_track(settings.dev_auth_track),
         "is_admin": True,
     }
+    # Token/cookie payloads use "sub"; login response uses "employee_id"
+    if for_token:
+        base["sub"] = eid
+    else:
+        base["employee_id"] = eid
+    return base
 
 
 def validate_login(employee_id: str, first_name: str, last_name: str) -> dict:
@@ -110,7 +116,7 @@ def get_current_user(request: Request) -> dict:
     token = request.cookies.get("aap_session")
     if not token:
         if settings.dev_auth_bypass:
-            return _get_dev_user()
+            return _get_dev_user(for_token=True)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Not authenticated.",

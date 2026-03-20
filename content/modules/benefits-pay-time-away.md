@@ -119,13 +119,13 @@ quiz:
       correctId: c
 ---
 
-## What This Module Covers
+## What You Need to Know
 
-This module gives you a practical overview of pay, benefits timing, PTO, holiday eligibility, and time-away basics. It is meant to orient you, not replace the detailed guides and reference materials in the Resource Hub.
+This module covers pay, benefits timing, PTO, and attendance. You won't need to memorize all of it today — but when questions come up, you'll know where to look.
 
 ## Pay and Payroll Basics
 
-Employees can access pay information through **Paylocity**.
+Your pay information lives in **Paylocity**. That's where you'll find pay stubs, tax forms and deduction details. AAP pays on a biweekly cycle on **Thursdays**.
 
 **AAP's payroll cadence:**
 
@@ -133,7 +133,7 @@ Employees can access pay information through **Paylocity**.
 - Payroll is submitted at 6:00 PM on the Tuesday before payday
 - Payday is **Thursday**
 
-For questions about paycheck deductions, route those through your supervisor first.
+For questions about paycheck deductions, route those through HR.
 
 :::link
 url: https://paylocity.com
@@ -143,7 +143,7 @@ description: View your pay stubs and paycheck information.
 
 ## Benefits Eligibility Timeline
 
-Benefits do not all begin at the same time. Here is what to expect:
+Benefits don't all kick in at the same time. The table below shows when each one becomes available — and if anything about your eligibility or access looks off, reach out to HR sooner rather than later.
 
 | Benefit | Available |
 |---|---|
@@ -158,44 +158,9 @@ Benefits do not all begin at the same time. Here is what to expect:
 When a benefit becomes available, you may need to complete enrollment steps within a specific window. If something about your eligibility, classification, or access looks off, contact HR early so it can be reviewed and corrected.
 :::
 
-## PTO Basics
-
-AAP uses **BambooHR** for PTO requests.
-
-- Vacation requests must be submitted by **5:00 PM the business day before**
-- Vacation can be used in **2-hour increments**
-- Personal leave can be used in **1-hour increments**
-- Unexpected absences should be reported to your supervisor as soon as possible
-
-:::link
-url: https://aap.bamboohr.com
-label: Request Time Off in BambooHR
-description: Submit vacation, personal leave, and other time-off requests.
-:::
-
-## Holiday Eligibility
-
-AAP observes company holidays. Holiday pay is provided to eligible regular full-time employees after 60 calendar days. Depending on staffing needs, employees may sometimes be required to work on a designated or observed holiday.
-
-## Leave Basics
-
-Some time away is routine PTO, and some time away follows different rules. If your question goes beyond regular PTO, holiday time, or a routine time-off request, start with your supervisor and involve HR when needed.
-
-:::callout tip
-Not all time away is the same. Medical leave, accommodation, and protected leave situations follow different rules. Involve HR early — not after the fact.
-:::
-
-## Need Help?
-
-For payroll, benefits timing, PTO, or holiday questions:
-
-- Start with your **supervisor** for routine operational questions
-- Contact **Nicole Thornton, HR Manager** for HR-related support
-- Use the **Resource Hub** for detailed plan materials and reference documents
-
 ## Attendance and Timekeeping
 
-AAP uses a no-fault point system for attendance — which means no one's judging why you were late, just whether it's becoming a pattern. Here's how it works.
+AAP uses a no-fault point system, which means the focus is on patterns, not circumstances. Here's how the points work.
 
 | Situation | Points |
 |-----------|--------|
@@ -228,7 +193,13 @@ If you're going to be late or absent, report it within 15 minutes of your schedu
 
 ## PTO and Time Away
 
-AAP offers vacation, personal leave, and paid holidays. Here's the breakdown — eligibility starts after your first 60 days.
+Vacation, personal leave, and paid holidays are all managed through **BambooHR**. Eligibility starts the first of the month after 60 days, and the breakdowns below cover what's available based on your employment type and tenure..
+
+:::link
+url: https://aap.bamboohr.com
+label: Request Time Off in BambooHR
+description: Submit vacation, personal leave, and other time-off requests.
+:::
 
 **Vacation**
 
@@ -261,7 +232,7 @@ Minimum increment: 1 hour. Accrual date is your full-time hire date — if you c
 
 **Holidays**
 
-AAP observes the following paid holidays:
+AAP observes the following paid holidays for eligible regular full-time employees after 60 calendar days:
 
 New Year's Day · Memorial Day · Independence Day · Labor Day · Thanksgiving · Day after Thanksgiving · Christmas Eve · Christmas Day
 
@@ -270,3 +241,15 @@ Day after Thanksgiving and Christmas Eve may be substituted with a Floating Holi
 **Requesting Time Off**
 
 Planned time off: submit your request by 5:00 PM the day before. Unplanned absence: notify your supervisor before your scheduled start time on each day you're out. Log everything in BambooHR.
+
+:::callout tip
+Not all time away is the same. Medical leave, accommodation, and protected leave situations follow different rules. Involve HR early — not after the fact.
+:::
+
+## Need Help?
+
+For pay, benefits, or time-off questions: start with your supervisor for day-to-day stuff, or reach out to Nicole Thornton, HR Manager for anything HR-related. The Resource Hub has detailed plan materials when you need to dig deeper.
+
+- Start with your **supervisor** for routine operational questions
+- Contact **Nicole Thornton, HR Manager** for HR-related support
+- Use the **Resource Hub** for detailed plan materials and reference documents

@@ -21,17 +21,17 @@ acknowledgements:
 quiz:
   questions:
     - id: q1
-      text: A coworker asks you to stay late to help finish a project. What should you do before working the extra hours?
+      text: You've accumulated some attendance points and want to get back on track. How can points roll off?
       options:
         - id: a
-          text: Stay and log the time — you'll get paid either way
+          text: Submit a written request to HR asking for points to be removed
         - id: b
-          text: Check with payroll to confirm your overtime rate first
+          text: Go two consecutive months without a tardy or unexcused absence
         - id: c
-          text: Work the hours and submit a request to HR afterward
+          text: Complete an attendance improvement course through your supervisor
         - id: d
-          text: Get overtime approved before working it
-      correctId: d
+          text: Points reset automatically at the start of each calendar year
+      correctId: b
 
     - id: q2
       text: What is the goal of AAP's corrective action process?
@@ -152,11 +152,12 @@ This isn't about limiting your voice. It's about protecting your reputation and 
 ## Dress Code
 
 :::track [warehouse]
-AAP expects a clean, neat, and work-appropriate appearance. Comfort is fine — this is a physical environment and we want you moving freely. A few hard rules:
+AAP expects all employees to maintain a neat and clean appearance. Here are the most important bits of the dress code policy in our API Warehouses:
 
 - Closed-toe, closed-heel shoes only
 - No hats, head coverings, or bulky jackets
 - No food or drinks on the warehouse floor
+- Employee badges must be on your person and visible at all times
 
 The shoe and clothing rules aren't arbitrary — they're about keeping the warehouse secure and everyone safe. If you need a snack or a drink, the break room is fully stocked and always available.
 :::
@@ -165,6 +166,8 @@ The shoe and clothing rules aren't arbitrary — they're about keeping the wareh
 AAP expects a clean, neat, and professional appearance. Business casual is the standard Monday through Thursday.
 
 Fridays are casual — jeans and a t-shirt are welcome. Just keep it clean and presentable. Jeans with holes or tears aren't permitted, even on Fridays.
+
+Employee badges must be on your person and visible at all times.
 :::
 
 :::track [hr]
@@ -174,13 +177,16 @@ AAP expects a clean, neat, and professional appearance. Business casual is the s
 
 Fridays are casual — jeans and a t-shirt are welcome. Just keep it clean and presentable. Jeans with holes or tears aren't permitted, even on Fridays.
 
+Employee badges must be on your person and visible at all times.
+
 **Dress Code (Warehouse)**
 
-The warehouse team follows a slightly different standard since it's a physical environment. Here's what applies on the floor:
+AAP expects all employees to maintain a neat and clean appearance. Here are the most important bits of the dress code policy in our API Warehouses:
 
 - Closed-toe, closed-heel shoes only
 - No hats, head coverings, or bulky jackets
 - No food or drinks on the warehouse floor
+- Employee badges must be on your person and visible at all times
 
 The shoe and clothing rules are about keeping the warehouse secure and everyone safe.
 :::
