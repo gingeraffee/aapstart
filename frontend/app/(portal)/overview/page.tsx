@@ -37,6 +37,7 @@ export default function OverviewPage() {
   const loadError = modulesError || progressError;
 
   const [showCelebration, setShowCelebration] = useState(false);
+  const [journeyExpanded, setJourneyExpanded] = useState(false);
 
   const progressMap = new Map<string, ProgressRecord>();
   progress?.forEach((item) => progressMap.set(item.module_slug, item));
@@ -561,9 +562,24 @@ export default function OverviewPage() {
                 {firstName}&apos;s learning journey
               </h2>
             </div>
+            {isHRAdmin && (
+              <button
+                onClick={() => setJourneyExpanded(!journeyExpanded)}
+                className="ml-auto flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[0.76rem] font-semibold transition-all hover:bg-black/5"
+                style={{ color: "var(--status-progress)" }}
+              >
+                {journeyExpanded ? "Collapse" : "Expand"}
+                <svg
+                  width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+                  className={`transition-transform duration-200 ${journeyExpanded ? "rotate-180" : ""}`}
+                >
+                  <path d="M3 4.5L6 7.5L9 4.5" />
+                </svg>
+              </button>
+            )}
           </div>
 
-          <div className="space-y-3.5">
+          <div className={`space-y-3.5 ${isHRAdmin && !journeyExpanded ? "hidden" : ""}`}>
             {journeyModules.map((module, index) => {
               const prog = progressMap.get(module.slug);
               const isComplete = prog?.module_completed ?? false;
