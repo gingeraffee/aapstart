@@ -11,7 +11,7 @@ import { CelebrationModal } from "@/components/features/overview/CelebrationModa
 import { Spinner } from "@/components/ui/Spinner";
 import { cn, pickRandom } from "@/lib/utils";
 import { COACH_TIPS } from "@/lib/coachTips";
-import type { ModuleSummary, ProgressRecord, UiContent, DashboardData } from "@/lib/types";
+import type { ModuleSummary, ProgressRecord, UiContent, DashboardData, Resource } from "@/lib/types";
 
 export default function OverviewPage() {
   const { user } = useAuth();
@@ -31,6 +31,10 @@ export default function OverviewPage() {
   const { data: dashboardData } = useSWR(
     isHRAdmin ? "dashboard" : null,
     () => adminApi.dashboard() as Promise<DashboardData>
+  );
+  const { data: adminResources } = useSWR(
+    isHRAdmin ? "admin-resources-overview" : null,
+    () => resourcesApi.list() as Promise<Resource[]>
   );
 
   const isLoading = loadingModules || loadingProgress;
@@ -82,6 +86,34 @@ export default function OverviewPage() {
   const coachTip = useMemo(() => pickRandom(COACH_TIPS), []);
 
   const firstName = user?.full_name?.split(" ")[0] ?? "there";
+  const adminJourneyParticipants = dashboardData
+    ? dashboardData.completion.all_complete + dashboardData.completion.in_progress + dashboardData.completion.not_started
+    : 0;
+  const adminActiveThisWeek = dashboardData?.recent_logins.length ?? 0;
+  const adminInactiveThisWeek = dashboardData ? Math.max(dashboardData.total_employees - adminActiveThisWeek, 0) : 0;
+  const adminCompletionRate = adminJourneyParticipants > 0 && dashboardData
+    ? Math.round((dashboardData.completion.all_complete / adminJourneyParticipants) * 100)
+    : 0;
+  const adminResourceCount = adminResources?.length ?? 0;
+  const adminManagementEntry = "/management-guides";
+  const adminLearningEntry = "/learning-program";
+  const adminTrackMix = dashboardData
+    ? Object.entries(dashboardData.by_track).sort((a, b) => b[1] - a[1])
+    : [];
+  const adminBestModule = dashboardData && dashboardData.module_progress.length > 0
+    ? dashboardData.module_progress.reduce((best, module) => {
+        const bestRatio = best.total > 0 ? best.completed / best.total : -1;
+        const nextRatio = module.total > 0 ? module.completed / module.total : -1;
+        return nextRatio > bestRatio ? module : best;
+      })
+    : undefined;
+  const adminLaggingModule = dashboardData && dashboardData.module_progress.length > 0
+    ? dashboardData.module_progress.reduce((worst, module) => {
+        const worstRatio = worst.total > 0 ? worst.completed / worst.total : Number.POSITIVE_INFINITY;
+        const nextRatio = module.total > 0 ? module.completed / module.total : Number.POSITIVE_INFINITY;
+        return nextRatio < worstRatio ? module : worst;
+      })
+    : undefined;
 
   const handleCloseCelebration = () => {
     const key = `aapstart:celebrated:${user?.employee_id ?? "guest"}`;
@@ -256,98 +288,51 @@ export default function OverviewPage() {
               Welcome back, {firstName}
             </h1>
             <p className="mt-2 max-w-[640px] text-[0.9rem] leading-[1.68]" style={{ color: "var(--welcome-body)" }}>
-              Your team dashboard is below. Here&apos;s how to get the most out of AAP Start.
+              Your people ops command center for onboarding, training, and manager enablement.
             </p>
 
-            {/* Quick-start guide cards */}
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              {[
-                {
-                  title: "Admin Panel",
-                  href: "/admin",
-                  tip: "Add new employees before their start date so they can log in on day one.",
-                  icon: (
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="8" cy="5" r="3" />
-                      <path d="M2 14c0-3.3 2.7-5 6-5s6 1.7 6 5" />
-                    </svg>
-                  ),
-                },
-                {
-                  title: "Preview As",
-                  href: null,
-                  tip: "Use the Preview As dropdown in the sidebar to see exactly what new hires see on each track.",
-                  icon: (
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M1 8s3-5.5 7-5.5S15 8 15 8s-3 5.5-7 5.5S1 8 1 8z" />
-                      <circle cx="8" cy="8" r="2.5" />
-                    </svg>
-                  ),
-                },
-                {
-                  title: "Resource Hub",
-                  href: "/resources",
-                  tip: "Browse and download all onboarding documents, guides, and reference materials.",
-                  icon: (
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M2 2h4l2 2h6v10H2z" />
-                    </svg>
-                  ),
-                },
-                {
-                  title: "Management Guides",
-                  href: "#management-section",
-                  tip: "Process guides for recruitment, onboarding, and more are at the bottom of this page.",
-                  icon: (
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M2 3h12M2 6h12M2 9h8M2 12h5" />
-                    </svg>
-                  ),
-                },
-              ].map((card) => {
-                const inner = (
-                  <>
-                    <div className="flex items-center gap-2.5">
-                      <span
-                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
-                        style={{ background: "rgba(14,165,233,0.12)", color: "#0d6b9d" }}
-                      >
-                        {card.icon}
-                      </span>
-                      <span className="text-[0.84rem] font-bold" style={{ color: "var(--heading-color)" }}>{card.title}</span>
-                    </div>
-                    <p className="mt-1.5 text-[0.76rem] leading-[1.55]" style={{ color: "var(--card-desc)" }}>{card.tip}</p>
-                  </>
-                );
+            <div className="mt-5 flex flex-wrap gap-2.5">
+              <div
+                className="rounded-full px-4 py-2 text-[0.78rem] font-semibold"
+                style={{
+                  background: "linear-gradient(135deg, rgba(11, 30, 61, 0.96) 0%, rgba(17, 41, 74, 0.96) 100%)",
+                  border: "1px solid rgba(56, 189, 248, 0.28)",
+                  color: "#ffffff",
+                  boxShadow: "0 10px 22px rgba(17, 41, 74, 0.18)",
+                }}
+              >
+                HR Dashboard
+              </div>
+              <Link
+                href={adminLearningEntry}
+                className="rounded-full px-4 py-2 text-[0.78rem] font-semibold transition-all duration-200 hover:-translate-y-px"
+                style={{
+                  background: "rgba(14, 165, 233, 0.08)",
+                  border: "1px solid rgba(14, 165, 233, 0.18)",
+                  color: "#0d6b9d",
+                }}
+              >
+                Learning Program
+              </Link>
+              <Link
+                href={adminManagementEntry}
+                className="rounded-full px-4 py-2 text-[0.78rem] font-semibold transition-all duration-200 hover:-translate-y-px"
+                style={{
+                  background: "rgba(223, 0, 48, 0.06)",
+                  border: "1px solid rgba(223, 0, 48, 0.12)",
+                  color: "#8f1239",
+                }}
+              >
+                Management Guides
+              </Link>
+            </div>
 
-                if (card.href) {
-                  return (
-                    <Link
-                      key={card.title}
-                      href={card.href}
-                      className="rounded-[12px] p-3.5 transition-all duration-200 hover:-translate-y-px"
-                      style={{
-                        background: "var(--welcome-stat-bg)",
-                        border: "1px solid var(--welcome-stat-border)",
-                      }}
-                    >
-                      {inner}
-                    </Link>
-                  );
-                }
-                return (
-                  <div
-                    key={card.title}
-                    className="rounded-[12px] p-3.5"
-                    style={{
-                      background: "var(--welcome-stat-bg)",
-                      border: "1px solid var(--welcome-stat-border)",
-                    }}
-                  >
-                    {inner}
-                  </div>
-                );
-              })}
+            <div className="mt-5 flex flex-wrap gap-3 text-[0.78rem] font-medium" style={{ color: "var(--welcome-label-text)" }}>
+              <span>Active this week: {adminActiveThisWeek}</span>
+              <span className="text-[rgba(23,54,93,0.32)]">•</span>
+              <span>Need follow-up: {dashboardData?.completion.not_started ?? 0}</span>
+              <span className="text-[rgba(23,54,93,0.32)]">•</span>
+              <span>Manager guides ready: {managementModules.length}</span>
             </div>
           </div>
         ) : (
@@ -364,6 +349,252 @@ export default function OverviewPage() {
 
       {/* ── HR Admin Dashboard ── */}
       {isHRAdmin && dashboardData && (
+        <div className="mb-8 space-y-5 animate-fade-up" style={{ animationDelay: "40ms" }}>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {[
+              {
+                label: "Enrolled Employees",
+                value: dashboardData.total_employees,
+                note: `${adminTrackMix[0]?.[1] ?? 0} in ${adminTrackMix[0]?.[0] === "hr" ? "HR" : adminTrackMix[0]?.[0] === "warehouse" ? "Warehouse" : adminTrackMix[0]?.[0] === "management" ? "Management" : "Administrative"}`,
+              },
+              { label: "Active This Week", value: adminActiveThisWeek, note: `${adminInactiveThisWeek} still quiet this week` },
+              { label: "Completion Rate", value: `${adminCompletionRate}%`, note: `${dashboardData.completion.all_complete} fully complete` },
+              { label: "Resource Library", value: adminResourceCount, note: `${managementModules.length} manager guides ready` },
+            ].map((card) => (
+              <div key={card.label} className="rounded-[20px] p-5" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)" }}>
+                <p className="text-[0.64rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>{card.label}</p>
+                <p className="mt-3 text-[2rem] font-extrabold leading-none" style={{ color: "var(--heading-color)" }}>{card.value}</p>
+                <p className="mt-1 text-[0.76rem]" style={{ color: "var(--card-desc)" }}>{card.note}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid gap-4 xl:grid-cols-[1.02fr,0.98fr]">
+            <div className="rounded-[20px] p-5" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)" }}>
+              <p className="text-[0.64rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>Needs Attention</p>
+              <div className="mt-4 space-y-3">
+                {[`${dashboardData.completion.not_started} employees have not started yet`, `${dashboardData.completion.in_progress} are moving through core training`, `${adminInactiveThisWeek} were inactive during the last 7 days`].map((item) => (
+                  <div key={item} className="flex items-start gap-2.5">
+                    <span className="mt-[6px] h-2 w-2 rounded-full bg-[#df0030]" />
+                    <p className="text-[0.82rem] leading-[1.6]" style={{ color: "var(--welcome-label-text)" }}>{item}</p>
+                  </div>
+                ))}
+              </div>
+              <Link href="/admin" className="mt-5 inline-flex items-center gap-2 rounded-[12px] px-4 py-2.5 text-[0.78rem] font-semibold transition-all duration-200 hover:-translate-y-px" style={{ background: "linear-gradient(135deg, #11264a 0%, #0f7fb3 82%)", boxShadow: "0 10px 22px rgba(17, 41, 74, 0.18)", color: "#ffffff" }}>
+                Review Team
+                <span>&rarr;</span>
+              </Link>
+            </div>
+
+            <div className="rounded-[20px] p-5" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)" }}>
+              <p className="text-[0.64rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>Team Operations</p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <Link href="/admin" className="rounded-[12px] px-4 py-2.5 text-[0.78rem] font-semibold transition-all duration-200 hover:-translate-y-px" style={{ background: "linear-gradient(135deg, #11264a 0%, #0f7fb3 82%)", boxShadow: "0 10px 22px rgba(17, 41, 74, 0.18)", color: "#ffffff" }}>
+                  Open Admin Screen
+                </Link>
+                <Link href="/resources" className="rounded-[12px] px-4 py-2.5 text-[0.78rem] font-semibold transition-all duration-200 hover:-translate-y-px" style={{ background: "rgba(14, 165, 233, 0.08)", border: "1px solid rgba(14, 165, 233, 0.16)", color: "#0d6b9d" }}>
+                  Resource Hub
+                </Link>
+              </div>
+              <div className="mt-4 rounded-[16px] px-4 py-4" style={{ background: "rgba(17, 41, 74, 0.04)" }}>
+                <p className="text-[0.82rem] font-semibold" style={{ color: "var(--heading-color)" }}>Bulk imports live in the admin screen</p>
+                <p className="mt-1 text-[0.76rem] leading-[1.6]" style={{ color: "var(--card-desc)" }}>
+                  Use the import tool there to upload a spreadsheet with employee name, employee number, and track. Preview As still lives in the sidebar.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-4 xl:grid-cols-2">
+            <div className="rounded-[20px] p-5" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)" }}>
+              <p className="text-[0.64rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>Activity Feed</p>
+              <div className="mt-4 space-y-3">
+                {dashboardData.recent_logins.length === 0 ? (
+                  <p className="text-[0.82rem]" style={{ color: "var(--card-desc)" }}>No recent logins this week yet.</p>
+                ) : (
+                  dashboardData.recent_logins.slice(0, 4).map((login, index) => (
+                    <div key={`${login.full_name}-${index}`} className="flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="truncate text-[0.82rem] font-semibold" style={{ color: "var(--heading-color)" }}>{login.full_name}</p>
+                        <p className="text-[0.72rem]" style={{ color: "var(--card-desc)" }}>
+                          {login.track === "hr" ? "HR" : login.track === "warehouse" ? "Warehouse" : login.track === "management" ? "Management" : "Administrative"} track login
+                        </p>
+                      </div>
+                      <span className="shrink-0 text-[0.72rem] font-medium" style={{ color: "var(--module-context)" }}>
+                        {new Date(login.last_login_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                      </span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            <div className="rounded-[20px] p-5" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)" }}>
+              <p className="text-[0.64rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>Training Health</p>
+              <div className="mt-4 space-y-4">
+                <div>
+                  <p className="text-[0.72rem] font-bold uppercase tracking-[0.12em]" style={{ color: "#0d6b9d" }}>Best Completion</p>
+                  <p className="mt-1 text-[0.86rem] font-semibold" style={{ color: "var(--heading-color)" }}>{adminBestModule?.title ?? "No module data yet"}</p>
+                </div>
+                <div>
+                  <p className="text-[0.72rem] font-bold uppercase tracking-[0.12em]" style={{ color: "#8f1239" }}>Needs a Push</p>
+                  <p className="mt-1 text-[0.86rem] font-semibold" style={{ color: "var(--heading-color)" }}>{adminLaggingModule?.title ?? "No module data yet"}</p>
+                </div>
+                <div className="rounded-[16px] px-4 py-4" style={{ background: "rgba(14, 165, 233, 0.05)" }}>
+                  <p className="text-[0.78rem] leading-[1.6]" style={{ color: "var(--welcome-label-text)" }}>
+                    {dashboardData.completion.in_progress} employees are currently in motion, while {dashboardData.completion.all_complete} have finished the full journey.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-4 xl:grid-cols-2">
+            <Link href={adminLearningEntry} className="group rounded-[22px] p-5 transition-all duration-200 hover:-translate-y-px" style={{ background: "linear-gradient(180deg, rgba(238, 251, 255, 0.92) 0%, rgba(247, 252, 255, 0.98) 100%)", border: "1px solid rgba(14, 165, 233, 0.16)", boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)" }}>
+              <p className="text-[0.64rem] font-bold uppercase tracking-[0.14em]" style={{ color: "#0d6b9d" }}>Learning Program</p>
+              <h2 className="mt-2 text-[1.08rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>Training workspace preview</h2>
+              <p className="mt-2 text-[0.82rem] leading-[1.6]" style={{ color: "var(--card-desc)" }}>
+                {completedCount} of {journeyModules.length} modules complete. {currentModule ? `${currentModule.title} is the current next step.` : "The learning journey is wrapped."}
+              </p>
+              <p className="mt-4 text-[0.76rem] font-semibold group-hover:underline" style={{ color: "#0d6b9d" }}>Enter Learning Program -&gt;</p>
+            </Link>
+
+            <Link href={adminManagementEntry} className="group rounded-[22px] p-5 transition-all duration-200 hover:-translate-y-px" style={{ background: "linear-gradient(180deg, rgba(255, 247, 249, 0.94) 0%, rgba(255, 252, 253, 0.98) 100%)", border: "1px solid rgba(223, 0, 48, 0.12)", boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)" }}>
+              <p className="text-[0.64rem] font-bold uppercase tracking-[0.14em]" style={{ color: "#8f1239" }}>Management Guides</p>
+              <h2 className="mt-2 text-[1.08rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>Process playbook preview</h2>
+              <p className="mt-2 text-[0.82rem] leading-[1.6]" style={{ color: "var(--card-desc)" }}>
+                {managementModules.length} guides are available for recruiting, onboarding, employee changes, and offboarding.
+              </p>
+              <p className="mt-4 text-[0.76rem] font-semibold group-hover:underline" style={{ color: "#8f1239" }}>Enter Management Guides -&gt;</p>
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/*
+        <div className="mb-8 space-y-5 animate-fade-up" style={{ animationDelay: "40ms" }}>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {[
+              {
+                label: "Enrolled Employees",
+                value: dashboardData.total_employees,
+                note: `${adminTrackMix[0]?.[1] ?? 0} in ${adminTrackMix[0]?.[0] === "hr" ? "HR" : adminTrackMix[0]?.[0] === "warehouse" ? "Warehouse" : adminTrackMix[0]?.[0] === "management" ? "Management" : "Administrative"}`,
+              },
+              { label: "Active This Week", value: adminActiveThisWeek, note: `${adminInactiveThisWeek} still quiet this week` },
+              { label: "Completion Rate", value: `${adminCompletionRate}%`, note: `${dashboardData.completion.all_complete} fully complete` },
+              { label: "Resource Library", value: adminResourceCount, note: `${managementModules.length} manager guides ready` },
+            ].map((card) => (
+              <div key={card.label} className="rounded-[20px] p-5" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)" }}>
+                <p className="text-[0.64rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>{card.label}</p>
+                <p className="mt-3 text-[2rem] font-extrabold leading-none" style={{ color: "var(--heading-color)" }}>{card.value}</p>
+                <p className="mt-1 text-[0.76rem]" style={{ color: "var(--card-desc)" }}>{card.note}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid gap-4 xl:grid-cols-[1.02fr,0.98fr]">
+            <div className="rounded-[20px] p-5" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)" }}>
+              <p className="text-[0.64rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>Needs Attention</p>
+              <div className="mt-4 space-y-3">
+                {[`${dashboardData.completion.not_started} employees have not started yet`, `${dashboardData.completion.in_progress} are moving through core training`, `${adminInactiveThisWeek} were inactive during the last 7 days`].map((item) => (
+                  <div key={item} className="flex items-start gap-2.5">
+                    <span className="mt-[6px] h-2 w-2 rounded-full bg-[#df0030]" />
+                    <p className="text-[0.82rem] leading-[1.6]" style={{ color: "var(--welcome-label-text)" }}>{item}</p>
+                  </div>
+                ))}
+              </div>
+              <Link href="/admin" className="mt-5 inline-flex items-center gap-2 rounded-[12px] px-4 py-2.5 text-[0.78rem] font-semibold transition-all duration-200 hover:-translate-y-px" style={{ background: "linear-gradient(135deg, #11264a 0%, #0f7fb3 82%)", boxShadow: "0 10px 22px rgba(17, 41, 74, 0.18)", color: "#ffffff" }}>
+                Review Team
+                <span>&rarr;</span>
+              </Link>
+            </div>
+
+            <div className="rounded-[20px] p-5" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)" }}>
+              <p className="text-[0.64rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>Team Operations</p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <Link href="/admin" className="rounded-[12px] px-4 py-2.5 text-[0.78rem] font-semibold transition-all duration-200 hover:-translate-y-px" style={{ background: "linear-gradient(135deg, #11264a 0%, #0f7fb3 82%)", boxShadow: "0 10px 22px rgba(17, 41, 74, 0.18)", color: "#ffffff" }}>
+                  Open Admin Screen
+                </Link>
+                <Link href="/resources" className="rounded-[12px] px-4 py-2.5 text-[0.78rem] font-semibold transition-all duration-200 hover:-translate-y-px" style={{ background: "rgba(14, 165, 233, 0.08)", border: "1px solid rgba(14, 165, 233, 0.16)", color: "#0d6b9d" }}>
+                  Resource Hub
+                </Link>
+              </div>
+              <div className="mt-4 rounded-[16px] px-4 py-4" style={{ background: "rgba(17, 41, 74, 0.04)" }}>
+                <p className="text-[0.82rem] font-semibold" style={{ color: "var(--heading-color)" }}>Bulk imports live in the admin screen</p>
+                <p className="mt-1 text-[0.76rem] leading-[1.6]" style={{ color: "var(--card-desc)" }}>
+                  Use the import tool there to upload a spreadsheet with employee name, employee number, and track. Preview As still lives in the sidebar.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-4 xl:grid-cols-2">
+            <div className="rounded-[20px] p-5" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)" }}>
+              <p className="text-[0.64rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>Activity Feed</p>
+              <div className="mt-4 space-y-3">
+                {dashboardData.recent_logins.length === 0 ? (
+                  <p className="text-[0.82rem]" style={{ color: "var(--card-desc)" }}>No recent logins this week yet.</p>
+                ) : (
+                  dashboardData.recent_logins.slice(0, 4).map((login, index) => (
+                    <div key={`${login.full_name}-${index}`} className="flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="truncate text-[0.82rem] font-semibold" style={{ color: "var(--heading-color)" }}>{login.full_name}</p>
+                        <p className="text-[0.72rem]" style={{ color: "var(--card-desc)" }}>
+                          {login.track === "hr" ? "HR" : login.track === "warehouse" ? "Warehouse" : login.track === "management" ? "Management" : "Administrative"} track login
+                        </p>
+                      </div>
+                      <span className="shrink-0 text-[0.72rem] font-medium" style={{ color: "var(--module-context)" }}>
+                        {new Date(login.last_login_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                      </span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            <div className="rounded-[20px] p-5" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)" }}>
+              <p className="text-[0.64rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>Training Health</p>
+              <div className="mt-4 space-y-4">
+                <div>
+                  <p className="text-[0.72rem] font-bold uppercase tracking-[0.12em]" style={{ color: "#0d6b9d" }}>Best Completion</p>
+                  <p className="mt-1 text-[0.86rem] font-semibold" style={{ color: "var(--heading-color)" }}>{adminBestModule?.title ?? "No module data yet"}</p>
+                </div>
+                <div>
+                  <p className="text-[0.72rem] font-bold uppercase tracking-[0.12em]" style={{ color: "#8f1239" }}>Needs a Push</p>
+                  <p className="mt-1 text-[0.86rem] font-semibold" style={{ color: "var(--heading-color)" }}>{adminLaggingModule?.title ?? "No module data yet"}</p>
+                </div>
+                <div className="rounded-[16px] px-4 py-4" style={{ background: "rgba(14, 165, 233, 0.05)" }}>
+                  <p className="text-[0.78rem] leading-[1.6]" style={{ color: "var(--welcome-label-text)" }}>
+                    {dashboardData.completion.in_progress} employees are currently in motion, while {dashboardData.completion.all_complete} have finished the full journey.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-4 xl:grid-cols-2">
+            <Link href={adminLearningEntry} className="group rounded-[22px] p-5 transition-all duration-200 hover:-translate-y-px" style={{ background: "linear-gradient(180deg, rgba(238, 251, 255, 0.92) 0%, rgba(247, 252, 255, 0.98) 100%)", border: "1px solid rgba(14, 165, 233, 0.16)", boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)" }}>
+              <p className="text-[0.64rem] font-bold uppercase tracking-[0.14em]" style={{ color: "#0d6b9d" }}>Learning Program</p>
+              <h2 className="mt-2 text-[1.08rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>Training workspace preview</h2>
+              <p className="mt-2 text-[0.82rem] leading-[1.6]" style={{ color: "var(--card-desc)" }}>
+                {completedCount} of {journeyModules.length} modules complete. {currentModule ? `${currentModule.title} is the current next step.` : "The learning journey is wrapped."}
+              </p>
+              <p className="mt-4 text-[0.76rem] font-semibold group-hover:underline" style={{ color: "#0d6b9d" }}>Enter Learning Program -&gt;</p>
+            </Link>
+
+            <Link href={adminManagementEntry} className="group rounded-[22px] p-5 transition-all duration-200 hover:-translate-y-px" style={{ background: "linear-gradient(180deg, rgba(255, 247, 249, 0.94) 0%, rgba(255, 252, 253, 0.98) 100%)", border: "1px solid rgba(223, 0, 48, 0.12)", boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)" }}>
+              <p className="text-[0.64rem] font-bold uppercase tracking-[0.14em]" style={{ color: "#8f1239" }}>Management Guides</p>
+              <h2 className="mt-2 text-[1.08rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>Process playbook preview</h2>
+              <p className="mt-2 text-[0.82rem] leading-[1.6]" style={{ color: "var(--card-desc)" }}>
+                {managementModules.length} guides are available for recruiting, onboarding, employee changes, and offboarding.
+              </p>
+              <p className="mt-4 text-[0.76rem] font-semibold group-hover:underline" style={{ color: "#8f1239" }}>Enter Management Guides -&gt;</p>
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {false && isHRAdmin && dashboardData && (
         <div className="mb-8 animate-fade-up" style={{ animationDelay: "40ms" }}>
           <div className="mb-4 flex items-center gap-2.5">
             <div
@@ -383,9 +614,9 @@ export default function OverviewPage() {
             </div>
           </div>
 
-          {/* Two-column: Team Overview + Recent Logins */}
+          Team Overview and Recent Logins
           <div className="grid gap-4 md:grid-cols-2">
-            {/* Team Overview Card */}
+            Team Overview Card
             <div
               className="rounded-[16px] p-5"
               style={{
@@ -402,7 +633,7 @@ export default function OverviewPage() {
               </p>
               <p className="mt-1 text-[0.78rem]" style={{ color: "var(--card-desc)" }}>Total Employees</p>
 
-              {/* Track breakdown */}
+              Track breakdown
               <div className="mt-4 flex flex-wrap gap-3">
                 {Object.entries(dashboardData.by_track).map(([track, count]) => {
                   const label = track === "hr" ? "HR" : track === "warehouse" ? "Warehouse" : track === "administrative" ? "Admin" : "Mgmt";
@@ -417,7 +648,7 @@ export default function OverviewPage() {
                 })}
               </div>
 
-              {/* Completion breakdown */}
+              Completion breakdown
               <div className="mt-4 space-y-1.5">
                 <div className="flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-emerald-400" />
@@ -440,7 +671,7 @@ export default function OverviewPage() {
               </div>
             </div>
 
-            {/* Recent Logins Card */}
+            Recent Logins Card
             <div
               className="rounded-[16px] p-5"
               style={{
@@ -486,7 +717,7 @@ export default function OverviewPage() {
             </div>
           </div>
 
-          {/* Module Progress */}
+          Module Progress
           {dashboardData.module_progress.length > 0 && (
             <div
               className="mt-4 rounded-[16px] p-5"
@@ -528,12 +759,12 @@ export default function OverviewPage() {
             </div>
           )}
 
-          {/* Divider between dashboard and journey */}
+          Divider between dashboard and journey
           <div className="mt-6 mb-2 h-px" style={{ background: "linear-gradient(90deg, transparent 0%, var(--card-border) 20%, var(--card-border) 80%, transparent 100%)" }} />
         </div>
-      )}
+      */}
 
-      <div className="flex items-start gap-5 max-[1220px]:flex-col">
+      {!isHRAdmin && <div className="flex items-start gap-5 max-[1220px]:flex-col">
         <div className="min-w-0 flex-1 animate-fade-up" style={{ animationDelay: "60ms" }}>
           <div className="mb-4 flex items-center gap-2.5">
             <div
@@ -955,7 +1186,7 @@ export default function OverviewPage() {
             </div>
           </div>
         </aside>}
-      </div>
+      </div>}
     </div>
   );
 }

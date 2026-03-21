@@ -99,6 +99,28 @@ export interface EmployeeRecord {
   };
 }
 
+export interface EmployeeImportRowInput {
+  employee_id: string;
+  track: string;
+  name?: string;
+  full_name?: string;
+  first_name?: string;
+  last_name?: string;
+  is_admin?: boolean;
+}
+
+export interface EmployeeImportError {
+  row: number;
+  employee_id: string | null;
+  detail: string;
+}
+
+export interface EmployeeImportResult {
+  added: number;
+  skipped: number;
+  errors: EmployeeImportError[];
+}
+
 export interface DashboardData {
   total_employees: number;
   by_track: Record<string, number>;

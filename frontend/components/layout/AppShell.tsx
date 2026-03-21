@@ -125,8 +125,10 @@ export function AppShell({ children }: AppShellProps) {
     ? journeyModules.filter((m) => progress.find((p) => p.module_slug === m.slug)?.module_completed).length
     : 0;
 
-  const isJourneyActive = pathname === "/overview" || pathname.startsWith("/modules") || pathname === "/roadmap";
-  const isResourcesActive = pathname.startsWith("/resources");
+  const isLearningProgramPage = pathname.startsWith("/learning-program");
+  const isManagementGuidesPage = pathname.startsWith("/management-guides");
+  const isJourneyActive = pathname === "/overview" || pathname.startsWith("/modules") || pathname === "/roadmap" || isLearningProgramPage;
+  const isResourcesActive = pathname.startsWith("/resources") || isManagementGuidesPage;
   const isRoadmapActive = pathname === "/roadmap";
 
   const isJourneyModuleUnlocked = (index: number) => {
@@ -528,7 +530,7 @@ export function AppShell({ children }: AppShellProps) {
           }}
         >
           <button
-            onClick={() => router.push("/overview")}
+            onClick={() => router.push(isLearningProgramPage ? "/learning-program" : "/overview")}
             className={cn(
               "rounded-[9px] px-5 py-1.5 text-[0.8rem] font-semibold transition-all duration-200",
               isJourneyActive ? "shadow-[0_1px_8px_rgba(15,29,60,0.16)]" : ""
@@ -543,10 +545,10 @@ export function AppShell({ children }: AppShellProps) {
                 : undefined),
             }}
           >
-            {isManagement ? "Training" : "Your Journey"}
+            {isManagement ? "Training" : isLearningProgramPage ? "Learning Program" : "Your Journey"}
           </button>
           <button
-            onClick={() => router.push("/resources")}
+            onClick={() => router.push(isManagementGuidesPage ? "/management-guides" : "/resources")}
             className={cn(
               "rounded-[9px] px-5 py-1.5 text-[0.8rem] font-semibold transition-all duration-200",
               isResourcesActive ? "shadow-[0_1px_8px_rgba(15,29,60,0.16)]" : ""
@@ -561,7 +563,7 @@ export function AppShell({ children }: AppShellProps) {
                 : undefined),
             }}
           >
-            Resource Hub
+            {isManagementGuidesPage ? "Management Guides" : "Resource Hub"}
           </button>
         </div>
 

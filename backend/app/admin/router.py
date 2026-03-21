@@ -31,6 +31,20 @@ class EmployeeUpdate(BaseModel):
     is_admin: bool | None = None
 
 
+class EmployeeImportRow(BaseModel):
+    employee_id: str
+    track: str
+    name: str | None = None
+    full_name: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
+    is_admin: bool = False
+
+
+class EmployeeImportRequest(BaseModel):
+    employees: list[EmployeeImportRow]
+
+
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def _progress_summary(employee_id: str, db: Session) -> dict:
@@ -57,6 +71,24 @@ def _serialize(emp: Employee, db: Session) -> dict:
         "first_login_at": emp.first_login_at.isoformat() if emp.first_login_at else None,
         "progress": _progress_summary(emp.employee_id, db),
     }
+
+
+def _resolve_names(row: EmployeeImportRow) -> tuple[str | None, str | None]:
+    if row.first_name and row.last_name:
+        first_name = row.first_name.strip()
+        last_name = row.last_name.strip()
+        if first_name and last_name:
+            return first_name, last_name
+
+    raw_name = (row.full_name or row.name or "").strip()
+    if not raw_name:
+        return None, None
+
+    parts = raw_name.split()
+    if len(parts) < 2:
+        return None, None
+
+    return parts[0], " ".join(parts[1:])
 
 
 # ── Routes ────────────────────────────────────────────────────────────────────
@@ -99,6 +131,83 @@ def create_employee(
     db.commit()
     db.refresh(emp)
     return _serialize(emp, db)
+
+
+@router.post("/employees/import")
+def import_employees(
+    payload: EmployeeImportRequest,
+    admin: dict = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    if not payload.employees:
+        raise HTTPException(status_code=400, detail="No employees were provided for import.")
+
+    existing_ids = {employee_id for (employee_id,) in db.query(Employee.employee_id).all()}
+    seen_ids: set[str] = set()
+    created: list[Employee] = []
+    errors: list[dict] = []
+
+    for index, row in enumerate(payload.employees, start=1):
+        employee_id = row.employee_id.strip()
+        track = row.track.strip().lower()
+
+        if not employee_id:
+            errors.append({"row": index, "employee_id": None, "detail": "Employee number is required."})
+            continue
+
+        if track not in VALID_TRACKS:
+            errors.append({
+                "row": index,
+                "employee_id": employee_id,
+                "detail": f"Track '{row.track}' is invalid.",
+            })
+            continue
+
+        if employee_id in seen_ids:
+            errors.append({
+                "row": index,
+                "employee_id": employee_id,
+                "detail": "Employee number is duplicated in this import file.",
+            })
+            continue
+
+        if employee_id in existing_ids:
+            errors.append({
+                "row": index,
+                "employee_id": employee_id,
+                "detail": "Employee already exists.",
+            })
+            continue
+
+        first_name, last_name = _resolve_names(row)
+        if not first_name or not last_name:
+            errors.append({
+                "row": index,
+                "employee_id": employee_id,
+                "detail": "A full employee name with first and last name is required.",
+            })
+            continue
+
+        employee = Employee(
+            employee_id=employee_id,
+            first_name=first_name,
+            last_name=last_name,
+            track=track,
+            is_admin=row.is_admin,
+            created_at=datetime.now(timezone.utc),
+        )
+        db.add(employee)
+        created.append(employee)
+        seen_ids.add(employee_id)
+
+    if created:
+        db.commit()
+
+    return {
+        "added": len(created),
+        "skipped": len(errors),
+        "errors": errors,
+    }
 
 
 @router.patch("/employees/{employee_id}")
