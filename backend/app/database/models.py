@@ -14,6 +14,7 @@ class Employee(Base):
     is_admin = Column(Boolean, default=False)
     created_at = Column(DateTime, default=func.now())
     first_login_at = Column(DateTime, nullable=True)
+    last_login_at = Column(DateTime, nullable=True)
 
 
 class UserProgress(Base):

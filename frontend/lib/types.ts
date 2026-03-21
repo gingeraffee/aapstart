@@ -99,6 +99,27 @@ export interface EmployeeRecord {
   };
 }
 
+export interface DashboardData {
+  total_employees: number;
+  by_track: Record<string, number>;
+  completion: {
+    all_complete: number;
+    in_progress: number;
+    not_started: number;
+  };
+  recent_logins: {
+    full_name: string;
+    track: string;
+    last_login_at: string;
+  }[];
+  module_progress: {
+    module_slug: string;
+    title: string;
+    completed: number;
+    total: number;
+  }[];
+}
+
 export interface LoginPayload {
   employee_id: string;
   first_name: string;

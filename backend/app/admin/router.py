@@ -1,11 +1,13 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from sqlalchemy import func as sa_func
 
 from app.auth.service import require_admin
 from app.database.connection import get_db
 from app.database.models import Employee, UserProgress
+from app.content.loader import get_modules_for_track
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
@@ -138,3 +140,89 @@ def delete_employee(
         raise HTTPException(status_code=400, detail="You cannot delete your own account.")
     db.delete(emp)
     db.commit()
+
+
+# ── Dashboard ────────────────────────────────────────────────────────────────
+
+@router.get("/dashboard")
+def get_dashboard(
+    admin: dict = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Aggregated dashboard stats for HR admins."""
+    employees = db.query(Employee).all()
+    total = len(employees)
+
+    # Count by track
+    by_track: dict[str, int] = {}
+    for emp in employees:
+        by_track[emp.track] = by_track.get(emp.track, 0) + 1
+
+    # Get all published non-management modules (journey modules)
+    # Use HR track to get the full list including all shared modules
+    all_modules = get_modules_for_track("hr")
+    journey_modules = [m for m in all_modules if "management" not in m.get("tracks", [])]
+    journey_slugs = {m["slug"] for m in journey_modules}
+    total_journey_modules = len(journey_modules)
+
+    # Get all non-management employees (journey participants)
+    journey_employees = [e for e in employees if e.track != "management"]
+    journey_employee_ids = {e.employee_id for e in journey_employees}
+
+    # Fetch all progress rows for journey modules
+    all_progress = db.query(UserProgress).filter(
+        UserProgress.module_slug.in_(journey_slugs)
+    ).all() if journey_slugs else []
+
+    # Build per-employee completion map
+    emp_completed: dict[str, int] = {}  # employee_id -> completed count
+    emp_visited: dict[str, bool] = {}   # employee_id -> has any progress
+    for row in all_progress:
+        if row.employee_id not in journey_employee_ids:
+            continue
+        if row.module_completed:
+            emp_completed[row.employee_id] = emp_completed.get(row.employee_id, 0) + 1
+        if row.visited:
+            emp_visited[row.employee_id] = True
+
+    all_complete = sum(1 for eid in journey_employee_ids if emp_completed.get(eid, 0) >= total_journey_modules) if total_journey_modules > 0 else 0
+    in_progress = sum(1 for eid in journey_employee_ids if emp_visited.get(eid, False) and emp_completed.get(eid, 0) < total_journey_modules)
+    not_started = len(journey_employee_ids) - len(emp_visited)
+
+    # Recent logins (last 7 days)
+    cutoff = datetime.now(timezone.utc) - timedelta(days=7)
+    recent_logins = []
+    for emp in sorted(employees, key=lambda e: e.last_login_at or datetime.min.replace(tzinfo=timezone.utc), reverse=True):
+        if emp.last_login_at and emp.last_login_at.replace(tzinfo=timezone.utc) >= cutoff:
+            recent_logins.append({
+                "full_name": f"{emp.first_name} {emp.last_name}",
+                "track": emp.track,
+                "last_login_at": emp.last_login_at.isoformat(),
+            })
+
+    # Per-module completion counts (journey modules only)
+    module_completion: dict[str, int] = {}
+    for row in all_progress:
+        if row.employee_id in journey_employee_ids and row.module_completed:
+            module_completion[row.module_slug] = module_completion.get(row.module_slug, 0) + 1
+
+    module_progress = []
+    for m in journey_modules:
+        module_progress.append({
+            "module_slug": m["slug"],
+            "title": m["title"],
+            "completed": module_completion.get(m["slug"], 0),
+            "total": len(journey_employee_ids),
+        })
+
+    return {
+        "total_employees": total,
+        "by_track": by_track,
+        "completion": {
+            "all_complete": all_complete,
+            "in_progress": in_progress,
+            "not_started": not_started,
+        },
+        "recent_logins": recent_logins,
+        "module_progress": module_progress,
+    }

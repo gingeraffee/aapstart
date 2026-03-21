@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from app.config import get_settings
@@ -32,10 +32,23 @@ def get_db():
 
 
 def init_db():
-    """Create all tables and seed the bootstrap admin account if needed."""
+    """Create all tables, run lightweight migrations, and seed the bootstrap admin."""
     from app.database import models  # noqa: F401 — import to register models
     Base.metadata.create_all(bind=engine)
+    _migrate()
     _seed_admin()
+
+
+def _migrate():
+    """Add any missing columns to existing tables (lightweight auto-migration)."""
+    insp = inspect(engine)
+    # Check employees table for last_login_at column
+    if insp.has_table("employees"):
+        cols = {c["name"] for c in insp.get_columns("employees")}
+        if "last_login_at" not in cols:
+            with engine.begin() as conn:
+                conn.execute(text("ALTER TABLE employees ADD COLUMN last_login_at DATETIME"))
+            print("[OK] Added last_login_at column to employees table")
 
 
 def _seed_admin():

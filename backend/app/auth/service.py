@@ -74,7 +74,8 @@ def validate_login(employee_id: str, first_name: str, last_name: str) -> dict:
 
         if not employee.first_login_at:
             employee.first_login_at = datetime.now(timezone.utc)
-            db.commit()
+        employee.last_login_at = datetime.now(timezone.utc)
+        db.commit()
 
         return {
             "employee_id": employee.employee_id,

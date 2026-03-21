@@ -5,13 +5,13 @@ import { useMemo, useState, useEffect } from "react";
 import useSWR from "swr";
 import { useAuth } from "@/lib/context/AuthContext";
 import { usePreview } from "@/lib/context/PreviewContext";
-import { modulesApi, progressApi, resourcesApi } from "@/lib/api";
+import { modulesApi, progressApi, resourcesApi, adminApi } from "@/lib/api";
 import { WelcomeHeader } from "@/components/features/overview/WelcomeHeader";
 import { CelebrationModal } from "@/components/features/overview/CelebrationModal";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn, pickRandom } from "@/lib/utils";
 import { COACH_TIPS } from "@/lib/coachTips";
-import type { ModuleSummary, ProgressRecord, UiContent } from "@/lib/types";
+import type { ModuleSummary, ProgressRecord, UiContent, DashboardData } from "@/lib/types";
 
 export default function OverviewPage() {
   const { user } = useAuth();
@@ -26,6 +26,12 @@ export default function OverviewPage() {
     progressApi.getAll() as Promise<ProgressRecord[]>
   );
   const { data: uiData } = useSWR("ui", () => resourcesApi.ui() as Promise<UiContent>);
+
+  const isHRAdmin = user?.track === "hr" && user?.is_admin === true;
+  const { data: dashboardData } = useSWR(
+    isHRAdmin ? "dashboard" : null,
+    () => adminApi.dashboard() as Promise<DashboardData>
+  );
 
   const isLoading = loadingModules || loadingProgress;
   const loadError = modulesError || progressError;
@@ -225,6 +231,177 @@ export default function OverviewPage() {
           comingSoonCount={comingSoonCount}
         />
       </div>
+
+      {/* ── HR Admin Dashboard ── */}
+      {isHRAdmin && dashboardData && (
+        <div className="mb-8 animate-fade-up" style={{ animationDelay: "40ms" }}>
+          <div className="mb-4 flex items-center gap-2.5">
+            <div
+              className="flex h-7 w-7 items-center justify-center rounded-full"
+              style={{ background: "linear-gradient(135deg, rgba(27,44,86,0.18) 0%, rgba(14,165,233,0.12) 100%)" }}
+            >
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#1b2c56" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="1" y="5" width="4" height="10" rx="0.5" />
+                <rect x="6" y="2" width="4" height="13" rx="0.5" />
+                <rect x="11" y="7" width="4" height="8" rx="0.5" />
+              </svg>
+            </div>
+            <div>
+              <p className="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.11em]" style={{ background: "var(--welcome-label-bg)", color: "var(--welcome-label-text)" }}>
+                Team Dashboard
+              </p>
+            </div>
+          </div>
+
+          {/* Two-column: Team Overview + Recent Logins */}
+          <div className="grid gap-4 md:grid-cols-2">
+            {/* Team Overview Card */}
+            <div
+              className="rounded-[16px] p-5"
+              style={{
+                background: "var(--card-bg)",
+                border: "1px solid var(--card-border)",
+                boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)",
+              }}
+            >
+              <p className="mb-3 text-[0.62rem] font-bold uppercase tracking-[0.15em]" style={{ color: "var(--module-context)" }}>
+                Team Overview
+              </p>
+              <p className="text-[2rem] font-extrabold leading-none" style={{ color: "var(--heading-color)" }}>
+                {dashboardData.total_employees}
+              </p>
+              <p className="mt-1 text-[0.78rem]" style={{ color: "var(--card-desc)" }}>Total Employees</p>
+
+              {/* Track breakdown */}
+              <div className="mt-4 flex flex-wrap gap-3">
+                {Object.entries(dashboardData.by_track).map(([track, count]) => {
+                  const label = track === "hr" ? "HR" : track === "warehouse" ? "Warehouse" : track === "administrative" ? "Admin" : "Mgmt";
+                  const color = track === "hr" ? "#3b82f6" : track === "warehouse" ? "#f59e0b" : track === "management" ? "#10b981" : "#8b5cf6";
+                  return (
+                    <div key={track} className="flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full" style={{ backgroundColor: color }} />
+                      <span className="text-[0.74rem] font-semibold" style={{ color: "var(--heading-color)" }}>{label}</span>
+                      <span className="text-[0.74rem]" style={{ color: "var(--card-desc)" }}>{count}</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Completion breakdown */}
+              <div className="mt-4 space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                  <span className="text-[0.78rem]" style={{ color: "var(--heading-color)" }}>
+                    <span className="font-semibold">{dashboardData.completion.all_complete}</span> completed all modules
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-sky-400" />
+                  <span className="text-[0.78rem]" style={{ color: "var(--heading-color)" }}>
+                    <span className="font-semibold">{dashboardData.completion.in_progress}</span> in progress
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-slate-300" />
+                  <span className="text-[0.78rem]" style={{ color: "var(--heading-color)" }}>
+                    <span className="font-semibold">{dashboardData.completion.not_started}</span> not started
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Recent Logins Card */}
+            <div
+              className="rounded-[16px] p-5"
+              style={{
+                background: "var(--card-bg)",
+                border: "1px solid var(--card-border)",
+                boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)",
+              }}
+            >
+              <p className="mb-3 text-[0.62rem] font-bold uppercase tracking-[0.15em]" style={{ color: "var(--module-context)" }}>
+                Recent Logins — Last 7 Days
+              </p>
+
+              {dashboardData.recent_logins.length === 0 ? (
+                <p className="text-[0.82rem]" style={{ color: "var(--card-desc)" }}>No logins in the last 7 days.</p>
+              ) : (
+                <div className="space-y-2.5">
+                  {dashboardData.recent_logins.slice(0, 8).map((login, i) => {
+                    const loginDate = new Date(login.last_login_at);
+                    const now = new Date();
+                    const diffMs = now.getTime() - loginDate.getTime();
+                    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                    const timeLabel = diffDays === 0 ? "Today" : diffDays === 1 ? "Yesterday" : loginDate.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+                    const trackColor = login.track === "hr" ? "#3b82f6" : login.track === "warehouse" ? "#f59e0b" : login.track === "management" ? "#10b981" : "#8b5cf6";
+
+                    return (
+                      <div key={i} className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: trackColor }} />
+                          <span className="truncate text-[0.82rem] font-medium" style={{ color: "var(--heading-color)" }}>{login.full_name}</span>
+                        </div>
+                        <span className="shrink-0 text-[0.74rem]" style={{ color: "var(--card-desc)" }}>{timeLabel}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              <div className="mt-4 rounded-lg px-3 py-2" style={{ background: "rgba(14, 165, 233, 0.06)" }}>
+                <p className="text-[0.78rem] font-semibold" style={{ color: "var(--status-progress)" }}>
+                  {dashboardData.recent_logins.length} of {dashboardData.total_employees} active this week
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Module Progress */}
+          {dashboardData.module_progress.length > 0 && (
+            <div
+              className="mt-4 rounded-[16px] p-5"
+              style={{
+                background: "var(--card-bg)",
+                border: "1px solid var(--card-border)",
+                boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)",
+              }}
+            >
+              <p className="mb-4 text-[0.62rem] font-bold uppercase tracking-[0.15em]" style={{ color: "var(--module-context)" }}>
+                Module Completion
+              </p>
+              <div className="space-y-3">
+                {dashboardData.module_progress.map((mod) => {
+                  const pct = mod.total > 0 ? Math.round((mod.completed / mod.total) * 100) : 0;
+                  return (
+                    <div key={mod.module_slug}>
+                      <div className="mb-1 flex items-center justify-between gap-3">
+                        <span className="truncate text-[0.82rem] font-medium" style={{ color: "var(--heading-color)" }}>{mod.title}</span>
+                        <span className="shrink-0 text-[0.74rem] font-semibold" style={{ color: "var(--card-desc)" }}>
+                          {mod.completed}/{mod.total}
+                        </span>
+                      </div>
+                      <div className="h-[4px] overflow-hidden rounded-full" style={{ background: "var(--welcome-progress-track)" }}>
+                        <div
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{
+                            width: `${pct}%`,
+                            background: pct === 100
+                              ? "linear-gradient(90deg, #34d399 0%, #1fa37d 100%)"
+                              : "linear-gradient(90deg, #22d3ee 0%, #0ea5d9 100%)",
+                          }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Divider between dashboard and journey */}
+          <div className="mt-6 mb-2 h-px" style={{ background: "linear-gradient(90deg, transparent 0%, var(--card-border) 20%, var(--card-border) 80%, transparent 100%)" }} />
+        </div>
+      )}
 
       <div className="flex items-start gap-5 max-[1220px]:flex-col">
         <div className="min-w-0 flex-1 animate-fade-up" style={{ animationDelay: "60ms" }}>
