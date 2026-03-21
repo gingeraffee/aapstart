@@ -1,11 +1,13 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import type { User, LoginPayload } from "@/lib/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api";
 const DEV_AUTH_BYPASS = process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === "true";
 const STORAGE_KEY = "aapstart_user";
+const INACTIVITY_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes
+const LAST_ACTIVITY_KEY = "aapstart_last_activity";
 
 interface AuthContextValue {
   user: User | null;
@@ -28,11 +30,93 @@ export function useAuth() {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const inactivityTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // ---------- Inactivity auto-logout ----------
+
+  const clearInactivityTimer = useCallback(() => {
+    if (inactivityTimer.current) {
+      clearTimeout(inactivityTimer.current);
+      inactivityTimer.current = null;
+    }
+  }, []);
+
+  const performAutoLogout = useCallback(() => {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(LAST_ACTIVITY_KEY);
+    setUser(null);
+    fetch(`${API_BASE}/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+    }).catch(() => {});
+    window.location.href = "/login";
+  }, []);
+
+  const resetInactivityTimer = useCallback(() => {
+    clearInactivityTimer();
+    localStorage.setItem(LAST_ACTIVITY_KEY, Date.now().toString());
+    inactivityTimer.current = setTimeout(performAutoLogout, INACTIVITY_TIMEOUT_MS);
+  }, [clearInactivityTimer, performAutoLogout]);
+
+  // Set up activity listeners when a user is logged in
+  useEffect(() => {
+    if (!user) {
+      clearInactivityTimer();
+      return;
+    }
+
+    // Check if the session already expired while the tab/browser was closed
+    const lastActivity = localStorage.getItem(LAST_ACTIVITY_KEY);
+    if (lastActivity) {
+      const elapsed = Date.now() - parseInt(lastActivity, 10);
+      if (elapsed >= INACTIVITY_TIMEOUT_MS) {
+        performAutoLogout();
+        return;
+      }
+      // Start timer with remaining time
+      inactivityTimer.current = setTimeout(
+        performAutoLogout,
+        INACTIVITY_TIMEOUT_MS - elapsed,
+      );
+    } else {
+      // First activity stamp
+      resetInactivityTimer();
+    }
+
+    const events: (keyof WindowEventMap)[] = [
+      "mousemove",
+      "mousedown",
+      "keydown",
+      "scroll",
+      "touchstart",
+    ];
+
+    const handleActivity = () => resetInactivityTimer();
+    events.forEach((e) => window.addEventListener(e, handleActivity));
+
+    return () => {
+      clearInactivityTimer();
+      events.forEach((e) => window.removeEventListener(e, handleActivity));
+    };
+  }, [user, clearInactivityTimer, resetInactivityTimer, performAutoLogout]);
+
+  // ---------- Hydrate user from localStorage ----------
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       try {
+        // Check if session expired while browser was closed
+        const lastActivity = localStorage.getItem(LAST_ACTIVITY_KEY);
+        if (lastActivity) {
+          const elapsed = Date.now() - parseInt(lastActivity, 10);
+          if (elapsed >= INACTIVITY_TIMEOUT_MS) {
+            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(LAST_ACTIVITY_KEY);
+            setLoading(false);
+            return;
+          }
+        }
         setUser(JSON.parse(stored));
       } catch {
         localStorage.removeItem(STORAGE_KEY);
@@ -97,7 +181,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const logout = useCallback(async () => {
+    clearInactivityTimer();
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(LAST_ACTIVITY_KEY);
     setUser(null);
     // Fire backend logout as best-effort, don't wait for it
     fetch(`${API_BASE}/auth/logout`, {
@@ -105,7 +191,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       credentials: "include",
     }).catch(() => {});
     window.location.href = "/login";
-  }, []);
+  }, [clearInactivityTimer]);
 
   return (
     <AuthContext.Provider value={{ user, loading, login, logout }}>
