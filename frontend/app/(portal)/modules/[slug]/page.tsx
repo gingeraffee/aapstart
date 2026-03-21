@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import useSWR from "swr";
 import { modulesApi, progressApi } from "@/lib/api";
 import { useAuth } from "@/lib/context/AuthContext";
+import { usePreview } from "@/lib/context/PreviewContext";
 import { ContentBlock } from "@/components/features/modules/ContentBlock";
 import { GutCheckBlock } from "@/components/features/modules/GutCheckBlock";
 import { ModulePanel, ModuleShell, buildModuleSteps } from "@/components/features/modules/ModuleShell";
@@ -272,21 +273,22 @@ export default function ModulePage() {
   const { slug } = useParams<{ slug: string }>();
   const router = useRouter();
   const { user } = useAuth();
+  const { effectiveTrack, isPreviewing } = usePreview();
   const [reflectionChecks, setReflectionChecks] = useState([false, false, false]);
   const [showCongrats, setShowCongrats] = useState(false);
   const [congratsMsg, setCongratsMsg] = useState<{ headline: string; body: string } | null>(null);
 
-  const isManagement = user?.track === "management";
+  const isManagement = effectiveTrack === "management";
 
   const { data: module, isLoading, error } = useSWR(`module:${slug}`, () => modulesApi.get(slug) as Promise<ModuleDetail>);
   const { data: moduleCatalog } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
   const { data: progress } = useSWR("progress", () => progressApi.getAll() as Promise<ProgressRecord[]>);
 
   useEffect(() => {
-    if (module && module.status === "published") {
+    if (module && module.status === "published" && !isPreviewing) {
       progressApi.visit(slug).catch(() => {});
     }
-  }, [module, slug]);
+  }, [module, slug, isPreviewing]);
 
   if (isLoading) {
     return (

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState, useEffect } from "react";
 import useSWR from "swr";
 import { useAuth } from "@/lib/context/AuthContext";
+import { usePreview } from "@/lib/context/PreviewContext";
 import { modulesApi, progressApi, resourcesApi } from "@/lib/api";
 import { WelcomeHeader } from "@/components/features/overview/WelcomeHeader";
 import { CelebrationModal } from "@/components/features/overview/CelebrationModal";
@@ -14,8 +15,9 @@ import type { ModuleSummary, ProgressRecord, UiContent } from "@/lib/types";
 
 export default function OverviewPage() {
   const { user } = useAuth();
-  const isManagement = user?.track === "management";
-  const isHR = user?.track === "hr";
+  const { effectiveTrack, isPreviewing } = usePreview();
+  const isManagement = effectiveTrack === "management";
+  const isHR = effectiveTrack === "hr";
 
   const { data: modules, isLoading: loadingModules, error: modulesError } = useSWR("modules", () =>
     modulesApi.list() as Promise<ModuleSummary[]>
@@ -61,7 +63,7 @@ export default function OverviewPage() {
   }, [isManagement, isLoading, completedCount, journeyModules.length, user?.employee_id]);
 
   const isJourneyModuleUnlocked = (index: number) => {
-    if (isHR) return true;
+    if (isHR && !isPreviewing) return true;
     if (index === 0) return true;
     const prevSlug = journeyModules[index - 1].slug;
     return progressMap.get(prevSlug)?.module_completed ?? false;
@@ -119,7 +121,7 @@ export default function OverviewPage() {
             </div>
             <div>
               <p className="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.11em]" style={{ background: "var(--welcome-label-bg)", color: "var(--welcome-label-text)" }}>
-                Management Training
+                Manager Resources
               </p>
             </div>
           </div>
@@ -132,13 +134,10 @@ export default function OverviewPage() {
         </div>
 
         <div className="animate-fade-up" style={{ animationDelay: "60ms" }}>
-          <div className="mb-4 flex items-center gap-2">
+          <div className="mb-4">
             <h2 className="text-[1.1rem] font-bold tracking-[-0.01em]" style={{ color: "var(--heading-color)" }}>
               Process Guides
             </h2>
-            <span className="rounded-full px-2 py-0.5 text-[0.66rem] font-semibold" style={{ background: "var(--welcome-label-bg)", color: "var(--welcome-label-text)" }}>
-              {managementModules.length} {managementModules.length === 1 ? "guide" : "guides"}
-            </span>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -488,7 +487,7 @@ export default function OverviewPage() {
                 </div>
                 <div>
                   <p className="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.11em]" style={{ background: "var(--welcome-label-bg)", color: "var(--welcome-label-text)" }}>
-                    Management Training
+                    Manager Resources
                   </p>
                   <h2 className="mt-0.5 text-[1.22rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>
                     Management Processes

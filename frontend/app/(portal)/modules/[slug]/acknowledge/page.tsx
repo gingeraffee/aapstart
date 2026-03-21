@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import useSWR, { useSWRConfig } from "swr";
 import { modulesApi, progressApi } from "@/lib/api";
+import { usePreview } from "@/lib/context/PreviewContext";
 import { ChecklistItem } from "@/components/ui/ChecklistItem";
 import { ModuleFooter, ModulePanel, ModuleShell, buildModuleSteps } from "@/components/features/modules/ModuleShell";
 import { Spinner } from "@/components/ui/Spinner";
@@ -13,6 +14,7 @@ export default function AcknowledgePage() {
   const { slug } = useParams<{ slug: string }>();
   const router = useRouter();
   const { mutate } = useSWRConfig();
+  const { isPreviewing } = usePreview();
 
   const { data: module, isLoading } = useSWR(`module:${slug}`, () => modulesApi.get(slug) as Promise<ModuleDetail>);
 
@@ -61,8 +63,11 @@ export default function AcknowledgePage() {
     setError(null);
 
     try {
-      await progressApi.acknowledge(slug, currentModule.acknowledgements.map((item) => item.id));
-      await mutate("progress");
+      // Skip saving progress when previewing another track
+      if (!isPreviewing) {
+        await progressApi.acknowledge(slug, currentModule.acknowledgements.map((item) => item.id));
+        await mutate("progress");
+      }
       router.push(hasQuiz ? `/modules/${slug}/quiz` : `/modules/${slug}/complete`);
     } catch {
       setError("We could not save this step just yet. Please try once more.");

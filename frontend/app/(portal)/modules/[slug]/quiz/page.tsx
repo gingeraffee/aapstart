@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import useSWR, { useSWRConfig } from "swr";
 import { modulesApi, progressApi } from "@/lib/api";
+import { usePreview } from "@/lib/context/PreviewContext";
 import { ModuleFooter, ModulePanel, ModuleShell, buildModuleSteps } from "@/components/features/modules/ModuleShell";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
@@ -21,6 +22,7 @@ export default function QuizPage() {
   const { slug } = useParams<{ slug: string }>();
   const router = useRouter();
   const { mutate } = useSWRConfig();
+  const { isPreviewing } = usePreview();
 
   const { data: module, isLoading } = useSWR(`module:${slug}`, () => modulesApi.get(slug) as Promise<ModuleDetail>);
 
@@ -100,15 +102,18 @@ export default function QuizPage() {
     if (isLastQuestion) {
       setSubmitting(true);
       try {
-        const correctAnswers: Record<string, string> = {};
-        questions.forEach((q) => {
-          const item = feedback?.feedback[q.id];
-          if (item?.correct_id) {
-            correctAnswers[q.id] = item.correct_id;
-          }
-        });
-        await progressApi.submitQuiz(slug, correctAnswers);
-        await mutate("progress");
+        // Skip final progress submission when previewing another track
+        if (!isPreviewing) {
+          const correctAnswers: Record<string, string> = {};
+          questions.forEach((q) => {
+            const item = feedback?.feedback[q.id];
+            if (item?.correct_id) {
+              correctAnswers[q.id] = item.correct_id;
+            }
+          });
+          await progressApi.submitQuiz(slug, correctAnswers);
+          await mutate("progress");
+        }
       } catch {
         // Best effort before navigation.
       } finally {

@@ -6,13 +6,21 @@ import { usePathname, useRouter } from "next/navigation";
 import useSWR from "swr";
 import { useAuth } from "@/lib/context/AuthContext";
 import { useTheme } from "@/lib/context/ThemeContext";
+import { usePreview } from "@/lib/context/PreviewContext";
 import { modulesApi, progressApi } from "@/lib/api";
 import { cn } from "@/lib/utils";
-import type { ModuleSummary, ProgressRecord } from "@/lib/types";
+import type { ModuleSummary, ProgressRecord, Track } from "@/lib/types";
 
 interface AppShellProps {
   children: React.ReactNode;
 }
+
+const TRACK_LABELS: Record<Track, string> = {
+  hr: "HR",
+  administrative: "Administrative",
+  warehouse: "Warehouse",
+  management: "Management",
+};
 
 function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
@@ -47,13 +55,54 @@ function ThemeToggle() {
   );
 }
 
+function ViewAsSelector() {
+  const { canPreview, effectiveTrack, isPreviewing, setPreviewTrack } = usePreview();
+
+  if (!canPreview) return null;
+
+  return (
+    <div className="mx-3.5 mb-3 mt-3.5">
+      <label
+        className="mb-1.5 block px-1 text-[0.68rem] font-bold uppercase tracking-[0.12em]"
+        style={{ color: "var(--sidebar-label)" }}
+      >
+        Preview as
+      </label>
+      <select
+        value={effectiveTrack}
+        onChange={(e) => {
+          const val = e.target.value as Track;
+          setPreviewTrack(val === "hr" ? null : val);
+        }}
+        className="w-full cursor-pointer rounded-[10px] px-3 py-2.5 text-[0.82rem] font-semibold outline-none transition-all duration-150"
+        style={{
+          background: isPreviewing ? "rgba(15, 109, 163, 0.08)" : "var(--sidebar-icon-bg)",
+          border: isPreviewing ? "1px solid rgba(15, 109, 163, 0.35)" : "1px solid var(--sidebar-active-border, rgba(130,160,194,0.4))",
+          color: isPreviewing ? "#0f6da3" : "var(--sidebar-text)",
+        }}
+      >
+        {(Object.keys(TRACK_LABELS) as Track[]).map((track) => (
+          <option key={track} value={track}>
+            {TRACK_LABELS[track]}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
 export function AppShell({ children }: AppShellProps) {
   const { user, logout } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
+  const { effectiveTrack, isPreviewing, canPreview, setPreviewTrack } = usePreview();
 
-  const isManagement = user?.track === "management";
-  const isHR = user?.track === "hr";
+  // Use effectiveTrack for rendering decisions
+  const isManagement = effectiveTrack === "management";
+  // For collapsibility, use whether the real user is HR (always true when canPreview)
+  const isRealHR = canPreview;
+  // For section visibility, check effectiveTrack
+  const isEffectiveHR = effectiveTrack === "hr";
 
   const { data: modules } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
   const { data: progress } = useSWR("progress", () => progressApi.getAll() as Promise<ProgressRecord[]>);
@@ -70,7 +119,7 @@ export function AppShell({ children }: AppShellProps) {
   // Show journey section for non-management tracks
   const showJourney = !isManagement;
   // Show management section for management and HR tracks
-  const showManagementSection = isManagement || isHR;
+  const showManagementSection = isManagement || isEffectiveHR;
 
   const completedCount = progress
     ? journeyModules.filter((m) => progress.find((p) => p.module_slug === m.slug)?.module_completed).length
@@ -81,11 +130,21 @@ export function AppShell({ children }: AppShellProps) {
   const isRoadmapActive = pathname === "/roadmap";
 
   const isJourneyModuleUnlocked = (index: number) => {
-    if (isHR) return true;
+    // When previewing as a non-HR track, simulate sequential unlock
+    if (isEffectiveHR) return true;
+    if (isPreviewing) {
+      // In preview mode, show sequential unlock based on progress
+      if (index === 0) return true;
+      const prevSlug = journeyModules[index - 1].slug;
+      return progress?.find((p) => p.module_slug === prevSlug)?.module_completed ?? false;
+    }
     if (index === 0) return true;
     const prevSlug = journeyModules[index - 1].slug;
     return progress?.find((p) => p.module_slug === prevSlug)?.module_completed ?? false;
   };
+
+  // Collapsibility: HR users can collapse, previewed tracks behave like their real track
+  const canCollapse = isRealHR && isEffectiveHR;
 
   const activeNavStyle = {
     background: "var(--sidebar-active-bg)",
@@ -121,6 +180,9 @@ export function AppShell({ children }: AppShellProps) {
             />
           </Link>
         </div>
+
+        {/* View As selector — only rendered for HR users */}
+        <ViewAsSelector />
 
         <div className="flex-1 overflow-y-auto px-3.5 pb-3 pt-4">
           {/* Overview link for non-management tracks */}
@@ -164,12 +226,12 @@ export function AppShell({ children }: AppShellProps) {
 
           {/* ── Your Journey section (warehouse, administrative, HR) ── */}
           {showJourney && (
-            <details open={!isHR} className="group mt-3 [&_summary::-webkit-details-marker]:hidden">
+            <details open={!canCollapse} className="group mt-5 [&_summary::-webkit-details-marker]:hidden">
               <summary
-                className={cn("mb-2.5 flex list-none items-center justify-between px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]", isHR ? "cursor-pointer" : "cursor-default")}
+                className={cn("mb-2.5 flex list-none items-center justify-between px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]", canCollapse ? "cursor-pointer" : "cursor-default")}
                 style={{ color: "var(--sidebar-label)" }}
                 onClick={(e) => {
-                  if (!isHR) e.preventDefault();
+                  if (!canCollapse) e.preventDefault();
                 }}
               >
                 <span>Your Journey</span>
@@ -177,7 +239,7 @@ export function AppShell({ children }: AppShellProps) {
                   <span className="rounded-full px-2 py-0.5 text-[0.5rem]" style={{ background: "var(--sidebar-icon-bg)", color: "var(--sidebar-text)" }}>
                     {journeyModules.length}
                   </span>
-                  <span className={cn("text-[0.7rem] transition-transform duration-200", isHR ? "group-open:rotate-90" : "hidden")}>&gt;</span>
+                  <span className={cn("text-[0.7rem] transition-transform duration-200", canCollapse ? "group-open:rotate-90" : "hidden")}>&gt;</span>
                 </span>
               </summary>
 
@@ -301,10 +363,10 @@ export function AppShell({ children }: AppShellProps) {
           {showManagementSection && managementModules.length > 0 && (
             <details open className={cn("group [&_summary::-webkit-details-marker]:hidden", showJourney ? "mt-5 border-t pt-4" : "mt-3")} style={showJourney ? { borderColor: "var(--sidebar-divider)" } : undefined}>
               <summary
-                className={cn("mb-2.5 flex list-none items-center justify-between px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]", isHR ? "cursor-pointer" : "cursor-default")}
+                className={cn("mb-2.5 flex list-none items-center justify-between px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]", canCollapse ? "cursor-pointer" : "cursor-default")}
                 style={{ color: "var(--sidebar-label)" }}
                 onClick={(e) => {
-                  if (!isHR) e.preventDefault();
+                  if (!canCollapse) e.preventDefault();
                 }}
               >
                 <span>Management Processes</span>
@@ -312,7 +374,7 @@ export function AppShell({ children }: AppShellProps) {
                   <span className="rounded-full px-2 py-0.5 text-[0.5rem]" style={{ background: "var(--sidebar-icon-bg)", color: "var(--sidebar-text)" }}>
                     {managementModules.length}
                   </span>
-                  <span className={cn("text-[0.7rem] transition-transform duration-200", isHR ? "group-open:rotate-90" : "hidden")}>&gt;</span>
+                  <span className={cn("text-[0.7rem] transition-transform duration-200", canCollapse ? "group-open:rotate-90" : "hidden")}>&gt;</span>
                 </span>
               </summary>
 
@@ -436,6 +498,27 @@ export function AppShell({ children }: AppShellProps) {
           borderBottom: "1px solid var(--header-border)",
         }}
       >
+        {/* Preview mode banner */}
+        {isPreviewing && (
+          <div className="mr-3 flex items-center gap-2 rounded-[8px] px-3 py-1.5" style={{ background: "#ffffff", border: "1px solid rgba(15, 109, 163, 0.2)", boxShadow: "0 1px 4px rgba(12, 24, 47, 0.08)" }}>
+            <svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="#0f6da3" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M1 6a5 5 0 0 1 10 0" />
+              <circle cx="6" cy="6" r="1.5" />
+              <path d="M6 1v1M1.5 3.5l.7.7M10.5 3.5l-.7.7" />
+            </svg>
+            <span className="text-[0.74rem] font-semibold" style={{ color: "var(--sidebar-text, #1b2c56)" }}>
+              Previewing as {TRACK_LABELS[effectiveTrack]}
+            </span>
+<button
+              onClick={() => setPreviewTrack(null)}
+              className="ml-1 rounded px-1.5 py-0.5 text-[0.66rem] font-semibold transition-colors hover:bg-[rgba(15,109,163,0.1)]"
+              style={{ color: "#0f6da3" }}
+            >
+              Reset
+            </button>
+          </div>
+        )}
+
         <div
           className="absolute left-1/2 flex -translate-x-1/2 rounded-[12px] p-1"
           style={{
@@ -519,7 +602,4 @@ export function AppShell({ children }: AppShellProps) {
     </div>
   );
 }
-
-
-
 
