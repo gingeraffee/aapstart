@@ -190,10 +190,10 @@ def get_dashboard(
     not_started = len(journey_employee_ids) - len(emp_visited)
 
     # Recent logins (last 7 days)
-    cutoff = datetime.now(timezone.utc) - timedelta(days=7)
+    cutoff = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=7)
     recent_logins = []
-    for emp in sorted(employees, key=lambda e: e.last_login_at or datetime.min.replace(tzinfo=timezone.utc), reverse=True):
-        if emp.last_login_at and emp.last_login_at.replace(tzinfo=timezone.utc) >= cutoff:
+    for emp in sorted(employees, key=lambda e: e.last_login_at or datetime.min, reverse=True):
+        if emp.last_login_at and emp.last_login_at >= cutoff:
             recent_logins.append({
                 "full_name": f"{emp.first_name} {emp.last_name}",
                 "track": emp.track,
