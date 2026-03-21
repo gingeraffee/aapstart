@@ -278,8 +278,6 @@ export default function ModulePage() {
   const [showCongrats, setShowCongrats] = useState(false);
   const [congratsMsg, setCongratsMsg] = useState<{ headline: string; body: string } | null>(null);
 
-  const isManagement = effectiveTrack === "management";
-
   const { data: module, isLoading, error } = useSWR(`module:${slug}`, () => modulesApi.get(slug) as Promise<ModuleDetail>);
   const { data: moduleCatalog } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
   const { data: progress } = useSWR("progress", () => progressApi.getAll() as Promise<ProgressRecord[]>);
@@ -307,6 +305,8 @@ export default function ModulePage() {
   }
 
   const currentModule = module;
+  // Render as resource/process guide if the module is a management module OR user is on management track
+  const isManagement = effectiveTrack === "management" || currentModule.tracks?.includes("management");
   const hasAcknowledgement =
     currentModule.requires_acknowledgement || currentModule.acknowledgements.length > 0;
   const hasQuiz =
