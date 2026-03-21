@@ -6,15 +6,17 @@ import os
 
 settings = get_settings()
 
-# Ensure the database directory exists (works for both relative and absolute paths)
-_db_path = settings.database_url.replace("sqlite:///", "")
-if _db_path and not _db_path.startswith(":"):
-    os.makedirs(os.path.dirname(os.path.abspath(_db_path)), exist_ok=True)
+db_url = settings.database_url
 
-engine = create_engine(
-    settings.database_url,
-    connect_args={"check_same_thread": False},  # Required for SQLite
-)
+# SQLite-specific setup
+connect_args = {}
+if db_url.startswith("sqlite"):
+    _db_path = db_url.replace("sqlite:///", "")
+    if _db_path and not _db_path.startswith(":"):
+        os.makedirs(os.path.dirname(os.path.abspath(_db_path)), exist_ok=True)
+    connect_args = {"check_same_thread": False}
+
+engine = create_engine(db_url, connect_args=connect_args)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
