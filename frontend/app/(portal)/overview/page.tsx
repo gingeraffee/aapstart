@@ -222,14 +222,142 @@ export default function OverviewPage() {
       )}
 
       <div className="mb-5 animate-fade-up">
-        <WelcomeHeader
-          name={user?.full_name ?? ""}
-          headers={uiData?.rotating_headers}
-          currentModule={currentModule}
-          completedCount={completedCount}
-          totalCount={journeyModules.length}
-          comingSoonCount={comingSoonCount}
-        />
+        {isHRAdmin ? (
+          /* ── HR Admin Hero ── */
+          <div
+            className="relative overflow-hidden rounded-[24px] p-7 lg:p-8"
+            style={{
+              background: "var(--welcome-bg)",
+              border: "1px solid var(--welcome-border)",
+              boxShadow: "var(--welcome-shadow)",
+            }}
+          >
+            <div className="pointer-events-none absolute -right-9 -top-9 h-28 w-28 rounded-full" style={{ border: "1px solid var(--welcome-circle-border)" }} />
+            <div className="pointer-events-none absolute -right-3 top-4 h-14 w-14 rounded-full" style={{ border: "1px solid var(--welcome-circle-border-2)" }} />
+            <div className="pointer-events-none absolute right-12 top-14 h-24 w-24 rounded-full bg-[radial-gradient(circle,rgba(223,0,48,0.08)_0%,rgba(223,0,48,0)_72%)]" />
+            <div
+              className="absolute inset-x-0 top-0 h-[4px]"
+              style={{ background: "linear-gradient(90deg, #0ea5d9 0%, #22d3ee 58%, #d63964 100%)" }}
+            />
+
+            <div className="flex flex-wrap items-center gap-3">
+              <p
+                className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-[0.58rem] font-bold uppercase tracking-[0.22em]"
+                style={{ background: "var(--welcome-label-bg)", color: "var(--welcome-label-text)" }}
+              >
+                <span className="h-2 w-2 rounded-full bg-[#df0030]" />
+                HR Admin
+              </p>
+            </div>
+
+            <h1 className="mt-2 text-[clamp(1.6rem,3vw,2.4rem)] font-extrabold leading-[1.08] tracking-[-0.03em]" style={{ color: "var(--welcome-headline)" }}>
+              Welcome back, {firstName}
+            </h1>
+            <p className="mt-2 max-w-[640px] text-[0.9rem] leading-[1.68]" style={{ color: "var(--welcome-body)" }}>
+              Your team dashboard is below. Here&apos;s how to get the most out of AAP Start.
+            </p>
+
+            {/* Quick-start guide cards */}
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              {[
+                {
+                  title: "Admin Panel",
+                  href: "/admin",
+                  tip: "Add new employees before their start date so they can log in on day one.",
+                  icon: (
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="8" cy="5" r="3" />
+                      <path d="M2 14c0-3.3 2.7-5 6-5s6 1.7 6 5" />
+                    </svg>
+                  ),
+                },
+                {
+                  title: "Preview As",
+                  href: null,
+                  tip: "Use the Preview As dropdown in the sidebar to see exactly what new hires see on each track.",
+                  icon: (
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 8s3-5.5 7-5.5S15 8 15 8s-3 5.5-7 5.5S1 8 1 8z" />
+                      <circle cx="8" cy="8" r="2.5" />
+                    </svg>
+                  ),
+                },
+                {
+                  title: "Resource Hub",
+                  href: "/resources",
+                  tip: "Browse and download all onboarding documents, guides, and reference materials.",
+                  icon: (
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M2 2h4l2 2h6v10H2z" />
+                    </svg>
+                  ),
+                },
+                {
+                  title: "Management Guides",
+                  href: "#management-section",
+                  tip: "Process guides for recruitment, onboarding, and more are at the bottom of this page.",
+                  icon: (
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M2 3h12M2 6h12M2 9h8M2 12h5" />
+                    </svg>
+                  ),
+                },
+              ].map((card) => {
+                const inner = (
+                  <>
+                    <div className="flex items-center gap-2.5">
+                      <span
+                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
+                        style={{ background: "rgba(14,165,233,0.12)", color: "#0d6b9d" }}
+                      >
+                        {card.icon}
+                      </span>
+                      <span className="text-[0.84rem] font-bold" style={{ color: "var(--heading-color)" }}>{card.title}</span>
+                    </div>
+                    <p className="mt-1.5 text-[0.76rem] leading-[1.55]" style={{ color: "var(--card-desc)" }}>{card.tip}</p>
+                  </>
+                );
+
+                if (card.href) {
+                  return (
+                    <Link
+                      key={card.title}
+                      href={card.href}
+                      className="rounded-[12px] p-3.5 transition-all duration-200 hover:-translate-y-px"
+                      style={{
+                        background: "var(--welcome-stat-bg)",
+                        border: "1px solid var(--welcome-stat-border)",
+                      }}
+                    >
+                      {inner}
+                    </Link>
+                  );
+                }
+                return (
+                  <div
+                    key={card.title}
+                    className="rounded-[12px] p-3.5"
+                    style={{
+                      background: "var(--welcome-stat-bg)",
+                      border: "1px solid var(--welcome-stat-border)",
+                    }}
+                  >
+                    {inner}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : (
+          <WelcomeHeader
+            name={user?.full_name ?? ""}
+            headers={uiData?.rotating_headers}
+            currentModule={currentModule}
+            completedCount={completedCount}
+            totalCount={journeyModules.length}
+            comingSoonCount={comingSoonCount}
+          />
+        )}
       </div>
 
       {/* ── HR Admin Dashboard ── */}
