@@ -5,12 +5,20 @@ import { AsideCard } from "@/components/features/modules/AsideCard";
 import { QRCodeBlock } from "@/components/features/modules/QRCodeBlock";
 import type { ContentBlock as ContentBlockType, ChecklistBlockItem } from "@/lib/types";
 
+const RESOURCE_CALLOUT_LABELS: Record<string, string> = {
+  tip: "Manager note",
+  info: "Worth noting",
+  warning: "Watch for",
+};
+
 interface ContentBlockProps {
   block: ContentBlockType;
   emphasizeLead?: boolean;
+  /** "training" uses default labels; "resource" uses management-friendly labels */
+  variant?: "training" | "resource";
 }
 
-export function ContentBlock({ block, emphasizeLead = false }: ContentBlockProps) {
+export function ContentBlock({ block, emphasizeLead = false, variant = "training" }: ContentBlockProps) {
   switch (block.type) {
     case "heading":
       return (
@@ -48,13 +56,16 @@ export function ContentBlock({ block, emphasizeLead = false }: ContentBlockProps
         />
       );
 
-    case "callout":
+    case "callout": {
+      const calloutVariant = (block.variant as "tip" | "info" | "warning") ?? "tip";
       return (
         <Callout
-          variant={(block.variant as "tip" | "info" | "warning") ?? "tip"}
+          variant={calloutVariant}
           content={block.content ?? ""}
+          label={variant === "resource" ? RESOURCE_CALLOUT_LABELS[calloutVariant] : undefined}
         />
       );
+    }
 
     case "list":
       return (

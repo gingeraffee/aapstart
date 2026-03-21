@@ -51,7 +51,7 @@ const CONGRATS_MESSAGES: ((name: string, moduleTitle: string) => { headline: str
 ];
 
 function stripHtml(input: string): string {
-  return input.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  return input.replace(/<[^>]*>/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\s+/g, " ").trim();
 }
 
 function toAnchor(value: string, index: number): string {
@@ -618,9 +618,61 @@ export default function ModulePage() {
         hasQuiz ? "I feel ready for the quick knowledge check next." : "I know my next action after this module.",
       ];
 
-  const rail = (
+  const downloadBlocks = currentModule.content_blocks.filter(
+    (b) => b.type === "download" || b.type === "link"
+  );
+
+  const rail = isManagement ? (
     <div className="space-y-3">
-      {!isManagement && (
+      {railSections.length > 0 ? (
+        <div className="rounded-[16px] border border-[#d6e2ef] bg-[linear-gradient(180deg,#fffefb_0%,#f9fbfe_100%)] p-4 shadow-[0_10px_20px_rgba(12,24,47,0.06)]">
+          <p className="text-[0.58rem] font-bold uppercase tracking-[0.16em] text-[#607895]">On this page</p>
+          <div className="mt-2.5 space-y-1.5">
+            {railSections.map((section) => (
+              <a
+                key={section.id}
+                href={`#${section.id}`}
+                className="group flex items-start gap-2 rounded-[9px] px-2 py-1.5 text-[0.75rem] text-[#274566] transition-all duration-200 hover:bg-[rgba(14,165,233,0.1)] hover:text-[#0784c4]"
+              >
+                <span className="mt-[6px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#17365d] transition-colors group-hover:bg-[#0784c4]" />
+                <span className="font-semibold leading-[1.3]">{section.title}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      {downloadBlocks.length > 0 ? (
+        <div className="rounded-[16px] border border-[#d6e2ef] bg-[linear-gradient(180deg,#fffefb_0%,#f9fbfe_100%)] p-4 shadow-[0_10px_20px_rgba(12,24,47,0.06)]">
+          <p className="text-[0.58rem] font-bold uppercase tracking-[0.16em] text-[#607895]">Downloads</p>
+          <div className="mt-2.5 space-y-2">
+            {downloadBlocks.map((block, idx) => (
+              <a
+                key={idx}
+                href={block.url ?? "#"}
+                download={block.type === "download" ? "" : undefined}
+                target={block.type === "link" ? "_blank" : undefined}
+                rel={block.type === "link" ? "noopener noreferrer" : undefined}
+                className="group flex items-start gap-2.5 rounded-[9px] px-2 py-2 text-[0.75rem] transition-all duration-200 hover:bg-[rgba(14,165,233,0.1)]"
+              >
+                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-[6px]" style={{ background: "rgba(14,118,189,0.1)" }}>
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#0e76bd" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M8 2v8M5 7l3 3 3-3" />
+                    <path d="M3 12h10" />
+                  </svg>
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-semibold leading-[1.3] text-[#0e76bd] group-hover:underline">{block.label ?? "Download"}</span>
+                  {block.description ? <span className="mt-0.5 block text-[0.7rem] leading-[1.4] text-[#607895]">{block.description}</span> : null}
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  ) : (
+    <div className="space-y-3">
       <div className="rounded-[16px] border border-[rgba(97,171,230,0.34)] bg-[linear-gradient(180deg,#fffefb_0%,#f6fbff_100%)] p-4 shadow-[0_12px_22px_rgba(12,24,47,0.08)]">
         <p className="inline-flex items-center gap-2 rounded-full bg-[rgba(27,44,86,0.06)] px-2.5 py-1 text-[0.58rem] font-bold uppercase tracking-[0.16em] text-[#17365d]">
           <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
@@ -644,9 +696,7 @@ export default function ModulePage() {
           />
         </div>
       </div>
-      )}
 
-      {!isManagement && (
       <div className="rounded-[16px] border border-[rgba(223,0,48,0.18)] bg-[linear-gradient(180deg,rgba(223,0,48,0.05)_0%,rgba(223,0,48,0.01)_100%)] p-4 shadow-[0_10px_20px_rgba(12,24,47,0.07)]">
         <p className="inline-flex items-center gap-2 rounded-full bg-[rgba(223,0,48,0.08)] px-2.5 py-1 text-[0.58rem] font-bold uppercase tracking-[0.16em] text-[#b3234c]">
           <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
@@ -654,7 +704,6 @@ export default function ModulePage() {
         </p>
         <p className="mt-2.5 text-[0.76rem] leading-[1.62] text-[#5d4964]">{coachTip}</p>
       </div>
-      )}
 
       {railSections.length > 0 ? (
         <div className="rounded-[16px] border border-[#d6e2ef] bg-[linear-gradient(180deg,#fffefb_0%,#f9fbfe_100%)] p-4 shadow-[0_10px_20px_rgba(12,24,47,0.06)]">
@@ -696,7 +745,7 @@ export default function ModulePage() {
           <div className={cn("flex items-center gap-3", isFeatured ? "mb-3" : "mb-4")}>
             <span className="h-5 w-[3px] shrink-0 rounded-full" style={{ background: "linear-gradient(180deg, #22d3ee 0%, #0ea5d9 100%)" }} />
             <h2 className={cn("font-extrabold tracking-[-0.025em] text-[#0d1f3a]", isFeatured ? "text-[1.34rem]" : "text-[1.48rem]")}>
-              Start Here
+              {isManagement ? "Overview" : "Start Here"}
             </h2>
           </div>
         )}
@@ -707,7 +756,7 @@ export default function ModulePage() {
               {blockIndex > 0 ? (
                 <div className={cn("mb-6 h-px w-full", isFeatured ? "bg-[linear-gradient(90deg,rgba(14,127,179,0.22)_0%,rgba(14,127,179,0.08)_40%,rgba(14,127,179,0)_100%)]" : "bg-[linear-gradient(90deg,rgba(27,44,86,0.18)_0%,rgba(27,44,86,0.05)_36%,rgba(27,44,86,0)_100%)]")} />
               ) : null}
-              <ContentBlock block={block} emphasizeLead={block.type === "text" && blockIndex === 0} />
+              <ContentBlock block={block} emphasizeLead={block.type === "text" && blockIndex === 0} variant={isManagement ? "resource" : "training"} />
             </div>
           ))}
         </div>
@@ -725,6 +774,14 @@ export default function ModulePage() {
     );
 
     if (isFeatured) {
+      return (
+        <ModulePanel key={section.id} id={section.id} className="scroll-mt-24 w-full">
+          {content}
+        </ModulePanel>
+      );
+    }
+
+    if (isManagement) {
       return (
         <ModulePanel key={section.id} id={section.id} className="scroll-mt-24 w-full">
           {content}
@@ -787,21 +844,23 @@ export default function ModulePage() {
       ) : null}
 
       <ModuleShell
-        breadcrumbs={[
-          { label: "My Path", href: "/overview" },
-          { label: currentModule.title },
-        ]}
+        breadcrumbs={isManagement
+          ? [{ label: "Manager Resources", href: "/overview" }, { label: currentModule.title }]
+          : [{ label: "My Path", href: "/overview" }, { label: currentModule.title }]
+        }
         moduleOrder={currentModule.order}
-        stageLabel="Learn"
+        stageLabel={isManagement ? "Process Guide" : "Learn"}
         headline={currentModule.title}
         description={
-          currentModule.description ||
-          "Work through the key ideas below, then move to the next step when it feels clear."
+          isManagement
+            ? (currentModule.description || "Reference guide for this management process.")
+            : (currentModule.description || "Work through the key ideas below, then move to the next step when it feels clear.")
         }
         estimatedMinutes={currentModule.estimated_minutes}
         steps={steps}
         rail={rail}
         footer={null}
+        variant={isManagement ? "resource" : "training"}
       >
         <div className="space-y-2">
         {sections[0] ? renderSection(sections[0], 0, "featured") : null}
@@ -865,11 +924,8 @@ export default function ModulePage() {
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 2L4 7l5 5" />
               </svg>
-              Back to modules
+              Back to resources
             </Link>
-            <Button onClick={() => router.push("/overview")} className="h-[2.8rem] px-6 text-[0.88rem]">
-              Done
-            </Button>
           </div>
         </ModulePanel>
         ) : (

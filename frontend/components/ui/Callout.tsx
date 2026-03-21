@@ -7,6 +7,8 @@ interface CalloutProps {
   children?: React.ReactNode;
   content?: string;
   className?: string;
+  /** Override the default label (e.g. "Manager note" instead of "Coach note") */
+  label?: string;
 }
 
 const styles: Record<Variant, { label: string; shell: string; iconShell: string; iconColor: string }> = {
@@ -60,7 +62,7 @@ function CalloutIcon({ variant }: { variant: Variant }) {
   );
 }
 
-export function Callout({ variant = "tip", children, content, className }: CalloutProps) {
+export function Callout({ variant = "tip", children, content, className, label }: CalloutProps) {
   const style = styles[variant] ?? styles.tip;
 
   return (
@@ -70,7 +72,7 @@ export function Callout({ variant = "tip", children, content, className }: Callo
           <CalloutIcon variant={variant} />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="mb-1.5 text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>{style.label}</p>
+          <p className="mb-1.5 text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>{label ?? style.label}</p>
           <div className="prose-module text-[0.9rem]">{content ? <div dangerouslySetInnerHTML={{ __html: content }} /> : children}</div>
         </div>
       </div>

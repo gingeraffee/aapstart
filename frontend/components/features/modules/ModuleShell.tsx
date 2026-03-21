@@ -30,6 +30,8 @@ interface ModuleShellProps {
   children: React.ReactNode;
   rail?: React.ReactNode;
   footer?: React.ReactNode;
+  /** "training" (default) shows module pill + step pills; "resource" shows process guide pill, no steps */
+  variant?: "training" | "resource";
 }
 
 interface ModulePanelProps {
@@ -189,7 +191,9 @@ export function ModuleShell({
   children,
   rail,
   footer,
+  variant = "training",
 }: ModuleShellProps) {
+  const isResource = variant === "resource";
   return (
     <div className="w-full px-6 py-7 font-sans lg:px-8 lg:py-9">
       <div className="mx-auto w-full max-w-[1160px]">
@@ -244,13 +248,22 @@ export function ModuleShell({
                       background: "var(--module-pill-bg)",
                     }}
                   >
-                    <span className="rounded-full bg-[linear-gradient(135deg,#17365d_0%,#0f7fb3_70%,#21b8e7_100%)] px-2.5 py-1 text-[0.63rem] font-bold uppercase tracking-[0.09em] text-white">
-                      Module {String(moduleOrder).padStart(2, "0")}
-                    </span>
-                    <span className="inline-flex items-center gap-2 text-[0.68rem] font-bold uppercase tracking-[0.12em]" style={{ color: "var(--welcome-label-text)" }}>
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
-                      {stageLabel}
-                    </span>
+                    {isResource ? (
+                      <span className="inline-flex items-center gap-2 text-[0.68rem] font-bold uppercase tracking-[0.12em]" style={{ color: "var(--welcome-label-text)" }}>
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#17365d]" />
+                        Process Guide
+                      </span>
+                    ) : (
+                      <>
+                        <span className="rounded-full bg-[linear-gradient(135deg,#17365d_0%,#0f7fb3_70%,#21b8e7_100%)] px-2.5 py-1 text-[0.63rem] font-bold uppercase tracking-[0.09em] text-white">
+                          Module {String(moduleOrder).padStart(2, "0")}
+                        </span>
+                        <span className="inline-flex items-center gap-2 text-[0.68rem] font-bold uppercase tracking-[0.12em]" style={{ color: "var(--welcome-label-text)" }}>
+                          <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
+                          {stageLabel}
+                        </span>
+                      </>
+                    )}
                   </div>
 
                   <div
@@ -273,7 +286,7 @@ export function ModuleShell({
                   {headline}
                 </h1>
                 <p className="mt-2.5 max-w-[700px] text-[0.94rem] leading-[1.72]" style={{ color: "var(--module-body)" }}>{description}</p>
-                {contextNote ? (
+                {contextNote && !isResource ? (
                   <p className="mt-2 text-[0.8rem] font-medium" style={{ color: "var(--module-context)" }}>
                     Context: {contextNote}
                   </p>
@@ -289,17 +302,19 @@ export function ModuleShell({
                         <circle cx="6" cy="6" r="4.5" />
                         <path d="M6 3.5v2.5l1.5 1" />
                       </svg>
-                      ~{estimatedMinutes} {plural(estimatedMinutes, "min", "mins")}
+                      {isResource ? `${estimatedMinutes} min read` : `~${estimatedMinutes} ${plural(estimatedMinutes, "min", "mins")}`}
                     </span>
                   ) : null}
-                  <div className="flex flex-wrap items-center gap-2">
-                    {steps.map((step, index) => (
-                      <div key={step.key} className="flex items-center gap-2">
-                        <StepPill step={step} index={index} />
-                        {index < steps.length - 1 ? <span className="h-px w-3 rounded-full" style={{ background: "var(--module-step-divider)" }} /> : null}
-                      </div>
-                    ))}
-                  </div>
+                  {!isResource && (
+                    <div className="flex flex-wrap items-center gap-2">
+                      {steps.map((step, index) => (
+                        <div key={step.key} className="flex items-center gap-2">
+                          <StepPill step={step} index={index} />
+                          {index < steps.length - 1 ? <span className="h-px w-3 rounded-full" style={{ background: "var(--module-step-divider)" }} /> : null}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </section>
