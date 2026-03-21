@@ -59,21 +59,47 @@ Conduct structured, fair, and job-related interviews. All panel members must hav
 - Prepare a mix of behavioral, situational, technical, and culture-fit questions.
 - Share interview questions or topic areas with all panel members in advance.
 
+Check out the documents below for examples of questions that really help you gain insight into the interviewee.
+
+:::link
+url: /downloads/scenario-based-interview-questions.pdf
+label: Scenario-Based Interview Questions
+description: A collection of scenario-based questions to assess how candidates approach real-world situations.
+:::
+
+:::link
+url: /downloads/competency-interview-questions.pdf
+label: Competency-Based Interview Questions
+description: Questions designed to evaluate a candidate's core competencies and past performance.
+:::
+
 **During the interview:**
 - Ask consistent questions across all candidates.
 - Inform candidates that employment is contingent on a background check and pre-employment drug screening.
 - For driving roles, inform candidates that an MVR check is also required.
 
 **After the interview:**
-- Each panel member independently completes an Interview Evaluation Form with ratings, strengths, concerns, and a recommendation (Advance / Hold / Decline).
+- Each panel member independently completes an [Interview Evaluation Form](https://form.jotform.com/260317618745057) with ratings, strengths, concerns, and a recommendation (Advance / Hold / Decline).
 
 ## Step 6: Extend the Offer
 
 Once your top candidate is selected, partner with HR to finalize the verbal and written offer, complete background checks, and begin pre-boarding.
 
-:::callout tip
-For the full detailed process — including interview question banks, evaluation forms, and BambooHR walkthroughs — download the complete guide below.
+Before making the call, review these guides to make sure your verbal offer is professional, compliant, and sets the right tone.
+
+:::link
+url: /downloads/verbal-offer-guidelines.pdf
+label: Verbal Offer Guidelines
+description: A step-by-step guide with sample scripts for extending a verbal job offer to your selected candidate.
 :::
+
+:::link
+url: /downloads/what-not-to-say-verbal-offer.pdf
+label: What NOT to Say During a Verbal Offer
+description: A quick reference of statements to avoid that could create legal, HR, or compliance risks.
+:::
+
+<p style="text-align: center;"><strong>Need more help? The full guide can be downloaded below.</strong></p>
 
 :::link
 url: /downloads/manager-recruiting-process.docx

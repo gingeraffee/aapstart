@@ -623,19 +623,20 @@ export default function ModulePage() {
   );
 
   const rail = isManagement ? (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {railSections.length > 0 ? (
-        <div className="rounded-[16px] border border-[#d6e2ef] bg-[linear-gradient(180deg,#fffefb_0%,#f9fbfe_100%)] p-4 shadow-[0_10px_20px_rgba(12,24,47,0.06)]">
-          <p className="text-[0.58rem] font-bold uppercase tracking-[0.16em] text-[#607895]">On this page</p>
-          <div className="mt-2.5 space-y-1.5">
+        <div className="pb-3" style={{ borderBottom: "1px solid var(--mgmt-section-divider)" }}>
+          <p className="text-[0.58rem] font-bold uppercase tracking-[0.16em]" style={{ color: "var(--mgmt-eyebrow-text)" }}>On this page</p>
+          <div className="mt-2.5 space-y-0.5">
             {railSections.map((section) => (
               <a
                 key={section.id}
                 href={`#${section.id}`}
-                className="group flex items-start gap-2 rounded-[9px] px-2 py-1.5 text-[0.75rem] text-[#274566] transition-all duration-200 hover:bg-[rgba(14,165,233,0.1)] hover:text-[#0784c4]"
+                className="group flex items-start gap-2 rounded-[7px] px-2 py-1.5 text-[0.74rem] transition-all duration-200 hover:bg-[rgba(14,165,233,0.08)]"
+                style={{ color: "var(--module-body)" }}
               >
-                <span className="mt-[6px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#17365d] transition-colors group-hover:bg-[#0784c4]" />
-                <span className="font-semibold leading-[1.3]">{section.title}</span>
+                <span className="mt-[6px] h-1 w-1 shrink-0 rounded-full transition-colors" style={{ backgroundColor: "var(--mgmt-step-text)", opacity: 0.5 }} />
+                <span className="font-medium leading-[1.3]">{section.title}</span>
               </a>
             ))}
           </div>
@@ -651,8 +652,8 @@ export default function ModulePage() {
                 key={idx}
                 href={block.url ?? "#"}
                 download={block.type === "download" ? "" : undefined}
-                target={block.type === "link" ? "_blank" : undefined}
-                rel={block.type === "link" ? "noopener noreferrer" : undefined}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="group flex items-start gap-2.5 rounded-[9px] px-2 py-2 text-[0.75rem] transition-all duration-200 hover:bg-[rgba(14,165,233,0.1)]"
               >
                 <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-[6px]" style={{ background: "rgba(14,118,189,0.1)" }}>
@@ -731,24 +732,29 @@ export default function ModulePage() {
     style: "featured" | "open"
   ) => {
     const isFeatured = style === "featured";
+    const isTimeline = isManagement && !isFeatured;
+
+    const heading = isTimeline ? (
+      // Timeline heading: eyebrow + clean heading (no cyan bar)
+      <div className="mb-5">
+        <p className="mgmt-step-eyebrow">Step {sectionIndex}</p>
+        <h2 className="mgmt-step-heading">
+          {section.title ? section.title.replace(/\?$/, "") : "Overview"}
+        </h2>
+      </div>
+    ) : (
+      // Standard heading with cyan gradient bar
+      <div className={cn("flex items-center gap-3", isFeatured ? "mb-3" : "mb-4")}>
+        <span className="h-5 w-[3px] shrink-0 rounded-full" style={{ background: "linear-gradient(180deg, #22d3ee 0%, #0ea5d9 100%)" }} />
+        <h2 className={cn("font-extrabold tracking-[-0.025em] text-[#0d1f3a]", isFeatured ? "text-[1.34rem]" : "text-[1.48rem]")}>
+          {section.title ? section.title.replace(/\?$/, "") : (isManagement ? "Overview" : "Start Here")}
+        </h2>
+      </div>
+    );
 
     const content = (
       <>
-        {section.title ? (
-          <div className={cn("flex items-center gap-3", isFeatured ? "mb-3" : "mb-4")}>
-            <span className="h-5 w-[3px] shrink-0 rounded-full" style={{ background: "linear-gradient(180deg, #22d3ee 0%, #0ea5d9 100%)" }} />
-            <h2 className={cn("font-extrabold tracking-[-0.025em] text-[#0d1f3a]", isFeatured ? "text-[1.34rem]" : "text-[1.48rem]")}>
-              {section.title.replace(/\?$/, "")}
-            </h2>
-          </div>
-        ) : (
-          <div className={cn("flex items-center gap-3", isFeatured ? "mb-3" : "mb-4")}>
-            <span className="h-5 w-[3px] shrink-0 rounded-full" style={{ background: "linear-gradient(180deg, #22d3ee 0%, #0ea5d9 100%)" }} />
-            <h2 className={cn("font-extrabold tracking-[-0.025em] text-[#0d1f3a]", isFeatured ? "text-[1.34rem]" : "text-[1.48rem]")}>
-              {isManagement ? "Overview" : "Start Here"}
-            </h2>
-          </div>
-        )}
+        {heading}
 
         <div className="space-y-0">
           {section.blocks.map((block, blockIndex) => (
@@ -781,11 +787,19 @@ export default function ModulePage() {
       );
     }
 
+    // Management timeline layout: step marker + content on open background
     if (isManagement) {
       return (
-        <ModulePanel key={section.id} id={section.id} className="scroll-mt-24 w-full">
-          {content}
-        </ModulePanel>
+        <section key={section.id} id={section.id} className="mgmt-timeline-section scroll-mt-24">
+          <div className="mgmt-timeline-row">
+            <div className="mgmt-timeline-marker">
+              <span className="mgmt-step-number">{sectionIndex}</span>
+            </div>
+            <div className="mgmt-timeline-content">
+              {content}
+            </div>
+          </div>
+        </section>
       );
     }
 
@@ -862,7 +876,7 @@ export default function ModulePage() {
         footer={null}
         variant={isManagement ? "resource" : "training"}
       >
-        <div className="space-y-2">
+        <div className={cn("space-y-2", isManagement && "mgmt-timeline")}>
         {sections[0] ? renderSection(sections[0], 0, "featured") : null}
 
         {!isManagement && (
@@ -918,16 +932,14 @@ export default function ModulePage() {
         {sections.slice(1).map((section, index) => renderSection(section, index + 1, "open"))}
 
         {isManagement ? (
-        <ModulePanel className="relative scroll-mt-24 !overflow-hidden !px-4 !py-5">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <Link href="/overview" className="inline-flex items-center gap-1.5 text-[0.82rem] font-semibold transition-colors" style={{ color: "var(--module-context)" }}>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 2L4 7l5 5" />
-              </svg>
-              Back to resources
-            </Link>
-          </div>
-        </ModulePanel>
+        <div className="mt-10 pt-5" style={{ borderTop: "1px solid var(--mgmt-section-divider)" }}>
+          <Link href="/overview" className="inline-flex items-center gap-1.5 text-[0.82rem] font-semibold transition-colors hover:opacity-80" style={{ color: "var(--module-context)" }}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 2L4 7l5 5" />
+            </svg>
+            Back to resources
+          </Link>
+        </div>
         ) : (
         <ModulePanel className="relative scroll-mt-24 !overflow-hidden !px-4 !py-3 !pt-0">
           <div className="mb-3 h-1 w-full bg-[linear-gradient(90deg,#0f7fb3_0%,#06b6d4_52%,#df0030_100%)]" />

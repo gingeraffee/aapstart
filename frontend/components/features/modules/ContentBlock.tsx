@@ -5,6 +5,14 @@ import { AsideCard } from "@/components/features/modules/AsideCard";
 import { QRCodeBlock } from "@/components/features/modules/QRCodeBlock";
 import type { ContentBlock as ContentBlockType, ChecklistBlockItem } from "@/lib/types";
 
+/** Make every <a href="..."> open in a new tab. */
+function externalizeLinks(html: string): string {
+  return html.replace(
+    /<a\s+(href="[^"]*")/g,
+    '<a target="_blank" rel="noopener noreferrer" $1',
+  );
+}
+
 const RESOURCE_CALLOUT_LABELS: Record<string, string> = {
   tip: "Manager note",
   info: "Worth noting",
@@ -52,7 +60,7 @@ export function ContentBlock({ block, emphasizeLead = false, variant = "training
             "[&_td]:px-4 [&_td]:py-2.5 [&_td]:border [&_td]:border-border [&_td]:text-text-secondary",
             "[&_tr:nth-child(even)_td]:bg-surface-soft",
           )}
-          dangerouslySetInnerHTML={{ __html: block.content ?? "" }}
+          dangerouslySetInnerHTML={{ __html: externalizeLinks(block.content ?? "") }}
         />
       );
 
@@ -61,7 +69,7 @@ export function ContentBlock({ block, emphasizeLead = false, variant = "training
       return (
         <Callout
           variant={calloutVariant}
-          content={block.content ?? ""}
+          content={externalizeLinks(block.content ?? "")}
           label={variant === "resource" ? RESOURCE_CALLOUT_LABELS[calloutVariant] : undefined}
         />
       );

@@ -129,6 +129,15 @@
   --module-footer-border: #d4deec;
   --module-footer-shadow: 0 10px 18px rgba(12,24,47,0.08);
 
+  /* Management timeline */
+  --mgmt-timeline-rail: rgba(14, 127, 179, 0.18);
+  --mgmt-step-bg: linear-gradient(135deg, #eaf6ff 0%, #f0f8ff 100%);
+  --mgmt-step-border: rgba(14, 127, 179, 0.3);
+  --mgmt-step-text: #0f7fb3;
+  --mgmt-section-divider: rgba(27, 44, 86, 0.1);
+  --mgmt-eyebrow-text: #607895;
+  --mgmt-heading-text: #0d1f3a;
+
   /* Module card statuses */
   --status-complete: #15803d;
   --status-progress: #0f6092;
@@ -304,6 +313,15 @@
   --module-footer-bg: linear-gradient(180deg, #111d30 0%, #0e1826 100%);
   --module-footer-border: rgba(30, 58, 95, 0.6);
   --module-footer-shadow: 0 10px 18px rgba(0,0,0,0.2);
+
+  /* Management timeline */
+  --mgmt-timeline-rail: rgba(56, 189, 248, 0.15);
+  --mgmt-step-bg: linear-gradient(135deg, rgba(14, 165, 233, 0.12) 0%, rgba(56, 189, 248, 0.06) 100%);
+  --mgmt-step-border: rgba(56, 189, 248, 0.25);
+  --mgmt-step-text: #38bdf8;
+  --mgmt-section-divider: rgba(56, 189, 248, 0.08);
+  --mgmt-eyebrow-text: #6b8bb5;
+  --mgmt-heading-text: #e2e8f0;
 
   /* Module card statuses */
   --status-complete: #34d399;
@@ -590,5 +608,145 @@
 
   .font-heading {
     font-family: var(--font-display), "Sora", "Avenir", "Inter", sans-serif;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Management Timeline Layout                                         */
+/* ------------------------------------------------------------------ */
+
+.mgmt-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.mgmt-timeline-section {
+  padding-bottom: 1.25rem;
+  position: relative;
+}
+
+.mgmt-timeline-section:last-of-type {
+  padding-bottom: 0;
+}
+
+/* Subtle divider between sections */
+.mgmt-timeline-section:not(:last-of-type)::after {
+  content: "";
+  display: block;
+  height: 1px;
+  margin-top: 1.25rem;
+  background: linear-gradient(
+    90deg,
+    var(--mgmt-section-divider) 0%,
+    transparent 70%
+  );
+}
+
+/* Grid: marker column + content column */
+.mgmt-timeline-row {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+/* Marker column */
+.mgmt-timeline-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+/* Step number circle */
+.mgmt-step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--mgmt-step-bg);
+  border: 1.5px solid var(--mgmt-step-border);
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: var(--mgmt-step-text);
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  letter-spacing: -0.02em;
+}
+
+/* Vertical connecting rail line */
+.mgmt-timeline-marker::after {
+  content: "";
+  position: absolute;
+  top: 42px;
+  bottom: -1.25rem;
+  width: 2px;
+  background: var(--mgmt-timeline-rail);
+  border-radius: 1px;
+}
+
+/* Hide rail on last section */
+.mgmt-timeline-section:last-of-type .mgmt-timeline-marker::after {
+  display: none;
+}
+
+/* Content column */
+.mgmt-timeline-content {
+  min-width: 0;
+  padding-top: 0.35rem;
+}
+
+/* Step eyebrow label */
+.mgmt-step-eyebrow {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--mgmt-eyebrow-text);
+  margin-bottom: 0.35rem;
+}
+
+/* Step heading */
+.mgmt-step-heading {
+  font-size: 1.38rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--mgmt-heading-text);
+  line-height: 1.25;
+  margin-bottom: 1.25rem;
+}
+
+/* Responsive: mobile collapse */
+@media (max-width: 767px) {
+  .mgmt-timeline-row {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .mgmt-timeline-marker {
+    flex-direction: row;
+    gap: 0.75rem;
+  }
+
+  .mgmt-timeline-marker::after {
+    display: none;
+  }
+
+  .mgmt-step-number {
+    width: 32px;
+    height: 32px;
+    font-size: 0.76rem;
+  }
+
+  .mgmt-timeline-section {
+    padding-bottom: 1rem;
+  }
+
+  .mgmt-timeline-section:not(:last-of-type)::after {
+    margin-top: 1rem;
   }
 }

@@ -66,9 +66,9 @@ export function Callout({ variant = "tip", children, content, className, label }
   const style = styles[variant] ?? styles.tip;
 
   return (
-    <div className={cn("my-6 rounded-[13px] border p-4", style.shell, className)}>
-      <div className="flex items-start gap-3">
-        <span className={cn("mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-[8px]", style.iconShell, style.iconColor)} aria-hidden>
+    <div className={cn("my-3 rounded-[11px] border px-3 pt-2.5 pb-1.5", style.shell, className)}>
+      <div className="flex items-start gap-2">
+        <span className={cn("mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-[6px]", style.iconShell, style.iconColor)} aria-hidden>
           <CalloutIcon variant={variant} />
         </span>
         <div className="min-w-0 flex-1">
