@@ -47,13 +47,37 @@ interface RawQuiz {
 
 // ── Cache (survives HMR via globalThis) ─────────────────────────────────────
 
-const g = globalThis as unknown as { __contentLoaderCache?: Map<string, RawModule> };
+const g = globalThis as unknown as {
+  __contentLoaderCache?: Map<string, RawModule>;
+  __contentLoaderSignature?: string;
+};
+
+function getModulesSignature(modulesDir: string): string {
+  if (!fs.existsSync(modulesDir)) return "missing";
+
+  return fs
+    .readdirSync(modulesDir)
+    .filter((file) => file.endsWith(".md"))
+    .sort()
+    .map((file) => {
+      const filepath = path.join(modulesDir, file);
+      const stat = fs.statSync(filepath);
+      return `${file}:${stat.mtimeMs}:${stat.size}`;
+    })
+    .join("|");
+}
 
 function getCache(): Map<string, RawModule> {
-  if (g.__contentLoaderCache) return g.__contentLoaderCache;
-  g.__contentLoaderCache = new Map();
-  const _cache = g.__contentLoaderCache;
   const modulesDir = path.join(CONTENT_DIR, "modules");
+  const signature = getModulesSignature(modulesDir);
+
+  if (g.__contentLoaderCache && g.__contentLoaderSignature === signature) {
+    return g.__contentLoaderCache;
+  }
+
+  g.__contentLoaderCache = new Map();
+  g.__contentLoaderSignature = signature;
+  const _cache = g.__contentLoaderCache;
   if (!fs.existsSync(modulesDir)) return _cache;
 
   for (const file of fs.readdirSync(modulesDir).sort()) {

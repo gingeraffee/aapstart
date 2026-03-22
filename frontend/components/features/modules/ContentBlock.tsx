@@ -3,6 +3,7 @@ import { Callout } from "@/components/ui/Callout";
 import { ChecklistBlock } from "@/components/features/modules/ChecklistBlock";
 import { AsideCard } from "@/components/features/modules/AsideCard";
 import { QRCodeBlock } from "@/components/features/modules/QRCodeBlock";
+import { TabGroup } from "@/components/ui/TabGroup";
 import type { ContentBlock as ContentBlockType, ChecklistBlockItem } from "@/lib/types";
 
 /** Make every <a href="..."> open in a new tab. */
@@ -141,6 +142,16 @@ export function ContentBlock({ block, emphasizeLead = false, variant = "training
     case "checklist":
       return (
         <ChecklistBlock items={(block.items ?? []) as ChecklistBlockItem[]} />
+      );
+
+    case "tabs":
+      return (
+        <TabGroup
+          tabs={(block.tabs ?? []).map((tab) => ({
+            label: tab.label,
+            content: externalizeLinks(tab.content),
+          }))}
+        />
       );
 
     case "link":

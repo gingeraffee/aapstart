@@ -24,10 +24,11 @@ export interface ChecklistBlockItem {
 }
 
 export interface ContentBlock {
-  type: "text" | "heading" | "callout" | "list" | "image" | "video" | "checklist" | "link" | "download" | "aside" | "qrcode" | "track_block";
+  type: "text" | "heading" | "callout" | "list" | "image" | "video" | "checklist" | "link" | "download" | "aside" | "qrcode" | "track_block" | "tabs";
   content?: string;
   items?: string[] | ChecklistBlockItem[];
   variant?: string;
+  tabs?: { label: string; content: string }[];
   src?: string;
   alt?: string;
   caption?: string;

@@ -54,6 +54,10 @@ function stripHtml(input: string): string {
   return input.replace(/<[^>]*>/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\s+/g, " ").trim();
 }
 
+function stripSectionNumber(value: string): string {
+  return value.replace(/^\d+\.\s*/, "").trim();
+}
+
 function toAnchor(value: string, index: number): string {
   const normalized = value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   return normalized ? `section-${normalized}-${index}` : `section-${index}`;
@@ -558,7 +562,30 @@ export default function ModulePage() {
     ];
   }
 
-  const firstKeyLine = sectionKeyLine(sections[0]?.blocks ?? []);
+  const railWarningBlocks =
+    isManagement && sections[0]
+      ? sections[0].blocks.filter(
+          (block) => block.type === "callout" && block.variant === "warning"
+        )
+      : [];
+
+  const displaySections =
+    isManagement && sections.length > 0
+      ? sections
+          .map((section, index) =>
+            index === 0
+              ? {
+                  ...section,
+                  blocks: section.blocks.filter(
+                    (block) => !(block.type === "callout" && block.variant === "warning")
+                  ),
+                }
+              : section
+          )
+          .filter((section) => section.blocks.length > 0)
+      : sections;
+
+  const firstKeyLine = sectionKeyLine(displaySections[0]?.blocks ?? []);
   const liveModules = (moduleCatalog ?? [])
     .filter((item) => item.status === "published")
     .sort((a, b) => a.order - b.order);
@@ -566,7 +593,7 @@ export default function ModulePage() {
   const totalModules = liveModules.length || currentModule.order;
   const completedModules = (progress ?? []).filter((item) => item.module_completed).length;
   const coachTip = coachTipForModule(currentModule.title, hasQuiz, hasAcknowledgement);
-  const outcomeLines = buildOutcomeLines(sections, hasQuiz, hasAcknowledgement);
+  const outcomeLines = buildOutcomeLines(displaySections, hasQuiz, hasAcknowledgement);
   const humanMoments = buildHumanMoments(currentModule.title, hasQuiz, hasAcknowledgement);
   const whyThisMatters =
     firstKeyLine ??
@@ -605,7 +632,7 @@ export default function ModulePage() {
     }
   }
 
-  const railSections = sections.filter((section) => section.title);
+  const railSections = displaySections.filter((section) => section.title);
   const reflectionPrompts = currentModule.title.toLowerCase().includes("how work works")
     ? [
         "I understand the Open Door policy.",
@@ -636,7 +663,7 @@ export default function ModulePage() {
                 style={{ color: "var(--module-body)" }}
               >
                 <span className="mt-[6px] h-1 w-1 shrink-0 rounded-full transition-colors" style={{ backgroundColor: "var(--mgmt-step-text)", opacity: 0.5 }} />
-                <span className="font-medium leading-[1.3]">{section.title}</span>
+                <span className="font-medium leading-[1.3]">{stripSectionNumber(section.title ?? "")}</span>
               </a>
             ))}
           </div>
@@ -669,6 +696,18 @@ export default function ModulePage() {
               </a>
             ))}
           </div>
+        </div>
+      ) : null}
+
+      {railWarningBlocks.length > 0 ? (
+        <div className="space-y-2">
+          {railWarningBlocks.map((block, idx) => (
+            <ContentBlock
+              key={`rail-warning-${idx}`}
+              block={block}
+              variant="resource"
+            />
+          ))}
         </div>
       ) : null}
     </div>
@@ -739,7 +778,7 @@ export default function ModulePage() {
       <div className="mb-5">
         <p className="mgmt-step-eyebrow">Step {sectionIndex}</p>
         <h2 className="mgmt-step-heading">
-          {section.title ? section.title.replace(/\?$/, "") : "Overview"}
+          {section.title ? stripSectionNumber(section.title.replace(/\?$/, "")) : "Overview"}
         </h2>
       </div>
     ) : (
@@ -747,7 +786,7 @@ export default function ModulePage() {
       <div className={cn("flex items-center gap-3", isFeatured ? "mb-3" : "mb-4")}>
         <span className="h-5 w-[3px] shrink-0 rounded-full" style={{ background: "linear-gradient(180deg, #22d3ee 0%, #0ea5d9 100%)" }} />
         <h2 className={cn("font-extrabold tracking-[-0.025em] text-[#0d1f3a]", isFeatured ? "text-[1.34rem]" : "text-[1.48rem]")}>
-          {section.title ? section.title.replace(/\?$/, "") : (isManagement ? "Overview" : "Start Here")}
+          {section.title ? stripSectionNumber(section.title.replace(/\?$/, "")) : (isManagement ? "Overview" : "Start Here")}
         </h2>
       </div>
     );
@@ -877,7 +916,7 @@ export default function ModulePage() {
         variant={isManagement ? "resource" : "training"}
       >
         <div className={cn("space-y-2", isManagement && "mgmt-timeline")}>
-        {sections[0] ? renderSection(sections[0], 0, "featured") : null}
+        {displaySections[0] ? renderSection(displaySections[0], 0, "featured") : null}
 
         {!isManagement && (
         <section
@@ -929,7 +968,7 @@ export default function ModulePage() {
         </section>
         )}
 
-        {sections.slice(1).map((section, index) => renderSection(section, index + 1, "open"))}
+        {displaySections.slice(1).map((section, index) => renderSection(section, index + 1, "open"))}
 
         {isManagement ? (
         <div className="mt-10 pt-5" style={{ borderTop: "1px solid var(--mgmt-section-divider)" }}>
