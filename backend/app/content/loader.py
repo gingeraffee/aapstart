@@ -182,6 +182,7 @@ def _parse_module_file(filepath: Path) -> dict:
         "requires_acknowledgement": meta.get("requiresAcknowledgement", False),
         "content_blocks": content_blocks,
         "quiz": meta.get("quiz"),               # kept server-side; answers stripped before send
+        "quiz_mode": meta.get("quizMode"),      # "final-review" for special quiz behavior
         "acknowledgements": meta.get("acknowledgements", []),
     }
 
@@ -378,6 +379,7 @@ def _module_for_client(module: dict, track: str) -> dict:
         **_module_summary(module, track),
         "content_blocks": content_blocks,
         "quiz": quiz_client,
+        "quiz_mode": module.get("quiz_mode"),
         "acknowledgements": [] if is_management else module.get("acknowledgements", []),
     }
 

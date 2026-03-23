@@ -22,73 +22,268 @@ acknowledgements:
   - id: ack-5
     statement: I have received and reviewed the AAP Employee Handbook.
 
-# DRAFT — Please review and edit before publishing.
+quizMode: final-review
 quiz:
   questions:
     - id: q1
-      text: What is AAP's primary mission?
+      text: An employee from another department stops by and asks if their coworker passed their background check. What do you do?
       options:
         - id: a
-          text: To maximize shareholder returns through operational efficiency
+          text: Check BambooHR and share the result
         - id: b
-          text: To grow into new markets as quickly as possible
+          text: Tell them to ask their manager instead
         - id: c
-          text: To provide quality services while maintaining high standards of integrity and professionalism
+          text: Say you don't have access to that information
         - id: d
-          text: To achieve 100% automated workflows by 2030
-      correctId: c
+          text: Decline — screening results are confidential and cannot be shared with anyone
+      correctId: d
 
     - id: q2
-      text: Who should you contact first with HR-related questions?
+      text: A supervisor calls and says their employee has been out a week with a medical issue. They want to know what paperwork is needed. What do you do?
       options:
         - id: a
-          text: Nicole Thornton, HR Manager
+          text: Send them the FMLA certification form
         - id: b
-          text: The payroll department directly
+          text: Check the employee's eligibility and advise the supervisor
         - id: c
-          text: A coworker who has been here the longest
+          text: Escalate to the HR Manager
         - id: d
-          text: Your employee portal chatbot
-      correctId: a
+          text: Tell the supervisor to have the employee call you directly
+      correctId: c
 
     - id: q3
-      text: If you have a conflict with a coworker that you haven't been able to resolve yourselves, what is the appropriate next step?
+      text: "You're reviewing timecards and notice an employee has no punches for Thursday. What's your first step?"
       options:
         - id: a
-          text: Avoid the coworker until the situation resolves itself
+          text: Enter their normal schedule and move on
         - id: b
-          text: Post about it on social media to get outside perspective
+          text: Mark the day as PTO
         - id: c
-          text: File a formal complaint with a government agency immediately
+          text: Contact the supervisor using the missing punch script
         - id: d
-          text: Bring it to your supervisor or HR
-      correctId: d
+          text: Flag it for the next pay period
+      correctId: c
 
     - id: q4
-      text: Which of the following best describes AAP's expectation for professional conduct?
+      text: "An employee was 25 minutes late Monday and didn't call until after their shift started. Wednesday, they called in before their shift and missed the full day. Their balance was 4.5. What's their new total and corrective action?"
       options:
         - id: a
-          text: Employees are only held to conduct standards during performance reviews
+          text: 6.0 — verbal warning
         - id: b
-          text: Professional conduct expectations apply in the workplace and in professional contexts representing AAP
+          text: 6.5 — verbal warning
         - id: c
-          text: Conduct standards apply only to supervisors and managers
+          text: 7.0 — written warning
         - id: d
-          text: Employees set their own conduct standards within their department
-      correctId: b
+          text: 5.5 — coaching
+      correctId: c
 
     - id: q5
-      text: What is the purpose of the AAP Employee Handbook?
+      text: An employee asks to use 30 minutes of vacation to leave early. What do you tell them?
       options:
         - id: a
-          text: To provide a rigid rule book that covers every possible situation
+          text: "That's fine — submit it in BambooHR"
         - id: b
-          text: To document each employee's performance history
+          text: Vacation requires a 2-hour minimum, but they could use personal time instead
         - id: c
-          text: To replace conversations with your supervisor about day-to-day expectations
+          text: They need supervisor approval for anything under 2 hours
         - id: d
-          text: To serve as a reference for policies, expectations, and resources available to employees
+          text: Vacation can only be used for full-day absences
+      correctId: b
+
+    - id: q6
+      text: An employee says their last paycheck was short by about 4 hours. What do you do?
+      options:
+        - id: a
+          text: Pull up their timecard and identify the issue
+        - id: b
+          text: Tell them to contact Paylocity
+        - id: c
+          text: Gather the details and route it to the HR Manager
+        - id: d
+          text: Check BambooHR for PTO adjustments and explain what you find
+      correctId: c
+
+    - id: q7
+      text: "You just received a signed offer letter from a candidate in Memphis. What are your next steps?"
+      options:
+        - id: a
+          text: Schedule their start date and send the new hire packet
+        - id: b
+          text: Order the background check and drug screening
+        - id: c
+          text: Send them to The Family Life Center for testing
+        - id: d
+          text: Wait for the background check before initiating the drug screen
+      correctId: b
+
+    - id: q8
+      text: An employee tells you a coworker has been making inappropriate comments. What do you do?
+      options:
+        - id: a
+          text: Speak with the coworker to hear their side
+        - id: b
+          text: "Document the report, get the employee's statement, and hand it off to the HR Manager"
+        - id: c
+          text: Advise the employee to address it with their coworker directly
+        - id: d
+          text: File a corrective action against the coworker
+      correctId: b
+
+    - id: q9
+      text: "Where does a new hire's signed I-9 and ID copies go in BambooHR?"
+      options:
+        - id: a
+          text: New Hire Forms
+        - id: b
+          text: Medical Documents
+        - id: c
+          text: Payroll Related Documents
+        - id: d
+          text: I-9 Folder
       correctId: d
+
+    - id: q10
+      text: A new hire in Scottsboro needs a drug screening. What do you order and where do they go?
+      options:
+        - id: a
+          text: "LabCorp 10-Panel; they receive an email with locations"
+        - id: b
+          text: "Standard Screening — 1 County; The Family Life Center"
+        - id: c
+          text: "Standard 5-Panel; any local clinic"
+        - id: d
+          text: No Employvio order needed for Scottsboro
+      correctId: b
+
+    - id: q11
+      text: "Rank these by urgency: (1) employee reports a safety hazard, (2) employee asks about their PTO balance, (3) employee reports being threatened by a coworker."
+      options:
+        - id: a
+          text: All three are the same urgency
+        - id: b
+          text: "1 and 3 are Immediate; 2 is Next Business Day"
+        - id: c
+          text: "1 is Immediate; 3 is Same Day; 2 is Next Business Day"
+        - id: d
+          text: "3 is Immediate; 1 is Same Day; 2 is Next Business Day"
+      correctId: b
+
+    - id: q12
+      text: "A full-time employee hired January 15th asks when they can enroll in medical insurance and start using vacation. What's correct?"
+      options:
+        - id: a
+          text: Both start on Day 1
+        - id: b
+          text: "Vacation at 60 days; medical on the 1st of the month after 60 days"
+        - id: c
+          text: Both on the 1st of the month after 60 days
+        - id: d
+          text: "Medical after 60 days; vacation after 1 year"
+      correctId: b
+
+    - id: q13
+      text: "You're adding a new hire to PayClock. What format goes in the Name At Clock field?"
+      options:
+        - id: a
+          text: First Name Last Name
+        - id: b
+          text: "Last Name, First Name"
+        - id: c
+          text: Last Name First Name
+        - id: d
+          text: Employee ID only
+      correctId: c
+
+    - id: q14
+      text: "During a reference call, the reference mentions the candidate \"just went through a divorce.\" How do you handle it?"
+      options:
+        - id: a
+          text: Note it as relevant context
+        - id: b
+          text: Ask a follow-up about their availability
+        - id: c
+          text: Redirect to job-related questions — do not document it
+        - id: d
+          text: End the call early
+      correctId: c
+
+    - id: q15
+      text: A supervisor hands you a signed written warning. What do you do?
+      options:
+        - id: a
+          text: File it in the general personnel folder
+        - id: b
+          text: File it in the corrective action folder
+        - id: c
+          text: Send it to Paylocity
+        - id: d
+          text: "Return it — supervisors keep their own files"
+      correctId: b
+
+    - id: q16
+      text: An employee has missed two consecutive shifts with no contact. What does policy say?
+      options:
+        - id: a
+          text: Issue a written warning and try to reach them
+        - id: b
+          text: They are considered to have voluntarily quit
+        - id: c
+          text: Wait three business days before acting
+        - id: d
+          text: "Add 3 attendance points and escalate if they don't return"
+      correctId: b
+
+    - id: q17
+      text: A candidate has signed their offer letter and completed the background check authorization. What status should you update them to in BambooHR?
+      options:
+        - id: a
+          text: New Hire — Pending Start
+        - id: b
+          text: Future Employee In Process
+        - id: c
+          text: Offer Accepted
+        - id: d
+          text: Pre-Boarding
+      correctId: b
+
+    - id: q18
+      text: An employee wants to take 7 consecutive vacation days. They have the balance. What's required?
+      options:
+        - id: a
+          text: "Nothing extra — balance is all that matters"
+        - id: b
+          text: Written approval from the Company President
+        - id: c
+          text: "Maximum of 5 consecutive days, no exceptions"
+        - id: d
+          text: Supervisor approval at least 30 days in advance
+      correctId: b
+
+    - id: q19
+      text: "An employee who just received a second corrective action asks you directly: \"Am I going to get fired?\" What do you say?"
+      options:
+        - id: a
+          text: "Reassure them it probably won't lead to termination"
+        - id: b
+          text: Be honest about what you think based on their situation
+        - id: c
+          text: "Use approved language — you'll verify and follow up with accurate information"
+        - id: d
+          text: Explain the corrective action thresholds so they can assess the risk
+      correctId: d
+
+    - id: q20
+      text: "A new hire shows up on their first day with an expired driver's license as their only form of ID for the I-9. What do you do?"
+      options:
+        - id: a
+          text: "Accept it — expired documents are fine for Section 2"
+        - id: b
+          text: Ask them to provide a different valid document from the acceptable documents list
+        - id: c
+          text: Send them home until they get a new license
+        - id: d
+          text: "Make a copy and note that it's expired in BambooHR"
+      correctId: b
 ---
 
 ## You Made It

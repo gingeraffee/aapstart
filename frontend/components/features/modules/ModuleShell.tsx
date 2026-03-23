@@ -158,21 +158,23 @@ export function ModuleFooter({
         {backLabel}
       </Link>
       <div className="flex flex-col items-end gap-1.5">
-        {ctaHref ? (
-          <Link
-            href={ctaHref}
-            className={cn(
-              "inline-flex h-[2.8rem] items-center rounded-button border border-[#6eaeea] px-6 text-[0.88rem] font-bold text-white shadow-[0_8px_16px_rgba(15,127,179,0.2)] transition-all duration-200 hover:-translate-y-px hover:shadow-[0_12px_20px_rgba(15,127,179,0.24)]",
-              "bg-[linear-gradient(135deg,#184371_0%,#13629a_100%)]"
-            )}
-          >
-            {ctaLabel}
-          </Link>
-        ) : (
-          <Button onClick={onCtaClick} disabled={disabled} className="h-[2.8rem] px-6 text-[0.88rem]">
-            {ctaLabel}
-          </Button>
-        )}
+        {ctaLabel ? (
+          ctaHref ? (
+            <Link
+              href={ctaHref}
+              className={cn(
+                "inline-flex h-[2.8rem] items-center rounded-button border border-[#6eaeea] px-6 text-[0.88rem] font-bold text-white shadow-[0_8px_16px_rgba(15,127,179,0.2)] transition-all duration-200 hover:-translate-y-px hover:shadow-[0_12px_20px_rgba(15,127,179,0.24)]",
+                "bg-[linear-gradient(135deg,#184371_0%,#13629a_100%)]"
+              )}
+            >
+              {ctaLabel}
+            </Link>
+          ) : (
+            <Button onClick={onCtaClick} disabled={disabled} className="h-[2.8rem] px-6 text-[0.88rem]">
+              {ctaLabel}
+            </Button>
+          )
+        ) : null}
         {helperText ? <p className="text-[0.73rem]" style={{ color: "var(--module-context)" }}>{helperText}</p> : null}
       </div>
     </div>
