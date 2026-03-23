@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import useSWR from "swr";
@@ -103,30 +103,151 @@ function sectionKeyLine(blocks: ModuleContentBlock[]): string | null {
   return line.length > 170 ? `${line.slice(0, 167)}...` : line;
 }
 
-function coachTipForModule(moduleTitle: string, hasQuiz: boolean, hasAcknowledgement: boolean) {
+function coachTipsForModule(moduleTitle: string, hasQuiz: boolean, hasAcknowledgement: boolean): string[] {
   const title = moduleTitle.toLowerCase();
 
-  if (title.includes("welcome") || title.includes("aap")) {
-    return "Look for the big-picture story, not trivia. If you can explain how AAP works in plain language, you are on track.";
+  if (title.includes("welcome") || (title.includes("aap") && !title.includes("show up"))) {
+    return [
+      "Look for the big-picture story, not trivia. If you can explain how AAP works in plain language, you are on track.",
+      "Pay attention to who does what and where. You will reference the org structure more than you think.",
+      "This is context, not a test. Let the mission and values sink in — they show up in everything else.",
+      "Think about how you would describe AAP to someone who has never heard of it. That is the level of understanding to aim for.",
+    ];
+  }
+
+  if (title.includes("how we show up")) {
+    return [
+      "This one is about behavior, not tasks. Focus on the standards you would want someone to hold you to.",
+      "The confidentiality rules here are non-negotiable. If only one section sticks, make it that one.",
+      "Pay attention to the approved default language. You will use those phrases more than you expect.",
+      "Think about what you would do if you were unsure whether something was confidential. That instinct matters here.",
+    ];
+  }
+
+  if (title.includes("where to go")) {
+    return [
+      "This module is your safety net. Know where to send people — you do not have to have all the answers yourself.",
+      "Bookmark the key contacts and resources. When someone asks for help, speed matters more than memory.",
+      "Focus on the routing — who handles what. That one skill will save you the most time in your first month.",
+    ];
+  }
+
+  if (title.includes("benefits") || title.includes("pay") || title.includes("time away")) {
+    return [
+      "You will get more benefits questions than almost anything else. Know the timeline milestones cold.",
+      "Pay attention to what is paid out at termination vs. what is forfeited. That question comes up a lot.",
+      "The 401(k) match formula and PTO increments are the two things employees ask about most. Worth memorizing.",
+      "If a benefits question feels complicated, route it. Your job is accuracy, not speed.",
+    ];
   }
 
   if (title.includes("safety")) {
-    return "Read this one like you might need it on a busy day. The goal is quick recall, not perfect wording.";
+    return [
+      "Read this one like you might need it on a busy day. The goal is quick recall, not perfect wording.",
+      "Safety reporting is never optional. If something feels off, document it and escalate — every time.",
+      "Focus on what to do first, not every detail. In a real situation, knowing the first step is what matters.",
+      "This is one module where over-reporting is always better than under-reporting.",
+    ];
   }
 
-  if (title.includes("tools") || title.includes("systems")) {
-    return "Anchor on where things live and when to use them. That will save more time than memorizing every detail.";
+  if (title.includes("toolkit")) {
+    return [
+      "Anchor on where things live and when to use them. That will save more time than memorizing every detail.",
+      "The PayClock and BambooHR workflows are your bread and butter. These are worth practicing, not just reading.",
+      "Pay attention to the escalation triggers in each system. Knowing when to stop and ask is just as important as knowing the steps.",
+      "Bookmark the system links now. You will open these pages dozens of times a week.",
+    ];
   }
 
-  if (hasQuiz) {
-    return "Read once for signal, then once for confidence. If a point feels repeatable, it will probably show up in the quick check.";
+  if (title.includes("impact") || title.includes("responsibilities") || title.includes("workflow")) {
+    return [
+      "This is your operating manual. Come back to it whenever you are unsure what you own vs. what belongs to someone else.",
+      "The weekly payroll cycle is the backbone of your rhythm. Get this flow down and everything else gets easier.",
+      "Focus on the ownership boundaries. Knowing what is not your job is just as important as knowing what is.",
+      "Your 30/60/90 plan is a guide, not a test. Use it to check your own progress, not to stress about deadlines.",
+    ];
   }
 
-  if (hasAcknowledgement) {
-    return "Focus on the parts you would feel comfortable standing behind. That usually points to what matters most in the confirmation step.";
+  if (title.includes("how work works")) {
+    return [
+      "You will reference this one more than once. The attendance points and PTO rules come up constantly.",
+      "FMLA is the one area where you escalate immediately, every time, no exceptions. That rule is worth repeating.",
+      "The corrective action thresholds are worth memorizing: 5, 6, 7, 8. You will need them during payroll weeks.",
+      "If an employee asks a policy question and you are not 100% sure, route it. Guessing in HR has real consequences.",
+    ];
   }
 
-  return "Take this section by section and keep your eye on what you would actually use in the role. Clarity beats speed here.";
+  if (title.includes("say it") || title.includes("solve it") || title.includes("communication") || title.includes("escalation")) {
+    return [
+      "The scripts are not meant to be read word-for-word. Learn the structure, then make it sound like you.",
+      "When in doubt about tone, default to professional and warm. You can always follow up — you cannot unsend.",
+      "The escalation routing table is your cheat sheet. Print it or bookmark it for your first few weeks.",
+      "Pay questions always go to the HR Manager. That is the one routing rule with zero exceptions.",
+    ];
+  }
+
+  if (title.includes("before the offer")) {
+    return [
+      "The recruiting workflow is triggered by BambooHR status changes. Check statuses daily — do not wait for someone to tell you.",
+      "Drug screening timelines are strict: 3 business days. Build that into your calendar the moment an offer is signed.",
+      "Reference checks have hard rules about what you cannot ask. Review the prohibited questions before your first call.",
+      "Memphis and Scottsboro have different screening workflows. Mixing them up creates real delays.",
+    ];
+  }
+
+  if (title.includes("after the offer")) {
+    return [
+      "The onboarding checklist has 12 steps for a reason. Skipping one creates downstream problems for payroll or IT.",
+      "State tax forms trip people up. If the employee is not in TN or AL, you need to manually add the right form.",
+      "File documents in the correct BambooHR folders the first time. Re-filing is twice the work.",
+      "The employee number is TBA[Hire Date] until a permanent one is assigned. Do not leave it blank.",
+    ];
+  }
+
+  if (title.includes("exit") || title.includes("offboarding")) {
+    return [
+      "Involuntary terminations are HR Manager territory. Your role is support and documentation, never communication.",
+      "The 2-day no-call/no-show rule is policy, not a judgment call. Notify HR Manager immediately when it happens.",
+      "Vacation pays out at termination. Personal leave does not. Know the difference — employees will ask.",
+    ];
+  }
+
+  if (title.includes("quick reference") || title.includes("key people")) {
+    return [
+      "This page is your desk reference. Bookmark it, print it, whatever works — just keep it within reach.",
+      "The SOP index tells you exactly which document to open for any task. Use it instead of guessing.",
+      "Key contacts prefer Teams for most things. Save the phone calls for urgent escalations.",
+    ];
+  }
+
+  if (title.includes("first 30") || title.includes("first 90") || title.includes("first day")) {
+    return [
+      "Your first month is about building habits, not proving yourself. Ask every question that comes to mind.",
+      "Write things down as you learn them. Your notes from week one will be your best resource in week four.",
+      "Nobody expects perfection in the first 90 days. They expect curiosity, follow-through, and honesty.",
+    ];
+  }
+
+  if (title.includes("final review")) {
+    return [
+      "This is your chance to prove to yourself how much you have learned. Trust what you know.",
+      "If a scenario feels tricky, go back to the basics: what do you own, what do you escalate, and who do you call?",
+      "You have made it through the full journey. Take a breath and finish strong.",
+    ];
+  }
+
+  // Fallback pool
+  const fallback = [
+    "Take this section by section and keep your eye on what you would actually use in the role. Clarity beats speed here.",
+    "Read once for signal, then once for confidence. If a point feels repeatable, it will probably show up in the quick check.",
+    "Focus on the parts you would feel comfortable standing behind. That usually points to what matters most.",
+    "Think about what question a new employee might ask you about this topic. If you can answer it, you are ready.",
+  ];
+  return fallback;
+}
+
+function pickRandom<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 
 function buildOutcomeLines(
@@ -591,7 +712,8 @@ export default function ModulePage() {
   const modulePosition = liveModules.findIndex((item) => item.slug === currentModule.slug) + 1 || currentModule.order;
   const totalModules = liveModules.length || currentModule.order;
   const completedModules = (progress ?? []).filter((item) => item.module_completed).length;
-  const coachTip = coachTipForModule(currentModule.title, hasQuiz, hasAcknowledgement);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const coachTip = useMemo(() => pickRandom(coachTipsForModule(currentModule.title, hasQuiz, hasAcknowledgement)), [currentModule.slug]);
   const outcomeLines = buildOutcomeLines(displaySections, hasQuiz, hasAcknowledgement);
   const humanMoments = buildHumanMoments(currentModule.title, hasQuiz, hasAcknowledgement);
   const whyThisMatters =
