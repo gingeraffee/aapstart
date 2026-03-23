@@ -3,7 +3,7 @@ slug: final-review
 title: Final Review
 description: A brief recap of your onboarding journey and your final acknowledgements before you're ready to go.
 tracks: [hr, warehouse, administrative]
-order: 10
+order: 15
 estimatedMinutes: 10
 status: published
 requiresQuiz: true

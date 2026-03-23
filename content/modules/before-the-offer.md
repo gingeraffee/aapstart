@@ -3,7 +3,7 @@ slug: before-the-offer
 title: Before the Offer
 description: Applicant tracking, interview coordination, background and drug screenings, and reference checks — everything before the hire is official.
 tracks: [hr]
-order: 12
+order: 10
 estimatedMinutes: 16
 status: published
 requiresQuiz: true

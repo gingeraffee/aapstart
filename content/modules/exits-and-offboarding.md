@@ -3,7 +3,7 @@ slug: exits-and-offboarding
 title: Exits & Offboarding
 description: What happens at separation — system removal, final pay rules, and your role in voluntary and involuntary departures.
 tracks: [hr]
-order: 14
+order: 12
 estimatedMinutes: 8
 status: published
 requiresQuiz: false

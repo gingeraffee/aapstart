@@ -1,9 +1,9 @@
 ---
 slug: where-you-make-an-impact-hr
-title: Where You Make an Impact
+title: Your Impact
 description: Your daily duties, weekly rhythm, ownership boundaries, and 30/60/90 day plan as an HR Administrative Assistant.
 tracks: [hr]
-order: 7
+order: 8
 estimatedMinutes: 14
 status: published
 requiresQuiz: true

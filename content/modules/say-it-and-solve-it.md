@@ -3,7 +3,7 @@ slug: say-it-and-solve-it
 title: Say It & Solve It
 description: Scripts, intake procedures, and routing rules for timecard exceptions, employee concerns, complaints, and escalation.
 tracks: [hr]
-order: 11
+order: 9
 estimatedMinutes: 18
 status: published
 requiresQuiz: true

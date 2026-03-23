@@ -3,7 +3,7 @@ slug: after-the-offer
 title: After the Offer
 description: New hire setup in BambooHR — from the hire click through document filing, onboarding tasks, and first-day readiness.
 tracks: [hr]
-order: 13
+order: 11
 estimatedMinutes: 16
 status: published
 requiresQuiz: true

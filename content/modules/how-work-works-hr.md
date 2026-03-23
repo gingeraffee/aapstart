@@ -3,7 +3,7 @@ slug: how-work-works-hr
 title: How Work Works
 description: Attendance points, PTO accruals, FMLA, benefits eligibility, and the corrective action process — everything you need to answer policy questions confidently.
 tracks: [hr]
-order: 8
+order: 7
 estimatedMinutes: 18
 status: published
 requiresQuiz: true
