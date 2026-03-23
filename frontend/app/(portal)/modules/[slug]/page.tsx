@@ -278,7 +278,6 @@ export default function ModulePage() {
   const router = useRouter();
   const { user } = useAuth();
   const { effectiveTrack, isPreviewing } = usePreview();
-  const [reflectionChecks, setReflectionChecks] = useState([false, false, false]);
   const [showCongrats, setShowCongrats] = useState(false);
   const [congratsMsg, setCongratsMsg] = useState<{ headline: string; body: string } | null>(null);
 
@@ -633,18 +632,6 @@ export default function ModulePage() {
   }
 
   const railSections = displaySections.filter((section) => section.title);
-  const reflectionPrompts = currentModule.title.toLowerCase().includes("how work works")
-    ? [
-        "I understand the Open Door policy.",
-        "I understand how my success is measured.",
-        "I understand how points are accrued or removed.",
-      ]
-    : [
-        "I can explain the key point of this module in plain language.",
-        "I know the ethical standards for all employees.",
-        hasQuiz ? "I feel ready for the quick knowledge check next." : "I know my next action after this module.",
-      ];
-
   const downloadBlocks = currentModule.content_blocks.filter(
     (b) => b.type === "download" || b.type === "link"
   );
@@ -980,95 +967,20 @@ export default function ModulePage() {
           </Link>
         </div>
         ) : (
-        <ModulePanel className="relative scroll-mt-24 !overflow-hidden !px-4 !py-3 !pt-0">
-          <div className="mb-3 h-1 w-full bg-[linear-gradient(90deg,#0f7fb3_0%,#06b6d4_52%,#df0030_100%)]" />
-          <div
-            className="pointer-events-none absolute -right-12 top-2 h-32 w-32 rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(15,127,179,0.10) 0%, rgba(15,127,179,0) 72%)" }}
-          />
-          <div
-            className="pointer-events-none absolute -left-6 bottom-4 h-20 w-20 rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(223,0,48,0.06) 0%, rgba(223,0,48,0) 72%)" }}
-          />
-          <div
-            className="pointer-events-none absolute right-4 top-4 hidden h-14 w-14 rounded-[12px] md:block"
-            style={{
-              backgroundImage: "radial-gradient(circle, rgba(19, 98, 154, 0.10) 0.8px, transparent 1px)",
-              backgroundSize: "11px 11px",
-            }}
-          />
-          <div className="relative mb-4 flex items-start gap-2.5 rounded-[14px] border border-[rgba(27,44,86,0.14)] bg-[linear-gradient(180deg,rgba(27,44,86,0.04)_0%,rgba(27,44,86,0.01)_100%)] px-4 py-3">
-            <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-[rgba(27,44,86,0.08)] text-[#17365d]">
-              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <path d="M8 2.5v6.6" />
-                <path d="M5.2 9.2A3.2 3.2 0 1 0 10.8 9.2" />
-                <path d="M5 13h6" />
-              </svg>
-            </span>
-            <div>
-              <p className="inline-flex rounded-full bg-[#17365d] px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.09em] text-white">
-                Quick Reflection
-              </p>
-              <p className="mt-1.5 text-[0.78rem] leading-[1.5] text-[#4d6788]">
-                45-second self-check before you move to the next step.
-              </p>
-            </div>
+        <div className="mt-10 flex flex-col gap-3 pt-5 sm:flex-row sm:items-center sm:justify-between" style={{ borderTop: "1px solid var(--mgmt-section-divider)" }}>
+          <Link href="/overview" className="inline-flex items-center gap-1.5 text-[0.82rem] font-semibold transition-colors" style={{ color: "var(--module-context)" }}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 2L4 7l5 5" />
+            </svg>
+            Back to my path
+          </Link>
+          <div className="flex flex-col items-end gap-1.5">
+            <Button onClick={handleFinished} className="h-[2.8rem] px-6 text-[0.88rem]">
+              {continueLabel}
+            </Button>
+            <p className="text-[0.73rem]" style={{ color: "var(--module-context)" }}>{nextStepLabel}</p>
           </div>
-
-          <div className="relative space-y-2">
-            {reflectionPrompts.map((prompt, index) => (
-              <button
-                key={prompt}
-                type="button"
-                onClick={() =>
-                  setReflectionChecks((prev) => prev.map((checked, i) => (i === index ? !checked : checked)))
-                }
-                className={cn(
-                  "flex w-full items-start gap-3 rounded-[12px] border px-4 py-3 text-left transition-all duration-200",
-                  reflectionChecks[index]
-                    ? "border-[rgba(14,127,179,0.34)] bg-[rgba(14,127,179,0.08)]"
-                    : "border-[rgba(143,171,205,0.34)] bg-[linear-gradient(180deg,rgba(255,255,255,0.7)_0%,rgba(248,252,255,0.9)_100%)] hover:border-[rgba(14,127,179,0.3)]"
-                )}
-              >
-                <span
-                  className={cn(
-                    "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[0.62rem] font-bold",
-                    reflectionChecks[index]
-                      ? "border-[#0f7fb3] bg-[#0f7fb3] text-white"
-                      : "border-[#adc5e2] bg-white text-[#6a86a5]"
-                  )}
-                >
-                  {reflectionChecks[index] ? "✓" : index + 1}
-                </span>
-                <span className="text-[0.84rem] leading-[1.55] text-[#284565]">{prompt}</span>
-              </button>
-            ))}
-          </div>
-
-          <p className="relative mt-2 text-[0.74rem] text-[#607996]">
-            {hasQuiz ? "Next stop: quick knowledge check." : "Next stop: confirmation and completion."}
-          </p>
-
-          <div
-            className="relative mt-4 h-px w-full"
-            style={{ background: "linear-gradient(90deg, rgba(27,44,86,0.14) 0%, rgba(27,44,86,0.04) 60%, transparent 100%)" }}
-          />
-
-          <div className="relative mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <Link href="/overview" className="inline-flex items-center gap-1.5 text-[0.82rem] font-semibold transition-colors" style={{ color: "var(--module-context)" }}>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 2L4 7l5 5" />
-              </svg>
-              Back to my path
-            </Link>
-            <div className="flex flex-col items-end gap-1.5">
-              <Button onClick={handleFinished} className="h-[2.8rem] px-6 text-[0.88rem]">
-                {continueLabel}
-              </Button>
-              <p className="text-[0.73rem]" style={{ color: "var(--module-context)" }}>{nextStepLabel}</p>
-            </div>
-          </div>
-        </ModulePanel>
+        </div>
         )}
       </div>
     </ModuleShell>

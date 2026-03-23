@@ -53,24 +53,44 @@ def load_all_content():
     _load_ui()
 
 
-def get_modules_for_track(track: str) -> list[dict]:
+def get_modules_for_track(track: str, is_admin: bool = False) -> list[dict]:
     """
     Return ordered module list for a given track.
-    - HR sees shared modules, HR-specific modules, and management process modules.
+    - HR admins see shared modules, HR-specific modules, and management process modules.
+    - HR non-admins see shared modules and HR-specific modules only.
     - Management sees ONLY modules with tracks: [management].
     - Other tracks see 'all' modules plus their track-specific modules.
     Excludes draft modules (status == 'draft').
+    When an HR-specific version exists (slug ending in '-hr'), the shared [all] version is excluded.
     """
     result = []
+    # Collect HR-specific slugs so we can exclude their [all] counterparts
+    hr_base_slugs = set()
+    if track == "hr":
+        for module in _modules_cache.values():
+            slug = module.get("slug", "")
+            mod_tracks = module.get("tracks", ["all"])
+            if slug.endswith("-hr") and "hr" in mod_tracks:
+                hr_base_slugs.add(slug.rsplit("-hr", 1)[0])
+
     for module in _modules_cache.values():
         if module.get("status") == "draft":
             continue
         mod_tracks = module.get("tracks", ["all"])
+        slug = module.get("slug", "")
 
         if track == "hr":
-            # HR sees shared modules, HR-specific modules, and management process modules.
-            if "all" in mod_tracks or "hr" in mod_tracks or "management" in mod_tracks:
-                result.append(_module_summary(module, track))
+            # Skip [all] modules that have an HR-specific replacement
+            if "all" in mod_tracks and slug in hr_base_slugs:
+                continue
+            # HR admins see shared + HR + management modules
+            if is_admin:
+                if "all" in mod_tracks or "hr" in mod_tracks or "management" in mod_tracks:
+                    result.append(_module_summary(module, track))
+            else:
+                # Non-admin HR sees shared + HR only (no management)
+                if "all" in mod_tracks or "hr" in mod_tracks:
+                    result.append(_module_summary(module, track))
         elif track == "management":
             # Management only sees management-specific modules
             if "management" in mod_tracks:

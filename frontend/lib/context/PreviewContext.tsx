@@ -37,7 +37,7 @@ export function usePreview() {
 export function PreviewProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const actualTrack: Track = user?.track ?? "administrative";
-  const canPreview = !!user && actualTrack === "hr";
+  const canPreview = !!user && actualTrack === "hr" && user.is_admin === true;
 
   const [previewTrack, setPreviewTrackState] = useState<Track | null>(null);
 

@@ -75,7 +75,7 @@ export default function OverviewPage() {
   }, [isManagement, isLoading, completedCount, journeyModules.length, user?.employee_id]);
 
   const isJourneyModuleUnlocked = (index: number) => {
-    if (isHR && !isPreviewing) return true;
+    if (isHRAdmin && !isPreviewing) return true;
     if (index === 0) return true;
     const prevSlug = journeyModules[index - 1].slug;
     return progressMap.get(prevSlug)?.module_completed ?? false;
@@ -1027,7 +1027,7 @@ export default function OverviewPage() {
           </div>
 
           {/* ── Management Processes section (HR only) ── */}
-          {isHR && managementModules.length > 0 && (
+          {isHRAdmin && managementModules.length > 0 && (
             <div className="mt-10">
               <div className="mb-4 flex items-center gap-2.5">
                 <div

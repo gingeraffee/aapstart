@@ -118,8 +118,9 @@ export function AppShell({ children }: AppShellProps) {
 
   // Show journey section for non-management tracks
   const showJourney = !isManagement;
-  // Show management section for management and HR tracks
-  const showManagementSection = isManagement || isEffectiveHR;
+  // Show management section for management track and HR admins only
+  const isHRAdmin = user?.track === "hr" && user?.is_admin === true;
+  const showManagementSection = isManagement || (isEffectiveHR && isHRAdmin);
 
   const completedCount = progress
     ? journeyModules.filter((m) => progress.find((p) => p.module_slug === m.slug)?.module_completed).length

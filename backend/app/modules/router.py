@@ -10,7 +10,8 @@ router = APIRouter(prefix="/api/modules", tags=["modules"])
 def list_modules(current_user: dict = Depends(get_current_user)):
     """Returns the ordered module list for the current employee's track."""
     track = current_user["track"]
-    return loader.get_modules_for_track(track)
+    is_admin = current_user.get("is_admin", False)
+    return loader.get_modules_for_track(track, is_admin=is_admin)
 
 
 @router.get("/{slug}", response_model=ModuleDetail)
