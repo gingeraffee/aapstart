@@ -510,10 +510,10 @@ export default function ModulePage() {
     },
   ] : [];
 
-  // Override "What This Module Covers" for How We Show Up
+  // Override first section for How We Show Up (both all and HR versions)
   if (currentModule.title.toLowerCase().includes("how we show up")) {
     const coverSection = sections.find(
-      (s) => s.title?.toLowerCase().includes("what this module covers")
+      (s) => s.title?.toLowerCase().includes("what this module covers") || s.title?.toLowerCase().includes("welcome to aap")
     );
     if (coverSection) {
       coverSection.title = "Good People Who Do Great Work";
