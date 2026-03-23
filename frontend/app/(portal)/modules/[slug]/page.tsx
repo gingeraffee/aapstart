@@ -527,7 +527,7 @@ export default function ModulePage() {
         },
         {
           type: "video",
-          src: "/videos/aap-values.mp4",
+          src: "https://www.youtube.com/embed/I1RvGairzZM?si=4YAX0Q8w7XxeFSPp&rel=0&modestbranding=1",
           alt: "AAP Values",
         },
       ];
