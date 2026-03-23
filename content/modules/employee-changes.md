@@ -74,8 +74,8 @@ For compensation-related changes:
 - Document the justification in BambooHR
 - Allow HR to review the change for compliance and process payroll updates
 
-:::callout warning
-Payroll-related changes must be submitted before payroll cutoff.
+:::callout warning "Time sensitive"
+Payroll-related changes must be submitted before payroll cutoff. Payroll cutoff is Tuesday by 4:30 PM.
 :::
 
 ## 5. Position or Title Change
