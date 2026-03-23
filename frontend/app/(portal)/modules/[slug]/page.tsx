@@ -407,9 +407,10 @@ export default function ModulePage() {
   const { data: progress } = useSWR("progress", () => progressApi.getAll() as Promise<ProgressRecord[]>);
 
   // Coach tip hooks must be before early returns to satisfy React's rules of hooks
-  const earlyTipPool = coachTipsForModule(module?.title ?? "", module?.requires_quiz ?? false, module?.requires_acknowledgement ?? false);
+  const moduleTitle = module?.title ?? "";
+  const earlyTipPool = coachTipsForModule(moduleTitle, module?.requires_quiz ?? false, module?.requires_acknowledgement ?? false);
   const [coachTip, setCoachTip] = useState(earlyTipPool[0] ?? "");
-  useEffect(() => { setCoachTip(pickRandom(earlyTipPool)); }, [slug]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { setCoachTip(pickRandom(earlyTipPool)); }, [slug, moduleTitle]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (module && module.status === "published" && !isPreviewing) {
