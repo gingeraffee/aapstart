@@ -249,7 +249,12 @@ def _parse_directive(block: str) -> dict | None:
 
     if block_type == "callout":
         variant = args[0] if args else "tip"
-        return {"type": "callout", "variant": variant, "content": _render_md(inner)}
+        # Support custom label: :::callout warning "Custom Label"
+        label_text = " ".join(args[1:]).strip().strip('"').strip("'") if len(args) > 1 else None
+        result = {"type": "callout", "variant": variant, "content": _render_md(inner)}
+        if label_text:
+            result["label"] = label_text
+        return result
 
     if block_type == "tabs":
         return {"type": "tabs", "tabs": _parse_tabs(inner)}
