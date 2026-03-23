@@ -113,10 +113,11 @@ export function AppShell({ children }: AppShellProps) {
     .sort((a, b) => a.order - b.order);
 
   // Split modules into journey (non-management) and management sections
-  // When previewing as another track, filter to only show modules visible to that track
+  // When previewing as another track, filter out HR-exclusive modules but keep HR replacements
+  const isHRReplacement = (slug: string) => slug.endsWith("-hr");
   const journeyModules = liveModules
     .filter((m) => !m.tracks?.includes("management"))
-    .filter((m) => !isPreviewing || m.tracks?.includes("all") || m.tracks?.includes(effectiveTrack));
+    .filter((m) => !isPreviewing || m.tracks?.includes("all") || m.tracks?.includes(effectiveTrack) || isHRReplacement(m.slug));
   const managementModules = liveModules.filter((m) => m.tracks?.includes("management"));
 
   // Show journey section for non-management tracks

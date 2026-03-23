@@ -53,10 +53,12 @@ export default function OverviewPage() {
     .sort((a, b) => a.order - b.order);
 
   // Split into journey modules and management modules
-  // When previewing as another track, filter to only show modules visible to that track
+  // When previewing as another track, filter out HR-exclusive modules but keep HR replacements
+  // (slug ending in -hr that replace an [all] module, e.g. how-we-show-up-hr replaces how-we-show-up)
+  const isHRReplacement = (slug: string) => slug.endsWith("-hr");
   const journeyModules = liveModules
     .filter((m) => !m.tracks?.includes("management"))
-    .filter((m) => !isPreviewing || m.tracks?.includes("all") || m.tracks?.includes(effectiveTrack));
+    .filter((m) => !isPreviewing || m.tracks?.includes("all") || m.tracks?.includes(effectiveTrack) || isHRReplacement(m.slug));
   const managementModules = liveModules.filter((m) => m.tracks?.includes("management"));
 
   const comingSoonCount = allModules.filter((m) => m.status === "coming_soon").length;
