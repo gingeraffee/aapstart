@@ -12,90 +12,83 @@ requiresAcknowledgement: false
 
 ## Manager Offboarding Process Guide
 
-This guide walks managers through the offboarding process from the moment a separation is being considered through system shutoff, company property return, and handoff to HR and IT. The goal is simple: handle separations respectfully, keep documentation clean, and make sure access changes happen at the right time.
+This guide outlines the steps managers must follow when offboarding an employee to ensure timely removal of system access, proper notifications, and compliance with AAP/API policies.
 
-:::callout warning
-If an after-hours safety or security issue requires urgent access removal, submit Immediate Offboarding right away and contact HR as soon as possible afterward.
-:::
+## Quick Reference: Offboarding Request Process Checklist
 
-## 1. Access the Offboarding Request in BambooHR
+The Offboarding Request Process Checklist is a one-page quick reference that will be shared alongside this guide. Use it as a visual reminder of the Immediate vs. Scheduled Offboarding paths and the workflow triggers in BambooHR.
 
-To begin any offboarding request:
+Checklist highlights:
+
+- Log into BambooHR, search the employee, open their profile, and go to the Offboarding Request tab.
+- **Immediate Offboarding:** select "Yes, disable access immediately" and select the tasks to be completed.
+- **Scheduled Offboarding:** enter the information needed to disable access and select required tasks.
+- **Workflow:** the request creates an IT Service Request Ticket and assigns offboarding tasks by division/location; Immediate Offboarding also sends an email notification alert to IT and other system owners as applicable.
+
+## 1. Access the Offboarding Request (BambooHR)
 
 1. Log in to **BambooHR**.
-2. Search for the employee by name.
+2. Search for the employee's name.
 3. Open the employee's profile.
 4. Select the **Offboarding Request** tab.
 
-This request is the starting point for both immediate and scheduled separations. It is also what triggers the IT service workflow, so accuracy matters from the first entry.
+## 2. HR Approval Required Before Termination
 
-## 2. Align with HR Before Termination
+Before initiating any termination (voluntary or involuntary), the manager must notify and involve HR in advance. For involuntary terminations, HR must be involved before the termination occurs.
 
-Managers should involve HR before initiating any termination, whether the separation is voluntary or involuntary. For involuntary terminations, HR needs to be part of the process before the termination occurs.
+This ensures:
 
-HR involvement helps confirm:
+- Compliance with federal and state employment laws.
+- Proper review of documentation, performance history, and prior corrective action.
+- Verification that the termination is consistent, job-related, and legally defensible.
 
-- compliance with employment laws and company policy
-- that documentation is current and complete
-- that the decision is job-related, consistent, and supportable
-- that final pay, benefits, and offboarding timing can be handled correctly
+Managers must provide HR with the documentation that supports the termination decision, including (as applicable):
 
-Managers should be prepared to share the documentation that supports the decision, which may include:
+- Coaching, counseling, and/or corrective action documentation
+- Attendance records (if applicable)
+- Performance documentation (examples, metrics, recent issues, or pattern of concerns)
+- Any relevant emails or notes previously discussed
 
-- coaching, counseling, or corrective action records
-- attendance records, when attendance is part of the issue
-- performance examples, metrics, recent incidents, or documented patterns
-- emails or manager notes that have already been discussed with HR
-
-:::callout tip
-HR may already have some of this material on file, but managers are still responsible for making sure the most current documentation is available before a termination is finalized.
+:::callout info
+HR may already have some or all documentation on file; however, managers are responsible for ensuring HR has the most recent and complete information — especially the specific documentation supporting the termination decision — before finalizing a termination. This documentation is frequently required to respond to unemployment claims and legal inquiries and is used to confirm the decision is consistent, job-related, and well-supported.
 :::
 
-## 3. Choose the Correct Offboarding Path
+:::callout warning
+If an after-hours or safety/security situation requires immediate access removal, submit Immediate Offboarding and contact HR as soon as possible.
+:::
 
-Choose the path that matches the type and timing of the separation.
+## 3. Immediate Offboarding (Same-Day / Immediate Access Removal)
 
-**Immediate Offboarding**
+Select this option if the employee is being separated immediately and access must be disabled right away.
 
-Use Immediate Offboarding when the separation is happening right away and access needs to be removed without delay. This is the required path for involuntary terminations.
+**Use Immediate Offboarding for involuntary terminations.**
 
-Complete the request by:
+Steps:
 
-- choosing the Immediate Offboarding option
-- indicating that access should be disabled immediately when applicable
-- selecting the needed offboarding IT tasks
-- adding notes for IT such as forwarding needs, shared mailbox instructions, equipment details, or any special handling
+1. Choose **Immediate Offboarding**.
+2. In the dropdown, select whether immediate disabling of access is required.
+3. If Yes, IT will be notified to disable access immediately.
+4. Select the required **Offboarding IT Tasks** and add any notes needed for IT (forwarding, shared mailbox, equipment, etc.).
 
-What this triggers automatically:
+What happens next (automatic):
 
-- an IT Service Request ticket
-- alert emails to IT and other applicable system owners based on division and location
+- Creates an **IT Service Request Ticket** automatically.
+- Sends email notification alert to IT and other applicable system owners based on division and location.
 
-**Scheduled Offboarding**
+## 4. Scheduled Offboarding (Planned Last Day)
 
-Use Scheduled Offboarding when the employee's last day is known ahead of time, such as a resignation, retirement, or planned transition.
+Use this option when the employee's last day is known in advance (resignation, retirement, planned transition, etc.)
 
-Complete the request by entering:
+Steps:
 
-- the employee's scheduled last day of employment
-- the date and time access should be disabled
-- the required offboarding IT tasks
-- a forwarding address if email forwarding is needed
-- any notes that help IT complete the request accurately
+1. Enter the **Scheduled Last Day of Employment**.
+2. Enter the **Date/Time access should be disabled** (typically the end of the employee's last working day unless HR/IT directs otherwise).
+3. Select all required **Offboarding IT Tasks**.
 
-In most cases, the disable time should match the end of the employee's last working day unless HR or IT instructs otherwise.
-
-What this triggers automatically:
-
-- an IT Service Request ticket
-- BambooHR task routing by division and location
-
-## 4. Select the Right IT Offboarding Tasks
-
-Choose every task that applies so IT can route the request cleanly and close it without guesswork.
+Offboarding IT Tasks (select all that apply):
 
 - Disable AD Account
-- Forward Email and include the forwarding address
+- Forward Email (enter forwarding address)
 - Remove Adobe License
 - Remove Dynamics License
 - Remove Fax Number
@@ -103,32 +96,32 @@ Choose every task that applies so IT can route the request cleanly and close it 
 - Remove Power BI License
 - Reset Email Password
 
-:::callout info
-If the employee has shared mailbox responsibilities, special access, or unusual equipment return needs, put that detail in the Offboarding Request Notes field so IT has context up front.
-:::
+If email must be forwarded, enter the forwarding address.
 
-## 5. Manager Responsibilities During Offboarding
+Add any additional notes in the **Offboarding Request Notes** field (e.g., equipment return, special access, shared mailbox needs).
 
-Managers own the quality of the request and the handoff around it. That includes both the system entry and the practical wrap-up work around the employee's departure.
+What happens next (automatically):
+
+- Creates an **IT Service Request Ticket**.
+- Assigns offboarding tasks in BambooHR by division and location.
+
+## 5. Manager Responsibilities
 
 :::checklist
-- [ ] Confirm HR has been involved and the separation path is approved.
-- [ ] Enter the correct last day and access disable timing.
-- [ ] Select every IT task that applies.
-- [ ] Add notes for forwarding, shared mailbox handling, equipment, or special access concerns.
-- [ ] Communicate any change in date, timing, or circumstances to HR immediately.
-- [ ] Collect company property such as badges, keys, laptops, phones, and other assigned equipment.
+- [ ] Ensure all offboarding selections are accurate — the details you enter determine IT ticket routing.
+- [ ] Provide clear notes for IT regarding any special instructions (shared mailboxes, forwarding needs, critical access removal, etc.).
+- [ ] Communicate with HR immediately if offboarding circumstances change (date, time, reason, immediate need).
+- [ ] Collect company property as required (badge, keys, laptop, equipment, etc.) and coordinate return logistics.
+- [ ] Confirm termination and offboarding steps comply with HR guidance.
 :::
-
-Managers should also keep notifications limited to the people who need to know and route final pay, benefits, or policy questions back to HR.
 
 ## 6. Important Reminders
 
-- HR approval should be obtained before termination whenever possible.
-- Immediate Offboarding must be used for involuntary terminations.
-- Access removal timing is a security and compliance issue, not just an IT step.
-- The details entered by the manager drive ticket routing and task assignment.
-- Scheduled access shutoff should usually happen at the end of the employee's last working day.
+- HR approval should be obtained prior to any termination when possible.
+- Immediate offboarding **MUST** be used for involuntary terminations.
+- Access removal is time-sensitive for security and compliance.
+- Details entered by the manager determine IT ticket routing — accuracy is critical.
+- Scheduled access disable time should generally be the end of the employee's last working day.
 
 :::callout warning
 Clean documentation matters after the employee leaves too. Termination support records may be needed later for unemployment claims, legal questions, or internal review.
