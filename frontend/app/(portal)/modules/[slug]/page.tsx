@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import useSWR from "swr";
@@ -712,8 +712,9 @@ export default function ModulePage() {
   const modulePosition = liveModules.findIndex((item) => item.slug === currentModule.slug) + 1 || currentModule.order;
   const totalModules = liveModules.length || currentModule.order;
   const completedModules = (progress ?? []).filter((item) => item.module_completed).length;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const coachTip = useMemo(() => pickRandom(coachTipsForModule(currentModule.title, hasQuiz, hasAcknowledgement)), [currentModule.slug]);
+  const coachTipPool = coachTipsForModule(currentModule.title, hasQuiz, hasAcknowledgement);
+  const [coachTip, setCoachTip] = useState(coachTipPool[0]);
+  useEffect(() => { setCoachTip(pickRandom(coachTipPool)); }, [currentModule.slug]); // eslint-disable-line react-hooks/exhaustive-deps
   const outcomeLines = buildOutcomeLines(displaySections, hasQuiz, hasAcknowledgement);
   const humanMoments = buildHumanMoments(currentModule.title, hasQuiz, hasAcknowledgement);
   const whyThisMatters =
