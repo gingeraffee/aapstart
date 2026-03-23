@@ -72,6 +72,8 @@ export const adminApi = {
     request(`/admin/employees/${employee_id}`, { method: "PATCH", body: JSON.stringify(data) }),
   deleteEmployee: (employee_id: string) =>
     request(`/admin/employees/${employee_id}`, { method: "DELETE" }),
+  resetProgress: (employee_id: string) =>
+    request(`/admin/employees/${employee_id}/reset-progress`, { method: "POST" }),
   dashboard: () => request("/admin/dashboard"),
 };
 

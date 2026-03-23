@@ -215,7 +215,8 @@ function parseDirective(block: string): ContentBlock | null {
   const args = headerParts.slice(1);
 
   if (blockType === "callout") {
-    return { type: "callout", variant: args[0] || "tip", content: renderMd(inner) };
+    const label = args.slice(1).join(" ").replace(/^["']|["']$/g, "").trim() || undefined;
+    return { type: "callout", variant: args[0] || "tip", content: renderMd(inner), label };
   }
   if (blockType === "tabs") {
     return { type: "tabs", tabs: parseTabs(inner) };

@@ -10,14 +10,15 @@ requiresQuiz: false
 requiresAcknowledgement: false
 ---
 
-## AAP/API Manager Employee Change Process Guide
+## Purpose of This Guide
 
 This guide provides Hiring Managers, Supervisors, and Department Leaders with a clear step-by-step process for submitting and managing employee changes in BambooHR. These changes ensure proper updates to payroll, benefits, IT systems, building access, job titles, reporting structure, and compliance documentation.
 
-## 1. Types of Employee Changes Requiring Manager Action
+## Employee Changes Requiring Manager Action
 
 - Position or title change
 - Pay rate or salary adjustment
+- Bonus to be paid
 - Promotion or demotion
 - Department change
 - Reporting manager change
@@ -27,18 +28,20 @@ This guide provides Hiring Managers, Supervisors, and Department Leaders with a 
 - Transfer between divisions such as AAP to API or API to AAP
 - Offboarding or termination process
 
-## 2. Initiating an Employee Change in BambooHR
+## Initiate the Employee Change in BambooHR
 
-To submit any employee change request:
+To submit an employee change request:
 
 1. Log in to BambooHR.
 2. Go to the employee's profile.
-3. Click the **Request a Change** button at the top of the page.
-4. Select the correct change type from the menu.
+3. Click **Request a Change** at the top of the page.
+4. Select the appropriate change type.
 5. Complete all required fields.
 6. Add comments or attach documents when required, such as a job description or justification.
 
-Common change types available in BambooHR include:
+**Common BambooHR Change Types**
+
+Select the option that best matches the requested change:
 
 - Address Change
 - Bonus to be Paid - Payroll Notification
@@ -47,19 +50,19 @@ Common change types available in BambooHR include:
 - Job Information
 - Promotion
 
-:::callout warning
-Fields marked with an asterisk are mandatory. If the request is incomplete, HR, payroll, IT, or facilities updates may be delayed.
+:::callout warning "Important"
+Fields marked with an asterisk are required. Incomplete requests may delay HR, payroll, IT, or facilities updates.
 :::
 
-## 3. Required Information for All Change Requests
+## Enter the Required Change Details
 
-Every request should include the details that apply to the change:
+Include all applicable details in the request:
 
 - Effective date of the change
 - Reason for the change
 - New position title, if applicable
 - Updated pay rate or salary, if applicable
-- New department or manager, if applicable
+- New department or reporting manager, if applicable
 - Change in FTE status or scheduled hours
 
 ## 4. Pay Rate or Salary Change Process
@@ -71,8 +74,8 @@ For compensation-related changes:
 - Document the justification in BambooHR
 - Allow HR to review the change for compliance and process payroll updates
 
-:::callout warning
-Payroll-related changes must be submitted before payroll cutoff.
+:::callout warning "Time sensitive"
+Payroll-related changes must be submitted before payroll cutoff. Payroll cutoff is Tuesday by 4:30 PM.
 :::
 
 ## 5. Position or Title Change
@@ -187,6 +190,8 @@ For more information, see the Manager Offboarding Process Guide.
 - Submit change requests at least 5 business days before the effective date
 - Payroll-related changes must be submitted before payroll cutoff
 - Department or location moves usually require 5 to 10 days for IT and Facilities preparation
+
+<p style="text-align: center;"><strong>Need more help? The full guide can be downloaded below.</strong></p>
 
 :::download
 url: /downloads/Manager_Employee_Change_Process_Guide.pdf

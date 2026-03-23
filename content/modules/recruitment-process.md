@@ -1,7 +1,7 @@
 ---
 slug: recruitment-process
-title: Recruitment Process
-description: A guide to the hiring manager recruitment process at AAP and API — from identifying a need to extending an offer.
+title: Recruiting Process
+description: A guide for hiring managers on AAP and API's recruiting process — from identifying a hiring need to extending an offer.
 tracks: [management]
 order: 101
 estimatedMinutes: 10
@@ -10,25 +10,29 @@ requiresQuiz: false
 requiresAcknowledgement: false
 ---
 
-## Recruitment Process
+## Purpose of This Guide
 
-AAP and API's hiring process ensures every candidate receives a consistent, fair, and professional experience. Whether you're filling a new position or backfilling an existing role, here's how the process works from start to finish.
+This guide outlines the steps hiring managers should follow to support a consistent, fair, and professional recruiting process at AAP and API. Whether you are requesting a new position or filling an existing vacancy, this resource is intended to help ensure proper approvals, documentation, collaboration, and candidate experience from start to finish.
 
-## Step 1: Identify the Hiring Need
+<p><strong>Who This Is For:</strong>&nbsp; Hiring managers and department leaders involved in requesting, interviewing, and selecting candidates.</p>
+
+<p><strong>Use This Guide When:</strong>&nbsp; Requesting a new position or filling an existing vacancy.</p>
+
+## Identify the Hiring Need
 
 Determine whether you're creating a **new position** or **backfilling** an existing role.
 
 - **New position:** Identify the business justification, confirm the pay band and budget, and get manager/leadership approval.
 - **Backfill:** Confirm the reason for the vacancy and whether the position is still needed at the same level.
 
-## Step 2: Submit a Job Requisition
+## Submit a Job Requisition
 
-Provide HR with the complete position details — job title, department, manager, key qualifications, and responsibilities.
+Submit the required job details to HR, including the job title, department, reporting manager, qualifications, responsibilities, and any updated needs to the job description.
 
 - Complete the [Recruitment Requisition Form](https://form.jotform.com/252025879740159) for new roles or backfills.
 - If backfilling, review and update the job description if responsibilities have changed.
 
-## Step 3: Collaborate on the Job Posting
+## Collaborate on the Job Posting
 
 Partner with HR to finalize the posting language, determine where it will be posted, and plan the interview process.
 
@@ -37,20 +41,24 @@ Partner with HR to finalize the posting language, determine where it will be pos
 - Align with HR on who will coordinate interview scheduling.
 - Once approved, HR publishes the posting. You'll be notified when it's live.
 
-## Step 4: Review Applicants
+## Review Applicants
 
 Screen and shortlist qualified candidates in BambooHR using consistent, job-related criteria.
 
 - Review resumes and applications against your defined qualifications.
 - Shortlist candidates for interviews and document your reasoning.
 - Use STAR ratings and comments in BambooHR to support your assessments. See the [STAR Rating Quick Reference](https://rxaap-my.sharepoint.com/personal/brandy_hooper_rxaap_com/_layouts/15/guestaccess.aspx?share=IQBdkrGnUmwlQYl0-9dlT9baAfhnUZ029scn_Ag_BIhDZZ4&e=ru6duI) for guidance.
-- Update each candidate's status and **always include comments** — they notify HR and collaborators.
 
-:::callout warning
+:::aside
+header: Important
+Always update candidate statuses and include comments in BambooHR. Status changes and comments notify HR and other collaborators.
+:::
+
+:::callout danger
 Do not use the "Move Candidate" or "Delete Candidate" functions in BambooHR.
 :::
 
-## Step 5: Interview and Evaluate
+## Interview and Evaluate
 
 Conduct structured, fair, and job-related interviews. All panel members must have completed the required Recruiting & Interview Basics training.
 
@@ -59,7 +67,7 @@ Conduct structured, fair, and job-related interviews. All panel members must hav
 - Prepare a mix of behavioral, situational, technical, and culture-fit questions.
 - Share interview questions or topic areas with all panel members in advance.
 
-Check out the documents below for examples of questions that really help you gain insight into the interviewee.
+**Use the resources below for examples of interview questions that help assess candidate experience, judgement, and job fit.**
 
 :::link
 url: /downloads/scenario-based-interview-questions.pdf
@@ -81,11 +89,11 @@ description: Questions designed to evaluate a candidate's core competencies and 
 **After the interview:**
 - Each panel member independently completes an [Interview Evaluation Form](https://form.jotform.com/260317618745057) with ratings, strengths, concerns, and a recommendation (Advance / Hold / Decline).
 
-## Step 6: Extend the Offer
+## Extend the Offer
 
-Once your top candidate is selected, partner with HR to finalize the verbal and written offer, complete background checks, and begin pre-boarding.
+Once your top candidate is selected, partner with HR to finalize the verbal offer, prepare the written offer, begin pre-employment screening, and pre-boarding steps as applicable.
 
-Before making the call, review these guides to make sure your verbal offer is professional, compliant, and sets the right tone.
+Before extending a verbal offer to the candidate, review these guides to help ensure the discussion is professional, compliant, and aligned with company expectations.
 
 :::link
 url: /downloads/verbal-offer-guidelines.pdf

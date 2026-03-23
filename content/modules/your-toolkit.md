@@ -3,7 +3,7 @@ slug: your-toolkit
 title: Your Toolkit
 description: The three platforms you'll use most — BambooHR, LinkedIn Learning, and Paylocity.
 tracks: [all]
-order: 5
+order: 6
 estimatedMinutes: 8
 status: published
 requiresQuiz: false

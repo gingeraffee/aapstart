@@ -18,6 +18,7 @@ const RESOURCE_CALLOUT_LABELS: Record<string, string> = {
   tip: "Manager note",
   info: "Worth noting",
   warning: "Watch for",
+  danger: "Do Not Use",
 };
 
 interface ContentBlockProps {
@@ -66,12 +67,12 @@ export function ContentBlock({ block, emphasizeLead = false, variant = "training
       );
 
     case "callout": {
-      const calloutVariant = (block.variant as "tip" | "info" | "warning") ?? "tip";
+      const calloutVariant = (block.variant as "tip" | "info" | "warning" | "danger") ?? "tip";
       return (
         <Callout
           variant={calloutVariant}
           content={externalizeLinks(block.content ?? "")}
-          label={variant === "resource" ? RESOURCE_CALLOUT_LABELS[calloutVariant] : undefined}
+          label={(block as { label?: string }).label || (variant === "resource" ? RESOURCE_CALLOUT_LABELS[calloutVariant] : undefined)}
         />
       );
     }
@@ -165,22 +166,22 @@ export function ContentBlock({ block, emphasizeLead = false, variant = "training
           rel={isDownload ? undefined : "noopener noreferrer"}
           className="group flex items-center gap-4 rounded-[14px] border px-5 py-4 no-underline transition-all duration-200 hover:-translate-y-px"
           style={{
-            background: "rgba(14,118,189,0.04)",
-            borderColor: "rgba(14,118,189,0.2)",
+            background: "linear-gradient(135deg, #112744 0%, #1b3a5c 100%)",
+            borderColor: "rgba(255,255,255,0.1)",
           }}
         >
           {/* Icon */}
           <span
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px]"
-            style={{ background: "rgba(14,118,189,0.12)" }}
+            style={{ background: "rgba(255,255,255,0.12)" }}
           >
             {isDownload ? (
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#0e76bd" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M8 2v8M5 7l3 3 3-3" />
                 <path d="M3 12h10" />
               </svg>
             ) : (
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#0e76bd" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M7 3H3a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V9" />
                 <path d="M10 2h4v4" />
                 <path d="M14 2 8 8" />
@@ -189,22 +190,22 @@ export function ContentBlock({ block, emphasizeLead = false, variant = "training
           </span>
           {/* Text */}
           <div className="min-w-0 flex-1">
-            <p className="text-[0.9rem] font-semibold leading-snug" style={{ color: "#0e76bd" }}>
+            <p className="text-[0.9rem] font-semibold leading-snug text-white">
               {block.label ?? block.url}
             </p>
             {block.description && (
-              <p className="mt-0.5 text-[0.78rem] leading-[1.45] text-text-muted">
+              <p className="mt-0.5 text-[0.78rem] leading-[1.45] text-white/70">
                 {block.description}
               </p>
             )}
             {!block.description ? (
-              <p className="mt-0.5 text-[0.74rem] leading-[1.45] text-[#607896]">
+              <p className="mt-0.5 text-[0.74rem] leading-[1.45] text-white/60">
                 {isDownload ? "Download and review when needed." : "Opens in a new tab."}
               </p>
             ) : null}
           </div>
           {/* Chevron */}
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#0e76bd" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 opacity-50 transition-opacity group-hover:opacity-100">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 opacity-50 transition-opacity group-hover:opacity-100">
             <path d="M5 2l4 5-4 5" />
           </svg>
         </a>

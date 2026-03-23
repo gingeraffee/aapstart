@@ -254,6 +254,12 @@ function AddEmployeeForm({ onAdded }: { onAdded: (message: string) => void }) {
 function EmployeeRow({ emp, currentUserId, onDeleted }: { emp: EmployeeRecord; currentUserId: string; onDeleted: (message: string, tone?: "success" | "error") => void }) {
   const [deleting, setDeleting] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editTrack, setEditTrack] = useState(emp.track);
+  const [editAdmin, setEditAdmin] = useState(emp.is_admin);
+  const [saving, setSaving] = useState(false);
+  const [resetting, setResetting] = useState(false);
+  const [confirmingReset, setConfirmingReset] = useState(false);
   const isSelf = emp.employee_id === currentUserId;
   const firstLogin = emp.first_login_at
     ? new Date(emp.first_login_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
@@ -272,6 +278,32 @@ function EmployeeRow({ emp, currentUserId, onDeleted }: { emp: EmployeeRecord; c
     }
   }
 
+  async function handleSaveEdit() {
+    setSaving(true);
+    try {
+      await adminApi.updateEmployee(emp.employee_id, { track: editTrack, is_admin: editAdmin });
+      setEditing(false);
+      onDeleted(`Updated ${emp.full_name} — track: ${TRACK_LABELS[editTrack] ?? editTrack}${editAdmin ? " (Admin)" : ""}.`);
+    } catch (err) {
+      onDeleted(err instanceof Error ? err.message : "Failed to update.", "error");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleResetProgress() {
+    setResetting(true);
+    try {
+      await adminApi.resetProgress(emp.employee_id);
+      setConfirmingReset(false);
+      onDeleted(`Progress reset for ${emp.full_name}.`);
+    } catch (err) {
+      onDeleted(err instanceof Error ? err.message : "Failed to reset progress.", "error");
+    } finally {
+      setResetting(false);
+    }
+  }
+
   return (
     <tr className="border-b border-slate-100 last:border-0">
       <td className="px-6 py-4">
@@ -279,21 +311,46 @@ function EmployeeRow({ emp, currentUserId, onDeleted }: { emp: EmployeeRecord; c
         <p className="mt-0.5 text-[0.72rem]" style={{ color: "var(--module-context)" }}>{emp.employee_id}</p>
       </td>
       <td className="px-6 py-4">
-        <span
-          className={cn(
-            "inline-flex rounded-full px-2.5 py-1 text-[0.68rem] font-semibold",
-            emp.track === "hr"
-              ? "bg-blue-50 text-blue-700"
-              : emp.track === "warehouse"
-                ? "bg-amber-50 text-amber-700"
-                : emp.track === "management"
-                  ? "bg-emerald-50 text-emerald-700"
-                  : "bg-fuchsia-50 text-fuchsia-700"
-          )}
-        >
-          {TRACK_LABELS[emp.track] ?? emp.track}
-        </span>
-        {emp.is_admin && <span className="ml-2 inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-[0.68rem] font-semibold text-slate-600">Admin</span>}
+        {editing ? (
+          <div className="flex flex-col gap-2">
+            <select
+              value={editTrack}
+              onChange={(e) => setEditTrack(e.target.value)}
+              className="rounded-[8px] border border-slate-200 bg-white px-2 py-1 text-[0.76rem] font-medium"
+            >
+              {Object.entries(TRACK_LABELS).map(([val, label]) => (
+                <option key={val} value={val}>{label}</option>
+              ))}
+            </select>
+            <label className="flex items-center gap-1.5 text-[0.72rem] font-medium" style={{ color: "var(--card-desc)" }}>
+              <input
+                type="checkbox"
+                checked={editAdmin}
+                onChange={(e) => setEditAdmin(e.target.checked)}
+                className="rounded"
+              />
+              Admin
+            </label>
+          </div>
+        ) : (
+          <>
+            <span
+              className={cn(
+                "inline-flex rounded-full px-2.5 py-1 text-[0.68rem] font-semibold",
+                emp.track === "hr"
+                  ? "bg-blue-50 text-blue-700"
+                  : emp.track === "warehouse"
+                    ? "bg-amber-50 text-amber-700"
+                    : emp.track === "management"
+                      ? "bg-emerald-50 text-emerald-700"
+                      : "bg-fuchsia-50 text-fuchsia-700"
+              )}
+            >
+              {TRACK_LABELS[emp.track] ?? emp.track}
+            </span>
+            {emp.is_admin && <span className="ml-2 inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-[0.68rem] font-semibold text-slate-600">Admin</span>}
+          </>
+        )}
       </td>
       <td className="px-6 py-4">
         <p className="text-[0.82rem] font-semibold" style={{ color: "var(--heading-color)" }}>{emp.progress.modules_completed} completed</p>
@@ -301,8 +358,26 @@ function EmployeeRow({ emp, currentUserId, onDeleted }: { emp: EmployeeRecord; c
       </td>
       <td className="px-6 py-4 text-[0.78rem]" style={{ color: "var(--card-desc)" }}>{firstLogin}</td>
       <td className="px-6 py-4 text-right">
-        {!isSelf && (
-          confirmingDelete ? (
+        {editing ? (
+          <div className="flex items-center justify-end gap-2">
+            <button
+              onClick={() => { setEditing(false); setEditTrack(emp.track); setEditAdmin(emp.is_admin); }}
+              disabled={saving}
+              className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold transition-all hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-50"
+              style={{ color: "var(--card-desc)" }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSaveEdit}
+              disabled={saving}
+              className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold text-white transition-all hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
+              style={{ background: "linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)" }}
+            >
+              {saving ? "Saving..." : "Save"}
+            </button>
+          </div>
+        ) : confirmingDelete ? (
             <div className="flex items-center justify-end gap-2">
               <button
                 onClick={() => setConfirmingDelete(false)}
@@ -321,16 +396,52 @@ function EmployeeRow({ emp, currentUserId, onDeleted }: { emp: EmployeeRecord; c
                 {deleting ? "Removing..." : "Confirm"}
               </button>
             </div>
-          ) : (
+        ) : confirmingReset ? (
+            <div className="flex items-center justify-end gap-2">
+              <button
+                onClick={() => setConfirmingReset(false)}
+                disabled={resetting}
+                className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold transition-all hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-50"
+                style={{ color: "var(--card-desc)" }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleResetProgress}
+                disabled={resetting}
+                className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold text-white transition-all hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
+                style={{ background: "linear-gradient(135deg, #d97706 0%, #b45309 100%)" }}
+              >
+                {resetting ? "Resetting..." : "Confirm Reset"}
+              </button>
+            </div>
+        ) : (
+          <div className="flex items-center justify-end gap-2">
             <button
-              onClick={() => setConfirmingDelete(true)}
-              disabled={deleting}
-              className="rounded-[10px] px-3 py-1.5 text-[0.74rem] font-semibold transition-all hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
-              style={{ color: "#be123c" }}
+              onClick={() => setEditing(true)}
+              className="rounded-[10px] px-3 py-1.5 text-[0.74rem] font-semibold transition-all hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50"
+              style={{ color: "#0369a1" }}
             >
-              Remove
+              Edit
             </button>
-          )
+            <button
+              onClick={() => setConfirmingReset(true)}
+              className="rounded-[10px] px-3 py-1.5 text-[0.74rem] font-semibold transition-all hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-50"
+              style={{ color: "#b45309" }}
+            >
+              Reset
+            </button>
+            {!isSelf && (
+              <button
+                onClick={() => setConfirmingDelete(true)}
+                disabled={deleting}
+                className="rounded-[10px] px-3 py-1.5 text-[0.74rem] font-semibold transition-all hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                style={{ color: "#be123c" }}
+              >
+                Remove
+              </button>
+            )}
+          </div>
         )}
       </td>
     </tr>

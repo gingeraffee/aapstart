@@ -62,6 +62,7 @@ export interface ModuleDetail extends ModuleSummary {
   content_blocks: ContentBlock[];
   acknowledgements: Acknowledgement[];
   quiz: Quiz | null;
+  quiz_mode?: string | null;
 }
 
 export interface QuizFeedback {

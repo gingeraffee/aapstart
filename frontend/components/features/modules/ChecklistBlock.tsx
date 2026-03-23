@@ -69,7 +69,7 @@ export function ChecklistBlock({ items }: ChecklistBlockProps) {
         </div>
       </div>
 
-      <div className="divide-y" style={{ borderColor: "rgba(14,118,189,0.08)" }}>
+      <div className="divide-y pb-3" style={{ borderColor: "rgba(14,118,189,0.08)" }}>
         {items.map((item, i) => (
           <div key={i} className="px-2">
             <ChecklistItem
