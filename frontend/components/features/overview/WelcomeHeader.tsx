@@ -15,6 +15,17 @@ const FALLBACK_HEADERS = [
   "One step at a time, {name}.",
 ];
 
+const COMPLETED_HEADERS = [
+  "You did it, {name}. Welcome to the team.",
+  "All modules complete. You crushed it, {name}.",
+  "Look at you, {name}. Fully onboarded.",
+  "{name}, you are officially ready to roll.",
+  "Nothing left but the real thing, {name}.",
+  "Training complete. Go make an impact, {name}.",
+  "From day one to done. Nice work, {name}.",
+  "Welcome aboard for real, {name}.",
+];
+
 const MOTIVATIONAL_LINES = [
   "One module at a time. That is all.",
   "Progress beats perfection.",
@@ -40,7 +51,8 @@ export function WelcomeHeader({
   totalCount,
 }: WelcomeHeaderProps) {
   const firstName = name.split(" ")[0] ?? name;
-  const pool = headers && headers.length > 0 ? headers : FALLBACK_HEADERS;
+  const isComplete = totalCount > 0 && completedCount >= totalCount;
+  const pool = isComplete ? COMPLETED_HEADERS : (headers && headers.length > 0 ? headers : FALLBACK_HEADERS);
   const raw = useMemo(() => pickRandom(pool), [pool]);
   const headline = raw.replace("{name}", firstName);
   const motivationalLine = useMemo(() => pickRandom(MOTIVATIONAL_LINES), []);
@@ -48,7 +60,6 @@ export function WelcomeHeader({
   const pct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
   const remaining = Math.max(totalCount - completedCount, 0);
   const activeDay = totalCount > 0 ? Math.min(completedCount + 1, totalCount) : 1;
-  const isComplete = totalCount > 0 && completedCount >= totalCount;
 
   const ctaHref = currentModule ? `/modules/${currentModule.slug}` : "/roadmap";
   const ctaLabel = currentModule ? "Pick up where you left off" : "Open your roadmap";
