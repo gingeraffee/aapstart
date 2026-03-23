@@ -231,13 +231,6 @@ export function ModuleShell({
                 className="pointer-events-none absolute -left-10 bottom-2 h-28 w-28 rounded-full"
                 style={{ background: "radial-gradient(circle, rgba(223,0,48,0.12) 0%, rgba(223,0,48,0) 72%)" }}
               />
-              <div
-                className="pointer-events-none absolute right-7 top-8 hidden h-20 w-20 rounded-[16px] md:block"
-                style={{
-                  backgroundImage: "radial-gradient(circle, rgba(19, 98, 154, 0.15) 0.8px, transparent 1px)",
-                  backgroundSize: "11px 11px",
-                }}
-              />
 
               <div className="relative px-7 pb-9 pt-7 md:px-8 md:pb-10 md:pt-8">
                 <div className="flex flex-wrap items-start justify-between gap-3">

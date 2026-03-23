@@ -14,9 +14,9 @@ requiresAcknowledgement: false
 
 This guide outlines the steps hiring managers should follow to support a consistent, fair, and professional recruiting process at AAP and API. Whether you are requesting a new position or filling an existing vacancy, this resource is intended to help ensure proper approvals, documentation, collaboration, and candidate experience from start to finish.
 
-**Who This Is For:** Hiring managers and department leaders involved in requesting, interviewing, and selecting candidates.
+<p><strong>Who This Is For:</strong>&nbsp; Hiring managers and department leaders involved in requesting, interviewing, and selecting candidates.</p>
 
-**Use This Guide When:** Requesting a new position or filling an existing vacancy.
+<p><strong>Use This Guide When:</strong>&nbsp; Requesting a new position or filling an existing vacancy.</p>
 
 ## Identify the Hiring Need
 
@@ -50,7 +50,9 @@ Screen and shortlist qualified candidates in BambooHR using consistent, job-rela
 - Use STAR ratings and comments in BambooHR to support your assessments. See the [STAR Rating Quick Reference](https://rxaap-my.sharepoint.com/personal/brandy_hooper_rxaap_com/_layouts/15/guestaccess.aspx?share=IQBdkrGnUmwlQYl0-9dlT9baAfhnUZ029scn_Ag_BIhDZZ4&e=ru6duI) for guidance.
 - Update each candidate's status and **always include comments** — they notify HR and collaborators.
 
-- **Important:** Always update candidate statuses and include comments in BambooHR. Status changes and comments notify HR and other collaborators.
+:::callout warning
+Always update candidate statuses and include comments in BambooHR. Status changes and comments notify HR and other collaborators.
+:::
 
 :::callout danger
 Do not use the "Move Candidate" or "Delete Candidate" functions in BambooHR.
