@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import useSWR from "swr";
@@ -368,6 +368,583 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
     ];
   }
 
+  // ── Support, Leave & Resources ("Where To Go") ──
+  if (title.includes("where to go") || title.includes("support") || title.includes("leave")) {
+    return [
+      {
+        eyebrow: "Heads Up",
+        title: "Not all time away works the same",
+        body: "PTO, medical leave, FMLA, and personal days all follow different rules. Don't assume one covers another — the sooner you understand the difference, the fewer surprises you'll have.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Good To Know",
+        title: "The EAP is available from day one",
+        body: "If you or someone in your household needs support — counseling, legal advice, financial guidance — the Employee Assistance Program is free and confidential. You don't have to wait for a crisis to use it.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Real Talk",
+        title: "Know who to call before you need to",
+        body: "Supervisor first, then HR Admin, then IT, then HR Manager. That's the escalation order. Having it in your head before something goes wrong makes all the difference.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── Safety at AAP ──
+  if (title === "safety at aap") {
+    return [
+      {
+        eyebrow: "Non-Negotiable",
+        title: "Safety isn't a department — it's everyone's job",
+        body: "Whether you're in the warehouse, the office, or visiting a location — if you see something unsafe, say something. Reporting a hazard is never an overreaction.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Heads Up",
+        title: "Injuries get reported immediately",
+        body: "Not at the end of your shift, not the next day — immediately to your supervisor. Delays create problems for you and make it harder for the company to help.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Good To Know",
+        title: "You won't get in trouble for raising a concern",
+        body: "AAP takes workplace safety seriously and that includes making sure people feel safe speaking up. If something doesn't feel right, the open-door policy exists for exactly that reason.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── Your Toolkit (general) ──
+  if (title === "your toolkit" && !title.includes("hr")) {
+    return [
+      {
+        eyebrow: "Start Here",
+        title: "BambooHR is your home base",
+        body: "Your profile, your documents, your tasks — it all lives in BambooHR. Complete your profile and check the Emergency tab early. Everything else flows from there.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Good To Know",
+        title: "Paylocity is where your money lives",
+        body: "Pay stubs, tax forms, direct deposit, address changes — that's all Paylocity. You can even access your paycheck early if you set it up. Worth doing in your first week.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Don't Sleep On This",
+        title: "LinkedIn Learning is free and it's actually good",
+        body: "10,000+ courses, company-provided, no cost to you. Whether you want to sharpen a skill or explore something new, the access is already there. Use it.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── Your Toolkit — HR ──
+  if (title.includes("your toolkit") && title.includes("hr")) {
+    return [
+      {
+        eyebrow: "Critical",
+        title: "You'll live in five systems — learn them early",
+        body: "BambooHR, PayClock, Employvio, Paylocity, and the HR Drive. Each one does something different and you'll touch most of them daily. Getting comfortable now saves you time every single day.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Heads Up",
+        title: "PayClock has workflows that trip people up",
+        body: "Polling timeclocks, entering PTO, editing punches — they each have specific steps. The shift naming convention matters too: active shifts always start with 'NEW.' Small details, big consequences.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Non-Negotiable",
+        title: "Passwords go in Proton Pass — nowhere else",
+        body: "Not in emails, not in Teams, not in shared docs, not on sticky notes. Proton Pass is the only approved place to store credentials. This is a hard rule.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── Exits & Offboarding ──
+  if (title.includes("exits") || title.includes("offboarding")) {
+    return [
+      {
+        eyebrow: "Heads Up",
+        title: "Final pay depends on how someone leaves",
+        body: "Vacation gets paid out, but personal leave and long-term sick time don't. Voluntary and involuntary separations follow different timelines. Understanding the rules now prevents awkward conversations later.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Good To Know",
+        title: "Two no-call/no-shows means voluntary quit",
+        body: "If someone doesn't show up and doesn't call in for two consecutive days, that's treated as a voluntary resignation. It's not a gray area — know the policy so you can communicate it clearly.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Real Talk",
+        title: "System access gets cut fast",
+        body: "When someone separates, their access to company systems is removed quickly — sometimes the same day. That's not personal, it's protocol. The smoother the process, the better for everyone.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── Say It & Solve It ──
+  if (title.includes("say it") || title.includes("solve it")) {
+    return [
+      {
+        eyebrow: "Heads Up",
+        title: "There are scripts for the tricky conversations",
+        body: "Timecard exceptions, pay questions, harassment intake — this module gives you actual scripts. You don't have to improvise the hard stuff. Use the templates until they feel natural.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Non-Negotiable",
+        title: "Pay questions always go to the HR Manager",
+        body: "Never share pay information with anyone, even if the employee is asking about their own. Route it to the HR Manager every time. No exceptions, no shortcuts.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Real Talk",
+        title: "Documentation isn't optional — it's protection",
+        body: "Date, time, method, what was asked, what was said, follow-up needed. If you didn't write it down, it didn't happen. This protects you, the employee, and the company.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── Final Review ──
+  if (title.includes("final review")) {
+    return [
+      {
+        eyebrow: "Almost There",
+        title: "This is a recap, not a test",
+        body: "The final review pulls together everything you've already learned. If you've been paying attention along the way, you're already prepared. This is about confirming what you know — not catching what you missed.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Good To Know",
+        title: "The scenarios are based on real situations",
+        body: "The quiz questions reflect actual workplace situations — privacy, FMLA, timekeeping, PTO disputes. They're designed to check your judgment, not your memory of exact policy numbers.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "What Happens Next",
+        title: "Passing this unlocks your completion",
+        body: "Once you clear the final review, your onboarding journey is officially complete. Take your time, trust what you've learned, and finish strong.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── Where You Make an Impact — HR ──
+  if (title.includes("your impact") || (title.includes("impact") && title.includes("hr"))) {
+    return [
+      {
+        eyebrow: "Heads Up",
+        title: "Your day has a rhythm — learn it fast",
+        body: "Morning: emails, timeclock polling, onboarding tasks. Midday: follow-ups. End of day: filing and updates. The daily routine is your anchor. Once it clicks, everything else gets easier.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Good To Know",
+        title: "Know what you own — and what you don't",
+        body: "You own timekeeping, PTO, onboarding follow-ups, recruiting scheduling, and basic policy questions. IT owns computer privileges. The HR Manager owns pay, discipline, investigations, and FMLA. Stay in your lane and you'll be fine.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Real Talk",
+        title: "The payroll cycle doesn't wait for anyone",
+        body: "Tuesday at 6 PM is the submit deadline. Every step before that — polling, verifying, reconciling — has to happen on time. Miss a step and the whole chain feels it.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── Where You Make an Impact — Warehouse ──
+  if (title.includes("impact") && title.includes("warehouse")) {
+    return [
+      {
+        eyebrow: "Heads Up",
+        title: "Accuracy matters more than speed",
+        body: "You'll hear a lot about efficiency, but the warehouse runs on getting things right. A fast mistake still creates rework. Consistent accuracy is what earns trust.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Good To Know",
+        title: "What 'good' looks like is simpler than you'd think",
+        body: "Show up, communicate, follow procedures, and escalate when something's off. Consistency beats perfection here. The people who do well aren't flashy — they're reliable.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Real Talk",
+        title: "Your work connects to real patients",
+        body: "Every label scanned, every order picked, every box checked — it all flows downstream to pharmacies that serve real people. That's not a motivational poster. That's literally the job.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── Where You Make an Impact — Administrative ──
+  if (title.includes("impact") && title.includes("administrative")) {
+    return [
+      {
+        eyebrow: "Heads Up",
+        title: "Your consistency keeps operations moving",
+        body: "Administrative roles don't always get the spotlight, but when file maintenance, communication routing, and issue tracking run smoothly — everyone notices. When they don't, everyone really notices.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Good To Know",
+        title: "Reliability is the skill that compounds",
+        body: "The people who earn trust fastest aren't the ones with the most experience — they're the ones who follow through consistently. Do what you say, when you say it.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Real Talk",
+        title: "Ask how your work connects to the bigger picture",
+        body: "Every file you maintain, every call you route, every issue you flag — it connects to something larger. Understanding that connection makes the routine work feel purposeful.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── Before the Offer ──
+  if (title.includes("before the offer")) {
+    return [
+      {
+        eyebrow: "Heads Up",
+        title: "The recruiting workflow has strict timelines",
+        body: "Drug screening has to happen within three business days of a signed offer. Reference checks need at least three contacts. These aren't suggestions — they're requirements that protect the company.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Non-Negotiable",
+        title: "There are questions you cannot ask in an interview",
+        body: "Age, marital status, religion, disability, pregnancy — protected classes are off-limits. Not 'probably shouldn't ask.' Cannot ask. Know the list and stick to job-related criteria.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Good To Know",
+        title: "Memphis and Scottsboro have different workflows",
+        body: "Employvio processes differ by location — drug screen panels, background check steps, and even some forms vary. Always verify which location's process you're following.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── After the Offer ──
+  if (title.includes("after the offer")) {
+    return [
+      {
+        eyebrow: "Heads Up",
+        title: "BambooHR setup is a 12-step process — don't skip steps",
+        body: "The HRA-04 workflow has a specific order for a reason. Employee numbers, tax forms, document folders — each step builds on the last. Skipping ahead creates problems you'll have to fix later.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Good To Know",
+        title: "State tax forms aren't automatic for every state",
+        body: "Tennessee and Alabama are pre-loaded, but if a new hire is in any other state, you'll need to manually add the correct tax form. Miss this and payroll gets complicated fast.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Real Talk",
+        title: "Documents go in specific folders — every time",
+        body: "New Hire Forms, Medical, Payroll, I-9 — each document type has a designated folder in BambooHR. Filing things in the wrong place isn't a small mistake when someone needs to find them later.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── Key People & Quick Answers (Quick References) ──
+  if (title.includes("quick") || title.includes("key people")) {
+    return [
+      {
+        eyebrow: "Bookmark This",
+        title: "This is the page you'll come back to most",
+        body: "Key contacts, system URLs, the attendance point breakdown, SOP numbers — it's all here in one place. Don't try to memorize it. Just know where to find it.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Good To Know",
+        title: "File naming follows a standard: YYYY-MM-DD",
+        body: "Every document you save should start with the date in that format. It keeps everything sortable and findable. Small habit, big impact over time.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Heads Up",
+        title: "The attendance thresholds are specific numbers",
+        body: "5.0 points triggers the first corrective step, and it escalates from there. Understanding the point values for different situations — tardy, absence, no-call — helps you answer questions confidently.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── Your First 30 Days — HR ──
+  if (title.includes("first") && title.includes("days") && title.includes("hr")) {
+    return [
+      {
+        eyebrow: "Heads Up",
+        title: "Days 1–30 are about learning, not performing",
+        body: "You're expected to listen, shadow, ask questions, and get comfortable with systems. Nobody expects you to run payroll solo in week two. Give yourself permission to be new.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Good To Know",
+        title: "By day 60, you should need zero reminders",
+        body: "The ramp is real: learn in month one, operate independently in month two, start improving things in month three. That's the trajectory — steady and intentional.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Real Talk",
+        title: "Build relationships early — they pay off later",
+        body: "Get to know your key stakeholders in the first few weeks. When you eventually need a fast answer, a favor, or context on a tricky situation, those early connections make everything smoother.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── Your First 30 Days — Warehouse ──
+  if (title.includes("first") && title.includes("days") && title.includes("warehouse")) {
+    return [
+      {
+        eyebrow: "Heads Up",
+        title: "Your first week is for learning, not proving yourself",
+        body: "Watch, listen, ask questions, and expect to make mistakes. That's the job right now. Nobody on the floor expects you to be fast yet — they expect you to be safe and coachable.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Good To Know",
+        title: "Know who's who on the floor",
+        body: "Your supervisor, your trainer, the HR contact, and the IT lane — those are the four people you need to know by name in week one. Each one helps you in a different way.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Real Talk",
+        title: "Good habits beat good intentions",
+        body: "Show up ready, scan everything, keep your area clean, escalate early, ask before assuming. These six things will carry you further than talent alone. Start them now so they're automatic later.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── Your First 30 Days — Administrative ──
+  if (title.includes("first") && title.includes("days") && title.includes("administrative")) {
+    return [
+      {
+        eyebrow: "Heads Up",
+        title: "Week one is orientation — not full speed",
+        body: "You'll spend the first week learning file systems, meeting key contacts, and understanding confidentiality expectations. That's enough. Don't try to prove anything yet.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Good To Know",
+        title: "Accuracy before speed — always",
+        body: "In weeks two and three, you'll start handling core workflows with guidance. The goal isn't to go fast, it's to go right. Speed comes naturally once the process is solid.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Real Talk",
+        title: "Your 30-day check-in is a conversation, not a test",
+        body: "Come prepared with what's going well, where you have gaps, and what support you need. Honest self-assessment at this stage earns more respect than pretending everything is perfect.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── Quality & Accuracy — Warehouse ──
+  if (title.includes("quality") || title.includes("accuracy")) {
+    return [
+      {
+        eyebrow: "Heads Up",
+        title: "Most errors come from the same few habits",
+        body: "Misread label, skipped scan, wrong location, assumed quantity. These are the common ones. They're not complicated to fix — they just require you to slow down at the right moments.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Good To Know",
+        title: "When something looks wrong, stop",
+        body: "Don't keep going and hope it works out. Stop, verify, and escalate if needed. Catching a problem early is always cheaper than fixing it after it ships.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Real Talk",
+        title: "Your suggestions actually matter here",
+        body: "If you see a better way to do something on the floor, bring it to your supervisor. Continuous improvement isn't just a buzzword — it's how the warehouse actually gets better.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── Safety & OSHA — Warehouse ──
+  if (title.includes("osha") || (title.includes("safety") && title.includes("warehouse"))) {
+    return [
+      {
+        eyebrow: "Non-Negotiable",
+        title: "PPE requirements are location-specific",
+        body: "Closed-toe, closed-heel shoes are the minimum everywhere. Beyond that, your area may require additional gear. Know what applies to your zone before your first shift on the floor.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Heads Up",
+        title: "Injuries get reported immediately — not at shift end",
+        body: "Tell your supervisor right away, even if it seems minor. Waiting until later creates documentation problems and can delay the help you need. Immediate means immediate.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Good To Know",
+        title: "Safe lifting isn't just advice — it's how you avoid getting hurt",
+        body: "Bend at the knees, keep the load close, don't twist. You'll hear it a lot because back injuries are the most common and the most preventable. Take it seriously from day one.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── Recruitment Process (management) ──
+  if (title.includes("recruit")) {
+    return [
+      {
+        eyebrow: "Heads Up",
+        title: "Every hire starts with a submitted requisition",
+        body: "Before you start interviewing, the JotForm requisition needs to be submitted and approved. Whether it's a new position or a backfill, the process starts the same way.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Good To Know",
+        title: "Screening should be structured and job-related",
+        body: "Use BambooHR's STAR ratings, stick to job-related criteria, and make sure each panel member rates independently. Structured hiring isn't just fair — it's legally defensible.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Real Talk",
+        title: "The offer process has a specific sequence",
+        body: "Verbal offer first, then written. Don't skip steps or freelance the terms. Consistency in the offer process protects both the candidate and the company.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── New Hire Onboarding (management — "hiring-onboarding") ──
+  if (title.includes("new hire") || title.includes("onboarding")) {
+    return [
+      {
+        eyebrow: "Heads Up",
+        title: "The position request comes before everything else",
+        body: "Before onboarding can start, the BambooHR Position Request has to be complete. Pre-boarding decisions — company phone, credit card, hardware, vehicle — all flow from this step.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Good To Know",
+        title: "IT coordination is triggered automatically — but verify",
+        body: "Once the request goes through, IT gets notified for equipment and access setup. But 'triggered' doesn't mean 'done.' Follow up to make sure the new hire's first day goes smoothly.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Real Talk",
+        title: "A smooth first day starts with your prep work",
+        body: "Keys, badges, workstation, parking — the details that seem small are the ones new hires remember most. A new employee who shows up to a prepared workspace feels expected. That matters.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── Employee Changes (management) ──
+  if (title.includes("employee changes")) {
+    return [
+      {
+        eyebrow: "Heads Up",
+        title: "Every change goes through BambooHR — no exceptions",
+        body: "Compensation, title, department, reporting manager, employment status — all changes must be submitted as a change request. Verbal agreements or side-channel updates don't count.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Critical",
+        title: "Tuesday at 4:30 PM is the payroll cutoff",
+        body: "If a compensation or status change misses the cutoff, it won't hit the current pay cycle. Plan ahead and submit early — corrections after the fact are messy for everyone.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Good To Know",
+        title: "Documentation completeness prevents delays",
+        body: "Every required field needs to be filled. Job descriptions need to be attached for title changes. Incomplete submissions get sent back, and the employee feels the delay. Get it right the first time.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── Terminations & Offboarding (management) ──
+  if (title.includes("termination")) {
+    return [
+      {
+        eyebrow: "Non-Negotiable",
+        title: "HR approval is required before any termination",
+        body: "No manager can terminate an employee without HR sign-off. The documentation — coaching records, corrective actions, attendance history, performance notes — needs to be in place first.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Heads Up",
+        title: "Involuntary terminations mean same-day access removal",
+        body: "When someone is involuntarily terminated, system access, building access, and equipment are handled immediately. The BambooHR Offboarding Request tab triggers the IT service ticket automatically.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Good To Know",
+        title: "Scheduled offboarding gives you time to plan",
+        body: "For voluntary separations with a known last day, you can coordinate access removal, equipment return, and knowledge transfer in advance. Use that time — a rushed exit creates loose ends.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── Performance Management (management) ──
+  if (title.includes("performance management")) {
+    return [
+      {
+        eyebrow: "Heads Up",
+        title: "BambooHR has more performance tools than most people realize",
+        body: "Manager assessments, self-assessments, peer assessments, goals, and 1:1 meeting notes — they're all built in. Using them consistently creates a paper trail that makes review time painless.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Good To Know",
+        title: "Fair ratings require calibration, not gut feelings",
+        body: "Avoid recency bias, halo effects, and grade inflation. Rate against the criteria, not against other employees or your personal relationship. Consistency across your team is what makes reviews credible.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Real Talk",
+        title: "1:1s are where the real work happens",
+        body: "The annual review shouldn't contain surprises. Regular 1:1s give you the space to coach, course-correct, and celebrate wins in real time. If you're only giving feedback once a year, it's too late.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── Coaching & Corrective Action (management) ──
+  if (title.includes("coaching") || title.includes("corrective")) {
+    return [
+      {
+        eyebrow: "Heads Up",
+        title: "Coaching and corrective action are two different tools",
+        body: "Coaching is proactive — it helps someone improve before there's a formal problem. Corrective action is reactive — it documents a pattern that needs to change. Know which one you're reaching for and why.",
+        tone: "navy" as const,
+      },
+      {
+        eyebrow: "Non-Negotiable",
+        title: "The escalation path is specific and must be followed",
+        body: "Verbal warning, written action, PIP, final warning, termination. You can't skip steps to speed things up. Each step exists to give the employee a fair chance and to protect the company legally.",
+        tone: "cyan" as const,
+      },
+      {
+        eyebrow: "Real Talk",
+        title: "Documentation is what makes this defensible",
+        body: "Every coaching conversation, every corrective step, every outcome — document it. If it ever goes to an EEOC claim or legal review, your notes are the only thing that proves you handled it fairly.",
+        tone: "red" as const,
+      },
+    ];
+  }
+
+  // ── Fallback (should rarely be hit now) ──
   return [
     {
       eyebrow: "Role Connection",
@@ -411,6 +988,65 @@ export default function ModulePage() {
   const earlyTipPool = coachTipsForModule(moduleTitle, module?.requires_quiz ?? false, module?.requires_acknowledgement ?? false);
   const [coachTip, setCoachTip] = useState(earlyTipPool[0] ?? "");
   useEffect(() => { setCoachTip(pickRandom(earlyTipPool)); }, [slug, moduleTitle]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Reading progress bar — tracks scroll position as 0–100
+  const [readingProgress, setReadingProgress] = useState(0);
+  useEffect(() => {
+    let raf = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        setReadingProgress(scrollHeight > 0 ? Math.min(Math.round((scrollTop / scrollHeight) * 100), 100) : 0);
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("scroll", onScroll); };
+  }, []);
+
+  // Track which sections the user has scrolled past (for TOC checkmarks)
+  const [readSections, setReadSections] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    setReadSections(new Set()); // reset on module change
+  }, [slug]);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          // Mark section as read when its bottom edge passes above the viewport center
+          if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
+            setReadSections((prev) => {
+              if (prev.has(entry.target.id)) return prev;
+              const next = new Set(prev);
+              next.add(entry.target.id);
+              return next;
+            });
+          }
+        });
+      },
+      { rootMargin: "0px 0px -50% 0px" }
+    );
+    // Observe all section elements with IDs matching our display sections
+    const sectionEls = document.querySelectorAll("section[id], div[id].scroll-mt-24");
+    sectionEls.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [slug, module]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Human notes stagger animation — trigger when section scrolls into view
+  const [humanNotesVisible, setHumanNotesVisible] = useState(false);
+  const humanNotesRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const el = humanNotesRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setHumanNotesVisible(true); observer.disconnect(); } },
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [slug, module]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (module && module.status === "published" && !isPreviewing) {
@@ -862,16 +1498,26 @@ export default function ModulePage() {
         <div className="rounded-[16px] border border-[#d6e2ef] bg-[linear-gradient(180deg,#fffefb_0%,#f9fbfe_100%)] p-4 shadow-[0_10px_20px_rgba(12,24,47,0.06)]">
           <p className="text-[0.58rem] font-bold uppercase tracking-[0.16em] text-[#607895]">In this module</p>
           <div className="mt-2.5 space-y-1.5">
-            {railSections.map((section) => (
-              <a
-                key={section.id}
-                href={`#${section.id}`}
-                className="group flex items-start gap-2 rounded-[9px] px-2 py-1.5 text-[0.75rem] text-[#274566] transition-all duration-200 hover:bg-[rgba(14,165,233,0.1)] hover:text-[#0784c4]"
-              >
-                <span className="mt-[6px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#17365d] transition-colors group-hover:bg-[#df0030]" />
-                <span className="font-semibold leading-[1.3]">{section.title}</span>
-              </a>
-            ))}
+            {railSections.map((section) => {
+              const isRead = readSections.has(section.id);
+              return (
+                <a
+                  key={section.id}
+                  href={`#${section.id}`}
+                  className="group flex items-start gap-2 rounded-[9px] px-2 py-1.5 text-[0.75rem] transition-all duration-200 hover:bg-[rgba(14,165,233,0.1)] hover:text-[#0784c4]"
+                  style={{ color: isRead ? "#0ea5d9" : "#274566" }}
+                >
+                  {isRead ? (
+                    <svg className="mt-[3px] h-3 w-3 shrink-0" viewBox="0 0 12 12" fill="none" stroke="#0ea5d9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transition: "opacity 300ms ease", opacity: 1 }}>
+                      <path d="M2.5 6.5 5 9l4.5-6" />
+                    </svg>
+                  ) : (
+                    <span className="mt-[6px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#17365d] transition-colors group-hover:bg-[#df0030]" />
+                  )}
+                  <span className={cn("leading-[1.3]", isRead ? "font-semibold" : "font-semibold")}>{section.title}</span>
+                </a>
+              );
+            })}
           </div>
         </div>
       ) : null}
@@ -964,6 +1610,19 @@ export default function ModulePage() {
 
   return (
     <>
+      {/* Reading progress bar */}
+      {!isManagement && (
+        <div
+          className="pointer-events-none fixed left-0 top-0 z-50 h-[3px]"
+          style={{
+            width: `${readingProgress}%`,
+            background: "linear-gradient(90deg, #0f7fb3 0%, #06b6d4 52%, #df0030 100%)",
+            transition: "width 150ms ease-out",
+            opacity: readingProgress > 0 && readingProgress < 100 ? 1 : 0,
+          }}
+        />
+      )}
+
       {!isManagement && showCongrats && congratsMsg ? (
         <>
           <style>{`
@@ -1033,6 +1692,7 @@ export default function ModulePage() {
 
         {!isManagement && (
         <section
+          ref={humanNotesRef}
           className="relative overflow-hidden"
           style={{
             padding: "2rem 2.5rem 2.25rem",
@@ -1060,8 +1720,15 @@ export default function ModulePage() {
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem" }}>
-            {humanMoments.map((moment) => (
-              <div key={moment.title}>
+            {humanMoments.map((moment, idx) => (
+              <div
+                key={moment.title}
+                style={{
+                  opacity: humanNotesVisible ? 1 : 0,
+                  transform: humanNotesVisible ? "translateY(0)" : "translateY(18px)",
+                  transition: `opacity 420ms ease-out ${idx * 120}ms, transform 420ms ease-out ${idx * 120}ms`,
+                }}
+              >
                 <p
                   className="text-[0.62rem] font-bold uppercase tracking-[0.12em]"
                   style={{
