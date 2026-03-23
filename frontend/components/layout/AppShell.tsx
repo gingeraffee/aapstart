@@ -113,7 +113,10 @@ export function AppShell({ children }: AppShellProps) {
     .sort((a, b) => a.order - b.order);
 
   // Split modules into journey (non-management) and management sections
-  const journeyModules = liveModules.filter((m) => !m.tracks?.includes("management"));
+  // When previewing as another track, filter to only show modules visible to that track
+  const journeyModules = liveModules
+    .filter((m) => !m.tracks?.includes("management"))
+    .filter((m) => !isPreviewing || m.tracks?.includes("all") || m.tracks?.includes(effectiveTrack));
   const managementModules = liveModules.filter((m) => m.tracks?.includes("management"));
 
   // Show journey section for non-management tracks

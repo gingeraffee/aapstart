@@ -53,7 +53,10 @@ export default function OverviewPage() {
     .sort((a, b) => a.order - b.order);
 
   // Split into journey modules and management modules
-  const journeyModules = liveModules.filter((m) => !m.tracks?.includes("management"));
+  // When previewing as another track, filter to only show modules visible to that track
+  const journeyModules = liveModules
+    .filter((m) => !m.tracks?.includes("management"))
+    .filter((m) => !isPreviewing || m.tracks?.includes("all") || m.tracks?.includes(effectiveTrack));
   const managementModules = liveModules.filter((m) => m.tracks?.includes("management"));
 
   const comingSoonCount = allModules.filter((m) => m.status === "coming_soon").length;
