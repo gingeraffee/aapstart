@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import useSWR, { useSWRConfig } from "swr";
 import { modulesApi, progressApi } from "@/lib/api";
@@ -21,6 +21,7 @@ export default function AcknowledgePage() {
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const autoSubmitted = useRef(false);
 
   useEffect(() => {
     if (!module) return;
@@ -29,6 +30,38 @@ export default function AcknowledgePage() {
     if (hasAcknowledgement) return;
     router.replace(hasQuiz ? `/modules/${slug}/quiz` : `/modules/${slug}/complete`);
   }, [module, router, slug]);
+
+  // Auto-submit once all acknowledgements are checked
+  const allAcksChecked = module
+    ? module.acknowledgements.length > 0 && module.acknowledgements.every((item) => checked[item.id])
+    : false;
+
+  useEffect(() => {
+    if (!allAcksChecked || autoSubmitted.current || submitting) return;
+    autoSubmitted.current = true;
+
+    const timer = setTimeout(async () => {
+      if (!module) return;
+      const hasQuiz = module.requires_quiz || (module.quiz?.questions?.length ?? 0) > 0;
+
+      setSubmitting(true);
+      setError(null);
+
+      try {
+        if (!isPreviewing) {
+          await progressApi.acknowledge(slug, module.acknowledgements.map((item) => item.id));
+          await mutate("progress");
+        }
+        router.push(hasQuiz ? `/modules/${slug}/quiz` : `/modules/${slug}/complete`);
+      } catch {
+        setError("We could not save this step just yet. Please try once more.");
+        setSubmitting(false);
+        autoSubmitted.current = false;
+      }
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, [allAcksChecked, module, slug, isPreviewing, submitting, mutate, router]);
 
   if (isLoading || !module) {
     return (
@@ -57,24 +90,6 @@ export default function AcknowledgePage() {
     current: "confirm",
   });
 
-  async function handleSubmit() {
-    if (!allChecked) return;
-    setSubmitting(true);
-    setError(null);
-
-    try {
-      // Skip saving progress when previewing another track
-      if (!isPreviewing) {
-        await progressApi.acknowledge(slug, currentModule.acknowledgements.map((item) => item.id));
-        await mutate("progress");
-      }
-      router.push(hasQuiz ? `/modules/${slug}/quiz` : `/modules/${slug}/complete`);
-    } catch {
-      setError("We could not save this step just yet. Please try once more.");
-      setSubmitting(false);
-    }
-  }
-
   return (
     <ModuleShell
       breadcrumbs={[
@@ -93,10 +108,9 @@ export default function AcknowledgePage() {
         <ModuleFooter
           backHref={`/modules/${slug}`}
           backLabel="Back to module"
-          ctaLabel={submitting ? "Saving..." : hasQuiz ? "Let's Test!" : "Save and complete module"}
-          onCtaClick={handleSubmit}
-          disabled={!allChecked || submitting}
-          helperText={!allChecked ? "Confirm each item to continue." : undefined}
+          ctaLabel={submitting ? "Saving..." : "Confirm all to continue"}
+          disabled
+          helperText={!allChecked ? "Confirm each item to continue." : "Heading to your quiz..."}
         />
       }
     >
@@ -138,6 +152,12 @@ export default function AcknowledgePage() {
             />
           ))}
         </div>
+
+        {allChecked && submitting ? (
+          <p className="mt-4 text-center text-[0.82rem] font-semibold text-[#0f6da3]">
+            Heading to your quiz...
+          </p>
+        ) : null}
       </ModulePanel>
 
       {error ? <p className="text-[0.88rem] text-[#9a5f1f]">{error}</p> : null}

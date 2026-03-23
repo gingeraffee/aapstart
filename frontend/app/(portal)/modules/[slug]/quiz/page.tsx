@@ -1,15 +1,16 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import useSWR, { useSWRConfig } from "swr";
 import confetti from "canvas-confetti";
 import { modulesApi, progressApi } from "@/lib/api";
+import { useAuth } from "@/lib/context/AuthContext";
 import { usePreview } from "@/lib/context/PreviewContext";
 import { ModuleFooter, ModulePanel, ModuleShell, buildModuleSteps } from "@/components/features/modules/ModuleShell";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
-import type { ModuleDetail, QuizFeedback } from "@/lib/types";
+import type { ModuleDetail, ModuleSummary, ProgressRecord, QuizFeedback } from "@/lib/types";
 
 const CORRECT_MESSAGES = [
   "Nice call. Keep that momentum.",
@@ -19,13 +20,101 @@ const CORRECT_MESSAGES = [
   "Great read. Onward.",
 ];
 
+const COMPLETION_MESSAGES: ((name: string, moduleTitle: string) => { headline: string; body: string })[] = [
+  (name, title) => ({
+    headline: `Crushed it, ${name}.`,
+    body: `"${title}" is done and dusted. You just leveled up your AAP knowledge — and honestly, you made it look easy.`,
+  }),
+  (name) => ({
+    headline: `Look at you go, ${name}.`,
+    body: `Another module down, another step closer to feeling like you've been here for years. Spoiler: you're already ahead of the curve.`,
+  }),
+  (name, title) => ({
+    headline: `${name}, that's a wrap.`,
+    body: `You just locked in "${title}" like a pro. Your future self is going to thank you for paying attention.`,
+  }),
+  (name) => ({
+    headline: `Gold star, ${name}.`,
+    body: `Module complete. Knowledge acquired. Confidence boosted. That's what we like to see on day one.`,
+  }),
+  (name, title) => ({
+    headline: `Nailed it, ${name}.`,
+    body: `"${title}" — done. You're building the foundation that makes everything else click. Keep that energy.`,
+  }),
+  (name) => ({
+    headline: `${name} is on a roll.`,
+    body: `Every module you finish makes the next one easier. You're stacking wins and it shows.`,
+  }),
+  (name, title) => ({
+    headline: `That's how it's done, ${name}.`,
+    body: `"${title}" is officially in the books. The team's getting a good one — we can already tell.`,
+  }),
+  (name) => ({
+    headline: `Boom. Done, ${name}.`,
+    body: `You're moving through onboarding like you've got somewhere to be. (You do — it's called your new role, and you're going to be great at it.)`,
+  }),
+];
+
+const ALL_DONE_MESSAGES: ((name: string) => { headline: string; body: string })[] = [
+  (name) => ({
+    headline: `You did it, ${name}!`,
+    body: "Every module, every quiz, every acknowledgement — done. You just completed your full onboarding journey. That's a serious accomplishment.",
+  }),
+  (name) => ({
+    headline: `${name}, you're officially onboarded.`,
+    body: "You worked through every module from start to finish. The foundation is set — now go make an impact.",
+  }),
+  (name) => ({
+    headline: `Strong finish, ${name}.`,
+    body: "That's every module in the books. You showed up, did the work, and now you're ready for whatever comes next.",
+  }),
+];
+
+function fireConfetti() {
+  const palettes = [
+    ["#0f7fb3", "#22d3ee", "#38bdf8", "#fbbf24", "#34d399", "#a78bfa"],
+    ["#f472b6", "#fbbf24", "#34d399", "#818cf8", "#22d3ee", "#fb923c"],
+    ["#0f7fb3", "#6366f1", "#a78bfa", "#f472b6", "#fbbf24", "#34d399"],
+    ["#22d3ee", "#2dd4bf", "#34d399", "#fbbf24", "#fb923c", "#f87171"],
+    ["#818cf8", "#c084fc", "#f472b6", "#fbbf24", "#22d3ee", "#0f7fb3"],
+  ];
+  const colors = palettes[Math.floor(Math.random() * palettes.length)];
+
+  // Center burst
+  confetti({ particleCount: 80, spread: 100, origin: { x: 0.5, y: 0.4 }, colors });
+
+  // Side streams
+  const end = Date.now() + 2500;
+  const frame = () => {
+    confetti({
+      particleCount: 2 + Math.floor(Math.random() * 3),
+      angle: 55 + Math.random() * 15,
+      spread: 45 + Math.random() * 20,
+      origin: { x: 0, y: 0.5 + Math.random() * 0.2 },
+      colors,
+    });
+    confetti({
+      particleCount: 2 + Math.floor(Math.random() * 3),
+      angle: 110 + Math.random() * 15,
+      spread: 45 + Math.random() * 20,
+      origin: { x: 1, y: 0.5 + Math.random() * 0.2 },
+      colors,
+    });
+    if (Date.now() < end) requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+}
+
 export default function QuizPage() {
   const { slug } = useParams<{ slug: string }>();
   const router = useRouter();
   const { mutate } = useSWRConfig();
+  const { user } = useAuth();
   const { isPreviewing } = usePreview();
 
   const { data: module, isLoading } = useSWR(`module:${slug}`, () => modulesApi.get(slug) as Promise<ModuleDetail>);
+  const { data: allModules } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
+  const { data: progress } = useSWR("progress", () => progressApi.getAll() as Promise<ProgressRecord[]>);
 
   const [currentQ, setCurrentQ] = useState(0);
   const [selected, setSelected] = useState<Record<string, string>>({});
@@ -34,38 +123,9 @@ export default function QuizPage() {
   const [wrongAttempts, setWrongAttempts] = useState<Record<string, number>>({});
   const [submitting, setSubmitting] = useState(false);
   const [correctMessage, setCorrectMessage] = useState(CORRECT_MESSAGES[0]);
-  // Final review state
-  const [missedQuestions, setMissedQuestions] = useState<string[]>([]);
-  const [quizFinished, setQuizFinished] = useState(false);
-  const [quizPassed, setQuizPassed] = useState(false);
+  const [showCompletion, setShowCompletion] = useState(false);
+  const [completionMsg, setCompletionMsg] = useState<{ headline: string; body: string } | null>(null);
   const confettiFired = useRef(false);
-
-  const isFinalReview = module?.quiz_mode === "final-review";
-
-  // Auto-advance timer for final review mode
-  const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const advanceToNext = useCallback(() => {
-    const questions = module?.quiz?.questions ?? [];
-    const isLast = currentQ === questions.length - 1;
-    if (isLast) {
-      // Quiz is done — calculate results
-      const missed = Object.entries(wrongAttempts).filter(([, v]) => v >= 2).map(([k]) => k);
-      // Also check current question's wrong attempts
-      setMissedQuestions(missed);
-      setQuizPassed(missed.length === 0);
-      setQuizFinished(true);
-    } else {
-      setCurrentQ((v) => v + 1);
-    }
-  }, [currentQ, module, wrongAttempts]);
-
-  // Cleanup timer on unmount
-  useEffect(() => {
-    return () => {
-      if (advanceTimer.current) clearTimeout(advanceTimer.current);
-    };
-  }, []);
 
   if (isLoading || !module) {
     return (
@@ -90,8 +150,22 @@ export default function QuizPage() {
   const isCorrect = questionFeedback?.correct ?? false;
   const correctId = questionFeedback?.correct_id;
   const currentWrongAttempts = wrongAttempts[question.id] ?? 0;
-  const shouldRevealCorrect = !isFinalReview && isRevealed && (isCorrect || currentWrongAttempts >= 2);
+  const shouldRevealCorrect = isRevealed && (isCorrect || currentWrongAttempts >= 2);
   const canRetry = isRevealed && !isCorrect && currentWrongAttempts < 2;
+
+  // Determine next module
+  const liveModules = (allModules ?? [])
+    .filter((item) => item.status === "published")
+    .sort((a, b) => a.order - b.order);
+  const currentIndex = liveModules.findIndex((item) => item.slug === slug);
+  const nextModule = currentIndex >= 0 ? liveModules[currentIndex + 1] ?? null : null;
+
+  // Check if all modules will be done after this one completes
+  const progressMap = new Map<string, ProgressRecord>();
+  (progress ?? []).forEach((item) => progressMap.set(item.module_slug, item));
+  const willBeAllDone = liveModules.every(
+    (item) => item.slug === slug || progressMap.get(item.slug)?.module_completed
+  );
 
   const steps = buildModuleSteps({
     requiresAcknowledgement: hasAcknowledgement,
@@ -119,58 +193,13 @@ export default function QuizPage() {
         feedback: { ...(prev?.feedback ?? {}), ...result.feedback },
       }));
 
-      const wasWrong = item && !item.correct;
-      const newWrongCount = wasWrong ? (wrongAttempts[question.id] ?? 0) + 1 : (wrongAttempts[question.id] ?? 0);
-
-      if (wasWrong) {
-        setWrongAttempts((prev) => ({ ...prev, [question.id]: newWrongCount }));
+      if (item && !item.correct) {
+        setWrongAttempts((prev) => ({ ...prev, [question.id]: (prev[question.id] ?? 0) + 1 }));
       } else {
         setCorrectMessage(CORRECT_MESSAGES[Math.floor(Math.random() * CORRECT_MESSAGES.length)]);
       }
 
       setRevealed((prev) => ({ ...prev, [question.id]: true }));
-
-      // Final review auto-advance
-      if (isFinalReview) {
-        // Capture current question index in closure
-        const qIndex = currentQ;
-        const qTotal = questions.length;
-
-        if (!wasWrong) {
-          // Correct — brief green flash then auto-advance
-          advanceTimer.current = setTimeout(() => {
-            if (qIndex === qTotal - 1) {
-              // Use functional updates to get latest state
-              setWrongAttempts((prev) => {
-                const missed = Object.keys(prev).filter((k) => (prev[k] ?? 0) >= 2);
-                setMissedQuestions(missed);
-                setQuizPassed(missed.length === 0);
-                setQuizFinished(true);
-                return prev;
-              });
-            } else {
-              setCurrentQ((v) => v + 1);
-            }
-          }, 800);
-        } else if (newWrongCount >= 2) {
-          // Second wrong attempt — mark as missed, auto-advance
-          const currentQId = question.id;
-          advanceTimer.current = setTimeout(() => {
-            setWrongAttempts((prev) => {
-              const allMissed = [...new Set([...Object.keys(prev).filter((k) => (prev[k] ?? 0) >= 2), currentQId])];
-              if (qIndex === qTotal - 1) {
-                setMissedQuestions(allMissed);
-                setQuizPassed(false);
-                setQuizFinished(true);
-              } else {
-                setCurrentQ((v) => v + 1);
-              }
-              return prev;
-            });
-          }, 1200);
-        }
-        // First wrong attempt — no auto-advance, let them retry
-      }
     } finally {
       setSubmitting(false);
     }
@@ -192,89 +221,101 @@ export default function QuizPage() {
           await mutate("progress");
         }
       } catch {
-        // Best effort before navigation.
+        // Best effort before showing completion.
       } finally {
         setSubmitting(false);
       }
-      router.push(`/modules/${slug}/complete`);
+
+      // Show completion modal instead of navigating to complete page
+      const firstName = user?.first_name ?? "there";
+      if (willBeAllDone) {
+        const msg = ALL_DONE_MESSAGES[Math.floor(Math.random() * ALL_DONE_MESSAGES.length)];
+        setCompletionMsg(msg(firstName));
+      } else {
+        const msg = COMPLETION_MESSAGES[Math.floor(Math.random() * COMPLETION_MESSAGES.length)];
+        setCompletionMsg(msg(firstName, module?.title ?? ""));
+      }
+      setShowCompletion(true);
+
+      if (!confettiFired.current) {
+        confettiFired.current = true;
+        fireConfetti();
+      }
       return;
     }
 
     setCurrentQ((value) => value + 1);
   }
 
-  // Final review: handle pass — submit correct answers and go to complete
-  async function handleFinalPass() {
-    setSubmitting(true);
-    try {
-      if (!isPreviewing) {
-        const correctAnswers: Record<string, string> = {};
-        questions.forEach((q) => {
-          const item = feedback?.feedback[q.id];
-          if (item?.correct_id) {
-            correctAnswers[q.id] = item.correct_id;
-          }
-        });
-        await progressApi.submitQuiz(slug, correctAnswers);
-        await mutate("progress");
-      }
-    } catch {
-      // Best effort
-    } finally {
-      setSubmitting(false);
+  function handleKeepGoing() {
+    if (willBeAllDone || !nextModule) {
+      router.push("/overview");
+    } else {
+      router.push(`/modules/${nextModule.slug}`);
     }
-    router.push(`/modules/${slug}/complete`);
   }
-
-  // Final review: handle retry — reset all quiz state
-  function handleRetry() {
-    setCurrentQ(0);
-    setSelected({});
-    setFeedback(null);
-    setRevealed({});
-    setWrongAttempts({});
-    setMissedQuestions([]);
-    setQuizFinished(false);
-    setQuizPassed(false);
-    confettiFired.current = false;
-  }
-
-  // Final review: finished but failed — show as modal overlay too
 
   return (
-    <ModuleShell
-      breadcrumbs={[
-        { label: "My Path", href: "/overview" },
-        { label: module.title, href: `/modules/${slug}` },
-        { label: isFinalReview ? "Final Review" : "Quiz" },
-      ]}
-      moduleOrder={module.order}
-      stageLabel={isFinalReview ? "Final Review" : "Quiz"}
-      headline={isFinalReview ? "Final Review" : "Quick check, then keep moving."}
-      description={
-        isFinalReview
-          ? "Answer all 20 questions. You must get every question right to complete your training."
-          : "This is a confidence check, not a test. Pick what fits best and we will guide you from there."
-      }
-      contextNote={module.title}
-      estimatedMinutes={Math.max(2, Math.round(questions.length * 0.8))}
-      steps={steps}
-      footer={
-        isFinalReview ? (
-          <ModuleFooter
-            backHref={`/modules/${slug}`}
-            backLabel="Back to module"
-            ctaLabel=""
-            disabled
-            helperText={
-              !isRevealed
-                ? "Choose the best answer."
-                : canRetry
-                  ? "Not quite — give it one more try."
-                  : undefined
+    <>
+      {showCompletion && completionMsg ? (
+        <>
+          <style>{`
+            @keyframes completion-in {
+              0% { opacity: 0; transform: translateY(12px) scale(0.97); }
+              100% { opacity: 1; transform: translateY(0) scale(1); }
             }
-          />
-        ) : (
+            @keyframes completion-bg-in {
+              0% { opacity: 0; }
+              100% { opacity: 1; }
+            }
+          `}</style>
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ backgroundColor: "rgba(15, 32, 58, 0.58)", backdropFilter: "blur(5px)", animation: "completion-bg-in 200ms ease-out both" }}
+          >
+            <div
+              className="relative w-full max-w-[440px] overflow-hidden rounded-[24px] border border-[#c2daf1] bg-[linear-gradient(180deg,#ffffff_0%,#f6fbff_100%)] shadow-[0_24px_56px_rgba(9,20,41,0.24)]"
+              style={{ animation: "completion-in 280ms ease-out both" }}
+            >
+              <div className="h-1 w-full bg-[linear-gradient(90deg,#0f7fb3_0%,#06b6d4_52%,#df0030_100%)]" />
+              <div className="px-8 pb-8 pt-7 text-center">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-[#9dd2ef] bg-[#eaf6ff] text-[#0f6da3]">
+                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d="M4 12.5 9.5 18 20 6" />
+                  </svg>
+                </div>
+                <h2 className="text-[1.6rem] font-extrabold leading-[1.12] tracking-[-0.025em] text-[#0f1d3c]">
+                  {completionMsg.headline}
+                </h2>
+                <p className="mt-3 text-[0.88rem] leading-[1.68] text-[#445b78]">
+                  {completionMsg.body}
+                </p>
+                <button
+                  onClick={handleKeepGoing}
+                  className="mt-6 w-full rounded-[12px] border border-[#6eaeea] bg-[linear-gradient(135deg,#184371_0%,#13629a_100%)] py-3 text-[0.9rem] font-bold text-white transition-all duration-200 hover:-translate-y-px hover:shadow-[0_10px_18px_rgba(15,127,179,0.24)]"
+                >
+                  {willBeAllDone ? "View My Journey" : "Keep Going!"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : null}
+
+      <ModuleShell
+        breadcrumbs={[
+          { label: "My Path", href: "/overview" },
+          { label: module.title, href: `/modules/${slug}` },
+          { label: "Quiz" },
+        ]}
+        moduleOrder={module.order}
+        stageLabel="Quiz"
+        headline="Quick check, then keep moving."
+        description="This is a confidence check, not a test. Pick what fits best and we will guide you from there."
+        contextNote={module.title}
+        estimatedMinutes={Math.max(2, Math.round(questions.length * 0.8))}
+        steps={steps}
+        footer={
           <ModuleFooter
             backHref={`/modules/${slug}`}
             backLabel="Back to module"
@@ -283,408 +324,102 @@ export default function QuizPage() {
             disabled={!isRevealed || (!isCorrect && currentWrongAttempts < 2) || submitting}
             helperText={!isRevealed ? "Choose an answer to unlock feedback." : canRetry ? "One more pass and you are through." : undefined}
           />
-        )
-      }
-    >
-      <ModulePanel>
-        <div className="space-y-5">
-          <div>
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="text-[0.62rem] font-bold uppercase tracking-[0.12em] text-text-muted">
-                  Question {currentQ + 1} of {questions.length}
-                </p>
-                <h2 className="mt-2 text-[1.18rem] font-extrabold tracking-[-0.02em] text-text-primary">{question.text}</h2>
-                {!isFinalReview && (
+        }
+      >
+        <ModulePanel>
+          <div className="space-y-5">
+            <div>
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-[0.62rem] font-bold uppercase tracking-[0.12em] text-text-muted">
+                    Question {currentQ + 1} of {questions.length}
+                  </p>
+                  <h2 className="mt-2 text-[1.18rem] font-extrabold tracking-[-0.02em] text-text-primary">{question.text}</h2>
                   <p className="mt-1 text-[0.78rem] text-[#5d7391]">Choose the best answer. You get guidance right away.</p>
-                )}
+                </div>
+                <span className="shrink-0 text-[0.76rem] font-semibold tabular-nums text-[#5d7391]">
+                  {currentQ + 1} / {questions.length}
+                </span>
               </div>
-              <span className="shrink-0 text-[0.76rem] font-semibold tabular-nums text-[#5d7391]">
-                {currentQ + 1} / {questions.length}
-              </span>
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-cyan-100">
+                <div
+                  className="h-full rounded-full bg-[linear-gradient(90deg,#0f7fb3_0%,#22d3ee_100%)] transition-all duration-500"
+                  style={{ width: `${((currentQ + 1) / questions.length) * 100}%` }}
+                />
+              </div>
             </div>
-            <div className="mt-3 h-2 overflow-hidden rounded-full bg-cyan-100">
-              <div
-                className="h-full rounded-full bg-[linear-gradient(90deg,#0f7fb3_0%,#22d3ee_100%)] transition-all duration-500"
-                style={{ width: `${((currentQ + 1) / questions.length) * 100}%` }}
-              />
-            </div>
-          </div>
 
-          <div className="space-y-3">
-            {question.options.map((option, index) => {
-              const isSelected = selected[question.id] === option.id;
-              const isCorrectOption = option.id === correctId;
+            <div className="space-y-3">
+              {question.options.map((option, index) => {
+                const isSelected = selected[question.id] === option.id;
+                const isCorrectOption = option.id === correctId;
 
-              return (
-                <button
-                  key={option.id}
-                  onClick={() => handleTap(option.id)}
-                  disabled={submitting || (isRevealed && (isCorrect || currentWrongAttempts >= 2))}
-                  className={cn(
-                    "w-full rounded-[12px] border px-4 py-3.5 text-left text-[0.88rem] font-medium transition-all duration-200",
-                    !isSelected && !isRevealed && "border-[#d6deeb] bg-white hover:border-brand-action/40 hover:bg-cyan-50/30",
-                    isSelected && !isRevealed && "border-brand-action/50 bg-cyan-50/50",
-                    submitting && !isSelected && "opacity-55",
-                    // Standard mode: show correct answer in green
-                    shouldRevealCorrect && isCorrectOption && "border-emerald-300 bg-emerald-50 text-emerald-700",
-                    // Final review mode: correct answer — brief green flash on selected only
-                    isFinalReview && isRevealed && isCorrect && isSelected && "border-emerald-300 bg-emerald-50 text-emerald-700",
-                    // Wrong answer — red in final review, amber in standard
-                    isFinalReview && isRevealed && isSelected && !isCorrectOption && "border-red-300 bg-red-50 text-red-700",
-                    !isFinalReview && isRevealed && isSelected && !isCorrectOption && "border-[#efcf9b] bg-[#fff8ec] text-[#8b5a1f]",
-                    // Dim unselected options
-                    isRevealed && !isSelected && !(shouldRevealCorrect && isCorrectOption) && "opacity-60"
-                  )}
-                  style={{ animationDelay: `${index * 40}ms` }}
-                >
-                  <span className="flex items-center gap-3.5">
-                    <span
-                      className={cn(
-                        "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[0.72rem] font-black",
-                        !isSelected && !isRevealed && "border border-[#d1d5db] text-[#64748b]",
-                        isSelected && !isRevealed && "bg-brand-action text-white",
-                        shouldRevealCorrect && isCorrectOption && "bg-emerald-500 text-white",
-                        isFinalReview && isRevealed && isCorrect && isSelected && "bg-emerald-500 text-white",
-                        isFinalReview && isRevealed && isSelected && !isCorrectOption && "bg-red-500 text-white",
-                        !isFinalReview && isRevealed && isSelected && !isCorrectOption && "bg-[#d9a04b] text-white",
-                        isRevealed && !isSelected && !(shouldRevealCorrect && isCorrectOption) && !(isFinalReview && isRevealed && isCorrect && isSelected) && "border border-[#d1d5db] text-[#9ca3af]"
-                      )}
-                    >
-                      {(shouldRevealCorrect && isCorrectOption) || (isFinalReview && isRevealed && isCorrect && isSelected)
-                        ? "\u2713"
-                        : (isRevealed && isSelected && !isCorrectOption)
-                          ? "\u2717"
-                          : String.fromCharCode(65 + index)}
-                    </span>
-                    <span>{option.text}</span>
-                    {submitting && isSelected ? (
-                      <span className="ml-auto">
-                        <Spinner size="sm" />
+                return (
+                  <button
+                    key={option.id}
+                    onClick={() => handleTap(option.id)}
+                    disabled={submitting || (isRevealed && (isCorrect || currentWrongAttempts >= 2))}
+                    className={cn(
+                      "w-full rounded-[12px] border px-4 py-3.5 text-left text-[0.88rem] font-medium transition-all duration-200",
+                      !isSelected && !isRevealed && "border-[#d6deeb] bg-white hover:border-brand-action/40 hover:bg-cyan-50/30",
+                      isSelected && !isRevealed && "border-brand-action/50 bg-cyan-50/50",
+                      submitting && !isSelected && "opacity-55",
+                      shouldRevealCorrect && isCorrectOption && "border-emerald-300 bg-emerald-50 text-emerald-700",
+                      isRevealed && isSelected && !isCorrectOption && "border-[#efcf9b] bg-[#fff8ec] text-[#8b5a1f]",
+                      isRevealed && !isSelected && !(shouldRevealCorrect && isCorrectOption) && "opacity-60"
+                    )}
+                    style={{ animationDelay: `${index * 40}ms` }}
+                  >
+                    <span className="flex items-center gap-3.5">
+                      <span
+                        className={cn(
+                          "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[0.72rem] font-black",
+                          !isSelected && !isRevealed && "border border-[#d1d5db] text-[#64748b]",
+                          isSelected && !isRevealed && "bg-brand-action text-white",
+                          shouldRevealCorrect && isCorrectOption && "bg-emerald-500 text-white",
+                          isRevealed && isSelected && !isCorrectOption && "bg-[#d9a04b] text-white",
+                          isRevealed && !isSelected && !(shouldRevealCorrect && isCorrectOption) && "border border-[#d1d5db] text-[#9ca3af]"
+                        )}
+                      >
+                        {shouldRevealCorrect && isCorrectOption
+                          ? "OK"
+                          : isRevealed && isSelected && !isCorrectOption
+                            ? "!"
+                            : String.fromCharCode(65 + index)}
                       </span>
-                    ) : null}
-                  </span>
-                </button>
-              );
-            })}
+                      <span>{option.text}</span>
+                      {submitting && isSelected ? (
+                        <span className="ml-auto">
+                          <Spinner size="sm" />
+                        </span>
+                      ) : null}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {isRevealed ? (
+              <div
+                className={cn(
+                  "rounded-[12px] border px-4 py-3",
+                  isCorrect || currentWrongAttempts >= 2
+                    ? "border-emerald-200 bg-emerald-50/70"
+                    : "border-[#efcf9b] bg-[#fff8ec]"
+                )}
+              >
+                <p className={cn("text-[0.82rem] font-semibold", isCorrect || currentWrongAttempts >= 2 ? "text-emerald-700" : "text-[#8b5a1f]")}>
+                  {isCorrect
+                    ? correctMessage
+                    : currentWrongAttempts >= 2
+                      ? "No worries. We highlighted the best answer so you can keep moving."
+                      : "Close. Take one more pass and you are through."}
+                </p>
+              </div>
+            ) : null}
           </div>
-
-          {/* Feedback messages */}
-          {isRevealed && !isFinalReview ? (
-            <div
-              className={cn(
-                "rounded-[12px] border px-4 py-3",
-                isCorrect || currentWrongAttempts >= 2
-                  ? "border-emerald-200 bg-emerald-50/70"
-                  : "border-[#efcf9b] bg-[#fff8ec]"
-              )}
-            >
-              <p className={cn("text-[0.82rem] font-semibold", isCorrect || currentWrongAttempts >= 2 ? "text-emerald-700" : "text-[#8b5a1f]")}>
-                {isCorrect
-                  ? correctMessage
-                  : currentWrongAttempts >= 2
-                    ? "No worries. We highlighted the best answer so you can keep moving."
-                    : "Close. Take one more pass and you are through."}
-              </p>
-            </div>
-          ) : null}
-
-          {/* Final review: wrong answer feedback */}
-          {isRevealed && isFinalReview && !isCorrect && currentWrongAttempts < 2 ? (
-            <div className="rounded-[12px] border border-red-200 bg-red-50/70 px-4 py-3">
-              <p className="text-[0.82rem] font-semibold text-red-700">
-                Not quite — give it one more try.
-              </p>
-            </div>
-          ) : null}
-        </div>
-      </ModulePanel>
-
-      {/* Final review result modals */}
-      {isFinalReview && quizFinished && quizPassed ? (
-        <CongratulationsModal
-          score={questions.length - missedQuestions.length}
-          total={questions.length}
-          moduleTracks={module.tracks}
-          onComplete={handleFinalPass}
-          submitting={submitting}
-          confettiFired={confettiFired}
-        />
-      ) : null}
-      {isFinalReview && quizFinished && !quizPassed ? (
-        <RetryModal
-          score={questions.length - missedQuestions.length}
-          total={questions.length}
-          onRetry={handleRetry}
-        />
-      ) : null}
-    </ModuleShell>
-  );
-}
-
-/* ── Congratulations Modal (pass) ─────────────────────────────────────────── */
-
-function CongratulationsModal({
-  score,
-  total,
-  moduleTracks,
-  onComplete,
-  submitting,
-  confettiFired,
-}: {
-  score: number;
-  total: number;
-  moduleTracks: string[];
-  onComplete: () => void;
-  submitting: boolean;
-  confettiFired: React.MutableRefObject<boolean>;
-}) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  // Big celebration confetti
-  useEffect(() => {
-    if (confettiFired.current) return;
-    confettiFired.current = true;
-
-    const colors = ["#0f7fb3", "#22d3ee", "#fbbf24", "#34d399", "#f472b6", "#6366f1"];
-
-    // Initial big burst
-    confetti({ particleCount: 150, spread: 140, origin: { x: 0.5, y: 0.3 }, colors });
-
-    // Staggered side bursts
-    setTimeout(() => {
-      confetti({ particleCount: 80, angle: 60, spread: 55, origin: { x: 0, y: 0.5 }, colors });
-      confetti({ particleCount: 80, angle: 120, spread: 55, origin: { x: 1, y: 0.5 }, colors });
-    }, 400);
-
-    // Sustained side streams
-    const end = Date.now() + 4000;
-    const frame = () => {
-      confetti({ particleCount: 4, angle: 55 + Math.random() * 15, spread: 50, origin: { x: 0, y: 0.4 + Math.random() * 0.3 }, colors });
-      confetti({ particleCount: 4, angle: 110 + Math.random() * 15, spread: 50, origin: { x: 1, y: 0.4 + Math.random() * 0.3 }, colors });
-      if (Date.now() < end) requestAnimationFrame(frame);
-    };
-    requestAnimationFrame(frame);
-
-    // Top rain
-    setTimeout(() => {
-      confetti({ particleCount: 100, spread: 180, origin: { x: 0.5, y: -0.1 }, gravity: 0.5, ticks: 350, colors });
-    }, 1200);
-
-    // Second burst
-    setTimeout(() => {
-      confetti({ particleCount: 80, spread: 120, origin: { x: 0.5, y: 0.25 }, colors });
-    }, 2500);
-  }, [confettiFired]);
-
-  function downloadCertificate() {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const w = 1200;
-    const h = 850;
-    canvas.width = w;
-    canvas.height = h;
-
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, w, h);
-
-    ctx.strokeStyle = "#0f4c81";
-    ctx.lineWidth = 6;
-    ctx.strokeRect(30, 30, w - 60, h - 60);
-
-    ctx.strokeStyle = "#22d3ee";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(40, 40, w - 80, h - 80);
-
-    const logo = new Image();
-    logo.crossOrigin = "anonymous";
-    logo.onload = () => {
-      const logoW = 200;
-      const logoH = (logo.height / logo.width) * logoW;
-      ctx.drawImage(logo, (w - logoW) / 2, 70, logoW, logoH);
-      drawCertText(ctx, w, h, logoH);
-      triggerDownload(canvas);
-    };
-    logo.onerror = () => {
-      drawCertText(ctx, w, h, 0);
-      triggerDownload(canvas);
-    };
-    logo.src = "/logo.png";
-
-    function drawCertText(c: CanvasRenderingContext2D, cw: number, ch: number, logoH: number) {
-      const startY = 80 + Math.max(logoH, 60) + 20;
-
-      c.fillStyle = "#0f4c81";
-      c.font = "bold 14px Arial";
-      c.textAlign = "center";
-      c.letterSpacing = "6px";
-      c.fillText("CERTIFICATE OF COMPLETION", cw / 2, startY);
-      c.letterSpacing = "0px";
-
-      c.strokeStyle = "#22d3ee";
-      c.lineWidth = 2;
-      c.beginPath();
-      c.moveTo(cw / 2 - 120, startY + 18);
-      c.lineTo(cw / 2 + 120, startY + 18);
-      c.stroke();
-
-      c.fillStyle = "#5d7391";
-      c.font = "16px Arial";
-      c.fillText("This certifies that", cw / 2, startY + 55);
-
-      c.fillStyle = "#0f4c81";
-      c.font = "bold 36px Georgia";
-      c.fillText("_______________________", cw / 2, startY + 110);
-
-      c.fillStyle = "#5d7391";
-      c.font = "16px Arial";
-      c.fillText("has successfully completed the", cw / 2, startY + 155);
-
-      c.fillStyle = "#0f4c81";
-      c.font = "bold 28px Georgia";
-      c.fillText("AAP Start Training Program", cw / 2, startY + 200);
-
-      c.fillStyle = "#5d7391";
-      c.font = "16px Arial";
-      const trackName = moduleTracks.includes("hr") ? "HR Administrative Assistant" : moduleTracks[0] ?? "";
-      c.fillText(trackName + " Track", cw / 2, startY + 240);
-
-      c.fillStyle = "#0f7fb3";
-      c.font = "bold 18px Arial";
-      c.fillText(`Final Review: ${score}/${total}`, cw / 2, startY + 285);
-
-      c.fillStyle = "#5d7391";
-      c.font = "14px Arial";
-      const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-      c.fillText(today, cw / 2, startY + 330);
-
-      c.strokeStyle = "#0f4c81";
-      c.lineWidth = 3;
-      c.beginPath(); c.moveTo(50, 70); c.lineTo(50, 50); c.lineTo(70, 50); c.stroke();
-      c.beginPath(); c.moveTo(cw - 50, 70); c.lineTo(cw - 50, 50); c.lineTo(cw - 70, 50); c.stroke();
-      c.beginPath(); c.moveTo(50, ch - 70); c.lineTo(50, ch - 50); c.lineTo(70, ch - 50); c.stroke();
-      c.beginPath(); c.moveTo(cw - 50, ch - 70); c.lineTo(cw - 50, ch - 50); c.lineTo(cw - 70, ch - 50); c.stroke();
-    }
-
-    function triggerDownload(cvs: HTMLCanvasElement) {
-      const link = document.createElement("a");
-      link.download = "AAP_Start_Certificate.png";
-      link.href = cvs.toDataURL("image/png");
-      link.click();
-    }
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-
-      {/* Modal */}
-      <div className="relative mx-4 w-full max-w-lg animate-in fade-in zoom-in-95 duration-300 rounded-2xl border border-emerald-200 bg-white p-8 shadow-2xl">
-        {/* Checkmark icon */}
-        <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full border-2 border-emerald-300 bg-emerald-50 text-emerald-600">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M4 12.5 9.5 18 20 6" />
-          </svg>
-        </div>
-
-        <div className="text-center">
-          <p className="text-[0.66rem] font-semibold uppercase tracking-[0.14em] text-emerald-600">
-            Training Complete
-          </p>
-          <h2 className="mt-2 text-[1.8rem] font-extrabold tracking-[-0.02em] text-text-primary">
-            Congratulations!
-          </h2>
-          <p className="mt-3 text-[0.95rem] leading-[1.7] text-text-secondary">
-            You scored <strong className="text-emerald-700">{score}/{total}</strong> on your final review.
-          </p>
-          <p className="mt-1 text-[1rem] font-semibold leading-[1.7] text-[#0f4c81]">
-            You&apos;ve completed the AAP Start Training Program — welcome to the team!
-          </p>
-        </div>
-
-        <div className="mt-8 flex flex-col items-center gap-3">
-          <button
-            onClick={downloadCertificate}
-            className="inline-flex items-center gap-2 rounded-xl border-2 border-[#0f4c81] bg-[#0f4c81] px-6 py-3 text-[0.88rem] font-bold text-white transition-colors hover:bg-[#0d3d6b]"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" y1="15" x2="12" y2="3" />
-            </svg>
-            Download Certificate
-          </button>
-
-          <button
-            onClick={onComplete}
-            disabled={submitting}
-            className="inline-flex items-center gap-2 rounded-xl border-2 border-brand-action bg-brand-action px-6 py-3 text-[0.88rem] font-bold text-white transition-colors hover:bg-[#0d6d96] disabled:opacity-50"
-          >
-            {submitting ? "Saving..." : "Finish & Return to My Path"}
-          </button>
-        </div>
-
-        <canvas ref={canvasRef} className="hidden" />
-      </div>
-    </div>
-  );
-}
-
-/* ── Retry Modal (fail) ───────────────────────────────────────────────────── */
-
-function RetryModal({
-  score,
-  total,
-  onRetry,
-}: {
-  score: number;
-  total: number;
-  onRetry: () => void;
-}) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-
-      <div className="relative mx-4 w-full max-w-lg animate-in fade-in zoom-in-95 duration-300 rounded-2xl border border-[#efcf9b] bg-white p-8 shadow-2xl">
-        <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full border-2 border-[#efcf9b] bg-[#fff8ec] text-[#d9a04b]">
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M12 9v4" />
-            <path d="M12 17h.01" />
-            <path d="M3.6 20h16.8a1 1 0 0 0 .86-1.5l-8.4-14a1 1 0 0 0-1.72 0l-8.4 14A1 1 0 0 0 3.6 20z" />
-          </svg>
-        </div>
-
-        <div className="text-center">
-          <h2 className="text-[1.5rem] font-extrabold tracking-[-0.02em] text-text-primary">
-            Not quite there yet
-          </h2>
-          <p className="mt-3 text-[0.95rem] leading-[1.7] text-text-secondary">
-            You got <strong>{score}</strong> out of <strong>{total}</strong> right. You need a perfect score to complete this section,
-            but that&apos;s okay — this material is detailed and worth another look.
-          </p>
-          <p className="mt-2 text-[0.88rem] leading-[1.7] text-[#5d7391]">
-            Take a few minutes to review the modules, then give it another shot.
-            You&apos;ve got this.
-          </p>
-        </div>
-
-        <div className="mt-8 flex justify-center">
-          <button
-            onClick={onRetry}
-            className="inline-flex items-center gap-2 rounded-xl border-2 border-brand-action bg-brand-action px-6 py-3 text-[0.88rem] font-bold text-white transition-colors hover:bg-[#0d6d96]"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="23 4 23 10 17 10" />
-              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-            </svg>
-            Try Again
-          </button>
-        </div>
-      </div>
-    </div>
+        </ModulePanel>
+      </ModuleShell>
+    </>
   );
 }
