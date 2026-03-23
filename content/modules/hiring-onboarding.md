@@ -141,6 +141,8 @@ Double-check all fields before submitting. Incorrect entries can delay IT setup 
 - Cover essentials: work hours/breaks, attendance expectations, safety basics, communication norms.
 - Start role training: job overview, priorities, key processes, and who to ask for help.
 
+<p style="text-align: center;"><strong>Need more help? The full guide can be downloaded below.</strong></p>
+
 :::download
 url: /downloads/AAP_API_Manager_Onboarding_Process_Guide.pdf
 label: Manager Onboarding Guide

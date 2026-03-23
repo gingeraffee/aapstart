@@ -188,6 +188,8 @@ For more information, see the Manager Offboarding Process Guide.
 - Payroll-related changes must be submitted before payroll cutoff
 - Department or location moves usually require 5 to 10 days for IT and Facilities preparation
 
+<p style="text-align: center;"><strong>Need more help? The full guide can be downloaded below.</strong></p>
+
 :::download
 url: /downloads/Manager_Employee_Change_Process_Guide.pdf
 label: Employee Change Process Guide

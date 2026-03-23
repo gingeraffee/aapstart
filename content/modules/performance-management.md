@@ -104,6 +104,8 @@ Documentation in BambooHR may be referenced during unemployment or legal claims.
 - [ ] Maintain professionalism, support growth, and partner with HR as needed.
 :::
 
+<p style="text-align: center;"><strong>Need more help? The full guide can be downloaded below.</strong></p>
+
 :::download
 url: /downloads/Manager_BambooHR_Performance_Management_Guide.docx
 label: Manager Performance Management Guide

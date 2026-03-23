@@ -127,6 +127,8 @@ What happens next (automatically):
 Clean documentation matters after the employee leaves too. Termination support records may be needed later for unemployment claims, legal questions, or internal review.
 :::
 
+<p style="text-align: center;"><strong>Need more help? The full guide can be downloaded below.</strong></p>
+
 :::download
 url: /downloads/AAP_API_Manager_Offboarding_Process_Guide.docx
 label: Manager Offboarding Process Guide
