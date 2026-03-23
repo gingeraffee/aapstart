@@ -2,7 +2,7 @@
 slug: where-you-make-an-impact-warehouse
 title: Where You Make an Impact
 description: How your role creates real impact every day at AAP.
-tracks: [all]
+tracks: [warehouse]
 order: 8
 estimatedMinutes: 12
 status: published

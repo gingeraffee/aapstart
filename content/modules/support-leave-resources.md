@@ -3,7 +3,7 @@ slug: support-leave-resources
 title: Where To Go
 description: Leave pathways, the Employee Assistance Program, and who to contact when you need help.
 tracks: [all]
-order: 6
+order: 3
 estimatedMinutes: 10
 status: published
 requiresQuiz: true

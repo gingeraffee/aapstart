@@ -3,7 +3,7 @@ slug: how-we-show-up-hr
 title: How We Show Up
 description: Who AAP is, what we stand for, your role expectations, and the confidentiality rules that protect everyone.
 tracks: [hr]
-order: 8
+order: 2
 estimatedMinutes: 14
 status: published
 requiresQuiz: true

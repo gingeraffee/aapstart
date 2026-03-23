@@ -3,7 +3,7 @@ slug: your-toolkit-hr
 title: Your Toolkit
 description: BambooHR, PayClock, Employvio, and every system you need to do your job — with step-by-step workflows for each.
 tracks: [hr]
-order: 10
+order: 6
 estimatedMinutes: 18
 status: published
 requiresQuiz: true
