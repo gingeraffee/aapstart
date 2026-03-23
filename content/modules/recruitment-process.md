@@ -48,9 +48,9 @@ Screen and shortlist qualified candidates in BambooHR using consistent, job-rela
 - Review resumes and applications against your defined qualifications.
 - Shortlist candidates for interviews and document your reasoning.
 - Use STAR ratings and comments in BambooHR to support your assessments. See the [STAR Rating Quick Reference](https://rxaap-my.sharepoint.com/personal/brandy_hooper_rxaap_com/_layouts/15/guestaccess.aspx?share=IQBdkrGnUmwlQYl0-9dlT9baAfhnUZ029scn_Ag_BIhDZZ4&e=ru6duI) for guidance.
-- Update each candidate's status and **always include comments** — they notify HR and collaborators.
 
-:::callout warning
+:::aside
+header: Important
 Always update candidate statuses and include comments in BambooHR. Status changes and comments notify HR and other collaborators.
 :::
 
