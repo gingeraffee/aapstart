@@ -18,6 +18,7 @@ const RESOURCE_CALLOUT_LABELS: Record<string, string> = {
   tip: "Manager note",
   info: "Worth noting",
   warning: "Watch for",
+  danger: "Do Not Use",
 };
 
 interface ContentBlockProps {
@@ -66,7 +67,7 @@ export function ContentBlock({ block, emphasizeLead = false, variant = "training
       );
 
     case "callout": {
-      const calloutVariant = (block.variant as "tip" | "info" | "warning") ?? "tip";
+      const calloutVariant = (block.variant as "tip" | "info" | "warning" | "danger") ?? "tip";
       return (
         <Callout
           variant={calloutVariant}

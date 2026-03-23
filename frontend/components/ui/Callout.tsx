@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-type Variant = "tip" | "info" | "warning";
+type Variant = "tip" | "info" | "warning" | "danger";
 
 interface CalloutProps {
   variant?: Variant;
@@ -30,9 +30,25 @@ const styles: Record<Variant, { label: string; shell: string; iconShell: string;
     iconShell: "bg-[#fbeecf] dark:bg-[rgba(234,179,8,0.12)]",
     iconColor: "text-[#9a661f] dark:text-[#eab308]",
   },
+  danger: {
+    label: "Do not use",
+    shell: "border-[#f0bfbf] bg-[#fef2f2] dark:border-[rgba(239,68,68,0.25)] dark:bg-[rgba(239,68,68,0.06)]",
+    iconShell: "bg-[#fde2e2] dark:bg-[rgba(239,68,68,0.12)]",
+    iconColor: "text-[#b91c1c] dark:text-[#ef4444]",
+  },
 };
 
 function CalloutIcon({ variant }: { variant: Variant }) {
+  if (variant === "danger") {
+    return (
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <circle cx="7" cy="7" r="5" />
+        <path d="M9 5L5 9" />
+        <path d="M5 5l4 4" />
+      </svg>
+    );
+  }
+
   if (variant === "warning") {
     return (
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
