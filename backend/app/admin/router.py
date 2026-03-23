@@ -251,6 +251,21 @@ def delete_employee(
     db.commit()
 
 
+@router.post("/employees/{employee_id}/reset-progress", status_code=status.HTTP_200_OK)
+def reset_employee_progress(
+    employee_id: str,
+    admin: dict = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Delete all progress records for an employee, resetting their journey."""
+    emp = db.query(Employee).filter_by(employee_id=employee_id).first()
+    if not emp:
+        raise HTTPException(status_code=404, detail="Employee not found.")
+    deleted = db.query(UserProgress).filter_by(employee_id=employee_id).delete()
+    db.commit()
+    return {"detail": f"Reset {deleted} progress records for {emp.first_name} {emp.last_name}."}
+
+
 # ── Dashboard ────────────────────────────────────────────────────────────────
 
 @router.get("/dashboard")
