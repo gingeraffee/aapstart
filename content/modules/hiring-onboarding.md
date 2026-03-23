@@ -89,7 +89,7 @@ Submitting this request triggers notifications to HR, IT, Marketing, Facilities,
 **Examples:** Sales, leadership, recruiting, and other external-facing roles.
 
 **Marketing Introduction --** Internal or external welcome announcement support.
-**Request when:** The role is a leadership or customer-facing position, or when the employee would like a formal introduction.
+**Request when:** The role is a leadership role, a customer-facing position, or when the department or work location would like a formal introduction shared.
 **Examples:** Leadership roles, customer-facing positions, or high-visibility new hires.
 
 ### Enter the Onboarding Request
