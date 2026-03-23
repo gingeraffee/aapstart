@@ -72,7 +72,7 @@ export function ContentBlock({ block, emphasizeLead = false, variant = "training
         <Callout
           variant={calloutVariant}
           content={externalizeLinks(block.content ?? "")}
-          label={variant === "resource" ? RESOURCE_CALLOUT_LABELS[calloutVariant] : undefined}
+          label={(block as { label?: string }).label || (variant === "resource" ? RESOURCE_CALLOUT_LABELS[calloutVariant] : undefined)}
         />
       );
     }
