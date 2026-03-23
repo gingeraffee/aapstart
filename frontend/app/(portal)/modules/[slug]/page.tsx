@@ -406,6 +406,11 @@ export default function ModulePage() {
   const { data: moduleCatalog } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
   const { data: progress } = useSWR("progress", () => progressApi.getAll() as Promise<ProgressRecord[]>);
 
+  // Coach tip hooks must be before early returns to satisfy React's rules of hooks
+  const earlyTipPool = coachTipsForModule(module?.title ?? "", module?.requires_quiz ?? false, module?.requires_acknowledgement ?? false);
+  const [coachTip, setCoachTip] = useState(earlyTipPool[0] ?? "");
+  useEffect(() => { setCoachTip(pickRandom(earlyTipPool)); }, [slug]); // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     if (module && module.status === "published" && !isPreviewing) {
       progressApi.visit(slug).catch(() => {});
@@ -712,9 +717,6 @@ export default function ModulePage() {
   const modulePosition = liveModules.findIndex((item) => item.slug === currentModule.slug) + 1 || currentModule.order;
   const totalModules = liveModules.length || currentModule.order;
   const completedModules = (progress ?? []).filter((item) => item.module_completed).length;
-  const coachTipPool = coachTipsForModule(currentModule.title, hasQuiz, hasAcknowledgement);
-  const [coachTip, setCoachTip] = useState(coachTipPool[0]);
-  useEffect(() => { setCoachTip(pickRandom(coachTipPool)); }, [currentModule.slug]); // eslint-disable-line react-hooks/exhaustive-deps
   const outcomeLines = buildOutcomeLines(displaySections, hasQuiz, hasAcknowledgement);
   const humanMoments = buildHumanMoments(currentModule.title, hasQuiz, hasAcknowledgement);
   const whyThisMatters =
