@@ -132,32 +132,41 @@ export default function QuizPage() {
 
       // Final review auto-advance
       if (isFinalReview) {
+        // Capture current question index in closure
+        const qIndex = currentQ;
+        const qTotal = questions.length;
+
         if (!wasWrong) {
           // Correct — brief green flash then auto-advance
           advanceTimer.current = setTimeout(() => {
-            const isLast = currentQ === questions.length - 1;
-            if (isLast) {
-              const missed = Object.keys(wrongAttempts).filter((k) => (wrongAttempts[k] ?? 0) >= 2);
-              setMissedQuestions(missed);
-              setQuizPassed(missed.length === 0);
-              setQuizFinished(true);
+            if (qIndex === qTotal - 1) {
+              // Use functional updates to get latest state
+              setWrongAttempts((prev) => {
+                const missed = Object.keys(prev).filter((k) => (prev[k] ?? 0) >= 2);
+                setMissedQuestions(missed);
+                setQuizPassed(missed.length === 0);
+                setQuizFinished(true);
+                return prev;
+              });
             } else {
               setCurrentQ((v) => v + 1);
             }
           }, 800);
         } else if (newWrongCount >= 2) {
           // Second wrong attempt — mark as missed, auto-advance
+          const currentQId = question.id;
           advanceTimer.current = setTimeout(() => {
-            const allMissed = [...Object.keys(wrongAttempts).filter((k) => (wrongAttempts[k] ?? 0) >= 2), question.id];
-            const uniqueMissed = [...new Set(allMissed)];
-            const isLast = currentQ === questions.length - 1;
-            if (isLast) {
-              setMissedQuestions(uniqueMissed);
-              setQuizPassed(false);
-              setQuizFinished(true);
-            } else {
-              setCurrentQ((v) => v + 1);
-            }
+            setWrongAttempts((prev) => {
+              const allMissed = [...new Set([...Object.keys(prev).filter((k) => (prev[k] ?? 0) >= 2), currentQId])];
+              if (qIndex === qTotal - 1) {
+                setMissedQuestions(allMissed);
+                setQuizPassed(false);
+                setQuizFinished(true);
+              } else {
+                setCurrentQ((v) => v + 1);
+              }
+              return prev;
+            });
           }, 1200);
         }
         // First wrong attempt — no auto-advance, let them retry
@@ -230,20 +239,7 @@ export default function QuizPage() {
     confettiFired.current = false;
   }
 
-  // Final review: finished — show modal overlay (fail stays inline, pass is modal)
-  if (isFinalReview && quizFinished && !quizPassed) {
-    return (
-      <FinalReviewFailed
-        score={questions.length - missedQuestions.length}
-        total={questions.length}
-        moduleTitle={module.title}
-        steps={steps}
-        slug={slug}
-        moduleOrder={module.order}
-        onRetry={handleRetry}
-      />
-    );
-  }
+  // Final review: finished but failed — show as modal overlay too
 
   return (
     <ModuleShell
@@ -404,7 +400,7 @@ export default function QuizPage() {
         </div>
       </ModulePanel>
 
-      {/* Congratulations modal overlay for final review pass */}
+      {/* Final review result modals */}
       {isFinalReview && quizFinished && quizPassed ? (
         <CongratulationsModal
           score={questions.length - missedQuestions.length}
@@ -413,6 +409,13 @@ export default function QuizPage() {
           onComplete={handleFinalPass}
           submitting={submitting}
           confettiFired={confettiFired}
+        />
+      ) : null}
+      {isFinalReview && quizFinished && !quizPassed ? (
+        <RetryModal
+          score={questions.length - missedQuestions.length}
+          total={questions.length}
+          onRetry={handleRetry}
         />
       ) : null}
     </ModuleShell>
@@ -631,72 +634,48 @@ function CongratulationsModal({
   );
 }
 
-/* ── Final Review Failed Screen ──────────────────────────────────────────── */
+/* ── Retry Modal (fail) ───────────────────────────────────────────────────── */
 
-function FinalReviewFailed({
+function RetryModal({
   score,
   total,
-  moduleTitle,
-  steps,
-  slug,
-  moduleOrder,
   onRetry,
 }: {
   score: number;
   total: number;
-  moduleTitle: string;
-  steps: ReturnType<typeof buildModuleSteps>;
-  slug: string;
-  moduleOrder: number;
   onRetry: () => void;
 }) {
   return (
-    <ModuleShell
-      breadcrumbs={[
-        { label: "My Path", href: "/overview" },
-        { label: moduleTitle, href: `/modules/${slug}` },
-        { label: "Final Review" },
-      ]}
-      moduleOrder={moduleOrder}
-      stageLabel="Final Review"
-      headline="Almost there!"
-      description="Review the content and try again when you're ready."
-      contextNote={moduleTitle}
-      steps={steps}
-      footer={
-        <ModuleFooter
-          backHref={`/modules/${slug}`}
-          backLabel="Back to module"
-          ctaLabel="Try Again"
-          onCtaClick={onRetry}
-        />
-      }
-    >
-      <ModulePanel>
-        <div className="flex flex-col items-center text-center py-6">
-          <div className="relative mb-6 flex h-20 w-20 items-center justify-center rounded-full border-2 border-[#efcf9b] bg-[#fff8ec] text-[#d9a04b]">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-              <path d="M12 9v4" />
-              <path d="M12 17h.01" />
-              <path d="M3.6 20h16.8a1 1 0 0 0 .86-1.5l-8.4-14a1 1 0 0 0-1.72 0l-8.4 14A1 1 0 0 0 3.6 20z" />
-            </svg>
-          </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
 
-          <h2 className="text-[1.3rem] font-extrabold tracking-[-0.02em] text-text-primary">
+      <div className="relative mx-4 w-full max-w-lg animate-in fade-in zoom-in-95 duration-300 rounded-2xl border border-[#efcf9b] bg-white p-8 shadow-2xl">
+        <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full border-2 border-[#efcf9b] bg-[#fff8ec] text-[#d9a04b]">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M12 9v4" />
+            <path d="M12 17h.01" />
+            <path d="M3.6 20h16.8a1 1 0 0 0 .86-1.5l-8.4-14a1 1 0 0 0-1.72 0l-8.4 14A1 1 0 0 0 3.6 20z" />
+          </svg>
+        </div>
+
+        <div className="text-center">
+          <h2 className="text-[1.5rem] font-extrabold tracking-[-0.02em] text-text-primary">
             Not quite there yet
           </h2>
-          <p className="mt-3 max-w-[480px] text-[0.92rem] leading-[1.7] text-text-secondary">
+          <p className="mt-3 text-[0.95rem] leading-[1.7] text-text-secondary">
             You got <strong>{score}</strong> out of <strong>{total}</strong> right. You need a perfect score to complete this section,
             but that&apos;s okay — this material is detailed and worth another look.
           </p>
-          <p className="mt-3 max-w-[440px] text-[0.88rem] leading-[1.7] text-[#5d7391]">
-            Take a few minutes to review the modules, then come back and give it another shot.
+          <p className="mt-2 text-[0.88rem] leading-[1.7] text-[#5d7391]">
+            Take a few minutes to review the modules, then give it another shot.
             You&apos;ve got this.
           </p>
+        </div>
 
+        <div className="mt-8 flex justify-center">
           <button
             onClick={onRetry}
-            className="mt-8 inline-flex items-center gap-2 rounded-xl border-2 border-brand-action bg-brand-action px-6 py-3 text-[0.88rem] font-bold text-white transition-colors hover:bg-[#0d6d96]"
+            className="inline-flex items-center gap-2 rounded-xl border-2 border-brand-action bg-brand-action px-6 py-3 text-[0.88rem] font-bold text-white transition-colors hover:bg-[#0d6d96]"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="23 4 23 10 17 10" />
@@ -705,7 +684,7 @@ function FinalReviewFailed({
             Try Again
           </button>
         </div>
-      </ModulePanel>
-    </ModuleShell>
+      </div>
+    </div>
   );
 }
