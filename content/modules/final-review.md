@@ -291,7 +291,7 @@ quiz:
 You've worked through AAP Start — and that matters. Completing your onboarding modules means you've built the foundation you need to show up confidently from day one.
 
 :::callout tip
-AAP Start is always available at [app.aapstart.com](https://app.aapstart.com). Bookmark it — you can return to any module anytime you need a refresher.
+AAP Start is always available at [aapstart.com](https://aapstart.com). Bookmark it — you can return to any module anytime you need a refresher.
 :::
 
 ---
