@@ -230,22 +230,17 @@ export default function QuizPage() {
     confettiFired.current = false;
   }
 
-  // Final review: finished screen
-  if (isFinalReview && quizFinished) {
+  // Final review: finished — show modal overlay (fail stays inline, pass is modal)
+  if (isFinalReview && quizFinished && !quizPassed) {
     return (
-      <FinalReviewResult
-        passed={quizPassed}
+      <FinalReviewFailed
         score={questions.length - missedQuestions.length}
         total={questions.length}
         moduleTitle={module.title}
-        moduleTracks={module.tracks}
         steps={steps}
         slug={slug}
         moduleOrder={module.order}
         onRetry={handleRetry}
-        onComplete={handleFinalPass}
-        submitting={submitting}
-        confettiFired={confettiFired}
       />
     );
   }
@@ -408,73 +403,77 @@ export default function QuizPage() {
           ) : null}
         </div>
       </ModulePanel>
+
+      {/* Congratulations modal overlay for final review pass */}
+      {isFinalReview && quizFinished && quizPassed ? (
+        <CongratulationsModal
+          score={questions.length - missedQuestions.length}
+          total={questions.length}
+          moduleTracks={module.tracks}
+          onComplete={handleFinalPass}
+          submitting={submitting}
+          confettiFired={confettiFired}
+        />
+      ) : null}
     </ModuleShell>
   );
 }
 
-/* ── Final Review Result Screen ──────────────────────────────────────────── */
+/* ── Congratulations Modal (pass) ─────────────────────────────────────────── */
 
-function FinalReviewResult({
-  passed,
+function CongratulationsModal({
   score,
   total,
-  moduleTitle,
   moduleTracks,
-  steps,
-  slug,
-  moduleOrder,
-  onRetry,
   onComplete,
   submitting,
   confettiFired,
 }: {
-  passed: boolean;
   score: number;
   total: number;
-  moduleTitle: string;
   moduleTracks: string[];
-  steps: ReturnType<typeof buildModuleSteps>;
-  slug: string;
-  moduleOrder: number;
-  onRetry: () => void;
   onComplete: () => void;
   submitting: boolean;
   confettiFired: React.MutableRefObject<boolean>;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Celebration confetti for passing
+  // Big celebration confetti
   useEffect(() => {
-    if (!passed || confettiFired.current) return;
+    if (confettiFired.current) return;
     confettiFired.current = true;
 
     const colors = ["#0f7fb3", "#22d3ee", "#fbbf24", "#34d399", "#f472b6", "#6366f1"];
 
-    // Big center burst
-    confetti({ particleCount: 120, spread: 120, origin: { x: 0.5, y: 0.35 }, colors });
+    // Initial big burst
+    confetti({ particleCount: 150, spread: 140, origin: { x: 0.5, y: 0.3 }, colors });
 
     // Staggered side bursts
     setTimeout(() => {
-      confetti({ particleCount: 60, angle: 60, spread: 55, origin: { x: 0, y: 0.5 }, colors });
-      confetti({ particleCount: 60, angle: 120, spread: 55, origin: { x: 1, y: 0.5 }, colors });
+      confetti({ particleCount: 80, angle: 60, spread: 55, origin: { x: 0, y: 0.5 }, colors });
+      confetti({ particleCount: 80, angle: 120, spread: 55, origin: { x: 1, y: 0.5 }, colors });
     }, 400);
 
     // Sustained side streams
-    const end = Date.now() + 3000;
+    const end = Date.now() + 4000;
     const frame = () => {
-      confetti({ particleCount: 3, angle: 55 + Math.random() * 15, spread: 50, origin: { x: 0, y: 0.5 + Math.random() * 0.2 }, colors });
-      confetti({ particleCount: 3, angle: 110 + Math.random() * 15, spread: 50, origin: { x: 1, y: 0.5 + Math.random() * 0.2 }, colors });
+      confetti({ particleCount: 4, angle: 55 + Math.random() * 15, spread: 50, origin: { x: 0, y: 0.4 + Math.random() * 0.3 }, colors });
+      confetti({ particleCount: 4, angle: 110 + Math.random() * 15, spread: 50, origin: { x: 1, y: 0.4 + Math.random() * 0.3 }, colors });
       if (Date.now() < end) requestAnimationFrame(frame);
     };
     requestAnimationFrame(frame);
 
-    // Final top rain
+    // Top rain
     setTimeout(() => {
-      confetti({ particleCount: 80, spread: 160, origin: { x: 0.5, y: -0.1 }, gravity: 0.6, ticks: 300, colors });
-    }, 1500);
-  }, [passed, confettiFired]);
+      confetti({ particleCount: 100, spread: 180, origin: { x: 0.5, y: -0.1 }, gravity: 0.5, ticks: 350, colors });
+    }, 1200);
 
-  // Certificate download
+    // Second burst
+    setTimeout(() => {
+      confetti({ particleCount: 80, spread: 120, origin: { x: 0.5, y: 0.25 }, colors });
+    }, 2500);
+  }, [confettiFired]);
+
   function downloadCertificate() {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -486,21 +485,17 @@ function FinalReviewResult({
     canvas.width = w;
     canvas.height = h;
 
-    // Background
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, w, h);
 
-    // Border
     ctx.strokeStyle = "#0f4c81";
     ctx.lineWidth = 6;
     ctx.strokeRect(30, 30, w - 60, h - 60);
 
-    // Inner border
     ctx.strokeStyle = "#22d3ee";
     ctx.lineWidth = 2;
     ctx.strokeRect(40, 40, w - 80, h - 80);
 
-    // Logo
     const logo = new Image();
     logo.crossOrigin = "anonymous";
     logo.onload = () => {
@@ -511,155 +506,150 @@ function FinalReviewResult({
       triggerDownload(canvas);
     };
     logo.onerror = () => {
-      // Draw without logo
       drawCertText(ctx, w, h, 0);
       triggerDownload(canvas);
     };
     logo.src = "/logo.png";
+
+    function drawCertText(c: CanvasRenderingContext2D, cw: number, ch: number, logoH: number) {
+      const startY = 80 + Math.max(logoH, 60) + 20;
+
+      c.fillStyle = "#0f4c81";
+      c.font = "bold 14px Arial";
+      c.textAlign = "center";
+      c.letterSpacing = "6px";
+      c.fillText("CERTIFICATE OF COMPLETION", cw / 2, startY);
+      c.letterSpacing = "0px";
+
+      c.strokeStyle = "#22d3ee";
+      c.lineWidth = 2;
+      c.beginPath();
+      c.moveTo(cw / 2 - 120, startY + 18);
+      c.lineTo(cw / 2 + 120, startY + 18);
+      c.stroke();
+
+      c.fillStyle = "#5d7391";
+      c.font = "16px Arial";
+      c.fillText("This certifies that", cw / 2, startY + 55);
+
+      c.fillStyle = "#0f4c81";
+      c.font = "bold 36px Georgia";
+      c.fillText("_______________________", cw / 2, startY + 110);
+
+      c.fillStyle = "#5d7391";
+      c.font = "16px Arial";
+      c.fillText("has successfully completed the", cw / 2, startY + 155);
+
+      c.fillStyle = "#0f4c81";
+      c.font = "bold 28px Georgia";
+      c.fillText("AAP Start Training Program", cw / 2, startY + 200);
+
+      c.fillStyle = "#5d7391";
+      c.font = "16px Arial";
+      const trackName = moduleTracks.includes("hr") ? "HR Administrative Assistant" : moduleTracks[0] ?? "";
+      c.fillText(trackName + " Track", cw / 2, startY + 240);
+
+      c.fillStyle = "#0f7fb3";
+      c.font = "bold 18px Arial";
+      c.fillText(`Final Review: ${score}/${total}`, cw / 2, startY + 285);
+
+      c.fillStyle = "#5d7391";
+      c.font = "14px Arial";
+      const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+      c.fillText(today, cw / 2, startY + 330);
+
+      c.strokeStyle = "#0f4c81";
+      c.lineWidth = 3;
+      c.beginPath(); c.moveTo(50, 70); c.lineTo(50, 50); c.lineTo(70, 50); c.stroke();
+      c.beginPath(); c.moveTo(cw - 50, 70); c.lineTo(cw - 50, 50); c.lineTo(cw - 70, 50); c.stroke();
+      c.beginPath(); c.moveTo(50, ch - 70); c.lineTo(50, ch - 50); c.lineTo(70, ch - 50); c.stroke();
+      c.beginPath(); c.moveTo(cw - 50, ch - 70); c.lineTo(cw - 50, ch - 50); c.lineTo(cw - 70, ch - 50); c.stroke();
+    }
+
+    function triggerDownload(cvs: HTMLCanvasElement) {
+      const link = document.createElement("a");
+      link.download = "AAP_Start_Certificate.png";
+      link.href = cvs.toDataURL("image/png");
+      link.click();
+    }
   }
 
-  function drawCertText(ctx: CanvasRenderingContext2D, w: number, h: number, logoH: number) {
-    const startY = 80 + Math.max(logoH, 60) + 20;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
 
-    // Certificate of Completion
-    ctx.fillStyle = "#0f4c81";
-    ctx.font = "bold 14px Arial";
-    ctx.textAlign = "center";
-    ctx.letterSpacing = "6px";
-    ctx.fillText("CERTIFICATE OF COMPLETION", w / 2, startY);
-    ctx.letterSpacing = "0px";
+      {/* Modal */}
+      <div className="relative mx-4 w-full max-w-lg animate-in fade-in zoom-in-95 duration-300 rounded-2xl border border-emerald-200 bg-white p-8 shadow-2xl">
+        {/* Checkmark icon */}
+        <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full border-2 border-emerald-300 bg-emerald-50 text-emerald-600">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M4 12.5 9.5 18 20 6" />
+          </svg>
+        </div>
 
-    // Divider line
-    ctx.strokeStyle = "#22d3ee";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(w / 2 - 120, startY + 18);
-    ctx.lineTo(w / 2 + 120, startY + 18);
-    ctx.stroke();
+        <div className="text-center">
+          <p className="text-[0.66rem] font-semibold uppercase tracking-[0.14em] text-emerald-600">
+            Training Complete
+          </p>
+          <h2 className="mt-2 text-[1.8rem] font-extrabold tracking-[-0.02em] text-text-primary">
+            Congratulations!
+          </h2>
+          <p className="mt-3 text-[0.95rem] leading-[1.7] text-text-secondary">
+            You scored <strong className="text-emerald-700">{score}/{total}</strong> on your final review.
+          </p>
+          <p className="mt-1 text-[1rem] font-semibold leading-[1.7] text-[#0f4c81]">
+            You&apos;ve completed the AAP Start Training Program — welcome to the team!
+          </p>
+        </div>
 
-    // "This certifies that"
-    ctx.fillStyle = "#5d7391";
-    ctx.font = "16px Arial";
-    ctx.fillText("This certifies that", w / 2, startY + 55);
+        <div className="mt-8 flex flex-col items-center gap-3">
+          <button
+            onClick={downloadCertificate}
+            className="inline-flex items-center gap-2 rounded-xl border-2 border-[#0f4c81] bg-[#0f4c81] px-6 py-3 text-[0.88rem] font-bold text-white transition-colors hover:bg-[#0d3d6b]"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Download Certificate
+          </button>
 
-    // Employee name placeholder
-    ctx.fillStyle = "#0f4c81";
-    ctx.font = "bold 36px Georgia";
-    ctx.fillText("_______________________", w / 2, startY + 110);
-
-    // "has successfully completed"
-    ctx.fillStyle = "#5d7391";
-    ctx.font = "16px Arial";
-    ctx.fillText("has successfully completed the", w / 2, startY + 155);
-
-    // Program name
-    ctx.fillStyle = "#0f4c81";
-    ctx.font = "bold 28px Georgia";
-    ctx.fillText("AAP Start Training Program", w / 2, startY + 200);
-
-    // Track
-    ctx.fillStyle = "#5d7391";
-    ctx.font = "16px Arial";
-    const trackName = moduleTracks.includes("hr") ? "HR Administrative Assistant" : moduleTracks[0] ?? "";
-    ctx.fillText(trackName + " Track", w / 2, startY + 240);
-
-    // Score
-    ctx.fillStyle = "#0f7fb3";
-    ctx.font = "bold 18px Arial";
-    ctx.fillText(`Final Review: ${score}/${total}`, w / 2, startY + 285);
-
-    // Date
-    ctx.fillStyle = "#5d7391";
-    ctx.font = "14px Arial";
-    const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-    ctx.fillText(today, w / 2, startY + 330);
-
-    // Decorative corners
-    const cornerSize = 20;
-    ctx.strokeStyle = "#0f4c81";
-    ctx.lineWidth = 3;
-    // Top left
-    ctx.beginPath(); ctx.moveTo(50, 70); ctx.lineTo(50, 50); ctx.lineTo(70, 50); ctx.stroke();
-    // Top right
-    ctx.beginPath(); ctx.moveTo(w - 50, 70); ctx.lineTo(w - 50, 50); ctx.lineTo(w - 70, 50); ctx.stroke();
-    // Bottom left
-    ctx.beginPath(); ctx.moveTo(50, h - 70); ctx.lineTo(50, h - 50); ctx.lineTo(70, h - 50); ctx.stroke();
-    // Bottom right
-    ctx.beginPath(); ctx.moveTo(w - 50, h - 70); ctx.lineTo(w - 50, h - 50); ctx.lineTo(w - 70, h - 50); ctx.stroke();
-  }
-
-  function triggerDownload(canvas: HTMLCanvasElement) {
-    const link = document.createElement("a");
-    link.download = "AAP_Start_Certificate.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-  }
-
-  if (passed) {
-    return (
-      <ModuleShell
-        breadcrumbs={[
-          { label: "My Path", href: "/overview" },
-          { label: moduleTitle, href: `/modules/${slug}` },
-          { label: "Complete" },
-        ]}
-        moduleOrder={moduleOrder}
-        stageLabel="Complete"
-        headline="You did it!"
-        description="You passed the final review with flying colors."
-        contextNote={moduleTitle}
-        steps={steps}
-        footer={
-          <ModuleFooter
-            backHref={`/modules/${slug}`}
-            backLabel="Back to module"
-            ctaLabel="Complete Training"
-            onCtaClick={onComplete}
+          <button
+            onClick={onComplete}
             disabled={submitting}
-          />
-        }
-      >
-        <ModulePanel>
-          <div className="flex flex-col items-center text-center py-6">
-            <div className="relative mb-6 flex h-20 w-20 items-center justify-center rounded-full border-2 border-emerald-300 bg-emerald-50 text-emerald-600">
-              <span className="absolute inset-[-6px] rounded-full border border-emerald-200 opacity-60" />
-              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <path d="M4 12.5 9.5 18 20 6" />
-              </svg>
-            </div>
+            className="inline-flex items-center gap-2 rounded-xl border-2 border-brand-action bg-brand-action px-6 py-3 text-[0.88rem] font-bold text-white transition-colors hover:bg-[#0d6d96] disabled:opacity-50"
+          >
+            {submitting ? "Saving..." : "Finish & Return to My Path"}
+          </button>
+        </div>
 
-            <p className="text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-emerald-600">Training Complete</p>
-            <h2 className="mt-3 text-[1.5rem] font-extrabold tracking-[-0.02em] text-text-primary">
-              Congratulations!
-            </h2>
-            <p className="mt-3 max-w-[480px] text-[0.95rem] leading-[1.7] text-text-secondary">
-              You scored <strong className="text-emerald-700">{score}/{total}</strong> on your final review.
-              You&apos;ve completed the AAP Start Training Program — welcome to the team!
-            </p>
+        <canvas ref={canvasRef} className="hidden" />
+      </div>
+    </div>
+  );
+}
 
-            <div className="mt-8 flex flex-col items-center gap-3">
-              <button
-                onClick={downloadCertificate}
-                className="inline-flex items-center gap-2 rounded-xl border-2 border-[#0f4c81] bg-[#0f4c81] px-6 py-3 text-[0.88rem] font-bold text-white transition-colors hover:bg-[#0d3d6b]"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="7 10 12 15 17 10" />
-                  <line x1="12" y1="15" x2="12" y2="3" />
-                </svg>
-                Download Certificate
-              </button>
-              <p className="text-[0.75rem] text-[#5d7391]">Save your certificate of completion</p>
-            </div>
+/* ── Final Review Failed Screen ──────────────────────────────────────────── */
 
-            <canvas ref={canvasRef} className="hidden" />
-          </div>
-        </ModulePanel>
-      </ModuleShell>
-    );
-  }
-
-  // Failed — encouraging retry screen
+function FinalReviewFailed({
+  score,
+  total,
+  moduleTitle,
+  steps,
+  slug,
+  moduleOrder,
+  onRetry,
+}: {
+  score: number;
+  total: number;
+  moduleTitle: string;
+  steps: ReturnType<typeof buildModuleSteps>;
+  slug: string;
+  moduleOrder: number;
+  onRetry: () => void;
+}) {
   return (
     <ModuleShell
       breadcrumbs={[
