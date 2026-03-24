@@ -24,7 +24,7 @@ export interface ChecklistBlockItem {
 }
 
 export interface ContentBlock {
-  type: "text" | "heading" | "callout" | "list" | "image" | "video" | "checklist" | "link" | "download" | "aside" | "qrcode" | "track_block" | "tabs";
+  type: "text" | "heading" | "subheading" | "callout" | "list" | "image" | "video" | "checklist" | "link" | "download" | "aside" | "qrcode" | "track_block" | "tabs";
   content?: string;
   items?: string[] | ChecklistBlockItem[];
   variant?: string;

@@ -46,6 +46,16 @@ export function ContentBlock({ block, emphasizeLead = false, variant = "training
         </div>
       );
 
+    case "subheading":
+      return (
+        <h3
+          className="text-[1.02rem] font-bold tracking-[-0.01em]"
+          style={{ color: "var(--heading-color)", marginTop: "1.25rem", marginBottom: "0.25rem" }}
+        >
+          {block.content ?? ""}
+        </h3>
+      );
+
     case "text":
       return (
         <div

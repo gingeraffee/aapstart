@@ -40,9 +40,15 @@ function splitTextBlockByHeadings(block: ModuleContentBlock): ModuleContentBlock
   if (parts.length <= 1) return [block];
 
   return parts.map((part) => {
-    if (/^<h[23][^>]*>/i.test(part)) {
+    if (/^<h2[^>]*>/i.test(part)) {
       return {
         type: "heading",
+        content: stripHtml(part),
+      };
+    }
+    if (/^<h3[^>]*>/i.test(part)) {
+      return {
+        type: "subheading",
         content: stripHtml(part),
       };
     }
