@@ -1038,7 +1038,7 @@ export default function ModulePage() {
 
   const normalizedBlocks = currentModule.content_blocks.flatMap((block) => splitTextBlockByHeadings(block));
 
-  type Section = { id: string; title?: string; blocks: ModuleContentBlock[] };
+  type Section = { id: string; title?: string; blocks: ModuleContentBlock[]; noStep?: boolean };
   const output: Section[] = [];
 
   let sectionIndex = 0;
@@ -1066,7 +1066,26 @@ export default function ModulePage() {
     output.push(current);
   }
 
+  // Mark sections that contain subheadings as non-step guidance sections
+  output.forEach((section) => {
+    if (section.blocks.some((b) => b.type === "subheading")) {
+      section.noStep = true;
+    }
+  });
+
   const sections = output.filter((section) => section.title || section.blocks.length > 0);
+
+  // Build a map from section array index to step number, skipping noStep sections
+  const stepNumberMap: Record<number, number> = {};
+  let stepCounter = 0;
+  sections.forEach((section, i) => {
+    if (section.noStep) {
+      stepNumberMap[i] = -1; // not a step
+    } else {
+      stepNumberMap[i] = stepCounter;
+      stepCounter++;
+    }
+  });
 
   // Override first section for How Work Works
   if (currentModule.title.toLowerCase().includes("how work works")) {
@@ -1467,23 +1486,24 @@ export default function ModulePage() {
   );
 
   const renderSection = (
-    section: { id: string; title?: string; blocks: ModuleContentBlock[] },
+    section: Section,
     sectionIndex: number,
     style: "featured" | "open"
   ) => {
     const isFeatured = style === "featured";
     const isTimeline = isManagement && !isFeatured;
+    const isGuidanceSection = !!(section as Section).noStep;
 
-    const heading = isTimeline ? (
+    const heading = isTimeline && !isGuidanceSection ? (
       // Timeline heading: eyebrow + clean heading (no cyan bar)
       <div className="mb-5">
-        <p className="mgmt-step-eyebrow">Step {sectionIndex}</p>
+        <p className="mgmt-step-eyebrow">Step {stepNumberMap[sectionIndex] ?? sectionIndex}</p>
         <h2 className="mgmt-step-heading">
           {section.title ? stripSectionNumber(section.title.replace(/\?$/, "")) : "Overview"}
         </h2>
       </div>
     ) : (
-      // Standard heading with cyan gradient bar
+      // Standard heading with cyan gradient bar (also used for guidance sections)
       <div className={cn("flex items-center gap-3", isFeatured ? "mb-3" : "mb-4")}>
         <span className="h-5 w-[3px] shrink-0 rounded-full" style={{ background: "linear-gradient(180deg, #22d3ee 0%, #0ea5d9 100%)" }} />
         <h2 className={cn("font-extrabold tracking-[-0.025em] text-[#0d1f3a]", isFeatured ? "text-[1.34rem]" : "text-[1.48rem]")}>
@@ -1525,11 +1545,21 @@ export default function ModulePage() {
 
     // Management timeline layout: step marker + content on open background
     if (isManagement) {
+      if (isGuidanceSection) {
+        // Guidance section: no step marker, just content
+        return (
+          <section key={section.id} id={section.id} className="mgmt-timeline-section scroll-mt-24">
+            <div className="mgmt-timeline-content" style={{ paddingLeft: "3.5rem" }}>
+              {content}
+            </div>
+          </section>
+        );
+      }
       return (
         <section key={section.id} id={section.id} className="mgmt-timeline-section scroll-mt-24">
           <div className="mgmt-timeline-row">
             <div className="mgmt-timeline-marker">
-              <span className="mgmt-step-number">{sectionIndex}</span>
+              <span className="mgmt-step-number">{stepNumberMap[sectionIndex] ?? sectionIndex}</span>
             </div>
             <div className="mgmt-timeline-content">
               {content}
