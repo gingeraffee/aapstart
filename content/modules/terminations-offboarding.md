@@ -47,7 +47,7 @@ Managers must provide HR with supporting documentation, as applicable, including
 - Relevant emails or notes previously shared or discussed
 
 :::callout info
-HR may already have some or all documentation on file. However, managers are responsible for ensuring HR has the most current and complete information before a termination is finalized, including the specific documentation supporting the decision. This documentation may be needed for unemployment claims, legal inquiries or internal review.
+HR may already have some or all of this documentation on file. However, managers are responsible for ensuring HR has the most current and complete information before a termination is finalized, including the specific documentation supporting the decision. This documentation may be needed for unemployment claims, legal inquiries or internal review.
 :::
 
 
@@ -126,9 +126,6 @@ Managers are responsible for makingh sure offboarding details are accurate, comp
 - Scheduled access disable time should generally be the end of the employee's last working day.
 - Clean documentation matters after the employee leaves as well; termination support records may later be needed for unemployment claims, legal questions or internal review.
 
-:::callout warning
-Clean documentation matters after the employee leaves too. Termination support records may be needed later for unemployment claims, legal questions, or internal review.
-:::
 
 <p style="text-align: center;"><strong>Need more help? The full guide can be downloaded below.</strong></p>
 
