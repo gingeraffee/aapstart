@@ -228,15 +228,18 @@ Minimum increment: 2 hours. Need more than 5 consecutive days? That requires wri
 
 **Holidays**
 
-AAP observes the following paid holidays for eligible regular full-time employees after 60 calendar days:
+After 60 days of full-time employment, you're eligible for paid holidays. Here's the lineup:
 
 New Year's Day · Memorial Day · Independence Day · Labor Day · Thanksgiving · Day after Thanksgiving · Christmas Eve · Christmas Day
 
-Day after Thanksgiving and Christmas Eve may be substituted with a Floating Holiday. Holidays falling on Saturday are observed the Friday before. Holidays falling on Sunday are observed the Monday after. If you're required to work a holiday, you'll receive a Floating Holiday to use within 90 days.
+A couple things to know:
+
+- The day after Thanksgiving and Christmas Eve are staffed based on business demands. Required to work on that day? You'll get a Floating Holiday to use within 90 days.
+- If a holiday falls on Saturday, it's observed the Friday before. If it falls on Sunday, it's observed the Monday after.
 
 **Requesting Time Off**
 
-Planned time off: submit your request by 5:00 PM the day before. Unplanned absence: notify your supervisor before your scheduled start time on each day you're out. Log everything in BambooHR.
+Planning ahead? Submit vacation requests in BambooHR by 5:00 PM the day before. Any last minute vacation requests may not be approved. Something unexpected comes up? Let your supervisor know that you need to use personal time before your scheduled start time. Either way, be sure to log it in BambooHR so everything stays on track.
 
 :::callout tip
 Not all time away is the same. Medical leave, accommodation, and protected leave situations follow different rules. Involve HR early — not after the fact.
