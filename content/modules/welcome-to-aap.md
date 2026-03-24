@@ -104,6 +104,6 @@ You are not expected to memorize everything on day one, or even week one! The go
 AAP Start is a starting point, not a substitute for your supervisor. Use it to get your footing, then keep the conversation going with your team.
 :::
 
-## Need Help?
+## When You Need Help?
 
 For anything related to onboarding, HR policies, benefits, or your employee record, reach out to **Nicole Thornton, HR Manager**. For higher-level questions or escalations, contact **Brandy Hooper, VP of HR**. And for day-to-day support, your supervisor is always a reliable first stop.
