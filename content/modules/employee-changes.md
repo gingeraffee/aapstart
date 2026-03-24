@@ -154,7 +154,7 @@ Manager responsibilities include:
 - Documenting the rationale clearly in BambooHR comments
 - Communicating changes to affected team members
 
-## 10. HR Responsibilities After Manager Submission
+## HR Responsibilities After Manager Submission
 
 After the manager submits the request, HR is responsible for processing and routing the change.
 
@@ -166,7 +166,7 @@ HR responsibilities include:
 - Notifying IT, Facilities, Marketing, and Finance when needed
 - Updating the employee file and organizational chart
 
-## 11. IT and Facilities Workflow Triggered by Changes
+## IT and Facilities Workflow Triggered by Changes
 
 Some requests trigger operational follow-up after HR review.
 
@@ -179,7 +179,7 @@ Some requests trigger operational follow-up after HR review.
 Following the SharePoint and Intune rollout, drive access updates will move from shared-drive requests to SharePoint-based access control.
 :::
 
-## 12. Employee Notification
+## Employee Notification
 
 Once the change is approved and processed:
 
@@ -188,7 +188,7 @@ Once the change is approved and processed:
 - The employee receives the updated job description when applicable
 - The employee should acknowledge schedule or pay changes when applicable
 
-## 13. Termination or Offboarding (Brief Overview)
+## Termination or Offboarding (Brief Overview)
 
 If the employee change involves separation:
 
@@ -200,7 +200,7 @@ If the employee change involves separation:
 
 For more information, see the Manager Offboarding Process Guide.
 
-## 14. Timeline Expectations
+## Timeline Expectations
 
 - Submit change requests at least 5 business days before the effective date
 - Payroll-related changes must be submitted before payroll cutoff

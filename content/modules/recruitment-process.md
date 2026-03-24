@@ -67,7 +67,7 @@ Conduct structured, fair, and job-related interviews. All panel members must hav
 - Prepare a mix of behavioral, situational, technical, and culture-fit questions.
 - Share interview questions or topic areas with all panel members in advance.
 
-**Use the resources below for examples of interview questions that help assess candidate experience, judgement, and job fit.**
+**Use the resources below for examples of interview questions that help assess candidate experience, judgment, and job fit.**
 
 :::link
 url: /downloads/scenario-based-interview-questions.pdf
