@@ -1505,11 +1505,7 @@ export default function ModulePage() {
             <GutCheckBlock scenarios={howWorkWorksGutChecks} />
           </div>
         )}
-        {!isManagement && isFeatured && benefitsGutChecks.length > 0 && (
-          <div className="mt-6 animate-fade-up" style={{ animationDelay: "150ms" }}>
-            <GutCheckBlock scenarios={benefitsGutChecks} />
-          </div>
-        )}
+        {/* Benefits gut check rendered at page bottom, not here */}
       </>
     );
 
@@ -1715,7 +1711,20 @@ export default function ModulePage() {
         </section>
         )}
 
-        {displaySections.slice(1).map((section, index) => renderSection(section, index + 1, "open"))}
+        {/* Render sections before last, then Benefits gut check, then last section (Need Help) */}
+        {displaySections.length > 2
+          ? displaySections.slice(1, -1).map((section, index) => renderSection(section, index + 1, "open"))
+          : null}
+        {!isManagement && benefitsGutChecks.length > 0 && (
+          <div className="mt-2">
+            <ModulePanel>
+              <GutCheckBlock scenarios={benefitsGutChecks} />
+            </ModulePanel>
+          </div>
+        )}
+        {displaySections.length > 1
+          ? renderSection(displaySections[displaySections.length - 1], displaySections.length - 1, "open")
+          : null}
 
         {isManagement ? (
         <div className="mt-10 pt-5" style={{ borderTop: "1px solid var(--mgmt-section-divider)" }}>
