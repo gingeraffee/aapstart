@@ -1553,7 +1553,7 @@ export default function ModulePage() {
                     {groupIndex > 0 ? (
                       <div className={cn("mb-6 h-px w-full", isFeatured ? "bg-[linear-gradient(90deg,rgba(14,127,179,0.22)_0%,rgba(14,127,179,0.08)_40%,rgba(14,127,179,0)_100%)]" : "bg-[linear-gradient(90deg,rgba(27,44,86,0.18)_0%,rgba(27,44,86,0.05)_36%,rgba(27,44,86,0)_100%)]")} />
                     ) : null}
-                    <div className={cn("grid gap-3", group.blocks.length === 2 ? "grid-cols-2" : "grid-cols-3")}>
+                    <div className={cn("grid gap-3", group.blocks.length === 2 ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3")}>
                       {group.blocks.map((item) => (
                         <ContentBlock key={`${section.id}-${item.index}`} block={item.block} emphasizeLead={false} variant={isManagement ? "resource" : "training"} gridItem />
                       ))}

@@ -768,4 +768,8 @@
   .mgmt-timeline-section:not(:last-of-type)::after {
     margin-top: 1rem;
   }
+
+  .mgmt-timeline-content {
+    padding-left: 0 !important;
+  }
 }

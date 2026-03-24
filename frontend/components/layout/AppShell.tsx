@@ -9,6 +9,7 @@ import { useTheme } from "@/lib/context/ThemeContext";
 import { usePreview } from "@/lib/context/PreviewContext";
 import { modulesApi, progressApi } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { MobileBottomNav } from "./MobileBottomNav";
 import type { ModuleSummary, ProgressRecord, Track } from "@/lib/types";
 
 interface AppShellProps {
@@ -162,7 +163,7 @@ export function AppShell({ children }: AppShellProps) {
   return (
     <div className="flex min-h-screen">
       <nav
-        className="fixed bottom-0 left-0 top-0 z-40 flex w-[248px] flex-col overflow-y-auto"
+        className="fixed bottom-0 left-0 top-0 z-40 hidden w-[248px] flex-col overflow-y-auto md:flex"
         style={{
           background: "var(--sidebar-bg)",
           borderRight: "1px solid var(--sidebar-border)",
@@ -498,8 +499,10 @@ export function AppShell({ children }: AppShellProps) {
         </div>
       </nav>
 
+      <MobileBottomNav />
+
       <header
-        className="fixed left-[248px] right-0 top-0 z-30 flex h-16 items-center px-6 backdrop-blur-md"
+        className="fixed left-0 right-0 top-0 z-30 flex h-16 items-center px-4 backdrop-blur-md md:left-[248px] md:px-6"
         style={{
           background: "var(--header-bg)",
           borderBottom: "1px solid var(--header-border)",
@@ -586,7 +589,7 @@ export function AppShell({ children }: AppShellProps) {
       </header>
 
       <div
-        className="relative ml-[248px] mt-16 flex min-h-[calc(100vh-4rem)] flex-1 flex-col overflow-hidden"
+        className="relative ml-0 mt-16 flex min-h-[calc(100vh-4rem)] flex-1 flex-col overflow-hidden pb-20 md:ml-[248px] md:pb-0"
         style={{ background: "var(--content-bg)" }}
       >
         <div
