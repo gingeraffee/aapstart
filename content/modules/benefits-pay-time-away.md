@@ -123,6 +123,23 @@ quiz:
 
 This module covers pay, benefits timing, PTO, and attendance. You won't need to memorize all of it today — but when questions come up, you'll know where to look.
 
+## Benefits Eligibility Timeline
+
+Benefits don't all kick in at the same time. The table below shows when each one becomes available — and if anything about your eligibility or access looks off, reach out to HR sooner rather than later.
+
+| Benefit | Available |
+|---|---|
+| LinkedIn Learning | Day 1 |
+| Employee Assistance Program (EAP) | Day 1 |
+| Teladoc | First of the month after hire |
+| PTO | After 60 days |
+| Paid Holidays | After 60 days of full-time service |
+| Medical, Dental, Vision, 401(k) | First of month after 60 days |
+
+:::callout tip
+When a benefit becomes available, you may need to complete enrollment steps within a specific window. If something about your eligibility, classification, or access looks off, contact HR early so it can be reviewed and corrected.
+:::
+
 ## Pay and Payroll Basics
 
 Your pay information lives in **Paylocity**. That's where you'll find pay stubs, tax forms and deduction details. AAP pays on a biweekly cycle on **Thursdays**.
@@ -139,23 +156,6 @@ For questions about paycheck deductions, route those through HR.
 url: https://paylocity.com
 label: Access Paylocity
 description: View your pay stubs and paycheck information.
-:::
-
-## Benefits Eligibility Timeline
-
-Benefits don't all kick in at the same time. The table below shows when each one becomes available — and if anything about your eligibility or access looks off, reach out to HR sooner rather than later.
-
-| Benefit | Available |
-|---|---|
-| LinkedIn Learning | Day 1 |
-| Employee Assistance Program (EAP) | Day 1 |
-| Teladoc | First of the month after hire |
-| PTO | After 60 days |
-| Paid Holidays | After 60 days of full-time service |
-| Medical, Dental, Vision, 401(k) | First of month after 60 days |
-
-:::callout tip
-When a benefit becomes available, you may need to complete enrollment steps within a specific window. If something about your eligibility, classification, or access looks off, contact HR early so it can be reviewed and corrected.
 :::
 
 ## Attendance and Timekeeping
@@ -193,7 +193,7 @@ If you're going to be late or absent, report it within 15 minutes of your schedu
 
 ## PTO and Time Away
 
-Vacation, personal leave, and paid holidays are all managed through **BambooHR**. Eligibility starts the first of the month after 60 days, and the breakdowns below cover what's available based on your employment type and tenure..
+Vacation, personal leave, and paid holidays are all managed through **BambooHR**. Eligibility starts the first of the month after 60 days, and the breakdowns below cover what's available based on your employment type and tenure.
 
 :::link
 url: https://aap.bamboohr.com
