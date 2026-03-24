@@ -510,7 +510,7 @@ export function AppShell({ children }: AppShellProps) {
       >
         {/* Preview mode banner */}
         {isPreviewing && (
-          <div className="mr-3 flex items-center gap-2 rounded-[8px] px-3 py-1.5" style={{ background: "#ffffff", border: "1px solid rgba(15, 109, 163, 0.2)", boxShadow: "0 1px 4px rgba(12, 24, 47, 0.08)" }}>
+          <div className="mr-3 hidden items-center gap-2 rounded-[8px] px-3 py-1.5 md:flex" style={{ background: "#ffffff", border: "1px solid rgba(15, 109, 163, 0.2)", boxShadow: "0 1px 4px rgba(12, 24, 47, 0.08)" }}>
             <svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="#0f6da3" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M1 6a5 5 0 0 1 10 0" />
               <circle cx="6" cy="6" r="1.5" />
@@ -530,7 +530,7 @@ export function AppShell({ children }: AppShellProps) {
         )}
 
         <div
-          className="absolute left-1/2 flex -translate-x-1/2 rounded-[12px] p-1"
+          className="mx-auto flex rounded-[12px] p-1 md:absolute md:left-1/2 md:mx-0 md:-translate-x-1/2"
           style={{
             background: "var(--tab-group-bg)",
             border: "1px solid var(--tab-group-border)",
@@ -575,7 +575,7 @@ export function AppShell({ children }: AppShellProps) {
           </button>
         </div>
 
-        <div className="ml-auto flex items-center gap-3">
+        <div className="ml-auto hidden items-center gap-3 md:flex">
           {!isManagement && (
             <div
               className="rounded-[10px] px-2.5 py-1 text-[0.74rem] font-semibold"

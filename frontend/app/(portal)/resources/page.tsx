@@ -238,7 +238,7 @@ export default function ResourceHubPage() {
           </p>
         </div>
 
-        <div className="flex items-start gap-6">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
           <div className="min-w-0 flex-1">
             <div
               className="mb-6 flex flex-col gap-3 rounded-[14px] p-4 sm:flex-row sm:items-center sm:justify-between"
@@ -301,12 +301,12 @@ export default function ResourceHubPage() {
             )}
           </div>
 
-          <aside className="w-64 shrink-0">
+          <aside className="w-full shrink-0 lg:w-64">
             <p className="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-[0.14em]" style={{ background: "var(--welcome-label-bg)", color: "var(--welcome-label-text)" }}>
               <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
               Key Contacts
             </p>
-            <div className="space-y-3">
+            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1 lg:space-y-0">
               {CONTACTS.map((c) => (
                 <ContactCard key={c.email} contact={c} />
               ))}
