@@ -142,15 +142,11 @@ When a benefit becomes available, you may need to complete enrollment steps with
 
 ## Pay and Payroll Basics
 
-Your pay information lives in **Paylocity**. That's where you'll find pay stubs, tax forms and deduction details. AAP pays on a biweekly cycle on **Thursdays**.
+Your pay information lives in **Paylocity**. That's where you'll find pay stubs, tax forms, and deduction details. You can also update your direct deposit information in Paylocity — any changes made before 4:30 PM on Tuesday will be reflected on payday.
 
-**AAP's payroll cadence:**
+AAP pays biweekly, every **Thursday**.
 
-- Pay period runs Sunday through the following Saturday
-- Payroll is submitted at 6:00 PM on the Tuesday before payday
-- Payday is **Thursday**
-
-For questions about paycheck deductions, route those through HR.
+If you ever have questions or concerns about your paycheck or deductions, reach out to the **HR Manager** for help.
 
 :::link
 url: https://paylocity.com
