@@ -197,22 +197,6 @@ label: Request Time Off in BambooHR
 description: Submit vacation, personal leave, and other time-off requests.
 :::
 
-**Vacation**
-
-Available to regular full-time employees. Accrual is based on your anniversary date and is paid out at termination.
-
-| Years of Service | Annual Vacation Hours |
-|-----------------|----------------------|
-| 60 days – 1st anniversary | 24 hours (3 days) |
-| 1st – 2nd anniversary | 40 hours (5 days) |
-| 2nd – 3rd anniversary | 56 hours (7 days) |
-| 3rd – 5th anniversary | 80 hours (10 days) |
-| 5th – 9th anniversary | 120 hours (15 days) |
-| 10th – 19th anniversary | 136 hours (17 days) |
-| 20th anniversary and beyond | 152 hours (19 days) |
-
-Minimum increment: 2 hours. Need more than 5 consecutive days? That requires written approval from the Company President.
-
 **Personal Leave**
 
 Available to all employees after the 60-day waiting period. Does not carry over and is not paid out at termination.
@@ -225,6 +209,22 @@ Available to all employees after the 60-day waiting period. Does not carry over 
 | Part-time | 1 hour per 30 hours worked |
 
 Minimum increment: 1 hour. Accrual date is your full-time hire date — if you converted from part-time, your original hire date does not count.
+
+**Vacation**
+
+Vacation time is available to all full-time employees after 60 days of full-time employment. The amount of vacation time you accrue increases on your full-time anniversary date. This breakdown shows how your time grows each year, so you can start planning your next getaway.
+
+| Years of Service | Annual Vacation Hours |
+|-----------------|----------------------|
+| 60 days – 1st anniversary | 24 hours (3 days) |
+| 1st – 2nd anniversary | 40 hours (5 days) |
+| 2nd – 3rd anniversary | 56 hours (7 days) |
+| 3rd – 5th anniversary | 80 hours (10 days) |
+| 5th – 9th anniversary | 120 hours (15 days) |
+| 10th – 19th anniversary | 136 hours (17 days) |
+| 20th anniversary and beyond | 152 hours (19 days) |
+
+Minimum increment: 2 hours. Need more than 5 consecutive days? That requires written approval from the Company President.
 
 **Holidays**
 
