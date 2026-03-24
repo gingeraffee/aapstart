@@ -78,11 +78,11 @@ Use this option when the employee's last day is known in advance (resignation, r
 
 **Steps:**
 
-1. Enter the **Scheduled Last Day of Employment**.
-2. Enter the **date and time access should be disabled,** typically the end of the employee's last working day unless HR or IT directs otherwise.
-3. Select all required **Offboarding IT Tasks**.
-4. If email must be forwarded, enter the forwarding address.
-5. Add any additional notes in the **Offboarding Request Notes** field, such as equipment return details, special access needs, or shared mailbox instructions.
+- Enter the **Scheduled Last Day of Employment**.
+- Enter the **date and time access should be disabled,** typically the end of the employee's last working day unless HR or IT directs otherwise.
+- Select all required **Offboarding IT Tasks**.
+- If email must be forwarded, enter the forwarding address.
+- Add any additional notes in the **Offboarding Request Notes** field, such as equipment return details, special access needs, or shared mailbox instructions.
 
 **Available Offboarding IT Tasks may include:**
 
@@ -106,17 +106,15 @@ Add any additional notes in the **Offboarding Request Notes** field (e.g., equip
 
 ## 5. Manager Responsibilities
 
-Managers are responsible for makingh sure offboarding details are accurate, complete, and timely. 
+Managers are responsible for making sure offboarding details are accurate, complete, and timely. 
 
 **Manager responsibilities include:**
 
-:::checklist
-- [ ] Ensuring all offboarding selections are accurate, since the details entered determine IT ticket routing.
-- [ ] Providing clear notes for IT regarding special instructionsm such as shared mailboxes, forwarding needs, critical access removal.
-- [ ] Communicating with HR immediately if offboarding circumstances change, including changes to date, time, reason, or urgency.
-- [ ] Collecting company property as required and coordinating return logistics.
-- [ ] Confirming that termination and offboarding steps align with HR guidance.
-:::
+- Ensuring all offboarding selections are accurate, since the details entered determine IT ticket routing.
+- Providing clear notes for IT regarding special instructions, such as shared mailboxes, forwarding needs, critical access removal.
+- Communicating with HR immediately if offboarding circumstances change, including changes to date, time, reason, or urgency.
+- Collecting company property as required and coordinating return logistics.
+- Confirming that termination and offboarding steps align with HR guidance.
 
 ## 6. Important Reminders
 
