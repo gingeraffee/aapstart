@@ -16,6 +16,8 @@ This guide provides Hiring Managers, Supervisors, and Department Leaders with a 
 
 ## Employee Changes Requiring Manager Action
 
+Managers should submit an employee change request for changes such as:
+
 - Position or title change
 - Pay rate or salary adjustment
 - Bonus to be paid
@@ -37,18 +39,17 @@ To submit an employee change request:
 3. Click **Request a Change** at the top of the page.
 4. Select the appropriate change type.
 5. Complete all required fields.
-6. Add comments or attach documents when required, such as a job description or justification.
+6. Add comments or attached documents when needed, such as a job description or justification.
 
-**Common BambooHR Change Types**
+**Common BambooHR Request Types:**
 
-Select the option that best matches the requested change:
+- **Job Information -** Position/title changes, department changes, reporting manager changes, work schedule changes, location changes, transfers between AAP and API, and demotions involving job changes.
+- **Compensation -** Pay rate or salary adjustments, including pay changes related to a demotion.
+- **Bonus to be Paid -- Payroll Notification -** One-time bonus payments
+- **Promotion -** Job/title change and pay change together
+- **Employment Status -** Full-time or part-time status changes and terminations
 
-- Address Change
-- Bonus to be Paid - Payroll Notification
-- Compensation
-- Employment Status
-- Job Information
-- Promotion
+**Note:** Address changes should be submitted directly by the employee in BambooHR and are not part of the manager employee change process.
 
 :::callout warning "Important"
 Fields marked with an asterisk are required. Incomplete requests may delay HR, payroll, IT, or facilities updates.
