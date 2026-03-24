@@ -66,70 +66,75 @@ Include all applicable details in the request:
 - New department or reporting manager, if applicable
 - Change in FTE status or scheduled hours
 
-## 4. Pay Rate or Salary Change Process
+## Change-Specific Guidance
+
+### Pay Rate or Salary Change
 
 For compensation-related changes:
 
-- Obtain required approvals
-- Secure Division Lead and CEO/President approval for roles that require it
-- Document the justification in BambooHR
-- Allow HR to review the change for compliance and process payroll updates
+- Select Compensation for pay-only changes
+- Select Promotion if the employee is receiving both a title change and a related pay change as part of a promotion
+- Enter the effective date and updated pay information
+- Include justification for the change in BambooHR
+- HR reviews the request for compliance and payroll processing
 
-:::callout warning "Time sensitive"
-Payroll-related changes must be submitted before payroll cutoff. Payroll cutoff is Tuesday by 4:30 PM.
-:::
+### Position or Title Change
 
-## 5. Position or Title Change
-
-When changing an employee's position or title:
+When an employee's position or title changes:
 
 - Update the official job title
-- Provide an updated job description
-- Confirm whether the change affects org chart placement or system access
+- Provide an updated job description, if applicable
+- Confirm whether the change affects the org chart placement, reporting structure or system access
+- Update the Position Request if access, equipment or workspace needs change
 
-HR updates the organizational chart and coordinates any system changes that may be needed.
+HR updates the organizational chart and coordinates related system changes as needed.
 
-## 6. Department or Manager Change
+### Division, Department or Manager Change
 
-When the employee is moving to a new department or manager:
+When an employee moves to a new division, department, or reporting manager:
 
-- Select the new department
-- Assign the new reporting manager
+- Select the new division, if applicable
+- Select the new department, if applicable
+- Assign the new reporting manager, if applicable
 - Document any related workflow or access changes
+- Update the Position Request if access, equipment or workspace is changing
 
-HR adjusts:
+HR updates evaluation routing, workflows, org chart placement, and other related system settings as needed.
 
-- Access when needed
-- Evaluation routing
-- Workflows
-- Organizational chart position
-
-## 7. Schedule, Shift, or Location Change
-
-When the employee's schedule, shift, or work location changes:
-
-- Update the weekly schedule and shift notes
-- Document changes in hours for payroll accuracy
-- Note whether the employee is moving onsite, remote, or hybrid
-
-If the location changes:
-
-- HR updates building access
-- IT updates login or IP-location-based controls
-- Facilities updates workspace requirements
-
-## 8. Transfers Between AAP and API
+### For transfers between AAP and API:
 
 Transfers between divisions require additional coordination because they may affect payroll, systems, email, permissions, branding details, and workspace setup.
 
-For AAP and API transfers:
-
 - HR approval is required
-- IT updates email structure, network access, and permissions
+- IT updates email structure, network access and permissions
 - Marketing updates the employee's email signature template
-- Facilities adjusts workspace and badge access
+- Facilities adjusts workspace and badge access, if applicable
 
-## 9. Manager Responsibilities for Documentation
+### Schedule, Shift, or Location Change
+
+When an employee's schedule, shift, or work location changes:
+
+- Update the new schedule, shift, or work location
+- Document any changes to hours for payroll accuracy
+- Note whether the employee is working onsite, remote, or hybrid, if applicable
+- Update the Position Request if access, equipment, or workspace needs change
+
+If the location changes:
+
+- HR updates records as needed
+- IT updates login, access, or location-based settings, if applicable
+- Facilities updates workspace or building access, if applicable
+
+### Employment Status Change
+
+When an employee changes from full-time to part-time or part-time to full-time:
+
+- Update the employment status in the request
+- Confirm any changes to scheduled hours
+- Promptly communicate the change to HR, since changes in full-time or part-time status may affect legally mandated benefits and other benefit eligibility
+- HR reviews the change and coordinates any related benefits or payroll updates
+
+## Manager Responsibilities for Documentation
 
 Managers are responsible for making sure the request is complete, timely, and clearly documented.
 
