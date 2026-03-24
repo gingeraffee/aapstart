@@ -26,9 +26,11 @@ interface ContentBlockProps {
   emphasizeLead?: boolean;
   /** "training" uses default labels; "resource" uses management-friendly labels */
   variant?: "training" | "resource";
+  /** When true, renders download/link as a vertical card for grid layouts */
+  gridItem?: boolean;
 }
 
-export function ContentBlock({ block, emphasizeLead = false, variant = "training" }: ContentBlockProps) {
+export function ContentBlock({ block, emphasizeLead = false, variant = "training", gridItem = false }: ContentBlockProps) {
   switch (block.type) {
     case "heading":
       return (
@@ -168,6 +170,50 @@ export function ContentBlock({ block, emphasizeLead = false, variant = "training
     case "link":
     case "download": {
       const isDownload = block.type === "download";
+      const icon = isDownload ? (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M8 2v8M5 7l3 3 3-3" />
+          <path d="M3 12h10" />
+        </svg>
+      ) : (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M7 3H3a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V9" />
+          <path d="M10 2h4v4" />
+          <path d="M14 2 8 8" />
+        </svg>
+      );
+
+      if (gridItem) {
+        return (
+          <a
+            href={block.url ?? "#"}
+            download={isDownload ? "" : undefined}
+            target={isDownload ? "_self" : "_blank"}
+            rel={isDownload ? undefined : "noopener noreferrer"}
+            className="group flex h-full flex-col items-center justify-center rounded-[14px] border px-4 py-5 text-center no-underline transition-all duration-200 hover:-translate-y-px"
+            style={{
+              background: "linear-gradient(135deg, #112744 0%, #1b3a5c 100%)",
+              borderColor: "rgba(255,255,255,0.1)",
+            }}
+          >
+            <span
+              className="mb-3 flex h-10 w-10 items-center justify-center rounded-[10px]"
+              style={{ background: "rgba(255,255,255,0.12)" }}
+            >
+              {icon}
+            </span>
+            <p className="text-[0.85rem] font-semibold leading-snug text-white">
+              {block.label ?? block.url}
+            </p>
+            {block.description && (
+              <p className="mt-1 text-[0.74rem] leading-[1.4] text-white/60">
+                {block.description}
+              </p>
+            )}
+          </a>
+        );
+      }
+
       return (
         <a
           href={block.url ?? "#"}
@@ -185,18 +231,7 @@ export function ContentBlock({ block, emphasizeLead = false, variant = "training
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px]"
             style={{ background: "rgba(255,255,255,0.12)" }}
           >
-            {isDownload ? (
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M8 2v8M5 7l3 3 3-3" />
-                <path d="M3 12h10" />
-              </svg>
-            ) : (
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M7 3H3a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V9" />
-                <path d="M10 2h4v4" />
-                <path d="M14 2 8 8" />
-              </svg>
-            )}
+            {icon}
           </span>
           {/* Text */}
           <div className="min-w-0 flex-1">

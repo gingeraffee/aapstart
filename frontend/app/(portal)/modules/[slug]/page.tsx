@@ -1521,14 +1521,57 @@ export default function ModulePage() {
           <GuidanceAccordion blocks={section.blocks} sectionId={section.id} variant={isManagement ? "resource" : "training"} />
         ) : (
         <div className="space-y-0">
-          {section.blocks.map((block, blockIndex) => (
-            <div key={`${section.id}-${blockIndex}`} className="animate-fade-up" style={{ animationDelay: `${Math.min(blockIndex, 8) * 25}ms` }}>
-              {blockIndex > 0 ? (
-                <div className={cn("mb-6 h-px w-full", isFeatured ? "bg-[linear-gradient(90deg,rgba(14,127,179,0.22)_0%,rgba(14,127,179,0.08)_40%,rgba(14,127,179,0)_100%)]" : "bg-[linear-gradient(90deg,rgba(27,44,86,0.18)_0%,rgba(27,44,86,0.05)_36%,rgba(27,44,86,0)_100%)]")} />
-              ) : null}
-              <ContentBlock block={block} emphasizeLead={block.type === "text" && blockIndex === 0} variant={isManagement ? "resource" : "training"} />
-            </div>
-          ))}
+          {(() => {
+            // Group consecutive download/link blocks into grid rows
+            const groups: { type: "single"; block: ModuleContentBlock; index: number }[] | { type: "grid"; blocks: { block: ModuleContentBlock; index: number }[] }[] = [];
+            const result: ({ type: "single"; block: ModuleContentBlock; index: number } | { type: "grid"; blocks: { block: ModuleContentBlock; index: number }[] })[] = [];
+            let pendingDownloads: { block: ModuleContentBlock; index: number }[] = [];
+
+            const flushDownloads = () => {
+              if (pendingDownloads.length >= 2) {
+                result.push({ type: "grid", blocks: [...pendingDownloads] });
+              } else if (pendingDownloads.length === 1) {
+                result.push({ type: "single", block: pendingDownloads[0].block, index: pendingDownloads[0].index });
+              }
+              pendingDownloads = [];
+            };
+
+            section.blocks.forEach((block, blockIndex) => {
+              if (block.type === "download" || block.type === "link") {
+                pendingDownloads.push({ block, index: blockIndex });
+              } else {
+                flushDownloads();
+                result.push({ type: "single", block, index: blockIndex });
+              }
+            });
+            flushDownloads();
+
+            return result.map((group, groupIndex) => {
+              if (group.type === "grid") {
+                return (
+                  <div key={`${section.id}-grid-${groupIndex}`} className="animate-fade-up" style={{ animationDelay: `${Math.min(groupIndex, 8) * 25}ms` }}>
+                    {groupIndex > 0 ? (
+                      <div className={cn("mb-6 h-px w-full", isFeatured ? "bg-[linear-gradient(90deg,rgba(14,127,179,0.22)_0%,rgba(14,127,179,0.08)_40%,rgba(14,127,179,0)_100%)]" : "bg-[linear-gradient(90deg,rgba(27,44,86,0.18)_0%,rgba(27,44,86,0.05)_36%,rgba(27,44,86,0)_100%)]")} />
+                    ) : null}
+                    <div className={cn("grid gap-3", group.blocks.length === 2 ? "grid-cols-2" : "grid-cols-3")}>
+                      {group.blocks.map((item) => (
+                        <ContentBlock key={`${section.id}-${item.index}`} block={item.block} emphasizeLead={false} variant={isManagement ? "resource" : "training"} gridItem />
+                      ))}
+                    </div>
+                  </div>
+                );
+              }
+              const { block, index: blockIndex } = group;
+              return (
+                <div key={`${section.id}-${blockIndex}`} className="animate-fade-up" style={{ animationDelay: `${Math.min(groupIndex, 8) * 25}ms` }}>
+                  {groupIndex > 0 ? (
+                    <div className={cn("mb-6 h-px w-full", isFeatured ? "bg-[linear-gradient(90deg,rgba(14,127,179,0.22)_0%,rgba(14,127,179,0.08)_40%,rgba(14,127,179,0)_100%)]" : "bg-[linear-gradient(90deg,rgba(27,44,86,0.18)_0%,rgba(27,44,86,0.05)_36%,rgba(27,44,86,0)_100%)]")} />
+                  ) : null}
+                  <ContentBlock block={block} emphasizeLead={block.type === "text" && blockIndex === 0} variant={isManagement ? "resource" : "training"} />
+                </div>
+              );
+            });
+          })()}
         </div>
         )}
         {!isManagement && isFeatured && howWorkWorksGutChecks.length > 0 && (
