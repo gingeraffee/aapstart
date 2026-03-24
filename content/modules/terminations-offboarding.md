@@ -78,11 +78,11 @@ Use this option when the employee's last day is known in advance (resignation, r
 
 **Steps:**
 
-- Enter the **Scheduled Last Day of Employment**.
-- Enter the **date and time access should be disabled,** typically the end of the employee's last working day unless HR or IT directs otherwise.
-- Select all required **Offboarding IT Tasks**.
-- If email must be forwarded, enter the forwarding address.
-- Add any additional notes in the **Offboarding Request Notes** field, such as equipment return details, special access needs, or shared mailbox instructions.
+1. Enter the **Scheduled Last Day of Employment**.
+2. Enter the **date and time access should be disabled,** typically the end of the employee's last working day unless HR or IT directs otherwise.
+3. Select all required **Offboarding IT Tasks**.
+4. If email must be forwarded, enter the forwarding address.
+5. Add any additional notes in the **Offboarding Request Notes** field, such as equipment return details, special access needs, or shared mailbox instructions.
 
 **Available Offboarding IT Tasks may include:**
 

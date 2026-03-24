@@ -481,6 +481,14 @@
     max-width: 64ch;
   }
 
+  .prose-module ol {
+    list-style: decimal;
+  }
+
+  .prose-module ol li {
+    padding-left: 0.25rem;
+  }
+
   .prose-module ul li {
     list-style: none;
     position: relative;
