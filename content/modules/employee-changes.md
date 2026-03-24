@@ -83,6 +83,10 @@ For compensation-related changes:
 - Include justification for the change in BambooHR
 - HR reviews the request for compliance and payroll processing
 
+:::callout warning "Important"
+Submit payroll-related changes before payroll cutoff.
+:::
+
 ### Position or Title Change
 
 When an employee's position or title changes:
