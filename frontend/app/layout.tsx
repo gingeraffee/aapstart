@@ -18,8 +18,8 @@ export const metadata: Metadata = {
   title: "AAP Start",
   description: "Your guided onboarding portal.",
   icons: {
-    icon: "/favicon.png",
-    apple: "/favicon.png",
+    icon: "/favicon.svg",
+    apple: "/favicon.svg",
   },
 };
 
