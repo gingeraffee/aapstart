@@ -10,54 +10,37 @@ requiresQuiz: false
 requiresAcknowledgement: false
 ---
 
-## AAP/API Coaching & Corrective Action Guide for Managers
+## Purpose of This Guide
 
-This guide provides managers with a structured, fair, and legally compliant approach to coaching employees, addressing performance issues, and documenting corrective action when necessary. The goal is to support employee success while ensuring consistency and protecting the organization.
+This guide outlines how managers should coach employees, address performance or behavior concerns, document issues appropriately, and apply corrective action when needed. The goal is to support employee improvement, ensure consistency, and protect the organization.
 
 ## 1. Coaching Philosophy
 
-- Coaching is the first step to address performance or behavior concerns.
-- Focuses on improvement, guidance, and support.
-- Encourages ongoing communication and development.
-- Corrective action is used only when coaching does not resolve issues.
+Coaching should be the first step when addressing most performance or behavior concerns. It focuses on improvement, guidance, support, and ongoing communication. Corrective action should be used when coaching does not resolve the issue or when the situation is more serious.
 
 ## 2. When to Use Coaching vs. Corrective Action
 
-**Use Coaching When:**
+**Coaching** should be the first step when addressing most performance or behavior concerns. It focuses on improvement, guidance, support, and ongoing communication. **Corrective action** should be used when coaching does not resolve the issue or when the situation is more serious.
 
-- Issues are skill, knowledge, or behavior related.
-- Employee is usually dependable but needs support.
-- The issue is not severe misconduct.
+## 3. Coaching Process
 
-**Use Corrective Action When:**
+When coaching an employee:
 
-- Problems continue after coaching.
-- Performance impacts operations, safety, or teamwork.
-- There is clear policy violation or repeated unprofessional behavior.
-
-## 3. Coaching Process (Step-by-Step)
-
-1. Clarify expectations and review job responsibilities.
-2. Observe and document examples of performance concerns.
-3. Meet privately to discuss the issue and gather employee input.
-4. Set improvement goals with specific timelines.
-5. Provide training, tools, or support.
-6. Monitor progress with regular check-ins.
-7. Document all coaching conversations and efforts.
+1. Clarify expectations and review job responsibilities
+2. Observe and document specific examples of concern
+3. Meet privately with the employee to discuss the issue and gather input
+4. Set improvement goals with clear timelines
+5. Provide training, tools, or support as needed
+6. Monitor progress through regular check-ins
+7. Document coaching conversations and follow-up efforts
 
 ## 4. Corrective Action Process
 
-1. If coaching fails, move to written corrective action.
-2. Review facts and document who/what/when/where.
-3. Discuss concerns with the employee and remain factual.
-4. Prepare a Corrective Action Notice or Performance Improvement Plan (PIP).
-5. Include expectations, deadlines, and consequences.
-6. Employee signs acknowledgment (or note refusal).
-7. Maintain confidentiality at all times.
+If coaching does not lead to improvement, move to written corrective action. Review the facts carefully and document the who, what, when, and where. Discuss the concern with the employee in a factual, professional manner. Prepare the appropriate documentation, such as a Corrective Action Notice or Performance Improvement Plan (PIP), and include expectations, deadlines, and consequences. The employee should sign the acknowledgment, or the refusal should be documented. Maintain confidentiality throughout the process.
 
-## 5. Legal Importance of Coaching & Corrective Action
+## 5. Why Coaching and Corrective Action Matter
 
-Ensuring proper documentation and fairness protects both the employee and the organization.
+A fair and documented coaching and corrective action process protects both the employee and the organization. It helps demonstrate consistent treatment, supports employment decisions, strengthens documentation for unemployment and legal matters, and reduces the risk of wrongful termination or retaliation claims. A documented process also shows a clear sequence: expectations, feedback, support, opportunity to improve, and outcome.
 
 **Legal reasons coaching and corrective action matter:**
 
@@ -69,54 +52,45 @@ Ensuring proper documentation and fairness protects both the employee and the or
 - Strengthens unemployment hearings by proving the employee was aware of expectations.
 - Reduces risk of wrongful termination claims through documentation and fairness.
 
-:::callout info
-A documented coaching process shows: Expectations → Feedback → Support → Chance to improve → Outcome.
-:::
-
 ## 6. Tools & Escalation Steps
 
-1. Verbal coaching / counseling.
-2. Written corrective action.
-3. Performance Improvement Plan (PIP).
-4. Final written warning.
-5. Demotion or reassignment (if appropriate).
-6. Suspension (depending on policy).
-7. Termination.
+Depending on the situation, managers may use one or more of the following:
+
+- Verbal coaching / counseling
+- Written corrective action
+- Performance Improvement Plan (PIP)
+- Final written warning
+- Demotion or reassignment, when appropriate
+- Suspension, depending on policy
+- Termination, with HR involvement and approval as required
 
 ## 7. Best Practices for Managers
 
-:::checklist
-- [ ] Provide timely, specific feedback.
-- [ ] Be consistent with all employees.
-- [ ] Document facts — avoid opinions.
-- [ ] Keep all documentation confidential.
-- [ ] Partner with HR for guidance.
-- [ ] Maintain professionalism and objectivity.
-:::
+Managers should provide feedback promptly, be consistent across employees, document facts rather than opinions, maintain confidentiality, partner with HR for guidance, and remain professional and objective throughout the process.
 
 ## 8. Sample Coaching & Corrective Action Workflow
 
-1. Issue identified.
-2. Coaching conversation occurs.
-3. Action plan and expectations set.
-4. Improvement achieved → process ends.
-5. No improvement → written corrective action or PIP.
-6. Monitor and document progress.
-7. Escalate if behavior or performance does not improve.
+The general workflow is:
 
-## 9. Corrective Action Documentation
+- Issue is identified
+- Coaching conversation takes place
+- Action plan and expectations are established
+- Improvement is achieved and the process ends, or
+- If improvement does not occur, move to written corrective action or a PIP
+- Continue monitoring and documenting progress
+- Escalate further if behavior or performance still does not improve
 
-Allow your employee to make comments regarding any write-ups, allow them to tell their side of the story, and always get a signature. Once the document has been signed, return it to HR.
+## 9. Corrective Action Documentation Requirements
 
-Disciplinary action allows the company to keep a record of ongoing issues with an employee. These write-ups are taken into consideration for performance reviews, promotions, raises, and even re-hire eligibility.
+Managers should allow the employee to respond to any write-up and share their side of the story. The employee should sign the document to acknowledge receipt, and the signed documentation should then be returned to HR. Corrective action records help document ongoing issues and may be considered in later employment decisions such as performance reviews, promotions, pay decisions, and rehire eligibility.
 
 :::callout warning
-If an incident isn't documented, it's as if it didn't happen. Incident statements, complaints, verbal warnings, and write-ups all need to be documented with the appropriate form and signed by all parties involved.
+If an issue is not documented, it's as if it didn't happen and becomes much harder to support later. Incident statements, complaints, verbal warnings, and written corrective action should all be documented using the appropriate form and signed by the appropriate parties.
 :::
 
 ## Resources & Templates
 
-<p style="text-align: center;"><strong>Need more help? The full guide and templates can be downloaded below.</strong></p>
+<p style="text-align: center;"><strong>Managers should use the available tools and templates to support a consistent process. Resources for this page include the full Coaching and Corrective Action Guide, a Performance Improvement Plan (PIP) Template, and an Employee Warning Notice.</strong></p>
 
 :::download
 url: /downloads/AAP_API_Coaching_Corrective_Action_Guide.docx
