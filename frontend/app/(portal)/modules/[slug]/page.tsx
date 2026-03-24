@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import useSWR from "swr";
@@ -14,41 +14,6 @@ import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
 import type { ContentBlock as ModuleContentBlock, ModuleDetail, ModuleSummary, ProgressRecord } from "@/lib/types";
-
-const CONGRATS_MESSAGES: ((name: string, moduleTitle: string) => { headline: string; body: string })[] = [
-  (name, title) => ({
-    headline: `Crushed it, ${name}.`,
-    body: `"${title}" is done and dusted. You just leveled up your AAP knowledge — and honestly, you made it look easy.`,
-  }),
-  (name) => ({
-    headline: `Look at you go, ${name}.`,
-    body: `Another module down, another step closer to feeling like you've been here for years. Spoiler: you're already ahead of the curve.`,
-  }),
-  (name, title) => ({
-    headline: `${name}, that's a wrap.`,
-    body: `You just locked in "${title}" like a pro. Your future self is going to thank you for paying attention.`,
-  }),
-  (name) => ({
-    headline: `Gold star, ${name}.`,
-    body: `Module complete. Knowledge acquired. Confidence boosted. That's what we like to see on day one.`,
-  }),
-  (name, title) => ({
-    headline: `Nailed it, ${name}.`,
-    body: `"${title}" — done. You're building the foundation that makes everything else click. Keep that energy.`,
-  }),
-  (name) => ({
-    headline: `${name} is on a roll.`,
-    body: `Every module you finish makes the next one easier. You're stacking wins and it shows.`,
-  }),
-  (name, title) => ({
-    headline: `That's how it's done, ${name}.`,
-    body: `"${title}" is officially in the books. The team's getting a good one — we can already tell.`,
-  }),
-  (name) => ({
-    headline: `Boom. Done, ${name}.`,
-    body: `You're moving through onboarding like you've got somewhere to be. (You do — it's called your new role, and you're going to be great at it.)`,
-  }),
-];
 
 function stripHtml(input: string): string {
   return input.replace(/<[^>]*>/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\s+/g, " ").trim();
@@ -976,9 +941,6 @@ export default function ModulePage() {
   const router = useRouter();
   const { user } = useAuth();
   const { effectiveTrack, isPreviewing } = usePreview();
-  const [showCongrats, setShowCongrats] = useState(false);
-  const [congratsMsg, setCongratsMsg] = useState<{ headline: string; body: string } | null>(null);
-
   const { data: module, isLoading, error } = useSWR(`module:${slug}`, () => modulesApi.get(slug) as Promise<ModuleDetail>);
   const { data: moduleCatalog } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
   const { data: progress } = useSWR("progress", () => progressApi.getAll() as Promise<ProgressRecord[]>);
@@ -1034,19 +996,9 @@ export default function ModulePage() {
     return () => observer.disconnect();
   }, [slug, module]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Human notes stagger animation — trigger when section scrolls into view
-  const [humanNotesVisible, setHumanNotesVisible] = useState(false);
-  const humanNotesRef = useRef<HTMLElement>(null);
-  useEffect(() => {
-    const el = humanNotesRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setHumanNotesVisible(true); observer.disconnect(); } },
-      { threshold: 0.15 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [slug, module]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Human notes card stack — user clicks through one at a time
+  const [humanNoteIndex, setHumanNoteIndex] = useState(0);
+  useEffect(() => { setHumanNoteIndex(0); }, [slug]);
 
   useEffect(() => {
     if (module && module.status === "published" && !isPreviewing) {
@@ -1367,23 +1319,7 @@ export default function ModulePage() {
     current: "read",
   });
 
-  const continueLabel = "I'm Finished!";
-
-  const nextStepLabel = hasAcknowledgement
-    ? "Next up: confirmation"
-    : hasQuiz
-      ? "Next up: quiz"
-      : "Next up: completion";
-
   function handleFinished() {
-    const firstName = user?.first_name ?? "there";
-    const msg = CONGRATS_MESSAGES[Math.floor(Math.random() * CONGRATS_MESSAGES.length)];
-    setCongratsMsg(msg(firstName, currentModule.title));
-    setShowCongrats(true);
-  }
-
-  function handleCongratsConfirm() {
-    setShowCongrats(false);
     if (hasAcknowledgement) {
       router.push(`/modules/${slug}/acknowledge`);
     } else if (hasQuiz) {
@@ -1623,51 +1559,6 @@ export default function ModulePage() {
         />
       )}
 
-      {!isManagement && showCongrats && congratsMsg ? (
-        <>
-          <style>{`
-            @keyframes congrats-in {
-              0% { opacity: 0; transform: translateY(12px) scale(0.97); }
-              100% { opacity: 1; transform: translateY(0) scale(1); }
-            }
-            @keyframes congrats-bg-in {
-              0% { opacity: 0; }
-              100% { opacity: 1; }
-            }
-          `}</style>
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style={{ backgroundColor: "rgba(15, 32, 58, 0.58)", backdropFilter: "blur(5px)", animation: "congrats-bg-in 200ms ease-out both" }}
-          >
-            <div
-              className="relative w-full max-w-[440px] overflow-hidden rounded-[24px] border border-[#c2daf1] bg-[linear-gradient(180deg,#ffffff_0%,#f6fbff_100%)] shadow-[0_24px_56px_rgba(9,20,41,0.24)]"
-              style={{ animation: "congrats-in 280ms ease-out both" }}
-            >
-              <div className="h-1 w-full bg-[linear-gradient(90deg,#0f7fb3_0%,#06b6d4_52%,#df0030_100%)]" />
-              <div className="px-8 pb-8 pt-7 text-center">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-[#9dd2ef] bg-[#eaf6ff] text-[#0f6da3]">
-                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                    <path d="M4 12.5 9.5 18 20 6" />
-                  </svg>
-                </div>
-                <h2 className="text-[1.6rem] font-extrabold leading-[1.12] tracking-[-0.025em] text-[#0f1d3c]">
-                  {congratsMsg.headline}
-                </h2>
-                <p className="mt-3 text-[0.88rem] leading-[1.68] text-[#445b78]">
-                  {congratsMsg.body}
-                </p>
-                <button
-                  onClick={handleCongratsConfirm}
-                  className="mt-6 w-full rounded-[12px] border border-[#6eaeea] bg-[linear-gradient(135deg,#184371_0%,#13629a_100%)] py-3 text-[0.9rem] font-bold text-white transition-all duration-200 hover:-translate-y-px hover:shadow-[0_10px_18px_rgba(15,127,179,0.24)]"
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
-          </div>
-        </>
-      ) : null}
-
       <ModuleShell
         breadcrumbs={isManagement
           ? [{ label: "Manager Resources", href: "/overview" }, { label: currentModule.title }]
@@ -1690,9 +1581,8 @@ export default function ModulePage() {
         <div className={cn("space-y-2", isManagement && "mgmt-timeline")}>
         {displaySections[0] ? renderSection(displaySections[0], 0, "featured") : null}
 
-        {!isManagement && (
+        {!isManagement && humanMoments.length > 0 && (
         <section
-          ref={humanNotesRef}
           className="relative overflow-hidden"
           style={{
             padding: "2rem 2.5rem 2.25rem",
@@ -1701,6 +1591,16 @@ export default function ModulePage() {
             borderBottom: "0.5px solid rgba(10, 22, 40, 0.08)",
           }}
         >
+          <style>{`
+            @keyframes hn-slide-in {
+              0% { opacity: 0; transform: translateX(24px); }
+              100% { opacity: 1; transform: translateX(0); }
+            }
+            @keyframes hn-slide-out {
+              0% { opacity: 1; transform: translateX(0); }
+              100% { opacity: 0; transform: translateX(-24px); }
+            }
+          `}</style>
           <div
             className="pointer-events-none absolute -right-16 -top-8 h-36 w-36 rounded-full"
             style={{ background: "radial-gradient(circle, rgba(15,127,179,0.10) 0%, rgba(15,127,179,0) 72%)" }}
@@ -1709,41 +1609,108 @@ export default function ModulePage() {
             className="pointer-events-none absolute -left-8 bottom-0 h-24 w-24 rounded-full"
             style={{ background: "radial-gradient(circle, rgba(223,0,48,0.07) 0%, rgba(223,0,48,0) 72%)" }}
           />
-          <div className="relative mb-5">
-            <p className="inline-flex items-center gap-2 rounded-full bg-[rgba(27,44,86,0.06)] px-3 py-1 text-[0.62rem] font-bold uppercase tracking-[0.14em] text-[#17365d]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
-              Human Notes
-            </p>
-            <h2 className="mt-3 text-[1.42rem] font-medium tracking-[-0.03em] text-[#0d1f3a]">
-              The part new hires usually want someone to just say out loud
-            </h2>
+
+          {/* Header row */}
+          <div className="relative mb-5 flex items-start justify-between gap-4">
+            <div>
+              <p className="inline-flex items-center gap-2 rounded-full bg-[rgba(27,44,86,0.06)] px-3 py-1 text-[0.62rem] font-bold uppercase tracking-[0.14em] text-[#17365d]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#df0030]" />
+                Human Notes
+              </p>
+              <h2 className="mt-3 text-[1.42rem] font-medium tracking-[-0.03em] text-[#0d1f3a]">
+                The part new hires usually want someone to just say out loud
+              </h2>
+            </div>
+            {/* Card counter */}
+            <span className="mt-1 shrink-0 text-[0.7rem] font-semibold tabular-nums text-[#6a82a2]">
+              {humanNoteIndex + 1} / {humanMoments.length}
+            </span>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem" }}>
-            {humanMoments.map((moment, idx) => (
+          {/* Card stack */}
+          <div className="relative" style={{ minHeight: "160px" }}>
+            {/* Background "stacked" cards */}
+            {humanMoments.length > 2 && humanNoteIndex < humanMoments.length - 2 && (
               <div
-                key={moment.title}
+                className="absolute inset-x-0 top-0 rounded-[16px] border border-[rgba(27,44,86,0.08)] bg-white/40"
+                style={{ transform: "translateY(8px) scale(0.94)", height: "calc(100% - 4px)", zIndex: 0 }}
+              />
+            )}
+            {humanMoments.length > 1 && humanNoteIndex < humanMoments.length - 1 && (
+              <div
+                className="absolute inset-x-0 top-0 rounded-[16px] border border-[rgba(27,44,86,0.10)] bg-white/60"
+                style={{ transform: "translateY(4px) scale(0.97)", height: "calc(100% - 2px)", zIndex: 1 }}
+              />
+            )}
+
+            {/* Active card */}
+            <div
+              key={humanNoteIndex}
+              className="relative rounded-[16px] border border-[rgba(27,44,86,0.14)] bg-white px-6 py-5 shadow-[0_4px_16px_rgba(12,24,47,0.08)]"
+              style={{ zIndex: 2, animation: "hn-slide-in 280ms ease-out both" }}
+            >
+              <p
+                className="text-[0.62rem] font-bold uppercase tracking-[0.12em]"
                 style={{
-                  opacity: humanNotesVisible ? 1 : 0,
-                  transform: humanNotesVisible ? "translateY(0)" : "translateY(18px)",
-                  transition: `opacity 420ms ease-out ${idx * 120}ms, transform 420ms ease-out ${idx * 120}ms`,
+                  color:
+                    humanMoments[humanNoteIndex].tone === "navy" ? "#17365d"
+                      : humanMoments[humanNoteIndex].tone === "cyan" ? "#0d5f91"
+                      : "#b3234c",
                 }}
               >
-                <p
-                  className="text-[0.62rem] font-bold uppercase tracking-[0.12em]"
+                {humanMoments[humanNoteIndex].eyebrow}
+              </p>
+              <h3 className="mt-2.5 text-[1.08rem] font-bold leading-[1.28] tracking-[-0.02em] text-[#112744]">
+                {humanMoments[humanNoteIndex].title}
+              </h3>
+              <p className="mt-2.5 text-[0.84rem] leading-[1.65] text-[#425d7d]">
+                {humanMoments[humanNoteIndex].body}
+              </p>
+            </div>
+          </div>
+
+          {/* Navigation */}
+          <div className="relative mt-4 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => setHumanNoteIndex((i) => Math.max(0, i - 1))}
+              disabled={humanNoteIndex === 0}
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(27,44,86,0.12)] bg-white text-[#17365d] transition-all duration-150 hover:border-[rgba(27,44,86,0.24)] hover:shadow-[0_2px_8px_rgba(12,24,47,0.1)] disabled:cursor-default disabled:opacity-30 disabled:hover:border-[rgba(27,44,86,0.12)] disabled:hover:shadow-none"
+              aria-label="Previous note"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 2L4 7l5 5" />
+              </svg>
+            </button>
+
+            {/* Dot indicators */}
+            <div className="flex items-center gap-1.5">
+              {humanMoments.map((_, i) => (
+                <span
+                  key={i}
+                  className="block rounded-full transition-all duration-200"
                   style={{
-                    color:
-                      moment.tone === "navy" ? "#17365d" : moment.tone === "cyan" ? "#0d5f91" : "#b3234c",
+                    width: i === humanNoteIndex ? "16px" : "5px",
+                    height: "5px",
+                    background: i === humanNoteIndex
+                      ? "linear-gradient(90deg, #0f7fb3, #22d3ee)"
+                      : "rgba(27,44,86,0.18)",
                   }}
-                >
-                  {moment.eyebrow}
-                </p>
-                <h3 className="mt-2 text-[1.02rem] font-bold leading-[1.28] tracking-[-0.02em] text-[#112744]">
-                  {moment.title}
-                </h3>
-                <p className="mt-2 text-[0.82rem] leading-[1.62] text-[#425d7d]">{moment.body}</p>
-              </div>
-            ))}
+                />
+              ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setHumanNoteIndex((i) => Math.min(humanMoments.length - 1, i + 1))}
+              disabled={humanNoteIndex === humanMoments.length - 1}
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(27,44,86,0.12)] bg-white text-[#17365d] transition-all duration-150 hover:border-[rgba(27,44,86,0.24)] hover:shadow-[0_2px_8px_rgba(12,24,47,0.1)] disabled:cursor-default disabled:opacity-30 disabled:hover:border-[rgba(27,44,86,0.12)] disabled:hover:shadow-none"
+              aria-label="Next note"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 2l5 5-5 5" />
+              </svg>
+            </button>
           </div>
         </section>
         )}
@@ -1767,12 +1734,9 @@ export default function ModulePage() {
             </svg>
             Back to my path
           </Link>
-          <div className="flex flex-col items-end gap-1.5">
-            <Button onClick={handleFinished} className="h-[2.8rem] px-6 text-[0.88rem]">
-              {continueLabel}
-            </Button>
-            <p className="text-[0.73rem]" style={{ color: "var(--module-context)" }}>{nextStepLabel}</p>
-          </div>
+          <Button onClick={handleFinished} className="h-[2.8rem] px-6 text-[0.88rem]">
+            Finished!
+          </Button>
         </div>
         )}
       </div>
