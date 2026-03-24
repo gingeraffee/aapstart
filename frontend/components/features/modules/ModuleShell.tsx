@@ -49,6 +49,7 @@ interface ModuleFooterProps {
   ctaHref?: string;
   disabled?: boolean;
   helperText?: string;
+  children?: React.ReactNode;
 }
 
 const STEP_LABELS: Record<ModuleStepKey, string> = {
@@ -141,6 +142,7 @@ export function ModuleFooter({
   ctaHref,
   disabled,
   helperText,
+  children,
 }: ModuleFooterProps) {
   return (
     <div
@@ -158,7 +160,9 @@ export function ModuleFooter({
         {backLabel}
       </Link>
       <div className="flex flex-col items-end gap-1.5">
-        {ctaLabel ? (
+        {children ? (
+          children
+        ) : ctaLabel ? (
           ctaHref ? (
             <Link
               href={ctaHref}
