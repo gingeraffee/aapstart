@@ -177,7 +177,7 @@ New employees may not exceed 2.0 points during their first 60 days. After that, 
 Points don't stick around forever. There are two ways they come off:
 
 * Go two consecutive months without a tardy or unexcused absence and 1.0 point drops off automatically.
-* Any points accrued in a month will roll off on the first day of that same month the following year.
+* Points accrued in any given month automatically roll off one year later, on the first of that month.
 
 **Perfect Attendance Bonus**
 
