@@ -57,14 +57,19 @@ Fields marked with an asterisk are required. Incomplete requests may delay HR, p
 
 ## Enter the Required Change Details
 
-Include all applicable details in the request:
+Include all details that apply to the requested change:
 
 - Effective date of the change
 - Reason for the change
 - New position title, if applicable
 - Updated pay rate or salary, if applicable
 - New department or reporting manager, if applicable
-- Change in FTE status or scheduled hours
+- New schedule, shift, or work location, if applicable
+- Change in full-time or part-time status, or scheduled hours, if applicable
+- Transfer between AAP and API, if applicable
+- Any related access, equipment or workspace needs
+
+**Note:** If any acces, equipment, or workspace needs to be changed, the manager must update the Position Request
 
 ## 4. Pay Rate or Salary Change Process
 
