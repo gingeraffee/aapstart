@@ -20,7 +20,7 @@ Coaching should be the first step when addressing most performance or behavior c
 
 ## 2. When to Use Coaching vs. Corrective Action
 
-**Coaching** should be the first step when addressing most performance or behavior concerns. It focuses on improvement, guidance, support, and ongoing communication. **Corrective action** should be used when coaching does not resolve the issue or when the situation is more serious.
+Use **coaching** when the issue involves skill, knowledge, or behavior concerns, the employee is generally dependable but needs support, and the issue does not involve serious misconduct. Use **corrective action** when problems continue after coaching, performance affects operations, safety, or teamwork, or there is a clear policy violation or repeated unprofessional behavior.
 
 ## 3. Coaching Process
 
