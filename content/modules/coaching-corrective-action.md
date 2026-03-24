@@ -90,7 +90,7 @@ If an issue is not documented, it's as if it didn't happen and becomes much hard
 
 ## Resources & Templates
 
-<p><strong>Managers should use the available tools and templates to support a consistent process. Resources for this page include the full Coaching and Corrective Action Guide, a Performance Improvement Plan (PIP) Template, and an Employee Warning Notice.</strong></p>
+Managers should use the available tools and templates to support a consistent process. Resources for this page include the full Coaching and Corrective Action Guide, a Performance Improvement Plan (PIP) Template, and an Employee Warning Notice.
 
 :::download
 url: /downloads/AAP_API_Coaching_Corrective_Action_Guide.docx
