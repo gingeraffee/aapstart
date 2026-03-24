@@ -165,7 +165,7 @@ AAP uses a no-fault point system, which means the focus is on patterns, not circ
 | Tardy or leave > half your shift | 1.0 point |
 | Absence | 1.0 point |
 | Absent with a doctor's note (up to 3 consecutive days) | 1.0 point total |
-| No call / no show | 1.5 points |
+| No call / no show or no notice within 15 minutes of shift | 1.5 points |
 | Two consecutive no call / no shows | Presumed resignation |
 
 **Thresholds**
