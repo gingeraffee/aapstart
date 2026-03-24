@@ -199,7 +199,7 @@ description: Submit vacation, personal leave, and other time-off requests.
 
 **Personal Leave**
 
-Available to all employees after the 60-day waiting period. Does not carry over and is not paid out at termination.
+Personal time is there for you when you need it most. All employees are eligible to use personal time after 60 days of employment. You can watch your personal time increase in the Time Off section of BambooHR. The details for personal time accrual are below.
 
 | Employee Type | Personal Leave |
 |--------------|----------------|
@@ -208,7 +208,7 @@ Available to all employees after the 60-day waiting period. Does not carry over 
 | Full-time, after 5 years | 40 hours (5 days) |
 | Part-time | 1 hour per 30 hours worked |
 
-Minimum increment: 1 hour. Accrual date is your full-time hire date — if you converted from part-time, your original hire date does not count.
+Personal time can be taken in 1-hour increments. Keep an eye on your personal time balance because personal time is "use it or lose it" — it doesn't carry over or pay out if you leave the company.
 
 **Vacation**
 
