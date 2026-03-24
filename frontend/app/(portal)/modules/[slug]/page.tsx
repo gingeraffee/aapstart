@@ -8,6 +8,7 @@ import { modulesApi, progressApi } from "@/lib/api";
 import { useAuth } from "@/lib/context/AuthContext";
 import { usePreview } from "@/lib/context/PreviewContext";
 import { ContentBlock } from "@/components/features/modules/ContentBlock";
+import { GuidanceAccordion } from "@/components/features/modules/GuidanceAccordion";
 import { GutCheckBlock } from "@/components/features/modules/GutCheckBlock";
 import { ModulePanel, ModuleShell, buildModuleSteps } from "@/components/features/modules/ModuleShell";
 import { Button } from "@/components/ui/Button";
@@ -1516,6 +1517,9 @@ export default function ModulePage() {
       <>
         {heading}
 
+        {isGuidanceSection ? (
+          <GuidanceAccordion blocks={section.blocks} sectionId={section.id} variant={isManagement ? "resource" : "training"} />
+        ) : (
         <div className="space-y-0">
           {section.blocks.map((block, blockIndex) => (
             <div key={`${section.id}-${blockIndex}`} className="animate-fade-up" style={{ animationDelay: `${Math.min(blockIndex, 8) * 25}ms` }}>
@@ -1526,6 +1530,7 @@ export default function ModulePage() {
             </div>
           ))}
         </div>
+        )}
         {!isManagement && isFeatured && howWorkWorksGutChecks.length > 0 && (
           <div className="mt-6 animate-fade-up" style={{ animationDelay: "150ms" }}>
             <GutCheckBlock scenarios={howWorkWorksGutChecks} />
