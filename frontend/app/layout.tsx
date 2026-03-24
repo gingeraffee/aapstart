@@ -17,6 +17,10 @@ const sora = Sora({
 export const metadata: Metadata = {
   title: "AAP Start",
   description: "Your guided onboarding portal.",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
