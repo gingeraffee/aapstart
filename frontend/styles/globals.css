@@ -482,11 +482,22 @@
   }
 
   .prose-module ol {
-    list-style: decimal;
+    list-style: none;
+    counter-reset: ol-counter;
   }
 
   .prose-module ol li {
+    counter-increment: ol-counter;
+    position: relative;
     padding-left: 0.25rem;
+  }
+
+  .prose-module ol li::before {
+    content: counter(ol-counter) ".";
+    position: absolute;
+    left: -1.5rem;
+    color: var(--accent);
+    font-weight: 600;
   }
 
   .prose-module ul li {
