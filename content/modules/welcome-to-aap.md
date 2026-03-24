@@ -74,7 +74,7 @@ alt: Welcome to AAP
 
 ## Who AAP Is
 
-American Associated Pharmacies — AAP — is a member-owned cooperative. That means the pharmacies we serve aren't just our customers; they're our members and our reason for existing. AAP came together in 2009 through the joining of two pharmacy organizations, and has been growing its reach and impact ever since. API, our warehouse and distribution subsidiary, is the operational backbone that keeps product moving and members supplied.
+American Associated Pharmacies — AAP — is a member-owned cooperative. That means the pharmacies we serve aren't just our customers; they're our members and our reason for existing. AAP came together in 2009 through the joining of two pharmacy organizations, United Drugs and API, and AAP has been growing its reach and impact ever since. API, our warehouse and distribution subsidiary, is the operational backbone that keeps product moving and members supplied.
 
 ## Mission, Vision, and Values
 
@@ -82,7 +82,7 @@ AAP's mission is to provide support and customized solutions for independent and
 
 The vision is straightforward: help independent pharmacies not just survive, but thrive in a competitive healthcare market.
 
-And the values aren't just words on a wall. They're how we expect to show up — for our members, for each other, and for the work.
+And the values aren't just words on a wall. They're how we expect everyone show up — for our members, for each other, and for the work.
 
 **Customer Focus** — Every decision runs through the same filter: does this make things better for our member pharmacies and the patients they serve? If the answer is no, we rethink it.
 
@@ -96,9 +96,9 @@ And the values aren't just words on a wall. They're how we expect to show up —
 
 ## What AAP Start Is For
 
-Onboarding can feel like drinking from a fire hose. AAP Start exists to turn that down to a manageable stream. Over the next several modules, you'll get a clear picture of how AAP operates, what's expected of you, where to find what you need, and what the first 90 days actually look like.
+Onboarding can feel like drinking from a fire hose. AAP Start exists to turn that down to a manageable stream. Over the course of these training modules, you'll get a clear picture of how AAP operates, what's expected of you, where to find what you need, and what the first 90 days actually look like.
 
-You are not expected to memorize everything on day one. The goal is to get you oriented — grounded enough to do your job with confidence and know where to look when you need a refresher.
+You are not expected to memorize everything on day one, or even week one! The goal is to get you grounded enough to do your job with confidence and teach you where to look when you need a refresher.
 
 :::callout tip
 AAP Start is a starting point, not a substitute for your supervisor. Use it to get your footing, then keep the conversation going with your team.
