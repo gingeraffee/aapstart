@@ -119,9 +119,9 @@ quiz:
       correctId: c
 ---
 
-## What You Need to Know
+## Look Alive — This One Hits Every Paycheck
 
-This module covers pay, benefits timing, PTO, and attendance. You won't need to memorize all of it today — but when questions come up, you'll know where to look.
+Payday is biweekly on Thursday. Not all benefits start on day one. PTO has rules you'll actually want to know. This is the module you'll come back to — not because it's exciting, but because it answers the questions everyone has.
 
 ## Benefits Eligibility Timeline
 
