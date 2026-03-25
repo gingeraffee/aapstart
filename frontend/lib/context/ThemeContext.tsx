@@ -1,11 +1,9 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
-
-type Theme = "light" | "dark";
+import { createContext, useContext, useEffect, useState } from "react";
 
 interface ThemeContextValue {
-  theme: Theme;
+  theme: "light";
   toggleTheme: () => void;
 }
 
@@ -15,36 +13,20 @@ const ThemeContext = createContext<ThemeContextValue>({
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("aap-theme") as Theme | null;
-    if (stored === "dark" || stored === "light") {
-      setTheme(stored);
-    } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      setTheme("dark");
-    }
+    document.documentElement.setAttribute("data-theme", "light");
+    localStorage.setItem("aap-theme", "light");
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (!mounted) return;
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("aap-theme", theme);
-  }, [theme, mounted]);
-
-  const toggleTheme = useCallback(() => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
-  }, []);
-
-  // Prevent flash of wrong theme
   if (!mounted) {
     return <>{children}</>;
   }
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme: "light", toggleTheme: () => {} }}>
       {children}
     </ThemeContext.Provider>
   );
