@@ -13,8 +13,14 @@ requiresAcknowledgement: true
 acknowledgements:
   - id: ack-1
     statement: I understand the AAP dress code.
-  - id: ack-3
+  - id: ack-2
     statement: I understand that corrective action decisions are based upon supervisor discretion.
+  - id: ack-3
+    statement: I understand what strong performance looks like at AAP and how evaluations work.
+  - id: ack-4
+    statement: I understand that my social media activity can reflect on AAP and I will use good judgment.
+  - id: ack-5
+    statement: I understand AAP's corrective action process and the attendance point thresholds that trigger it.
 
 quiz:
   questions:
