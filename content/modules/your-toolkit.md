@@ -1,7 +1,7 @@
 ---
 slug: your-toolkit
 title: Your Toolkit
-description: Every employee at AAP uses these platforms — for pay, for learning, and for everything HR. This is where you get them up and running so you're not scrambling later.
+description: Every employee at AAP uses these platforms — for pay, for learning, and for everything HR. This module is all about making sure you have the tools you need for success.
 tracks: [all]
 order: 6
 estimatedMinutes: 8
@@ -121,6 +121,8 @@ header: Your Information is Safe
 We ask for your social security number to verify your identity and complete your employment records. Your information is transmitted securely, stored encrypted, and never shared with third parties except where required by law or for payroll processing. If you have any questions or concerns before proceeding, reach out to HR — we're happy to help.
 :::
 
+Go ahead and scan the QR code below to download the app on your phone so you have it handy exactly when you need it.
+
 :::qrcode
 url: https://apps.apple.com/app/bamboohr/id726813547
 label: BambooHR for iOS
@@ -141,12 +143,6 @@ label: BambooHR for Android
 2. Enter the same email you used for BambooHR
 3. Complete the 2-step verification using the code sent to your email (be sure to check spam/social/junk folders!)
 
-:::link
-url: https://www.linkedin.com/learning
-label: Open LinkedIn Learning
-description: Browse courses and start learning.
-:::
-
 ## Paylocity
 
 Paylocity is your payroll platform. Registering gives you access to your pay stubs, lets you receive your tax documents digitally, and — here's the good part — lets you view your paycheck up to two days early. You can also use it to update your address, bank account information, and tax withholding anytime.
@@ -156,15 +152,15 @@ Paylocity is your payroll platform. Registering gives you access to your pay stu
 1. Navigate to [Paylocity](https://access.paylocity.com)
 2. Click **Register New User**
 3. Click **I don't have a registration code**
-4. Enter your Company ID:
-   - AAP employees: **123958**
-   - API employees: **123959**
+4. Enter your Company ID — AAP employees: **123958** / API employees: **123959**
 5. Enter your social security number and date of birth, then click **Continue**
 
 :::aside
 header: Your Information is Safe
 We ask for your social security number to verify your identity and complete your employment records. Your information is transmitted securely, stored encrypted, and never shared with third parties except where required by law or for payroll processing. If you have any questions or concerns before proceeding, reach out to HR — we're happy to help.
 :::
+
+Go ahead and scan the QR code below to download the app on your phone so you have it handy exactly when you need it.
 
 :::qrcode
 url: https://apps.apple.com/app/paylocity-mobile/id663507713
