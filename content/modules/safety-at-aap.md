@@ -3,7 +3,7 @@ slug: safety-at-aap
 title: Safety at AAP
 description: Every employee plays a role in keeping AAP safe. This module covers reporting, awareness, and the expectations that apply no matter where you work in the building.
 tracks: [all]
-order: 5
+order: 6
 estimatedMinutes: 8
 status: published
 requiresQuiz: true

@@ -1726,12 +1726,7 @@ export default function ModulePage() {
           })()}
         </div>
         )}
-        {!isManagement && isFeatured && howWorkWorksGutChecks.length > 0 && (
-          <div className="mt-6 animate-fade-up" style={{ animationDelay: "150ms" }}>
-            <GutCheckBlock scenarios={howWorkWorksGutChecks} />
-          </div>
-        )}
-        {/* Benefits gut check rendered at page bottom, not here */}
+        {/* All gut checks rendered at page bottom, before Need Help */}
       </>
     );
 
@@ -1951,6 +1946,13 @@ export default function ModulePage() {
         {displaySections.length > 2
           ? displaySections.slice(1, -1).map((section, index) => renderSection(section, index + 1, "open"))
           : null}
+        {!isManagement && howWorkWorksGutChecks.length > 0 && (
+          <div className="mt-2">
+            <ModulePanel>
+              <GutCheckBlock scenarios={howWorkWorksGutChecks} />
+            </ModulePanel>
+          </div>
+        )}
         {!isManagement && benefitsGutChecks.length > 0 && (
           <div className="mt-2">
             <ModulePanel>

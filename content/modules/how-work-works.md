@@ -3,7 +3,7 @@ slug: how-work-works
 title: How Work Works
 description: "This module covers how performance is measured, what to wear, the open door policy, and conduct and overtime expectations. The practical stuff — so nothing catches you off guard."
 tracks: [all]
-order: 7
+order: 5
 estimatedMinutes: 12
 status: published
 requiresQuiz: true

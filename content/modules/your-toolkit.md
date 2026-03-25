@@ -3,7 +3,7 @@ slug: your-toolkit
 title: Your Toolkit
 description: Every employee at AAP uses these platforms — for pay, for learning, and for everything HR. This module is all about making sure you have the tools you need for success.
 tracks: [all]
-order: 6
+order: 7
 estimatedMinutes: 8
 status: published
 requiresQuiz: true

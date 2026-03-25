@@ -108,9 +108,6 @@ export default function AcknowledgePage() {
         <ModuleFooter
           backHref={`/modules/${slug}`}
           backLabel="Back to module"
-          ctaLabel={submitting ? "Saving..." : "Confirm all to continue"}
-          disabled
-          helperText={!allChecked ? "Confirm each item to continue." : "Heading to your quiz..."}
         />
       }
     >
