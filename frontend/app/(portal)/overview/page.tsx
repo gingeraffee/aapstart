@@ -39,15 +39,7 @@ function ManagementOverview({ firstName, managementModules }: { firstName: strin
           boxShadow: "0 14px 28px rgba(17, 41, 74, 0.08)",
         }}
       >
-        <div className="mb-1 flex items-center gap-2.5">
-          <div
-            className="flex h-7 w-7 items-center justify-center rounded-full"
-            style={{ background: "linear-gradient(135deg, rgba(27,44,86,0.18) 0%, rgba(14,165,233,0.12) 100%)" }}
-          >
-            <svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="#1b2c56" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M2 3h8M2 6h8M2 9h5" />
-            </svg>
-          </div>
+        <div className="mb-1">
           <p
             className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.11em]"
             style={{ background: "rgba(223, 0, 48, 0.06)", color: "#8f1239" }}
@@ -66,11 +58,11 @@ function ManagementOverview({ firstName, managementModules }: { firstName: strin
 
       {/* Search + heading */}
       <div className="animate-fade-up" style={{ animationDelay: "60ms" }}>
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="text-[1.1rem] font-bold tracking-[-0.01em]" style={{ color: "var(--heading-color)" }}>
+        <div className="mb-4">
+          <h2 className="mb-3 text-[1.1rem] font-bold tracking-[-0.01em]" style={{ color: "var(--heading-color)" }}>
             Process Guides
           </h2>
-          <div className="relative w-full sm:w-64">
+          <div className="relative w-full sm:w-72">
             <svg
               className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2"
               width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
@@ -99,7 +91,6 @@ function ManagementOverview({ firstName, managementModules }: { firstName: strin
         {/* Guide cards */}
         <div className="grid gap-4 sm:grid-cols-2">
           {filtered.map((module) => {
-            const isQuick = module.estimated_minutes <= 8;
             return (
               <Link
                 key={module.slug}
@@ -120,20 +111,9 @@ function ManagementOverview({ firstName, managementModules }: { firstName: strin
                 />
                 <div className="pl-2">
                   <div className="mb-1 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                      <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--welcome-label-text)" }}>
-                        Process Guide
-                      </p>
-                      <span
-                        className="rounded-full px-2 py-0.5 text-[0.58rem] font-semibold"
-                        style={{
-                          background: isQuick ? "rgba(14, 165, 233, 0.08)" : "rgba(223, 0, 48, 0.07)",
-                          color: isQuick ? "#0c6a9e" : "#8f1239",
-                        }}
-                      >
-                        {isQuick ? "Quick read" : "Deep dive"}
-                      </span>
-                    </div>
+                    <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--welcome-label-text)" }}>
+                      Process Guide
+                    </p>
                     <p className="shrink-0 text-[0.67rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--module-context)" }}>
                       {Math.max(module.estimated_minutes, 1)} min
                     </p>
@@ -174,9 +154,6 @@ function ManagementOverview({ firstName, managementModules }: { firstName: strin
           className="group inline-flex items-center gap-2.5 rounded-[12px] px-5 py-3 text-[0.82rem] font-bold text-white transition-all duration-200 hover:-translate-y-px hover:shadow-[0_8px_24px_rgba(17,38,74,0.25)]"
           style={{ background: "linear-gradient(135deg, #11264a 0%, #0f7fb3 82%)" }}
         >
-          <svg width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M2 3h8M2 6h8M2 9h5" />
-          </svg>
           Browse Resource Hub
           <span className="transition-transform group-hover:translate-x-0.5">&rarr;</span>
         </Link>
@@ -1115,14 +1092,6 @@ export default function OverviewPage() {
           {isHRAdmin && managementModules.length > 0 && (
             <div className="mt-10">
               <div className="mb-4 flex items-center gap-2.5">
-                <div
-                  className="flex h-7 w-7 items-center justify-center rounded-full"
-                  style={{ background: "linear-gradient(135deg, rgba(27,44,86,0.18) 0%, rgba(14,165,233,0.12) 100%)" }}
-                >
-                  <svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="#1b2c56" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M2 3h8M2 6h8M2 9h5" />
-                  </svg>
-                </div>
                 <div>
                   <p className="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.11em]" style={{ background: "var(--welcome-label-bg)", color: "var(--welcome-label-text)" }}>
                     Manager Resources
