@@ -1,7 +1,7 @@
 ---
 slug: benefits-pay-time-away
 title: Benefits, Pay & Time Away
-description: Payroll basics, benefits eligibility timing, PTO, and holiday eligibility at AAP.
+description: Pay, benefits, and time off all have their own timelines. This is where you learn when things kick in and how to stay on top of them.
 tracks: [all]
 order: 4
 estimatedMinutes: 12
@@ -125,7 +125,7 @@ Payday is biweekly on Thursday. Not all benefits start on day one. PTO has rules
 
 ## Benefits Eligibility Timeline
 
-Benefits don't all kick in at the same time — and that's the part that trips people up. Some things are available on day one. Others don't start until 60 days in. The table below breaks down when each benefit becomes available, but here's the bigger picture.
+Benefits don't all kick in at the same time — and that's the part that trips people up. Some things are available on day one. Others don't start until 60 days in. The table below breaks down when each benefit becomes available to you.
 
 | Benefit | Available |
 |---|---|
@@ -135,6 +135,38 @@ Benefits don't all kick in at the same time — and that's the part that trips p
 | PTO | After 60 days |
 | Paid Holidays | After 60 days of full-time service |
 | Medical, Dental, Vision, 401(k) | First of month after 60 days |
+
+Want the bigger picture? Check out each section below to see what's available and when.
+
+## Know Your Benefits
+
+### LinkedIn Learning
+
+LinkedIn Learning is available to all AAP employees **free of charge** — no waiting period, no approval needed. The platform has over 20,000 courses taught by industry experts and Harvard professors, covering everything from everyday skills like communication and collaboration to deeper topics like leadership, data analysis, and accounting. Whether you're sharpening skills for your current role or building toward the next one, this is your platform to grow.
+
+### Teladoc
+
+Did someone say free? Teladoc is here to save the day. With free access to a licensed physician in your state, you can speak with a doctor over phone or video call 24/7 — **no copay, no appointment, no stress.** Teladoc is available to you the first of the month after your hire date, and it's not just for you — anyone in your household can use it. Need a school excuse, a doctor's note, or a prescription called in? Teladoc handles all of it. The only cost to you is the price of your prescription at your local pharmacy.
+
+### Medical
+
+AAP has you covered — like, seriously covered. Our BlueCross BlueShield health plan offers two options: a **PPO** or a **High Deductible Health Plan (HDHP)**. You choose the coverage level that fits your situation. Medical insurance is available to full-time employees the first of the month after 60 days of employment. HR will reach out with enrollment details as your eligibility date approaches.
+
+### Dental
+
+Dental coverage comes in two plan options through **Guardian**: the **Core Plan** or the **Buy-Up Plan**. Both include free preventative care — like cleanings and exams — so the basics are always covered. The Buy-Up Plan offers higher coverage limits for anyone who wants a little extra security when bigger work comes up.
+
+### Vision
+
+Keep your eyes healthy with our **Guardian** vision plan. With just a **$10 copay** and a **$130 allowance for frames**, you won't be blindsided by costs when that annual eye exam comes around.
+
+### Supplemental Coverages
+
+AAP offers full-time employees a variety of **supplemental coverages** to fill the gaps that standard plans don't always reach. Options include accident, critical illness, and cancer coverage — plus additional life insurance and short-term disability. These are designed to make sure you're covered when life throws something unexpected your way.
+
+### 401(k)
+
+AAP's 401(k) plan through **Fidelity** gives you a real head start on your future. Not only does AAP offer a **generous company match**, but your savings are **100% vested after 60 days** — meaning it's all yours, even if you leave the company.
 
 ### Your First 30 Days
 
