@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, useEffect } from "react";
+import { useDeferredValue, useMemo, useState, useEffect } from "react";
 import useSWR from "swr";
 import { useAuth } from "@/lib/context/AuthContext";
 import { usePreview } from "@/lib/context/PreviewContext";
@@ -12,6 +12,178 @@ import { Spinner } from "@/components/ui/Spinner";
 import { cn, pickRandom } from "@/lib/utils";
 import { COACH_TIPS } from "@/lib/coachTips";
 import type { ModuleSummary, ProgressRecord, UiContent, DashboardData, Resource } from "@/lib/types";
+
+/* ── Management Overview ─────────────────────────────────────────────────── */
+function ManagementOverview({ firstName, managementModules }: { firstName: string; managementModules: ModuleSummary[] }) {
+  const [search, setSearch] = useState("");
+  const deferred = useDeferredValue(search);
+
+  const filtered = useMemo(() => {
+    if (!deferred.trim()) return managementModules;
+    const q = deferred.toLowerCase();
+    return managementModules.filter(
+      (m) => m.title.toLowerCase().includes(q) || m.description?.toLowerCase().includes(q),
+    );
+  }, [deferred, managementModules]);
+
+  return (
+    <div className="w-full px-6 py-5 font-sans lg:px-8 lg:py-7">
+
+      {/* Hero section with gradient background */}
+      <div
+        className="mb-7 animate-fade-up overflow-hidden rounded-[20px] px-7 py-7"
+        style={{
+          background: "linear-gradient(135deg, rgba(255,248,250,0.98) 0%, rgba(248,252,255,0.98) 100%)",
+          borderTop: "3px solid transparent",
+          borderImage: "linear-gradient(90deg, #11264a 0%, #0ea5d9 62%, #d63964 100%) 1",
+          boxShadow: "0 14px 28px rgba(17, 41, 74, 0.08)",
+        }}
+      >
+        <div className="mb-1 flex items-center gap-2.5">
+          <div
+            className="flex h-7 w-7 items-center justify-center rounded-full"
+            style={{ background: "linear-gradient(135deg, rgba(27,44,86,0.18) 0%, rgba(14,165,233,0.12) 100%)" }}
+          >
+            <svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="#1b2c56" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M2 3h8M2 6h8M2 9h5" />
+            </svg>
+          </div>
+          <p
+            className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.11em]"
+            style={{ background: "rgba(223, 0, 48, 0.06)", color: "#8f1239" }}
+          >
+            <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: "#d63964" }} />
+            Manager Resources
+          </p>
+        </div>
+        <h1 className="mt-2 text-[1.5rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>
+          Welcome, {firstName}
+        </h1>
+        <p className="mt-2 max-w-2xl text-[0.9rem] leading-[1.7]" style={{ color: "var(--card-desc)" }}>
+          This portal contains process guides and reference materials designed to support you in your management role at AAP. Each document walks through a specific process step by step so you have a clear, consistent resource to reference when needed.
+        </p>
+      </div>
+
+      {/* Search + heading */}
+      <div className="animate-fade-up" style={{ animationDelay: "60ms" }}>
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h2 className="text-[1.1rem] font-bold tracking-[-0.01em]" style={{ color: "var(--heading-color)" }}>
+            Process Guides
+          </h2>
+          <div className="relative w-full sm:w-64">
+            <svg
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2"
+              width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+            >
+              <circle cx="6.2" cy="6.2" r="4.7" />
+              <path d="M12.5 12.5l-3-3" />
+            </svg>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search guides..."
+              className="h-9 w-full rounded-[10px] border pl-9 pr-3 text-[0.82rem] outline-none transition-all focus:ring-2"
+              style={{
+                background: "var(--card-bg)",
+                borderColor: "var(--card-border)",
+                color: "var(--heading-color)",
+                ...(search ? {} : {}),
+              }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = "#0ea5d9"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(14,165,233,0.12)"; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = ""; e.currentTarget.style.boxShadow = ""; }}
+            />
+          </div>
+        </div>
+
+        {/* Guide cards */}
+        <div className="grid gap-4 sm:grid-cols-2">
+          {filtered.map((module) => {
+            const isQuick = module.estimated_minutes <= 8;
+            return (
+              <Link
+                key={module.slug}
+                href={`/modules/${module.slug}`}
+                className="group relative overflow-hidden rounded-[16px] p-5 transition-all duration-200 hover:-translate-y-px"
+                style={{
+                  background: "var(--card-bg)",
+                  border: "1px solid var(--card-border)",
+                  boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 14px 32px rgba(17, 41, 74, 0.18), 0 0 0 1px rgba(14, 165, 233, 0.15)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 14px 28px rgba(17, 41, 74, 0.12)"; }}
+              >
+                {/* Brand gradient left border */}
+                <span
+                  className="absolute inset-y-4 left-3 w-[2px] rounded-full"
+                  style={{ background: "linear-gradient(180deg, #11264a 0%, #0ea5d9 62%, #d63964 100%)" }}
+                />
+                <div className="pl-2">
+                  <div className="mb-1 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--welcome-label-text)" }}>
+                        Process Guide
+                      </p>
+                      <span
+                        className="rounded-full px-2 py-0.5 text-[0.58rem] font-semibold"
+                        style={{
+                          background: isQuick ? "rgba(14, 165, 233, 0.08)" : "rgba(223, 0, 48, 0.07)",
+                          color: isQuick ? "#0c6a9e" : "#8f1239",
+                        }}
+                      >
+                        {isQuick ? "Quick read" : "Deep dive"}
+                      </span>
+                    </div>
+                    <p className="shrink-0 text-[0.67rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--module-context)" }}>
+                      {Math.max(module.estimated_minutes, 1)} min
+                    </p>
+                  </div>
+                  <p className="text-[0.96rem] font-semibold leading-snug" style={{ color: "var(--heading-color)" }}>{module.title}</p>
+                  {module.description && (
+                    <p className="mt-1.5 line-clamp-2 text-[0.8rem] leading-[1.58]" style={{ color: "var(--card-desc)" }}>{module.description}</p>
+                  )}
+                  <p className="mt-3 text-[0.73rem] font-semibold transition-all group-hover:underline" style={{ color: "#17365d" }}>
+                    View guide &rarr;
+                  </p>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* No results */}
+        {filtered.length === 0 && managementModules.length > 0 && (
+          <div className="rounded-[16px] p-8 text-center" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}>
+            <p className="text-[0.88rem] font-semibold" style={{ color: "var(--heading-color)" }}>No guides match &ldquo;{search}&rdquo;</p>
+            <p className="mt-1 text-[0.8rem]" style={{ color: "var(--card-desc)" }}>Try a different search term.</p>
+          </div>
+        )}
+
+        {managementModules.length === 0 && (
+          <div className="rounded-[16px] p-8 text-center" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}>
+            <p className="text-[0.88rem] font-semibold" style={{ color: "var(--heading-color)" }}>Process guides are being developed.</p>
+            <p className="mt-1 text-[0.8rem]" style={{ color: "var(--card-desc)" }}>Check back soon for new management training materials.</p>
+          </div>
+        )}
+      </div>
+
+      {/* Browse Resource Hub CTA */}
+      <div className="mt-8 animate-fade-up" style={{ animationDelay: "120ms" }}>
+        <Link
+          href="/resources"
+          className="group inline-flex items-center gap-2.5 rounded-[12px] px-5 py-3 text-[0.82rem] font-bold text-white transition-all duration-200 hover:-translate-y-px hover:shadow-[0_8px_24px_rgba(17,38,74,0.25)]"
+          style={{ background: "linear-gradient(135deg, #11264a 0%, #0f7fb3 82%)" }}
+        >
+          <svg width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2 3h8M2 6h8M2 9h5" />
+          </svg>
+          Browse Resource Hub
+          <span className="transition-transform group-hover:translate-x-0.5">&rarr;</span>
+        </Link>
+      </div>
+    </div>
+  );
+}
 
 export default function OverviewPage() {
   const { user } = useAuth();
@@ -153,99 +325,7 @@ export default function OverviewPage() {
   // ── Management Overview ────────────────────────────────────────────────────
   if (isManagement) {
     return (
-      <div className="w-full px-6 py-5 font-sans lg:px-8 lg:py-7">
-        <div className="mb-6 animate-fade-up">
-          <div className="mb-1 flex items-center gap-2.5">
-            <div
-              className="flex h-7 w-7 items-center justify-center rounded-full"
-              style={{ background: "linear-gradient(135deg, rgba(27,44,86,0.18) 0%, rgba(14,165,233,0.12) 100%)" }}
-            >
-              <svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="#1b2c56" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M2 3h8M2 6h8M2 9h5" />
-              </svg>
-            </div>
-            <div>
-              <p className="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-[0.66rem] font-semibold uppercase tracking-[0.11em]" style={{ background: "var(--welcome-label-bg)", color: "var(--welcome-label-text)" }}>
-                Manager Resources
-              </p>
-            </div>
-          </div>
-          <h1 className="mt-2 text-[1.5rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>
-            Welcome, {firstName}
-          </h1>
-          <p className="mt-2 max-w-2xl text-[0.9rem] leading-[1.7]" style={{ color: "var(--card-desc)" }}>
-            This portal contains process guides and reference materials designed to support you in your management role at AAP. Each document walks through a specific process step by step so you have a clear, consistent resource to reference when needed.
-          </p>
-        </div>
-
-        <div className="animate-fade-up" style={{ animationDelay: "60ms" }}>
-          <div className="mb-4">
-            <h2 className="text-[1.1rem] font-bold tracking-[-0.01em]" style={{ color: "var(--heading-color)" }}>
-              Process Guides
-            </h2>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            {managementModules.map((module) => (
-              <Link
-                key={module.slug}
-                href={`/modules/${module.slug}`}
-                className="group relative overflow-hidden rounded-[16px] p-5 transition-all duration-200 hover:-translate-y-px hover:shadow-[0_14px_24px_rgba(17,41,74,0.15)]"
-                style={{
-                  background: "var(--card-bg)",
-                  border: "1px solid var(--card-border)",
-                  boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)",
-                }}
-              >
-                <span className="absolute inset-y-4 left-3 w-[2px] rounded-full" style={{ background: "rgba(27, 44, 86, 0.5)" }} />
-                <div className="pl-2">
-                  <div className="mb-1 flex items-center justify-between gap-3">
-                    <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--welcome-label-text)" }}>
-                      Process Guide
-                    </p>
-                    <p className="shrink-0 text-[0.67rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--module-context)" }}>
-                      {Math.max(module.estimated_minutes, 1)} min read
-                    </p>
-                  </div>
-                  <p className="text-[0.96rem] font-semibold leading-snug" style={{ color: "var(--heading-color)" }}>{module.title}</p>
-                  {module.description && (
-                    <p className="mt-1.5 line-clamp-2 text-[0.8rem] leading-[1.58]" style={{ color: "var(--card-desc)" }}>{module.description}</p>
-                  )}
-                  <p className="mt-3 text-[0.73rem] font-semibold transition-all group-hover:underline" style={{ color: "#17365d" }}>
-                    View guide -&gt;
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
-
-          {managementModules.length === 0 && (
-            <div className="rounded-[16px] p-8 text-center" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}>
-              <p className="text-[0.88rem] font-semibold" style={{ color: "var(--heading-color)" }}>Process guides are being developed.</p>
-              <p className="mt-1 text-[0.8rem]" style={{ color: "var(--card-desc)" }}>Check back soon for new management training materials.</p>
-            </div>
-          )}
-        </div>
-
-        <div className="mt-8 animate-fade-up" style={{ animationDelay: "120ms" }}>
-          <Link
-            href="/resources"
-            className="group inline-flex items-center gap-2 rounded-[12px] px-4 py-2.5 text-[0.82rem] font-semibold transition-all duration-200 hover:-translate-y-px"
-            style={{
-              background: "var(--card-bg)",
-              border: "1px solid var(--card-border)",
-              boxShadow: "0 4px 12px rgba(17, 41, 74, 0.08)",
-              color: "var(--heading-color)",
-            }}
-          >
-            <svg width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M2 3h8M2 6h8M2 9h5" />
-            </svg>
-            Browse Resource Hub
-            <span className="transition-transform group-hover:translate-x-0.5">&rarr;</span>
-          </Link>
-        </div>
-      </div>
+      <ManagementOverview firstName={firstName} managementModules={managementModules} />
     );
   }
 
