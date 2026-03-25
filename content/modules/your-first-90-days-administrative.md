@@ -1,7 +1,7 @@
 ---
 slug: your-first-90-days-administrative
 title: Your First 30 Days
-description: What to focus on in your first month so you can build confidence quickly in an administrative role.
+description: "Your first 30 days are mapped out week by week — what to focus on, who to connect with, and how to build the confidence that makes everything else click."
 tracks: [administrative]
 order: 10
 estimatedMinutes: 10
@@ -12,7 +12,7 @@ requiresAcknowledgement: false
 
 ## Your First 30 Days
 
-Your first month is about building a reliable foundation. You are not expected to master everything immediately, but you are expected to learn the workflows, ask questions early, and follow through consistently.
+Your first month has one job: build a reliable foundation. That means learning workflows, meeting the right people, asking questions before you're stuck, and showing up consistently. You don't need to master everything — you just need to show you're invested.
 
 ## Week 1: Orientation and Setup
 
