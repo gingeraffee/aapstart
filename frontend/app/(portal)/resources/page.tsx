@@ -148,8 +148,8 @@ const CATEGORY_COLORS: Record<string, { bg: string; icon: string }> = {
 function getTrackAccent(tracks?: string[]): string {
   if (!tracks || tracks.length === 0) return "#94a3b8"; // slate for "all"
   if (tracks.length === 1 && tracks[0] === "hr") return "linear-gradient(to bottom, #0f7fb3, #df0030)";
-  if (tracks.length === 1) return "#1b2c56"; // navy for single non-HR track
-  return "#1b2c56"; // navy for multi-track
+  if (tracks.length === 1) return "#e8838f"; // soft red for single non-HR track
+  return "#e8838f"; // soft red for multi-track
 }
 
 function ResourceCard({ resource }: { resource: Resource }) {
