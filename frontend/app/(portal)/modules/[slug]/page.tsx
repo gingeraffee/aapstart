@@ -1369,6 +1369,40 @@ export default function ModulePage() {
     },
   ] : [];
 
+  // Gut Check scenarios for Your Toolkit
+  const toolkitGutChecks = (currentModule.title.toLowerCase() === "your toolkit" && !currentModule.title.toLowerCase().includes("hr")) ? [
+    {
+      scenario: "You need to review your pay stub from last week. Where do you go?",
+      options: [
+        { id: "a", text: "BambooHR" },
+        { id: "b", text: "Paylocity" },
+        { id: "c", text: "Ask your supervisor to print it off" },
+      ],
+      correctId: "b",
+      explanation: "Paylocity handles everything tied to your paycheck — pay stubs, tax forms, direct deposit, and withholding. Need a copy of your pay stub? Ask HR to print it off for you!",
+    },
+    {
+      scenario: "You just got hired and HR says you have tasks waiting in your inbox. Where do you find them?",
+      options: [
+        { id: "a", text: "Your personal email" },
+        { id: "b", text: "Paylocity" },
+        { id: "c", text: "BambooHR inbox" },
+      ],
+      correctId: "c",
+      explanation: "BambooHR is your HR home base. New hire tasks, forms, and documents all live in your BambooHR inbox.",
+    },
+    {
+      scenario: "Your supervisor mentions a required training course you need to complete. Where do you find it?",
+      options: [
+        { id: "a", text: "Paylocity" },
+        { id: "b", text: "LinkedIn Learning" },
+        { id: "c", text: "BambooHR" },
+      ],
+      correctId: "b",
+      explanation: "Supervisors can assign LinkedIn Learning trainings to help you reach your goals or catch you up on company trainings — plus thousands of optional courses you can explore on your own.",
+    },
+  ] : [];
+
   // Override first section for How We Show Up (both all and HR versions)
   if (currentModule.title.toLowerCase().includes("how we show up")) {
     const coverSection = sections.find(
@@ -1655,7 +1689,7 @@ export default function ModulePage() {
             };
 
             section.blocks.forEach((block, blockIndex) => {
-              if (block.type === "download" || block.type === "link") {
+              if (block.type === "download" || block.type === "link" || block.type === "qrcode") {
                 pendingDownloads.push({ block, index: blockIndex });
               } else {
                 flushDownloads();
@@ -1942,6 +1976,13 @@ export default function ModulePage() {
           <div className="mt-2">
             <ModulePanel>
               <GutCheckBlock scenarios={safetyGutChecks} />
+            </ModulePanel>
+          </div>
+        )}
+        {!isManagement && toolkitGutChecks.length > 0 && (
+          <div className="mt-2">
+            <ModulePanel>
+              <GutCheckBlock scenarios={toolkitGutChecks} />
             </ModulePanel>
           </div>
         )}
