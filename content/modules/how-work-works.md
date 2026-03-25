@@ -12,8 +12,6 @@ requiresAcknowledgement: true
 # DRAFT — Please review and edit these acknowledgement statements before publishing.
 acknowledgements:
   - id: ack-1
-    statement: I understand that I cannot exceed 2.0 points in the first 60 days.
-  - id: ack-2
     statement: I understand the AAP dress code.
   - id: ack-3
     statement: I understand that corrective action decisions are based upon supervisor discretion.
@@ -21,19 +19,6 @@ acknowledgements:
 quiz:
   questions:
     - id: q1
-      text: You've accumulated some attendance points and want to get back on track. How can points roll off?
-      options:
-        - id: a
-          text: Submit a written request to HR asking for points to be removed
-        - id: b
-          text: Go two consecutive months without a tardy or unexcused absence
-        - id: c
-          text: Complete an attendance improvement course through your supervisor
-        - id: d
-          text: Points reset automatically at the start of each calendar year
-      correctId: b
-
-    - id: q2
       text: What is the goal of AAP's corrective action process?
       options:
         - id: a
@@ -97,45 +82,6 @@ For attendance specifically, the point system has its own warning track:
 
 Supervisor discretion applies at each stage.
 
-## Attendance and Timekeeping
-
-AAP uses a no-fault point system for attendance — which means no one's judging why you were late, just whether it's becoming a pattern. Here's how it works.
-
-| Situation | Points |
-|-----------|--------|
-| Tardy ≤ 5 minutes | No point — you're fine |
-| Tardy or leave < half your shift | 0.5 points |
-| Tardy or leave > half your shift | 1.0 point |
-| Absence | 1.0 point |
-| Absent with a doctor's note (up to 3 consecutive days) | 1.0 point total |
-| No call / no show | 1.5 points |
-| Two consecutive no call / no shows | Presumed resignation |
-
-:::aside
-The 5-minute grace period isn't a daily strategy. Routinely clocking in at 5:05 will still get flagged.
-:::
-
-**Thresholds**
-
-First 60 days: don't exceed 2.0 points.
-
-After that, 8.0 points in a calendar year is the termination threshold — but don't worry, we will always let you know when you're in the danger zone.
-
-**Point Rolloff**
-
-Points don't stick around forever. There are two ways they come off:
-
-1. Go two consecutive months without a tardy or unexcused absence and 1.0 point drops off automatically.
-2. Any point that hasn't rolled off early will fall off on the first of the same month the following year.
-
-**Perfect Attendance Bonus**
-
-Three consecutive months with no tardies or unexcused absences earns you a $75 bonus on your first check of the following month. Yes, really.
-
-**Reporting**
-
-If you're going to be late or absent, report it within 15 minutes of your scheduled shift start. Log it in BambooHR, or contact your supervisor or HR directly if you don't have access.
-
 ## Social Media and AAP
 
 Your personal social media accounts are yours — but anything you post can reflect on AAP, especially if your profile identifies you as an employee. AAP doesn't monitor your accounts, but the company does expect you to use good judgment.
@@ -163,11 +109,7 @@ The shoe and clothing rules aren't arbitrary — they're about keeping the wareh
 :::
 
 :::track [administrative]
-AAP expects a clean, neat, and professional appearance. Business casual is the standard Monday through Thursday.
-
-Fridays are casual — jeans and a t-shirt are welcome. Just keep it clean and presentable. Jeans with holes or tears aren't permitted, even on Fridays.
-
-Employee badges must be on your person and visible at all times.
+You don't need a suit, but you do need to look like you're here on purpose. Business casual Monday through Thursday, casual on Fridays. Jeans and a t-shirt are totally fine on Friday — just make sure they're clean, presentable, and hole-free. One thing that applies every day: **your badge stays on and visible.**
 :::
 
 :::track [hr]
