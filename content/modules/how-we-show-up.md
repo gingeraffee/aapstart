@@ -1,7 +1,7 @@
 ---
 slug: how-we-show-up
 title: How We Show Up
-description: The standards behind the work — professionalism, conduct, ethics, and how to raise concerns.
+description: The rules are simple: treat people well, act with integrity, and speak up when something isn't right. This module covers what that looks like at AAP.
 tracks: [all]
 order: 2
 estimatedMinutes: 12
@@ -64,24 +64,28 @@ quiz:
 
 ## What This Module Covers
 
-This module is about the standards behind the work — not just the work itself.
+Professionalism, respect, ethics, and accountability — the expectations that apply to everyone, every day. This section is all about how people show up at AAP. It's not just what we do, it's *how* we do it.
 
-At AAP, how people show up matters. That includes professionalism, respectful behavior, ethical conduct, accountability, and how concerns are raised.
+Watch the video below to see AAP CEO Jon Copeland explain how employees make a difference every day.
 
 ## Respect and Professionalism
 
-AAP is a place where people are expected to treat each other well — communicating directly, assuming good intent, and handling the inevitable bumps without letting them turn into something bigger. The values aren't just wall art. They show up in how we talk to each other every day.
+AAP is a place where people treat each other well — communicate directly, assume good intent, and handle the inevitable bumps without letting them become something bigger. The values aren't just wall art. They show up in how we talk to each other every day.
 
 A few things that are never okay:
 
 - Harassment of any kind
 - Bullying or disrespectful behavior
-- Retaliation against someone who reported something in good faith
+- Retaliation against someone who raised a concern in good faith
 - Dishonest, unethical, or illegal conduct
+
+If you see it, say something. If you're not sure, ask.
 
 ## Ethics and Conduct
 
 Good judgment isn't complicated — it's just asking yourself whether you'd be comfortable if your supervisor could see exactly what you're doing and why. Protect the trust people place in you, handle company information like it matters, and keep it legal. That's the whole thing.
+
+📄 [Review the AAP Code of Conduct before completing this page](/downloads/AAP_Code_of_Conduct.pdf)
 
 ## Need Help?
 
