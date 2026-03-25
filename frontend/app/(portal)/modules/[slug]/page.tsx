@@ -1251,6 +1251,43 @@ export default function ModulePage() {
     },
   ] : [];
 
+  // Gut Check scenarios for Where To Go (Support, Leave & Resources)
+  const whereToGoGutChecks = (currentModule.title.toLowerCase().includes("where to go") || currentModule.slug === "support-leave-resources") ? [
+    {
+      scenario: "A coworker mentions they need surgery next month and asks you what they should do about time off. What's the best advice?",
+      options: [
+        { id: "a", text: "Tell them to submit a PTO request in BambooHR" },
+        { id: "b", text: "Suggest they talk to their supervisor first, and if it involves medical leave, go directly to HR" },
+        { id: "c", text: "Let them know they'll need to use vacation time" },
+        { id: "d", text: "Tell them to call the EAP" },
+      ],
+      correctId: "b",
+      explanation: "A surgery likely involves medical leave, which has its own rules and protections. Their supervisor is a good starting point, but HR needs to be involved early for anything medical or leave-related.",
+    },
+    {
+      scenario: "You're going through a stressful time at home and it's starting to affect your focus at work. What resource is available to you right now?",
+      options: [
+        { id: "a", text: "Submit a PTO request and take time off" },
+        { id: "b", text: "Wait until your 60-day benefits kick in" },
+        { id: "c", text: "The Employee Assistance Program — it's free, confidential, and available from day one" },
+        { id: "d", text: "Ask your supervisor for a schedule change" },
+      ],
+      correctId: "c",
+      explanation: "The EAP is available from day one to you and your household — no waiting period, no enrollment. It covers counseling, financial guidance, legal support, and more. Everything is confidential.",
+    },
+    {
+      scenario: "You have a concern about something happening at work, but you're not comfortable bringing it to your supervisor. What should you do?",
+      options: [
+        { id: "a", text: "Wait and see if it resolves itself" },
+        { id: "b", text: "Bring it up at your next performance review" },
+        { id: "c", text: "Go directly to HR — you don't need permission to skip a step" },
+        { id: "d", text: "Ask a coworker to bring it up for you" },
+      ],
+      correctId: "c",
+      explanation: "You never need permission to skip a step when the situation calls for it. If you're not comfortable going to your supervisor, go directly to HR. That's exactly what they're there for.",
+    },
+  ] : [];
+
   // Override first section for How We Show Up (both all and HR versions)
   if (currentModule.title.toLowerCase().includes("how we show up")) {
     const coverSection = sections.find(
@@ -1803,6 +1840,13 @@ export default function ModulePage() {
           <div className="mt-2">
             <ModulePanel>
               <GutCheckBlock scenarios={benefitsGutChecks} />
+            </ModulePanel>
+          </div>
+        )}
+        {!isManagement && whereToGoGutChecks.length > 0 && (
+          <div className="mt-2">
+            <ModulePanel>
+              <GutCheckBlock scenarios={whereToGoGutChecks} />
             </ModulePanel>
           </div>
         )}
