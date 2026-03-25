@@ -51,12 +51,20 @@ resources:
     category: quick-links
 
   # ── Policies ───────────────────────────────────────────────────────────────
+  - id: employee-handbook
+    title: AAP Employee Handbook
+    description: The official AAP employee handbook — company policies, expectations, and guidelines.
+    type: download
+    filename: AAP_Employee_Handbook.pdf
+    category: policies
+
   - id: pto-policy
     title: Paid Time Off Policy
     description: PTO accrual, personal days, and how to request time away.
     type: download
     filename: POL-02_Paid_Time_Off_Policies_SOP.docx
     category: policies
+    tracks: [hr, management]
 
   - id: attendance-policy
     title: Attendance Policy Playbook
@@ -64,6 +72,7 @@ resources:
     type: download
     filename: Policy Playbook_Attendance.docx
     category: policies
+    tracks: [hr]
 
   - id: fmla-policy
     title: FMLA Policy
@@ -71,6 +80,7 @@ resources:
     type: download
     filename: POL-03_FMLA_SOP.docx
     category: policies
+    tracks: [hr]
 
   - id: benefits-eligibility
     title: Benefits Eligibility
@@ -78,6 +88,7 @@ resources:
     type: download
     filename: POL-04_Benefits_Eligibility.docx
     category: policies
+    tracks: [hr]
 
   - id: corrective-action
     title: Corrective Action Process
@@ -85,6 +96,7 @@ resources:
     type: download
     filename: POL-05_Corrective_Action_Process_SOP.docx
     category: policies
+    tracks: [hr]
 
   - id: confidentiality-policy
     title: Confidentiality Policy
@@ -92,6 +104,7 @@ resources:
     type: download
     filename: POL-06_Confidentiality_SOP.docx
     category: policies
+    tracks: [hr]
 
   # ── HR Systems ─────────────────────────────────────────────────────────────
   - id: bamboohr-onboarding
@@ -100,7 +113,7 @@ resources:
     type: download
     filename: HRA-04_Bamboo_Onboarding.docx
     category: hr-systems
-    tracks: [administrative]
+    tracks: [hr]
 
   - id: bamboohr-recruiting
     title: Recruiting Support in BambooHR
@@ -108,7 +121,7 @@ resources:
     type: download
     filename: HRA-02_Recruiting_Support_in_BambooHR_SOP.docx
     category: hr-systems
-    tracks: [administrative]
+    tracks: [hr]
 
   - id: payclock-pto
     title: Enter PTO in Payclock
@@ -116,7 +129,7 @@ resources:
     type: download
     filename: PC-01_Enter_PTO_Payclock.pdf
     category: hr-systems
-    tracks: [administrative]
+    tracks: [hr, management]
 
   - id: payclock-edit-time
     title: Edit Time Punches
@@ -124,7 +137,7 @@ resources:
     type: download
     filename: PC-02_Edit_Time_Punches.pdf
     category: hr-systems
-    tracks: [administrative]
+    tracks: [hr, management]
 
   - id: payclock-poll
     title: Poll the Timeclock
@@ -132,7 +145,7 @@ resources:
     type: download
     filename: PC-03_Poll_the_Timeclock.pdf
     category: hr-systems
-    tracks: [administrative]
+    tracks: [hr]
 
   - id: payclock-new-employee
     title: Add New Employee to Payclock
@@ -140,7 +153,7 @@ resources:
     type: download
     filename: PC-04_Add_New_Employee_to_Payclock.pdf
     category: hr-systems
-    tracks: [administrative]
+    tracks: [hr]
 
   - id: payclock-pto-report
     title: Add PTO via Time Off Taken Report
@@ -148,7 +161,7 @@ resources:
     type: download
     filename: PC-05_Adding_PTO_Using_Time_Off_Taken_Report.docx
     category: hr-systems
-    tracks: [administrative]
+    tracks: [hr]
 
   - id: payroll-change-report
     title: View the Payroll Change Report
@@ -156,7 +169,7 @@ resources:
     type: download
     filename: SOP-BG-02 - View the Payroll Change Report.pdf
     category: hr-systems
-    tracks: [administrative]
+    tracks: [hr]
 
   - id: bamboohr-pto-request
     title: Edit an Employee PTO Request
@@ -164,7 +177,7 @@ resources:
     type: download
     filename: SOP-BH-01 - Edit an Employee PTO Request.pdf
     category: hr-systems
-    tracks: [administrative]
+    tracks: [hr]
 
   # ── Training Resources ─────────────────────────────────────────────────────
   - id: hr-admin-training-guide
@@ -173,7 +186,7 @@ resources:
     type: download
     filename: HR_Administrative_Assistant_Training_Guide.docx
     category: training
-    tracks: [administrative]
+    tracks: [hr]
 
   - id: hr-admin-cheat-sheet
     title: HR Admin Assistant Cheat Sheet
@@ -181,7 +194,7 @@ resources:
     type: download
     filename: HR Admin Assistant Cheat Sheet.docx
     category: training
-    tracks: [administrative]
+    tracks: [hr]
 
   - id: hr-admin-quick-reference
     title: Quick Reference Guide — HR Admin
@@ -189,7 +202,7 @@ resources:
     type: download
     filename: Quick Reference Guide - HR Admin Assistant.pdf
     category: training
-    tracks: [administrative]
+    tracks: [hr]
 
   - id: hr-training-checklist
     title: HR Training Checklist
@@ -197,7 +210,7 @@ resources:
     type: download
     filename: HR_Training_Checklist.docx
     category: training
-    tracks: [administrative]
+    tracks: [hr]
 
   - id: hr-sop-job-aids
     title: HR SOP Job Aids
@@ -205,7 +218,7 @@ resources:
     type: download
     filename: HR_SOP_Job_Aids.docx
     category: training
-    tracks: [administrative]
+    tracks: [hr]
 
   - id: employee-inquiries-sop
     title: Employee Inquiries SOP
@@ -213,7 +226,7 @@ resources:
     type: download
     filename: HRA-01_Employee_Inquiries_SOP.docx
     category: training
-    tracks: [administrative]
+    tracks: [hr]
 
   - id: prehire-screenings
     title: Pre-Hire Screenings SOP
@@ -221,7 +234,7 @@ resources:
     type: download
     filename: HRA-03_Prehire_Screenings_SOP.docx
     category: training
-    tracks: [administrative]
+    tracks: [hr]
 
   - id: reference-checks-guide
     title: New Hire Reference Checks Guide
@@ -229,7 +242,7 @@ resources:
     type: download
     filename: RM-01_New_Hire_Reference_Checks.pdf
     category: training
-    tracks: [administrative]
+    tracks: [hr]
 
   - id: cs-timecard-exceptions
     title: Timecard Exceptions
@@ -237,6 +250,7 @@ resources:
     type: download
     filename: CS-01_Timecard_Exceptions.docx
     category: training
+    tracks: [hr]
 
   - id: cs-employee-script
     title: Employee Script
@@ -244,6 +258,7 @@ resources:
     type: download
     filename: CS-02_Employee_Script.pdf
     category: training
+    tracks: [hr]
 
   - id: cs-escalation-route
     title: Escalation Route
@@ -251,3 +266,4 @@ resources:
     type: download
     filename: CS-04_Escalation_Route.docx
     category: training
+    tracks: [hr]

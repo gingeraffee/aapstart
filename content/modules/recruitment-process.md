@@ -2,7 +2,7 @@
 slug: recruitment-process
 title: Recruiting Process
 description: A guide for hiring managers on AAP and API's recruiting process — from identifying a hiring need to extending an offer.
-tracks: [management]
+tracks: [hr, management]
 order: 101
 estimatedMinutes: 10
 status: published
