@@ -6,8 +6,85 @@ tracks: [all]
 order: 6
 estimatedMinutes: 8
 status: published
-requiresQuiz: false
-requiresAcknowledgement: false
+requiresQuiz: true
+requiresAcknowledgement: true
+
+acknowledgements:
+  - id: ack-1
+    statement: I have completed my BambooHR profile and any tasks.
+  - id: ack-2
+    statement: I have activated my LinkedIn Learning account.
+  - id: ack-3
+    statement: I have completed my Paylocity registration.
+  - id: ack-4
+    statement: I know where to go to find what I need for payroll, training, or my employment record.
+
+quiz:
+  questions:
+    - id: q1
+      text: "Where do you go to submit a time-off request?"
+      options:
+        - id: a
+          text: Paylocity
+        - id: b
+          text: LinkedIn Learning
+        - id: c
+          text: BambooHR
+        - id: d
+          text: Email your supervisor
+      correctId: c
+
+    - id: q2
+      text: "You need to update your tax withholding. Which platform handles that?"
+      options:
+        - id: a
+          text: BambooHR
+        - id: b
+          text: Paylocity
+        - id: c
+          text: LinkedIn Learning
+        - id: d
+          text: Contact HR to do it for you
+      correctId: b
+
+    - id: q3
+      text: "Your coworker asks where to check their remaining PTO balance. Where do you tell them to look?"
+      options:
+        - id: a
+          text: Paylocity
+        - id: b
+          text: Ask HR to look it up
+        - id: c
+          text: BambooHR
+        - id: d
+          text: LinkedIn Learning
+      correctId: c
+
+    - id: q4
+      text: "Which of the following is NOT something you can do in BambooHR?"
+      options:
+        - id: a
+          text: View your pay stubs
+        - id: b
+          text: Submit a time-off request
+        - id: c
+          text: Update your emergency contact
+        - id: d
+          text: Complete new hire paperwork
+      correctId: a
+
+    - id: q5
+      text: "How do you log in to LinkedIn Learning for the first time?"
+      options:
+        - id: a
+          text: Create a new LinkedIn account
+        - id: b
+          text: Use your personal email and request access from HR
+        - id: c
+          text: Use your work email and complete 2-step verification
+        - id: d
+          text: Your supervisor will set it up for you
+      correctId: c
 ---
 
 ## The Tools That Run Your Day
@@ -16,7 +93,18 @@ You'll use three platforms consistently at AAP — **BambooHR** for your employe
 
 ## BambooHR
 
-BambooHR is your HR home base. It's where your employment records live, where you'll find forms and documents from your new hire packet, and where HR will reach out to you with important tasks. Before your first day is over, you'll need to complete your profile and check your inbox.
+BambooHR is your HR home base — and you'll use it more than you think. Here's what lives inside:
+
+- **The attendance point system** — track your points and stay on top of your record
+- **PTO balances and calculators** — see what you have, what you've used, and what's coming
+- **Employment record details** — pay rate, hire date, job history, and classifications
+- **Job information** — your title, department, and reporting structure
+- **Company updates and announcements** — news and updates from leadership
+- **Organizational chat** — message coworkers directly inside BambooHR
+- **Company links** — quick access to tools like Teladoc, EAP, and more
+- **Contact information** — find anyone at AAP
+
+Before your first day is over, you'll need to complete your profile and check your inbox.
 
 **How to Complete Your BambooHR Profile:**
 
