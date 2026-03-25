@@ -368,21 +368,21 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
   if (title === "safety at aap") {
     return [
       {
-        eyebrow: "Non-Negotiable",
-        title: "Safety isn't a department — it's everyone's job",
-        body: "Whether you're in the warehouse, the office, or visiting a location — if you see something unsafe, say something. Reporting a hazard is never an overreaction.",
+        eyebrow: "Heads Up",
+        title: "It's Not Just the Warehouse",
+        body: "Slips, trips, and falls are the #1 cause of office injuries. Spilled coffee, a box in the walkway, a cord across the floor — it doesn't take heavy machinery to get hurt. If you see it, fix it or report it.",
         tone: "navy" as const,
       },
       {
-        eyebrow: "Heads Up",
-        title: "Injuries get reported immediately",
-        body: "Not at the end of your shift, not the next day — immediately to your supervisor. Delays create problems for you and make it harder for the company to help.",
+        eyebrow: "Non-Negotiable",
+        title: "Report It. Every Time.",
+        body: "That 'minor' paper cut from a box cutter. The bruise from bumping into a shelf. The headache from a strange smell in the break room. Report it anyway. Small things become big things when they go undocumented — and delayed reporting makes everything harder for you and for AAP.",
         tone: "cyan" as const,
       },
       {
         eyebrow: "Good To Know",
-        title: "You won't get in trouble for raising a concern",
-        body: "AAP takes workplace safety seriously and that includes making sure people feel safe speaking up. If something doesn't feel right, the open-door policy exists for exactly that reason.",
+        title: "See Something? Say Something.",
+        body: "You don't have to be a safety expert to recognize when something isn't right. An unfamiliar visitor, a propped-open door, a coworker who seems off — trust your instincts and speak up. Your supervisor or HR would rather hear about a false alarm than miss a real one.",
         tone: "red" as const,
       },
     ];
@@ -1325,6 +1325,50 @@ export default function ModulePage() {
     },
   ] : [];
 
+  // Gut Check scenarios for Safety at AAP
+  const safetyGutChecks = currentModule.title.toLowerCase().includes("safety") ? [
+    {
+      scenario: "You notice a small puddle near the break room from a leaky coffee maker. Nobody's slipped yet. What do you do?",
+      options: [
+        { id: "a", text: "Step over it — it's not that big" },
+        { id: "b", text: "Clean it up or report it to your supervisor so it gets addressed" },
+        { id: "c", text: "Assume someone else will take care of it" },
+      ],
+      correctId: "b",
+      explanation: "Slips, trips, and falls are the #1 cause of office injuries. A small puddle today can be a workers' comp claim tomorrow. Fix it or flag it.",
+    },
+    {
+      scenario: "You bump your elbow on a filing cabinet hard enough to leave a bruise, but it's not serious. Do you report it?",
+      options: [
+        { id: "a", text: "No — it isn't affecting my work" },
+        { id: "b", text: "Only if it still hurts the next day" },
+        { id: "c", text: "Yes — report it to your supervisor immediately, no matter how minor" },
+      ],
+      correctId: "c",
+      explanation: "Every incident gets reported, even the small ones. AAP's safety team uses these reports to spot patterns and prevent future accidents.",
+    },
+    {
+      scenario: "Someone you don't recognize is walking through the office without a badge. They look like they know where they're going. What should you do?",
+      options: [
+        { id: "a", text: "Nothing — they probably work here" },
+        { id: "b", text: "Direct them to the reception area or notify your supervisor" },
+        { id: "c", text: "Wait and see if someone else says something" },
+      ],
+      correctId: "b",
+      explanation: "All visitors must check in at reception. It's not awkward to ask — it's your job to keep the workplace secure.",
+    },
+    {
+      scenario: "A coworker sends a joke through the company email system that you find funny, but you think others might find offensive. Is this a problem?",
+      options: [
+        { id: "a", text: "It's fine — it was just a joke between friends" },
+        { id: "b", text: "Yes — company email is for business use, and offensive content is prohibited regardless of intent" },
+        { id: "c", text: "Only if someone complains about it" },
+      ],
+      correctId: "b",
+      explanation: "AAP's computer and email policy is clear: company systems should never be used in ways that are disruptive or offensive to others.",
+    },
+  ] : [];
+
   // Override first section for How We Show Up (both all and HR versions)
   if (currentModule.title.toLowerCase().includes("how we show up")) {
     const coverSection = sections.find(
@@ -1891,6 +1935,13 @@ export default function ModulePage() {
           <div className="mt-2">
             <ModulePanel>
               <GutCheckBlock scenarios={whereToGoGutChecks} />
+            </ModulePanel>
+          </div>
+        )}
+        {!isManagement && safetyGutChecks.length > 0 && (
+          <div className="mt-2">
+            <ModulePanel>
+              <GutCheckBlock scenarios={safetyGutChecks} />
             </ModulePanel>
           </div>
         )}

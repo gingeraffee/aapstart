@@ -138,6 +138,33 @@ Benefits don't all kick in at the same time — and that's the part that trips p
 
 Want the bigger picture? Check out each section below to see what's available and when.
 
+### Your First 30 Days
+
+You'll have access to LinkedIn Learning and the Employee Assistance Program (EAP) right away — no enrollment needed. Teladoc kicks in the first of the month after your hire date. Use this time to review your benefits options so you're ready when the enrollment window opens.
+
+### Days 30–60
+
+This is your waiting period for most benefits. PTO and paid holidays become available after 60 days of full-time service. Start thinking about your medical, dental, vision, and 401(k) elections — you'll want to have your decisions made before your enrollment window opens.
+
+### After 60 Days
+
+Medical, dental, vision, and 401(k) become available the first of the month after 60 days. **You'll have a limited enrollment window — if you miss it, you'll have to wait until the next open enrollment period.** HR will reach out with enrollment instructions, but don't wait for a reminder. Be proactive.
+
+### What You Actually Need to Do
+
+- **Review** the benefits packet you received during onboarding
+- **Decide** on your medical/dental/vision plan and coverage level (individual, spouse, family)
+- **Enroll** during your enrollment window — HR will confirm exact dates
+- **Designate** your 401(k) contribution percentage and beneficiaries
+- **Ask HR** if anything about your eligibility, classification, or start dates looks off
+
+### Questions Everyone Asks
+
+- *"Can I add my spouse or dependents?"* — Yes, during your enrollment window or during open enrollment.
+- *"What if I miss my enrollment window?"* — You'll need to wait until the next open enrollment unless you have a qualifying life event (marriage, birth, etc.).
+- *"When does the 401(k) match start?"* — Eligibility for the company match begins after 60 days, same as the plan itself. Check with HR for match details.
+- *"What's the EAP?"* — It's a free, confidential resource for counseling, financial guidance, and legal support. Available to you and your household from day one.
+
 ## Know Your Benefits
 
 ### LinkedIn Learning
@@ -167,33 +194,6 @@ AAP offers full-time employees a variety of **supplemental coverages** to fill t
 ### 401(k)
 
 AAP's 401(k) plan through **Fidelity** gives you a real head start on your future. Not only does AAP offer a **generous company match**, but your savings are **100% vested after 60 days** — meaning it's all yours, even if you leave the company.
-
-### Your First 30 Days
-
-You'll have access to LinkedIn Learning and the Employee Assistance Program (EAP) right away — no enrollment needed. Teladoc kicks in the first of the month after your hire date. Use this time to review your benefits options so you're ready when the enrollment window opens.
-
-### Days 30–60
-
-This is your waiting period for most benefits. PTO and paid holidays become available after 60 days of full-time service. Start thinking about your medical, dental, vision, and 401(k) elections — you'll want to have your decisions made before your enrollment window opens.
-
-### After 60 Days
-
-Medical, dental, vision, and 401(k) become available the first of the month after 60 days. **You'll have a limited enrollment window — if you miss it, you'll have to wait until the next open enrollment period.** HR will reach out with enrollment instructions, but don't wait for a reminder. Be proactive.
-
-### What You Actually Need to Do
-
-- **Review** the benefits packet you received during onboarding
-- **Decide** on your medical/dental/vision plan and coverage level (individual, spouse, family)
-- **Enroll** during your enrollment window — HR will confirm exact dates
-- **Designate** your 401(k) contribution percentage and beneficiaries
-- **Ask HR** if anything about your eligibility, classification, or start dates looks off
-
-### Questions Everyone Asks
-
-- *"Can I add my spouse or dependents?"* — Yes, during your enrollment window or during open enrollment.
-- *"What if I miss my enrollment window?"* — You'll need to wait until the next open enrollment unless you have a qualifying life event (marriage, birth, etc.).
-- *"When does the 401(k) match start?"* — Eligibility for the company match begins after 60 days, same as the plan itself. Check with HR for match details.
-- *"What's the EAP?"* — It's a free, confidential resource for counseling, financial guidance, and legal support. Available to you and your household from day one.
 
 :::callout tip
 When a benefit becomes available, you may need to complete enrollment steps within a specific window. If something about your eligibility, classification, or access looks off, contact HR early so it can be reviewed and corrected.
