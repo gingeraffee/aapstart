@@ -2,7 +2,7 @@
 slug: performance-management
 title: Performance Management
 description: How managers use BambooHR Performance Management to evaluate employees, provide feedback, support development, and ensure consistency across AAP/API.
-tracks: [management]
+tracks: [hr, management]
 order: 105
 estimatedMinutes: 14
 status: published

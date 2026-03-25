@@ -2,7 +2,7 @@
 slug: hiring-onboarding
 title: New Hire Onboarding
 description: Required steps after offer acceptance to prepare a new hire for day one. This includes BambooHR account setup, IT coordination, facilities, equipment, and manager responsibilities.
-tracks: [management]
+tracks: [hr, management]
 order: 102
 estimatedMinutes: 12
 status: published
