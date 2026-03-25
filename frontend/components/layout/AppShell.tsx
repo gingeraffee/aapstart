@@ -9,6 +9,7 @@ import { usePreview } from "@/lib/context/PreviewContext";
 import { modulesApi, progressApi } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { MobileBottomNav } from "./MobileBottomNav";
+import { ScrollProgressBar } from "../ui/ScrollProgressBar";
 import type { ModuleSummary, ProgressRecord, Track } from "@/lib/types";
 
 interface AppShellProps {
@@ -128,6 +129,7 @@ export function AppShell({ children }: AppShellProps) {
 
   return (
     <div className="flex min-h-screen">
+      <ScrollProgressBar />
       <nav
         className="fixed bottom-0 left-0 top-0 z-40 hidden w-[248px] flex-col overflow-y-auto md:flex"
         style={{
