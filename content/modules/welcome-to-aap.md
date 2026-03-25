@@ -101,7 +101,7 @@ Onboarding can feel like drinking from a fire hose. AAP Start exists to turn tha
 You are not expected to memorize everything on day one, or even week one! The goal is to get you grounded enough to do your job with confidence and teach you where to look when you need a refresher.
 
 :::callout tip
-AAP Start is a starting point, not a substitute for your supervisor. Use it to get your footing, then keep the conversation going with your team.
+AAP Start is a exactly that - a starting point. It's not a substitute for your supervisor or guidance from your trainer. Use it to get your footing, then keep the conversation going with your team.
 :::
 
 ## When You Need Help?
