@@ -125,7 +125,7 @@ Payday is biweekly on Thursday. Not all benefits start on day one. PTO has rules
 
 ## Benefits Eligibility Timeline
 
-Benefits don't all kick in at the same time. The table below shows when each one becomes available — and if anything about your eligibility or access looks off, reach out to HR sooner rather than later.
+Benefits don't all kick in at the same time — and that's the part that trips people up. Some things are available on day one. Others don't start until 60 days in. The table below breaks down when each benefit becomes available, but here's the bigger picture.
 
 | Benefit | Available |
 |---|---|
@@ -136,17 +136,40 @@ Benefits don't all kick in at the same time. The table below shows when each one
 | Paid Holidays | After 60 days of full-time service |
 | Medical, Dental, Vision, 401(k) | First of month after 60 days |
 
+### Your First 30 Days
+
+You'll have access to LinkedIn Learning and the Employee Assistance Program (EAP) right away — no enrollment needed. Teladoc kicks in the first of the month after your hire date. Use this time to review your benefits options so you're ready when the enrollment window opens.
+
+### Days 30–60
+
+This is your waiting period for most benefits. PTO and paid holidays become available after 60 days of full-time service. Start thinking about your medical, dental, vision, and 401(k) elections — you'll want to have your decisions made before your enrollment window opens.
+
+### After 60 Days
+
+Medical, dental, vision, and 401(k) become available the first of the month after 60 days. **You'll have a limited enrollment window — if you miss it, you'll have to wait until the next open enrollment period.** HR will reach out with enrollment instructions, but don't wait for a reminder. Be proactive.
+
+### What You Actually Need to Do
+
+- **Review** the benefits packet you received during onboarding
+- **Decide** on your medical/dental/vision plan and coverage level (individual, spouse, family)
+- **Enroll** during your enrollment window — HR will confirm exact dates
+- **Designate** your 401(k) contribution percentage and beneficiaries
+- **Ask HR** if anything about your eligibility, classification, or start dates looks off
+
+### Questions Everyone Asks
+
+- *"Can I add my spouse or dependents?"* — Yes, during your enrollment window or during open enrollment.
+- *"What if I miss my enrollment window?"* — You'll need to wait until the next open enrollment unless you have a qualifying life event (marriage, birth, etc.).
+- *"When does the 401(k) match start?"* — Eligibility for the company match begins after 60 days, same as the plan itself. Check with HR for match details.
+- *"What's the EAP?"* — It's a free, confidential resource for counseling, financial guidance, and legal support. Available to you and your household from day one.
+
 :::callout tip
 When a benefit becomes available, you may need to complete enrollment steps within a specific window. If something about your eligibility, classification, or access looks off, contact HR early so it can be reviewed and corrected.
 :::
 
 ## Pay and Payroll Basics
 
-Your pay information lives in **Paylocity**. That's where you'll find pay stubs, tax forms, and deduction details. You can also update your direct deposit information in Paylocity — any changes made before 4:30 PM on Tuesday will be reflected on payday.
-
-AAP pays biweekly, every **Thursday**.
-
-If you ever have questions or concerns about your paycheck or deductions, reach out to the **HR Manager** for help.
+Your paycheck details live in **Paylocity** — that's where you'll find pay stubs, tax forms, deductions, and direct deposit info. Your pay rate and benefits can also be reviewed in **BambooHR**. Payday is every other **Thursday**. Need to make a change? Get it into Paylocity or BambooHR **by the end of day the Monday before payday** — anything after that won't hit until the next cycle. If something on your check doesn't look right, don't sit on it. Reach out to the HR Manager right away for the quickest resolution.
 
 :::link
 url: https://paylocity.com
@@ -156,7 +179,7 @@ description: View your pay stubs and paycheck information.
 
 ## Attendance and Timekeeping
 
-AAP uses a no-fault point system, which means the focus is on patterns, not circumstances. Here's how the points work.
+AAP uses a no-fault point system to track attendance for hourly team members — the focus is on patterns, not circumstances. The system is built with checkpoints so issues get addressed early. Expect a corrective action conversation with your supervisor if your points start to stack up. Reaching **8.0 points** within a 12-month period will result in disciplinary action, including termination. The good news? Every one of those checkpoints is a chance to course-correct. Here's how points accumulate.
 
 | Situation | Points |
 |-----------|--------|
@@ -170,26 +193,28 @@ AAP uses a no-fault point system, which means the focus is on patterns, not circ
 
 **Thresholds**
 
-New employees may not exceed 2.0 points during their first 60 days. After that, accumulating 8.0 or more points within a calendar year will result in disciplinary action, up to and including termination.
+New employees may not exceed **2.0 points** during their first 60 days. After that, you'll have a corrective action conversation with your supervisor at **5.0, 6.0, and 7.0 points** — these are designed to help you get back on track. Reaching **8.0 points within a 12-month period** will result in disciplinary action, up to and including termination.
 
 **Point Rolloff**
 
 Points don't stick around forever. There are two ways they come off:
 
-* Go two consecutive months without a tardy or unexcused absence and 1.0 point drops off automatically.
-* Points accrued in any given month automatically roll off one year later, on the first of that month.
+* Go two consecutive months without a tardy or unexcused absence and **1.0 point drops off automatically**.
+* Points accrued in any given month automatically roll off **one year later**, on the first of that month.
+
+The system is designed to reward consistency — stay on track and your points take care of themselves.
 
 **Perfect Attendance Bonus**
 
-Three consecutive months with no tardies or unexcused absences earns you a $75 bonus on your first paycheck of the following month. Yes, really.
+Three consecutive months with no tardies or unexcused absences earns you a **$75 bonus** on your first paycheck of the following month. Yes, really. Show up, stay consistent, get paid for it.
 
 **Reporting**
 
-If you're going to be late or absent, report it within 15 minutes of your scheduled shift start. Log it in BambooHR, or contact your supervisor or HR directly if you don't have access.
+If you're going to be late or absent, report it within **15 minutes** of your scheduled shift start. Log it in **BambooHR**, or contact your supervisor or HR directly if you don't have access. The sooner you communicate, the easier it is for everyone to adjust.
 
 ## PTO and Time Away
 
-Vacation, personal leave, and paid holidays are all managed through **BambooHR**. Eligibility starts the first of the month after 60 days, and the breakdowns below cover what's available based on your employment type and tenure.
+Everyone needs time away — and AAP has a structured system to make sure you know exactly what's available to you. Vacation, personal leave, and paid holidays are all tracked in **BambooHR**, with eligibility kicking in after 60 days of service. Here's how each one works.
 
 :::link
 url: https://aap.bamboohr.com
@@ -199,7 +224,9 @@ description: Submit vacation, personal leave, and other time-off requests.
 
 **Personal Leave**
 
-Personal time is there for you when you need it most. All employees are eligible to use personal time after 60 days of employment. You can watch your personal time increase in the Time Off section of BambooHR. The details for personal time accrual are below.
+Personal time is yours to use when life happens — appointments, errands, days you just need a breather. After 60 days of employment, full-time employees will see a lump sum of personal time added to **BambooHR**. Each year on your hire anniversary, you'll get a fresh balance. But here's the catch: **whatever you didn't use is gone.** It doesn't roll over into the new balance, and it doesn't pay out if you leave.
+
+For part-time employees, personal time is earned through your consistent work efforts. For every 30 hours you work in a week, you get 1 hour of personal time. Personal time for part-time employees works the same way as for full-time employees — personal leave is truly use-it-or-lose-it time, so keep an eye on your balance and don't let it go to waste.
 
 | Employee Type | Personal Leave |
 |--------------|----------------|
@@ -208,11 +235,11 @@ Personal time is there for you when you need it most. All employees are eligible
 | Full-time, after 5 years | 40 hours (5 days) |
 | Part-time | 1 hour per 30 hours worked |
 
-Personal time can be taken in 1-hour increments. Keep an eye on your personal time balance because personal time is "use it or lose it" — it doesn't carry over or pay out if you leave the company.
+Personal leave can be taken in 1-hour increments to make sure it always covers you when you need it most. Personal time off requests can be entered into BambooHR through the app or website. It will send the request to your supervisor and email you when your time off is approved!
 
 **Vacation**
 
-Vacation time is available to all full-time employees after 60 days of full-time employment. The amount of vacation time you accrue increases on your full-time anniversary date. This breakdown shows how your time grows each year, so you can start planning your next getaway.
+Here's the good news about vacation: it grows with you. Full-time employees start earning vacation time after 60 days of employment, and the longer you're with AAP, the more you get. Your accrual rate is tied to your **full-time** hire date anniversary — check the table below to see where you fall.
 
 | Years of Service | Annual Vacation Hours |
 |-----------------|----------------------|
@@ -224,18 +251,18 @@ Vacation time is available to all full-time employees after 60 days of full-time
 | 10th – 19th anniversary | 136 hours (17 days) |
 | 20th anniversary and beyond | 152 hours (19 days) |
 
-Minimum increment: 2 hours. Need more than 5 consecutive days? That requires written approval from the Company President.
+Vacation can be taken in 2-hour increments, and unlike personal time, **your balance rolls over** — no use-it-or-lose-it pressure here. Just make sure your requests are in **BambooHR by 5:00 PM the day before**, and know that anything over 5 consecutive days needs written approval from the Company President.
 
 **Holidays**
 
-After 60 days of full-time employment, you're eligible for paid holidays. Here's the lineup:
+**All employees** are eligible for paid holidays after 60 days of employment — and AAP observes eight of them:
 
 New Year's Day · Memorial Day · Independence Day · Labor Day · Thanksgiving · Day after Thanksgiving · Christmas Eve · Christmas Day
 
-A couple things to know:
+Most of these are straightforward days off, but a couple come with a catch:
 
-- The day after Thanksgiving and Christmas Eve are staffed based on business demands. Required to work on that day? You'll get a Floating Holiday to use within 90 days.
-- If a holiday falls on Saturday, it's observed the Friday before. If it falls on Sunday, it's observed the Monday after.
+- **The day after Thanksgiving and Christmas Eve** are staffed based on business needs. If you're required to work, you'll get a Floating Holiday to use within 90 days — don't let it expire.
+- When a holiday lands on **Saturday**, it's observed the Friday before. When it lands on **Sunday**, it's observed the Monday after.
 
 **Requesting Time Off**
 
@@ -247,9 +274,5 @@ Not all time away is the same. Medical leave, accommodation, and protected leave
 
 ## Need Help?
 
-For pay, benefits, or time-off questions: start with your supervisor for day-to-day stuff, or reach out to Nicole Thornton, HR Manager for anything HR-related. The Resource Hub has detailed plan materials when you need to dig deeper.
-
-- Start with your **supervisor** for routine operational questions
-- Contact **Nicole Thornton, HR Manager** for HR-related support
-- Use the **Resource Hub** for detailed plan materials and reference documents
+For more information about benefits or time off, start with your supervisor. Your supervisor is always your trustworthy first step. You're always welcome to stop by and talk to **Nicole Thornton**, the HR Manager, for anything HR-related or sensitive. Don't forget, you can bookmark this page and come back to it anytime!
 
