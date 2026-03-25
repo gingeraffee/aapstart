@@ -352,21 +352,21 @@ export default function QuizPage() {
         }
       >
         <ModulePanel>
-          <div className="space-y-5">
+          <div className="space-y-3">
             <div>
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-[0.62rem] font-bold uppercase tracking-[0.12em] text-text-muted">
                     Question {currentQ + 1} of {questions.length}
                   </p>
-                  <h2 className="mt-2 text-[1.18rem] font-extrabold tracking-[-0.02em] text-text-primary">{question.text}</h2>
-                  <p className="mt-1 text-[0.78rem] text-[#5d7391]">Choose the best answer. You get guidance right away.</p>
+                  <h2 className="mt-1.5 text-[1.1rem] font-extrabold tracking-[-0.02em] text-text-primary">{question.text}</h2>
+                  <p className="mt-0.5 text-[0.76rem] text-[#5d7391]">Choose the best answer. You get guidance right away.</p>
                 </div>
                 <span className="shrink-0 text-[0.76rem] font-semibold tabular-nums text-[#5d7391]">
                   {currentQ + 1} / {questions.length}
                 </span>
               </div>
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-cyan-100">
+              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-cyan-100">
                 <div
                   className="h-full rounded-full bg-[linear-gradient(90deg,#0f7fb3_0%,#22d3ee_100%)] transition-all duration-500"
                   style={{ width: `${((currentQ + 1) / questions.length) * 100}%` }}
@@ -374,7 +374,7 @@ export default function QuizPage() {
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2">
               {question.options.map((option, index) => {
                 const isSelected = selected[question.id] === option.id;
                 const isCorrectOption = option.id === correctId;
@@ -385,7 +385,7 @@ export default function QuizPage() {
                     onClick={() => handleTap(option.id)}
                     disabled={submitting || (isRevealed && (isCorrect || currentWrongAttempts >= 2))}
                     className={cn(
-                      "w-full rounded-[12px] border px-4 py-3.5 text-left text-[0.88rem] font-medium transition-all duration-200",
+                      "w-full rounded-[12px] border px-3.5 py-2.5 text-left text-[0.85rem] font-medium transition-all duration-200",
                       !isSelected && !isRevealed && "border-[#d6deeb] bg-white hover:border-brand-action/40 hover:bg-cyan-50/30",
                       isSelected && !isRevealed && "border-brand-action/50 bg-cyan-50/50",
                       submitting && !isSelected && "opacity-55",
@@ -395,10 +395,10 @@ export default function QuizPage() {
                     )}
                     style={{ animationDelay: `${index * 40}ms` }}
                   >
-                    <span className="flex items-center gap-3.5">
+                    <span className="flex items-center gap-3">
                       <span
                         className={cn(
-                          "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[0.72rem] font-black",
+                          "flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[0.68rem] font-black",
                           !isSelected && !isRevealed && "border border-[#d1d5db] text-[#64748b]",
                           isSelected && !isRevealed && "bg-brand-action text-white",
                           shouldRevealCorrect && isCorrectOption && "bg-emerald-500 text-white",
@@ -427,7 +427,7 @@ export default function QuizPage() {
             {isRevealed ? (
               <div
                 className={cn(
-                  "rounded-[12px] border px-4 py-3",
+                  "rounded-[10px] border px-3.5 py-2.5",
                   isCorrect || currentWrongAttempts >= 2
                     ? "border-emerald-200 bg-emerald-50/70"
                     : "border-[#efcf9b] bg-[#fff8ec]"
