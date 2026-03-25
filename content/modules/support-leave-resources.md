@@ -93,7 +93,7 @@ You do not need to follow this list in order. If something feels urgent, sensiti
 
 ## Employee Assistance Program
 
-You don't have to wait for a crisis to use the **Employee Assistance Program (EAP)** — and you don't have to be going through something major. It's a free, confidential platform available to you and your household from **day one**. Whether you're dealing with stress, navigating a personal situation, or just looking for tools to grow personally or professionally — the EAP is built for that.
+You don't have to wait for a crisis to use the **Employee Assistance Program (EAP)** — AAP has you covered from Day One. It's a free, confidential platform available to you and your household from **day one**. Whether you're dealing with stress, navigating a personal situation, or just looking for tools to grow personally or professionally — the EAP is built for that.
 
 Here's what's available:
 
