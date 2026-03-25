@@ -1,7 +1,7 @@
 ---
 slug: how-we-show-up
 title: How We Show Up
-description: The rules are simple: treat people well, act with integrity, and speak up when something isn't right. This module covers what that looks like at AAP.
+description: "The rules are simple: treat people well, act with integrity, and speak up when something isn't right. This module covers what that looks like at AAP."
 tracks: [all]
 order: 2
 estimatedMinutes: 12
