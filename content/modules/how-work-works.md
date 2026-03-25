@@ -133,15 +133,4 @@ AAP expects all employees to maintain a neat and clean appearance. Here are the 
 The shoe and clothing rules are about keeping the warehouse secure and everyone safe.
 :::
 
-## Open Door Policy
-
-If something comes up — a question, a concern, or something that just doesn't feel right — don't sit on it. AAP's open door policy means you always have a path forward. Start with your supervisor. If that's not the right fit for the situation, HR is the next step.
-
-**Who handles what**
-
-| | Generally handles |
-|---|---|
-| Your supervisor | Day-to-day expectations, attendance follow-up, timekeeping, coaching, everyday questions |
-| HR | Policy guidance, employee records, leave and support resources, sensitive workplace concerns, issues you're not comfortable raising to your supervisor |
-| You | Reporting attendance issues promptly, recording time accurately, following company policies, speaking up when something needs attention |
 
