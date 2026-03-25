@@ -360,23 +360,41 @@ export default function LoginPage() {
       </section>
 
       {/* ── Mobile: single column login ── */}
-      <div className="flex lg:hidden w-full flex-col items-center justify-center min-h-screen px-6 py-12 bg-brand-ink">
-        <Image src="/logo.png" alt="AAP | API logos" width={180} height={45} className="mb-8 h-10 w-auto" priority />
-        <div
-          className="w-full max-w-[420px] overflow-hidden rounded-[24px]"
-          style={{
-            background: "var(--welcome-stat-bg)",
-            boxShadow: "0 20px 60px rgba(0,0,0,0.25), 0 6px 20px rgba(0,0,0,0.15)",
-          }}
-        >
-          <div className="h-1.5 bg-gradient-to-r from-brand-deep via-brand-action to-accent" />
-          <div className="px-7 py-8">
-            <h2 className="text-[1.4rem] font-bold" style={{ color: "var(--heading-color)" }}>Let&apos;s get you in.</h2>
-            <p className="mt-1.5 text-[0.83rem]" style={{ color: "var(--module-body)" }}>Enter your name and employee number.</p>
-            <div className="mt-6">
-              <LoginForm />
+      <div
+        className="fixed inset-0 z-50 flex lg:hidden w-full flex-col items-center justify-center overflow-y-auto px-5 py-10"
+        style={{
+          backgroundColor: "#0f1d3c",
+          backgroundImage: "radial-gradient(ellipse 140% 80% at 50% 0%, rgba(48,119,185,0.70) 0%, transparent 65%)",
+        }}
+      >
+        <div className="flex w-full max-w-[400px] flex-col items-center">
+          <Image src="/logo.png" alt="AAP | API logos" width={220} height={55} className="mb-4 h-12 w-auto" priority />
+          <span className="mb-6 inline-flex rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1 text-[0.58rem] font-bold uppercase tracking-[0.16em] text-cyan-300">
+            Welcome Aboard
+          </span>
+
+          <div
+            className="w-full overflow-hidden rounded-[20px]"
+            style={{
+              background: "var(--welcome-stat-bg)",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.25), 0 6px 20px rgba(0,0,0,0.15)",
+            }}
+          >
+            <div className="h-1.5 bg-gradient-to-r from-brand-deep via-brand-action to-accent" />
+            <div className="px-6 py-7">
+              <Image src="/logo.png" alt="AAP | API logos" width={160} height={40} className="mx-auto mb-5 h-9 w-auto" />
+              <h2 className="text-center text-[1.35rem] font-bold" style={{ color: "var(--heading-color)" }}>Let&apos;s get you in.</h2>
+              <p className="mt-1.5 text-center text-[0.82rem]" style={{ color: "var(--module-body)" }}>Enter your name and employee number.</p>
+              <div className="mt-6">
+                <LoginForm />
+              </div>
+              <p className="mt-4 text-center text-[0.68rem]" style={{ color: "var(--module-context)" }}>
+                Your employee number is in BambooHR under My Info.
+              </p>
             </div>
           </div>
+
+          <p className="mt-6 text-[0.62rem] text-white/30">© 2026 AAP — All rights reserved</p>
         </div>
       </div>
 
