@@ -74,7 +74,7 @@ alt: Welcome to AAP
 
 ## Who AAP Is
 
-American Associated Pharmacies (AAP) is a member-owned cooperative. That means the pharmacies we serve aren't just our customers; they're our members and our reason for existing. AAP came together in 2009 through the joining of two pharmacy organizations, United Drugs and API, and AAP has been growing its reach and impact ever since. API, our warehouse and distribution subsidiary, is the operational backbone that keeps product moving and members supplied.
+American Associated Pharmacies (AAP) is a member-owned cooperative. That means the pharmacies we serve aren't just our customers; they're our members and our reason to show up each day. AAP came together in 2009 through the joining of two pharmacy organizations, United Drugs and API, and the reach and impact has been growing ever since. API, our warehouse and distribution subsidiary, is the operational backbone that keeps product moving and members supplied. AAP provides member pharmacies with customized solutions to help them stay competitive. 
 
 ## Mission, Vision, and Values
 
