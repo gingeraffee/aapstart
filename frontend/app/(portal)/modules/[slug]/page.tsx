@@ -1288,6 +1288,43 @@ export default function ModulePage() {
     },
   ] : [];
 
+  // Gut Check scenarios for How We Show Up
+  const howWeShowUpGutChecks = currentModule.title.toLowerCase().includes("how we show up") ? [
+    {
+      scenario: "A coworker makes a joke that makes another team member visibly uncomfortable. Nobody says anything. What should you do?",
+      options: [
+        { id: "a", text: "It's not your problem — stay out of it" },
+        { id: "b", text: "Laugh it off and move on" },
+        { id: "c", text: "Check in with the person who seemed uncomfortable, and speak up or report it if needed" },
+        { id: "d", text: "Wait to see if it happens again before doing anything" },
+      ],
+      correctId: "c",
+      explanation: "You don't have to witness something twice for it to matter. Checking in with the person shows respect, and speaking up or reporting it helps keep the culture where it needs to be.",
+    },
+    {
+      scenario: "You overhear a conversation about a customer's private account information in the break room. What's the right call?",
+      options: [
+        { id: "a", text: "It's just casual conversation — no big deal" },
+        { id: "b", text: "Join in so you're in the loop" },
+        { id: "c", text: "Politely remind them that company and customer information should stay confidential" },
+        { id: "d", text: "Report them to HR immediately" },
+      ],
+      correctId: "c",
+      explanation: "Confidential information doesn't belong in casual conversation — even in the break room. A polite reminder in the moment is usually all it takes to course-correct.",
+    },
+    {
+      scenario: "A friend at another company asks what AAP's pricing looks like for a specific product. You know the answer. What do you do?",
+      options: [
+        { id: "a", text: "Share it — they're a friend, not a competitor" },
+        { id: "b", text: "Give a vague answer without specifics" },
+        { id: "c", text: "Let them know that's confidential and direct them to the appropriate AAP contact" },
+        { id: "d", text: "Ignore the question and change the subject" },
+      ],
+      correctId: "c",
+      explanation: "Even with good intentions, sharing company information outside of AAP can cause real damage. Redirecting them to the right contact keeps the relationship intact and the information where it belongs.",
+    },
+  ] : [];
+
   // Override first section for How We Show Up (both all and HR versions)
   if (currentModule.title.toLowerCase().includes("how we show up")) {
     const coverSection = sections.find(
@@ -1840,6 +1877,13 @@ export default function ModulePage() {
           <div className="mt-2">
             <ModulePanel>
               <GutCheckBlock scenarios={benefitsGutChecks} />
+            </ModulePanel>
+          </div>
+        )}
+        {!isManagement && howWeShowUpGutChecks.length > 0 && (
+          <div className="mt-2">
+            <ModulePanel>
+              <GutCheckBlock scenarios={howWeShowUpGutChecks} />
             </ModulePanel>
           </div>
         )}
