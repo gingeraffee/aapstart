@@ -61,22 +61,21 @@ quiz:
       correctId: c
 ---
 
-## What This Module Covers
+## When It's More Than Just a Day Off
 
-This module is about support routes, leave-related help, and employee resources that go beyond ordinary PTO. The most important thing to know is simple: not all time away is the same, and not every question should be handled casually.
+Not every absence is a vacation day, and not every question belongs in a casual conversation. Medical leave, FMLA, accommodations, workplace concerns — they all have their own rules and their own routes. This module breaks down what's available, who handles what, and how to get the right support without the runaround.
 
 ## Where to Start
 
-In most situations, start with your **supervisor**. If you are not comfortable doing that, or the issue needs HR handling, contact **Nicole Thornton, HR Manager**.
+For most day-to-day questions, your supervisor is the right starting point. But not everything belongs in that conversation — and that's okay. Some situations should go straight to HR:
 
-This applies especially to:
+- Leave or accommodation questions
+- Workplace concerns or conflicts
+- Harassment, bullying, or anything that feels unsafe
+- Injury follow-up that needs HR involvement
+- Anything you're not comfortable raising through the usual path
 
-- Leave questions
-- Accommodation or support questions
-- Workplace concerns
-- Harassment or bullying concerns
-- Injury follow-up when HR involvement is needed
-- Issues you are not comfortable raising through the usual path
+You don't need permission to skip a step when the situation calls for it.
 
 ## Who to Know
 
@@ -94,17 +93,34 @@ You do not need to follow this list in order. If something feels urgent, sensiti
 
 ## Employee Assistance Program
 
-Employee support resources are available beyond policy questions and time-off issues. The **Employee Assistance Program (EAP)** is available starting on **day one** of employment.
+You don't have to wait for a crisis to use the **Employee Assistance Program (EAP)** — and you don't have to be going through something major. It's a free, confidential platform available to you and your household from **day one**. Whether you're dealing with stress, navigating a personal situation, or just looking for tools to grow personally or professionally — the EAP is built for that.
+
+Here's what's available:
+
+- Counseling and mental health support
+- Financial and legal guidance
+- Stress management and resilience tools
+- Work-life balance and relationship resources
+
+Access it through the link on your **BambooHR home page** under Company Links, or use the direct link below. The company password is **AAP1**. Everything is confidential — no one at AAP sees what you use or when you use it.
+
+:::link
+url: https://eap.mylifematters.com/login
+label: Access the Employee Assistance Program
+description: Log in with company password AAP1 to explore EAP resources.
+:::
 
 ## When to Escalate
 
-Contact HR when:
+Life situations aren't one-size-fits-all — and some need more than a standard process. When something comes up that needs a customized solution, HR is the right place to start. Here are a few examples:
 
-- Leave or support questions go beyond routine PTO
-- A medical, accommodation, or protected-leave issue may be involved
-- You are not comfortable going to your supervisor
-- The issue involves harassment, bullying, retaliation, or other sensitive concerns
-- Something is too specific, too personal, or too important for a guess
+- Leave or support questions that go beyond regular PTO
+- A medical leave or accommodation request
+- A situation where you're not comfortable going to your supervisor
+- Anything involving harassment, bullying, retaliation, or other sensitive concerns
+- Something that's too important for your best guess
+
+Don't overthink whether it's "big enough" to involve HR. If you're unsure, that's reason enough to reach out.
 
 
 

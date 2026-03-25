@@ -358,7 +358,7 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
       {
         eyebrow: "Real Talk",
         title: "Know who to call before you need to",
-        body: "Supervisor first, then HR Admin, then IT, then HR Manager. That's the escalation order. Having it in your head before something goes wrong makes all the difference.",
+        body: "Your supervisor is your go-to for day-to-day support and can direct you when HR or IT needs to be involved. For anything sensitive, confidential, or just uncomfortable to bring up — the HR Manager is always ready and available to help.",
         tone: "red" as const,
       },
     ];
