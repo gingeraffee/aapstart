@@ -108,6 +108,7 @@ export default function AcknowledgePage() {
         <ModuleFooter
           backHref={`/modules/${slug}`}
           backLabel="Back to module"
+          ctaLabel=""
         />
       }
     >
