@@ -16,17 +16,15 @@ Your first month has one job: build a reliable foundation. That means learning w
 
 ## Week 1: Orientation and Setup
 
-- Complete AAP Start modules and account setup tasks.
-- Learn where key files, systems, and SOPs are stored.
-- Meet your key contacts and understand who owns what.
-- Review confidentiality expectations and communication norms.
+Your first week is about getting grounded. You'll work through your AAP Start modules, get your accounts set up, and start learning where things live — key files, systems, and SOPs.
 
-## Weeks 2-3: Learn Core Workflows
+You'll also meet the people you'll be working with most closely and start to understand who owns what. Take note of confidentiality expectations and how communication works here. None of this needs to be memorized overnight — just pay attention and ask questions as they come up.
 
-- Practice recurring tasks with guidance.
-- Build accuracy before speed.
-- Document questions as you work and review them with your supervisor.
-- Learn escalation paths for time-sensitive requests.
+## Weeks 2–3: Learn Core Workflows
+
+This is where you start doing the work — with guidance. You'll practice recurring tasks, get familiar with the rhythm of the role, and start building accuracy before speed. Getting it right matters more than getting it fast.
+
+Keep a running list of questions as you go and review them with your supervisor regularly. You'll also want to learn the escalation paths for time-sensitive requests — knowing when to flag something and who to flag it to will save you a lot of second-guessing later.
 
 ## Week 4: Work With Increasing Independence
 
@@ -41,9 +39,19 @@ A strong first month is not about being perfect. It is about being dependable, c
 
 ## 30-Day Check-In Prep
 
-Bring notes on:
+At the 30-day mark, you'll have a check-in conversation with your supervisor. This isn't a test — it's a real conversation about how things are going and what would help you keep building momentum.
 
-- What is going well
-- Where you need more context or training
-- Which tasks you are ready to own independently
-- What support would help you ramp faster
+Come prepared. Think about what's clicking, where you still need more context or training, which tasks you feel ready to own independently, and what kind of support would help you ramp faster. Honest self-assessment at this stage earns more respect than pretending everything is perfect.
+
+## Up To Speed
+
+By the time you wrap up your training, these should all feel like a confident yes. If any of them don't — that's worth flagging with your supervisor now, not later.
+
+:::checklist
+- [ ] I have access to BambooHR
+- [ ] I have access to LinkedIn Learning
+- [ ] I have access to Paylocity
+- [ ] I have completed all onboarding tasks
+- [ ] I know how performance is measured
+- [ ] I understand AAP's ethics and values
+:::

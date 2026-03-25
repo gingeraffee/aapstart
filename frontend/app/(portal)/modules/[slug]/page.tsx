@@ -705,20 +705,20 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
     return [
       {
         eyebrow: "Heads Up",
-        title: "Week one is orientation — not full speed",
-        body: "You'll spend the first week learning file systems, meeting key contacts, and understanding confidentiality expectations. That's enough. Don't try to prove anything yet.",
+        title: "Your first month has one job: build a reliable foundation",
+        body: "Learn workflows, meet the right people, ask questions before you're stuck, and show up consistently. You don't need to master everything — you just need to show you're invested.",
         tone: "navy" as const,
       },
       {
         eyebrow: "Good To Know",
-        title: "Accuracy before speed — always",
-        body: "In weeks two and three, you'll start handling core workflows with guidance. The goal isn't to go fast, it's to go right. Speed comes naturally once the process is solid.",
+        title: "Each week builds on the last",
+        body: "Week one is orientation and setup. Weeks two and three are about practicing core tasks with guidance. By week four, you're working with increasing independence and prepping for your check-in.",
         tone: "cyan" as const,
       },
       {
         eyebrow: "Real Talk",
-        title: "Your 30-day check-in is a conversation, not a test",
-        body: "Come prepared with what's going well, where you have gaps, and what support you need. Honest self-assessment at this stage earns more respect than pretending everything is perfect.",
+        title: "Dependable, coachable, consistent — that's the bar",
+        body: "A strong first month isn't about being perfect. Come to your 30-day check-in with notes on what's going well, where you need more context, and what support would help you ramp faster.",
         tone: "red" as const,
       },
     ];
@@ -1100,11 +1100,6 @@ export default function ModulePage() {
           type: "text",
           content:
             "<p>Policies are more useful when you can see them in action. This module pairs the fine print with real scenarios so you walk away with context, not just rules.</p>",
-        },
-        {
-          type: "text",
-          content:
-            '<p style="color:#4d6788; margin-top: 0.5rem;">Don\'t worry — we aren\'t judging. This is just to give you some real-life context before we dive into the policies.</p>',
         },
       ];
     }
