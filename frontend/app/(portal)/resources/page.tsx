@@ -145,21 +145,11 @@ const CATEGORY_COLORS: Record<string, { bg: string; icon: string }> = {
   "hr-systems": { bg: "rgba(15,127,179,0.14)", icon: "#0f7fb3" },
 };
 
-const TRACK_ACCENT_COLORS: Record<string, string> = {
-  hr: "#2563eb",
-  warehouse: "#d97706",
-  administrative: "#c026d3",
-  management: "#059669",
-};
-
 function getTrackAccent(tracks?: string[]): string {
   if (!tracks || tracks.length === 0) return "#94a3b8"; // slate for "all"
-  if (tracks.length === 1) return TRACK_ACCENT_COLORS[tracks[0]] ?? "#94a3b8";
-  // For multi-track, build a CSS gradient
-  const colors = tracks.map((t) => TRACK_ACCENT_COLORS[t] ?? "#94a3b8");
-  const step = 100 / colors.length;
-  const stops = colors.map((c, i) => `${c} ${i * step}%, ${c} ${(i + 1) * step}%`).join(", ");
-  return `linear-gradient(to bottom, ${stops})`;
+  if (tracks.length === 1 && tracks[0] === "hr") return "linear-gradient(to bottom, #0f7fb3, #df0030)";
+  if (tracks.length === 1) return "#1b2c56"; // navy for single non-HR track
+  return "#1b2c56"; // navy for multi-track
 }
 
 function ResourceCard({ resource }: { resource: Resource }) {
@@ -179,7 +169,6 @@ function ResourceCard({ resource }: { resource: Resource }) {
   }
 
   const accent = getTrackAccent(resource.tracks);
-  const isGradient = accent.startsWith("linear-gradient");
 
   return (
     <div
@@ -192,7 +181,7 @@ function ResourceCard({ resource }: { resource: Resource }) {
     >
       <div
         className="w-[4px] shrink-0 rounded-l-[16px]"
-        style={{ background: isGradient ? accent : accent }}
+        style={{ background: accent }}
       />
       <div className="flex flex-1 flex-col p-5">
       <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl" style={{ backgroundColor: colors.bg }}>
