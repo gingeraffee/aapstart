@@ -49,6 +49,62 @@ quiz:
         - id: d
           text: You connect with coworkers on professional networking sites
       correctId: a
+
+    - id: q4
+      tracks: [warehouse]
+      text: "It's cold in the warehouse, so you grab a bulky jacket from your car to wear on the floor. What's the problem?"
+      options:
+        - id: a
+          text: You need supervisor approval to wear personal outerwear
+        - id: b
+          text: Outside clothing isn't sanitary for the warehouse environment
+        - id: c
+          text: Bulky jackets aren't allowed on the floor — they're a visibility and security concern
+        - id: d
+          text: There's no issue as long as your badge is still visible
+      correctId: c
+
+    - id: q5
+      tracks: [warehouse]
+      text: "A coworker tells you they're at 5.0 attendance points and just received coaching. They say it's not a big deal because \"coaching isn't a real warning.\" How would you think about that?"
+      options:
+        - id: a
+          text: They're right — coaching is informal and doesn't count toward further action
+        - id: b
+          text: Coaching is the first step in a structured process, and the next point triggers a verbal warning
+        - id: c
+          text: They should be fine as long as they don't hit 8.0 points
+        - id: d
+          text: Points reset after coaching, so they're starting fresh
+      correctId: b
+
+    - id: q6
+      tracks: [warehouse]
+      text: "You finish your assigned tasks early and notice a coworker struggling to keep up with their workload. What best reflects AAP's performance expectations?"
+      options:
+        - id: a
+          text: Wait for your supervisor to reassign you
+        - id: b
+          text: Clock out early since your work is done
+        - id: c
+          text: Let your coworker figure it out — it's their responsibility
+        - id: d
+          text: Offer to help without being asked
+      correctId: d
+
+    - id: q7
+      tracks: [warehouse]
+      text: "Your supervisor asks you to stay an extra two hours to help finish a shipment. You agree but don't clock the overtime. A coworker says \"it's no big deal, they'll fix it later.\" What's the right call?"
+      options:
+        - id: a
+          text: It's fine — your supervisor knows you stayed, so payroll will handle it
+        - id: b
+          text: Log it the next day when you have time
+        - id: c
+          text: Clock the time now — all overtime must be recorded accurately when it's worked
+        - id: d
+          text: Let your coworker handle reporting it since they saw you stay
+      correctId: c
 ---
 
 ## The Stuff Everyone Assumes You Know
