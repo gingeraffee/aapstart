@@ -228,8 +228,6 @@ You've put in the work — now prove it to yourself. This final review pulls tog
 AAP Start is always available at [aapstart.com](https://aapstart.com). Bookmark it — you can return to any module anytime you need a refresher.
 :::
 
----
-
 ## What You've Covered
 
 Here's a brief look back at everything you've worked through:
@@ -251,8 +249,6 @@ You set up your core accounts and learned which systems you'll use for HR, payro
 
 **Your First 30 Days**
 You mapped out the phases of your first month and what success looks like at each milestone.
-
----
 
 ## A Few Things Worth Repeating
 

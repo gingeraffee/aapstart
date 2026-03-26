@@ -484,6 +484,11 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
     ];
   }
 
+  // ── Final Review — no Human Notes ──
+  if (title.includes("final review")) {
+    return [];
+  }
+
   // ── Where You Make an Impact — HR ──
   if (title.includes("your impact") || (title.includes("impact") && title.includes("hr"))) {
     return [
