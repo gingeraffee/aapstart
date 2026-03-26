@@ -1,7 +1,8 @@
 ---
 slug: where-you-make-an-impact-hr
 title: Your Impact
-description: Your daily duties, weekly rhythm, ownership boundaries, and 30/60/90 day plan as an HR Administrative Assistant.
+description: "No matter where you work at AAP, your work connects to something bigger. This module breaks down what that looks like for your specific role — the expectations, the day-to-day, and the impact only you can make."
+cardDescription: "This is where onboarding gets personal. Every role at AAP contributes differently, and this module walks you through exactly how yours fits into the bigger picture — what's expected, what good looks like, and why your work matters."
 tracks: [hr]
 order: 8
 estimatedMinutes: 14
