@@ -580,7 +580,7 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
   }
 
   // ── Where You Make an Impact — Warehouse ──
-  if (title.includes("impact") && title.includes("warehouse")) {
+  if (title.includes("impact") && track === "warehouse") {
     return [
       {
         eyebrow: "Heads Up",
@@ -604,7 +604,7 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
   }
 
   // ── Where You Make an Impact — Administrative ──
-  if (title.includes("impact") && title.includes("administrative")) {
+  if (title.includes("impact") && track === "administrative") {
     return [
       {
         eyebrow: "Heads Up",
