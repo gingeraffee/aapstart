@@ -7,7 +7,7 @@ import confetti from "canvas-confetti";
 import { modulesApi, progressApi } from "@/lib/api";
 import { useAuth } from "@/lib/context/AuthContext";
 import { usePreview } from "@/lib/context/PreviewContext";
-import { ModuleFooter, ModulePanel, ModuleShell, buildModuleSteps } from "@/components/features/modules/ModuleShell";
+import { ModulePanel, ModuleShell, buildModuleSteps } from "@/components/features/modules/ModuleShell";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
 import type { ModuleDetail, ModuleSummary, ProgressRecord, QuizFeedback } from "@/lib/types";
@@ -315,41 +315,6 @@ export default function QuizPage() {
         contextNote={module.title}
         estimatedMinutes={Math.max(2, Math.round(questions.length * 0.8))}
         steps={steps}
-        footer={
-          <ModuleFooter
-            backHref={`/modules/${slug}`}
-            backLabel="Back to module"
-            ctaLabel=""
-            onCtaClick={handleNext}
-            disabled={!isRevealed || (!isCorrect && currentWrongAttempts < 2) || submitting}
-            helperText={!isRevealed ? "Choose an answer to unlock feedback." : canRetry ? "One more pass and you are through." : undefined}
-          >
-            <button
-              type="button"
-              onClick={handleNext}
-              disabled={!isRevealed || (!isCorrect && currentWrongAttempts < 2) || submitting}
-              className="group relative flex items-center gap-2.5 disabled:opacity-35 disabled:cursor-default"
-              aria-label={isLastQuestion ? "Finish quick check" : "Next question"}
-            >
-              <span className="text-[0.78rem] font-semibold tracking-[-0.01em] text-[#17365d] opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-disabled:!opacity-0">
-                {isLastQuestion ? "Finish" : "Next"}
-              </span>
-              <span
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-[rgba(27,44,86,0.14)] bg-white text-[#17365d] shadow-[0_2px_8px_rgba(12,24,47,0.08)] transition-all duration-200 group-hover:border-[#0f7fb3] group-hover:bg-[#0f7fb3] group-hover:text-white group-hover:shadow-[0_4px_14px_rgba(15,127,179,0.28)] group-disabled:hover:border-[rgba(27,44,86,0.14)] group-disabled:hover:bg-white group-disabled:hover:text-[#17365d] group-disabled:hover:shadow-[0_2px_8px_rgba(12,24,47,0.08)]"
-              >
-                {isLastQuestion ? (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M4 12.5 9.5 18 20 6" />
-                  </svg>
-                ) : (
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M6 3l5 5-5 5" />
-                  </svg>
-                )}
-              </span>
-            </button>
-          </ModuleFooter>
-        }
       >
         <ModulePanel>
           <div className="space-y-3">
@@ -362,9 +327,30 @@ export default function QuizPage() {
                   <h2 className="mt-1.5 text-[1.1rem] font-extrabold tracking-[-0.02em] text-text-primary">{question.text}</h2>
                   <p className="mt-0.5 text-[0.76rem] text-[#5d7391]">Choose the best answer. You get guidance right away.</p>
                 </div>
-                <span className="shrink-0 text-[0.76rem] font-semibold tabular-nums text-[#5d7391]">
-                  {currentQ + 1} / {questions.length}
-                </span>
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  disabled={!isRevealed || (!isCorrect && currentWrongAttempts < 2) || submitting}
+                  className="group relative flex shrink-0 items-center gap-2 disabled:opacity-30 disabled:cursor-default"
+                  aria-label={isLastQuestion ? "Finish quick check" : "Next question"}
+                >
+                  <span className="text-[0.75rem] font-semibold tracking-[-0.01em] text-[#17365d] opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-disabled:!opacity-0">
+                    {isLastQuestion ? "Finish" : "Next"}
+                  </span>
+                  <span
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(27,44,86,0.14)] bg-white text-[#17365d] shadow-[0_2px_6px_rgba(12,24,47,0.08)] transition-all duration-200 group-hover:border-[#0f7fb3] group-hover:bg-[#0f7fb3] group-hover:text-white group-hover:shadow-[0_4px_14px_rgba(15,127,179,0.28)] group-disabled:hover:border-[rgba(27,44,86,0.14)] group-disabled:hover:bg-white group-disabled:hover:text-[#17365d] group-disabled:hover:shadow-[0_2px_6px_rgba(12,24,47,0.08)]"
+                  >
+                    {isLastQuestion ? (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M4 12.5 9.5 18 20 6" />
+                      </svg>
+                    ) : (
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M6 3l5 5-5 5" />
+                      </svg>
+                    )}
+                  </span>
+                </button>
               </div>
               <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-cyan-100">
                 <div
