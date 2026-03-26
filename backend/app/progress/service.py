@@ -113,12 +113,12 @@ def submit_quiz(
     db: Session, employee_id: str, module_slug: str, track: str, answers: dict[str, str]
 ) -> dict:
     # We need the raw module with correct answers — use the internal cache
-    from app.content.loader import _modules_cache
+    from app.content.loader import _modules_cache, _get_track_quiz_questions
     module_raw = _modules_cache.get(module_slug)
     if not module_raw:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Module not found.")
 
-    questions = module_raw.get("quiz", {}).get("questions", [])
+    questions = _get_track_quiz_questions(module_raw, track)
     if not questions:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="This module has no quiz."

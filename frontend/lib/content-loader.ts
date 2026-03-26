@@ -36,13 +36,16 @@ interface ContentBlock {
   [key: string]: unknown;
 }
 
+interface RawQuizQuestion {
+  id: string;
+  text: string;
+  options: { id: string; text: string }[];
+  correctId: string;
+}
+
 interface RawQuiz {
-  questions: {
-    id: string;
-    text: string;
-    options: { id: string; text: string }[];
-    correctId: string;
-  }[];
+  questions: RawQuizQuestion[];
+  [track: string]: RawQuizQuestion[] | undefined;
 }
 
 // ── Cache (survives HMR via globalThis) ─────────────────────────────────────
@@ -137,15 +140,28 @@ export function getModule(slug: string, track: string) {
   return moduleForClient(mod, track);
 }
 
-export function getQuizAnswers(slug: string): Record<string, string> | null {
+export function getQuizAnswers(slug: string, track?: string): Record<string, string> | null {
   const cache = getCache();
   const mod = cache.get(slug);
   if (!mod?.quiz) return null;
+  const questions = getTrackQuizQuestions(mod, track);
   const answers: Record<string, string> = {};
-  for (const q of mod.quiz.questions) {
+  for (const q of questions) {
     answers[q.id] = q.correctId;
   }
   return answers;
+}
+
+function getTrackQuizQuestions(mod: RawModule, track?: string): RawQuizQuestion[] {
+  const quiz = mod.quiz;
+  if (!quiz) return [];
+  if (track) {
+    const trackQuestions = quiz[track];
+    if (Array.isArray(trackQuestions) && trackQuestions.length > 0) {
+      return trackQuestions;
+    }
+  }
+  return quiz.questions ?? [];
 }
 
 // ── Parsing ─────────────────────────────────────────────────────────────────
@@ -323,8 +339,9 @@ function moduleForClient(mod: RawModule, track: string) {
 
   let quizClient = null;
   if (mod.quiz) {
+    const trackQuestions = getTrackQuizQuestions(mod, track);
     quizClient = {
-      questions: mod.quiz.questions.map((q) => ({
+      questions: trackQuestions.map((q) => ({
         id: q.id,
         text: q.text,
         options: q.options,

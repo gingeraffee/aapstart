@@ -59,6 +59,72 @@ quiz:
         - id: d
           text: Wait for a supervisor to identify a hazard before reporting
       correctId: b
+
+  warehouse:
+    - id: wq1
+      text: "What type of footwear is required on the warehouse floor?"
+      options:
+        - id: a
+          text: Any comfortable sneakers
+        - id: b
+          text: Closed-toe, closed-heel footwear
+        - id: c
+          text: Steel-toed boots only
+        - id: d
+          text: Whatever your supervisor approves that day
+      correctId: b
+
+    - id: wq2
+      text: "You notice a wet spot near a loading dock that nobody has cleaned up. What should you do?"
+      options:
+        - id: a
+          text: Walk around it and keep working
+        - id: b
+          text: Wait for the janitorial team to find it
+        - id: c
+          text: Report it or clean it up yourself — don't leave it for the next person
+        - id: d
+          text: Put a box over it so nobody steps in it
+      correctId: c
+
+    - id: wq3
+      text: "Your forklift certification expired last week. A supervisor asks you to move a pallet. What do you do?"
+      options:
+        - id: a
+          text: Do it quickly since a supervisor asked
+        - id: b
+          text: Let them know your certification is expired and you can't operate it
+        - id: c
+          text: Ask a coworker to watch while you do it
+        - id: d
+          text: Move it slowly so it's safer
+      correctId: b
+
+    - id: wq4
+      text: "Which of the following is the correct way to lift a heavy box?"
+      options:
+        - id: a
+          text: Bend at the waist and pull it up quickly
+        - id: b
+          text: Bend at the knees, keep the load close, and avoid twisting
+        - id: c
+          text: Twist your torso to get momentum
+        - id: d
+          text: Lift with your back to protect your knees
+      correctId: b
+
+    - id: wq5
+      text: "AAP requires you to use the company-provided box cutter. Why?"
+      options:
+        - id: a
+          text: It's cheaper for the company
+        - id: b
+          text: Personal tools haven't been safety-inspected and may not meet AAP standards
+        - id: c
+          text: There's no real reason — it's just policy
+        - id: d
+          text: Personal box cutters are always duller
+      correctId: b
 ---
 
 ## Your Role in Keeping AAP Safe

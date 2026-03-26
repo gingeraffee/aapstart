@@ -8,7 +8,8 @@ export async function POST(
 ) {
   const { slug } = await params;
   const body = await req.json();
-  const answers = getQuizAnswers(slug);
+  const track = body.track as string | undefined;
+  const answers = getQuizAnswers(slug, track);
   if (!answers) return NextResponse.json({ detail: "No quiz" }, { status: 404 });
 
   const submitted: Record<string, string> = body.answers ?? body;

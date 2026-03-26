@@ -352,6 +352,15 @@ def _module_summary(module: dict, track: str | None = None) -> dict:
     }
 
 
+def _get_track_quiz_questions(module: dict, track: str) -> list:
+    """Return track-specific quiz questions if they exist, otherwise fallback."""
+    quiz = module.get("quiz") or {}
+    track_questions = quiz.get(track)
+    if track_questions and isinstance(track_questions, list) and len(track_questions) > 0:
+        return track_questions
+    return quiz.get("questions", [])
+
+
 def _module_for_client(module: dict, track: str) -> dict:
     """Full module with content blocks, track-filtered. Quiz answers stripped."""
     is_management = track == "management"
@@ -371,7 +380,7 @@ def _module_for_client(module: dict, track: str) -> dict:
                     "options": q["options"],
                     # correctId intentionally omitted
                 }
-                for q in module["quiz"].get("questions", [])
+                for q in _get_track_quiz_questions(module, track)
             ]
         }
 
