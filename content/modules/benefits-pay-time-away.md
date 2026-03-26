@@ -244,6 +244,16 @@ Three consecutive months with no tardies or unexcused absences earns you a **$75
 
 If you're going to be late or absent, report it within **15 minutes** of your scheduled shift start. Log it in **BambooHR**, or contact your supervisor or HR directly if you don't have access. The sooner you communicate, the easier it is for everyone to adjust.
 
+**Cheat Sheet**
+
+We get that this is a lot to try to memorize, so we made you a cheat sheet you can use.
+
+:::download
+url: /downloads/Attendance_Point_System_Quick_Reference.pdf
+label: Attendance Point System Quick Reference
+description: A quick-reference guide to the attendance point system, reporting rules, and incentives.
+:::
+
 ## PTO and Time Away
 
 Everyone needs time away — and AAP has a structured system to make sure you know exactly what's available to you. Vacation, personal leave, and paid holidays are all tracked in **BambooHR**, with eligibility kicking in after 60 days of service. Here's how each one works.
