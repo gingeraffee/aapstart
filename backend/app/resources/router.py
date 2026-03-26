@@ -41,6 +41,7 @@ def download_file(
         path=str(safe_path),
         filename=filename,
         media_type="application/octet-stream",
+        headers={"Cache-Control": "no-cache, no-store, must-revalidate"},
     )
 
 
