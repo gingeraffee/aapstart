@@ -2,7 +2,6 @@ export interface ModuleSummary {
   slug: string;
   title: string;
   description: string;
-  card_description?: string;
   tracks: string[];
   order: number;
   status: "published" | "draft" | "coming_soon";

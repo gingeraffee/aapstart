@@ -1,8 +1,7 @@
 ---
 slug: where-you-make-an-impact-warehouse
 title: Where You Make an Impact
-description: "No matter where you work at AAP, your work connects to something bigger. This module breaks down what that looks like for your specific role — the expectations, the day-to-day, and the impact only you can make."
-cardDescription: "This is where onboarding gets personal. Every role at AAP contributes differently, and this module walks you through exactly how yours fits into the bigger picture — what's expected, what good looks like, and why your work matters."
+description: This is where onboarding gets personal. Every role at AAP contributes differently, and this module walks you through exactly how yours fits into the bigger picture — what's expected, what good looks like, and why your work matters.
 tracks: [warehouse]
 order: 8
 estimatedMinutes: 12
@@ -11,9 +10,9 @@ requiresQuiz: false
 requiresAcknowledgement: false
 ---
 
-## Why This Module Matters
+## Your Role in the Bigger Picture
 
-Every role at AAP supports patients, pharmacies, and teammates. This module connects your day-to-day work to the bigger mission so you can see where your decisions matter most.
+No matter where you work at AAP, your work connects to something bigger. This module breaks down what that looks like for your specific role — the expectations, the day-to-day, and the impact only you can make.
 
 ## Shared Impact Across Every Team
 

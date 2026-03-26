@@ -69,7 +69,7 @@ export function ModuleCard({ module, progress, index, featured = false }: Module
       </h3>
 
       <p className="mt-1.5 text-[0.86rem] leading-[1.6] line-clamp-3" style={{ color: "var(--card-desc)" }}>
-        {module.card_description || module.description}
+        {module.description}
       </p>
 
       <div className="mt-4 text-[0.8rem] font-semibold transition-all group-hover:underline" style={{ color: "var(--card-link)" }}>
