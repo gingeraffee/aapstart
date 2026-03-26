@@ -328,14 +328,6 @@ Before you close out, here are the key points that come up most often in that fi
 
 **You're not expected to know everything.** You're expected to ask when you don't.
 
----
-
-## Final Acknowledgements
-
-Please review and confirm each of the following statements before completing your onboarding.
-
----
-
 ## Congratulations
 
 Once you submit your final acknowledgements and pass the review quiz, your onboarding is complete.
