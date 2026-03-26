@@ -82,24 +82,27 @@ AAP has a workplace safety program and provides training — but the best safety
 :::
 
 **Building Security**
+Staffing and schedule changes happen — just because you recognize someone doesn't mean they're supposed to be here. Keeping our building secure is **everyone's** responsibility. Here are some pro tips:
+
 - **Always scan your badge** when entering or exiting any part of the building
 - **Never hold the door** for someone behind you — everyone badges in individually. It's not rude, it's policy
 - If someone doesn't have a badge, direct them to check in at the front desk
 
 Safety applies to every employee, in every role, every day.
 
-:::track [warehouse]
 ## Warehouse Safety & OSHA Highlights
 
-Warehouse teams have additional safety requirements on top of the shared AAP expectations.
+:::track [warehouse]
+Working in the warehouse means a few extra safety rules on top of what applies to everyone else. None of this is optional — it's how we keep people from getting hurt.
 
-- Closed-toe, closed-heel footwear is required on the floor.
-- Report all injuries and near-misses immediately to your supervisor.
-- Do not operate forklifts or pallet jacks unless you are currently certified.
-- Use safe lifting form: assess the load, bend at the knees, keep the load close, and avoid twisting.
-- Review Safety Data Sheets (SDS) before handling unfamiliar materials.
+- **Footwear matters.** Closed-toe, closed-heel shoes are required every time you're on the floor. No exceptions.
+- **Report everything.** Injuries, near-misses, something that just didn't look right — tell your supervisor immediately. Not later. Not at the end of your shift.
+- **Don't touch equipment you're not certified on.** Forklifts, pallet jacks — if your certification isn't current, don't operate it. Period.
+- **Lift smart.** Check the load first. Bend at the knees, keep it close to your body, and don't twist. If it's too heavy, ask for help.
+- **Know what you're handling.** If a material is unfamiliar, check the Safety Data Sheet (SDS) before you do anything with it.
+- **Use the company box cutter — not your own.** Even if you've got a favorite from home, AAP requires you to use the API-provided box cutter on the floor. When using it, always cut away from your body, keep the blade retracted when you're not actively cutting, replace dull blades instead of pushing harder, and never leave an open blade unattended on a surface. A sharp, properly handled blade is safer than a dull one you're forcing through cardboard.
 
-If any task feels unsafe, stop and escalate before continuing.
+If something feels unsafe — stop. Don't push through it. Escalate to your supervisor and let them figure out the next step.
 :::
 
 ## Reporting Injuries and Incidents

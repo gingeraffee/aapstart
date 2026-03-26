@@ -1121,7 +1121,19 @@ export default function ModulePage() {
     }
   });
 
-  const sections = output.filter((section) => section.title || section.blocks.length > 0);
+  // Hide sections whose only content is track_blocks that don't match the current user
+  const sections = output.filter((section) => {
+    if (!section.title && section.blocks.length === 0) return false;
+    // If every block is a track_block and none match the effective track, hide the whole section
+    if (section.blocks.length > 0 && section.blocks.every((b) => b.type === "track_block")) {
+      const hasVisibleBlock = section.blocks.some((b) => {
+        const tracks = (b.tracks as string[]) || [];
+        return tracks.includes("all") || tracks.includes(effectiveTrack);
+      });
+      if (!hasVisibleBlock) return false;
+    }
+    return true;
+  });
 
   // Build a map from section array index to step number, skipping noStep sections
   const stepNumberMap: Record<number, number> = {};
