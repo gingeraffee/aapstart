@@ -1,7 +1,7 @@
 ---
 slug: support-leave-resources
 title: Where To Go
-description: Leave pathways, the Employee Assistance Program, and who to contact when you need help.
+description: "Life happens — and when it does, AAP has your back. This module walks you through your leave options, the Employee Assistance Program, and exactly who to reach out to when you need support."
 tracks: [all]
 order: 3
 estimatedMinutes: 10
