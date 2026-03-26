@@ -1,7 +1,7 @@
 ---
 slug: how-work-works
 title: How Work Works
-description: "This module covers how performance is measured, what to wear, the open door policy, and conduct and overtime expectations. The practical stuff — so nothing catches you off guard."
+description: "From dress code to overtime, this module breaks down the everyday expectations at AAP — so you know exactly how things run before your first shift."
 tracks: [all]
 order: 5
 estimatedMinutes: 12
@@ -53,7 +53,7 @@ quiz:
 
 ## The Stuff Everyone Assumes You Know
 
-This module covers how performance is measured, what to wear, the open door policy, and conduct and overtime expectations. The practical stuff — so nothing catches you off guard.
+This is the day-to-day stuff — how performance is measured, what to wear, how overtime works, and what AAP expects when it comes to conduct. No surprises, just the ground rules so you can hit the floor running.
 
 ## What To Do (and what not to do)
 
@@ -104,14 +104,15 @@ This isn't about limiting your voice. It's about protecting your reputation and 
 ## Dress Code
 
 :::track [warehouse]
-AAP expects all employees to maintain a neat and clean appearance. Here are the most important bits of the dress code policy in our API Warehouses:
+Looking the part matters — but in the warehouse, it's mostly about safety. AAP expects everyone to show up neat, clean, and ready to work. Here's what else to know before you clock in:
 
-- Closed-toe, closed-heel shoes only
-- No hats, head coverings, or bulky jackets
-- No food or drinks on the warehouse floor
-- Employee badges must be on your person and visible at all times
+- Closed-toe, closed-heel shoes are a must. No exceptions — this is a safety requirement.
+- No hats, head coverings, or bulky jackets on the floor. It's about visibility and security.
+- No food or drinks on the warehouse floor. The break room is fully stocked and always available — use it.
+- Strong fragrances (cologne, perfume, body sprays) aren't allowed — you're working in close quarters, and it can affect the people around you.
+- Your employee badge stays on you and visible at all times. This keeps everyone accounted for.
 
-The shoe and clothing rules aren't arbitrary — they're about keeping the warehouse secure and everyone safe. If you need a snack or a drink, the break room is fully stocked and always available.
+These rules aren't red tape — they exist to keep you and the people around you safe. If you have questions about what's allowed, ask your supervisor before your shift.
 :::
 
 :::track [administrative]
@@ -129,14 +130,15 @@ Employee badges must be on your person and visible at all times.
 
 **Dress Code (Warehouse)**
 
-AAP expects all employees to maintain a neat and clean appearance. Here are the most important bits of the dress code policy in our API Warehouses:
+Looking the part matters — but in the warehouse, it's mostly about safety. AAP expects everyone to show up neat, clean, and ready to work. Here's what else to know before you clock in:
 
-- Closed-toe, closed-heel shoes only
-- No hats, head coverings, or bulky jackets
-- No food or drinks on the warehouse floor
-- Employee badges must be on your person and visible at all times
+- Closed-toe, closed-heel shoes are a must. No exceptions — this is a safety requirement.
+- No hats, head coverings, or bulky jackets on the floor. It's about visibility and security.
+- No food or drinks on the warehouse floor. The break room is fully stocked and always available — use it.
+- Strong fragrances (cologne, perfume, body sprays) aren't allowed — you're working in close quarters, and it can affect the people around you.
+- Your employee badge stays on you and visible at all times. This keeps everyone accounted for.
 
-The shoe and clothing rules are about keeping the warehouse secure and everyone safe.
+These rules aren't red tape — they exist to keep you and the people around you safe. If you have questions about what's allowed, ask your supervisor before your shift.
 :::
 
 
