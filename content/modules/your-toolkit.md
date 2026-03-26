@@ -116,11 +116,6 @@ Before your first day is over, you'll need to complete your profile and check yo
 
 4. When your profile is complete, check your **BambooHR inbox** (upper right corner) for any outstanding tasks or forms from your new hire packet. Complete all of them.
 
-:::aside
-header: Your Information is Safe
-We ask for your social security number to verify your identity and complete your employment records. Your information is transmitted securely, stored encrypted, and never shared with third parties except where required by law or for payroll processing. If you have any questions or concerns before proceeding, reach out to HR — we're happy to help.
-:::
-
 Go ahead and scan the QR code below to download the app on your phone so you have it handy exactly when you need it.
 
 :::qrcode
