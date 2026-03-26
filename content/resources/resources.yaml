@@ -50,7 +50,35 @@ resources:
     url: https://www.linkedin.com/learning
     category: quick-links
 
+  - id: eap
+    title: Employee Assistance Program (EAP)
+    description: Free, confidential support for you and your household — counseling, legal, financial, and more. Available from day one.
+    type: link
+    url: https://eap.mylifematters.com/login
+    category: quick-links
+
+  - id: teladoc
+    title: Teladoc
+    description: Free 24/7 telehealth — phone or video visits, no copay. Available to you and your household.
+    type: link
+    url: https://www.teladoc.com
+    category: quick-links
+
   # ── Policies ───────────────────────────────────────────────────────────────
+  - id: code-of-conduct
+    title: AAP Code of Conduct
+    description: AAP's expectations for professional behavior, ethics, and workplace conduct.
+    type: download
+    filename: AAP_Code_of_Conduct.pdf
+    category: policies
+
+  - id: attendance-quick-reference
+    title: Attendance Point System Quick Reference
+    description: Point values, corrective action thresholds, rolloff rules, and the perfect attendance bonus — all in one place.
+    type: download
+    filename: Attendance_Point_System_Quick_Reference.pdf
+    category: policies
+
   - id: employee-handbook
     title: AAP Employee Handbook
     description: The official AAP employee handbook — company policies, expectations, and guidelines.
