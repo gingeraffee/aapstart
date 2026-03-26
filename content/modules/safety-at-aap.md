@@ -1,7 +1,7 @@
 ---
 slug: safety-at-aap
 title: Safety at AAP
-description: Every employee plays a role in keeping AAP safe. This module covers reporting, awareness, and the expectations that apply no matter where you work in the building.
+description: This one's all about staying safe — and what AAP expects from every employee to make that happen. We'll cover how to spot and report hazards, what to do if you get hurt (even a little), building security basics like badge access, and why near-misses matter just as much as actual incidents.
 tracks: [all]
 order: 6
 estimatedMinutes: 8
@@ -63,7 +63,7 @@ quiz:
 
 ## Your Role in Keeping AAP Safe
 
-Safety applies to everyone at AAP — not just the warehouse team. This module covers the expectations every employee shares: recognizing hazards, reporting injuries and incidents right away, following training and procedures, and using good judgment in everything you do. The goal is simple — go home the same way you came in.
+Safety at AAP isn't owned by one department — it's everyone's responsibility. This module covers what every employee needs to know: how to spot and report hazards, what to do when someone gets hurt, and the everyday habits that keep you and your coworkers safe. The goal is simple — go home the same way you came in.
 
 ## General Safety Expectations
 
