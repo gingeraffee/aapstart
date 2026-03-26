@@ -317,7 +317,7 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
     ];
   }
 
-  if (title.includes("welcome") || title.includes("aap")) {
+  if ((title.includes("welcome") || title.includes("aap")) && !title.includes("safety")) {
     return [
       {
         eyebrow: "Reality Check",
