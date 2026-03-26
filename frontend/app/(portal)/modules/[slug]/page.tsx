@@ -484,30 +484,6 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
     ];
   }
 
-  // ── Final Review ──
-  if (title.includes("final review")) {
-    return [
-      {
-        eyebrow: "Almost There",
-        title: "This is a recap, not a test",
-        body: "The final review pulls together everything you've already learned. If you've been paying attention along the way, you're already prepared. This is about confirming what you know — not catching what you missed.",
-        tone: "navy" as const,
-      },
-      {
-        eyebrow: "Good To Know",
-        title: "The scenarios are based on real situations",
-        body: "The quiz questions reflect actual workplace situations — privacy, FMLA, timekeeping, PTO disputes. They're designed to check your judgment, not your memory of exact policy numbers.",
-        tone: "cyan" as const,
-      },
-      {
-        eyebrow: "What Happens Next",
-        title: "Passing this unlocks your completion",
-        body: "Once you clear the final review, your onboarding journey is officially complete. Take your time, trust what you've learned, and finish strong.",
-        tone: "red" as const,
-      },
-    ];
-  }
-
   // ── Where You Make an Impact — HR ──
   if (title.includes("your impact") || (title.includes("impact") && title.includes("hr"))) {
     return [

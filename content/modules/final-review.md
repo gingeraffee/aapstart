@@ -1,8 +1,8 @@
 ---
 slug: final-review
 title: Final Review
-description: A brief recap of your onboarding journey and your final acknowledgements before you're ready to go.
-tracks: [hr, warehouse, administrative]
+description: "This is the finish line. Review what you've learned, confirm you're ready, and close out your onboarding the right way."
+tracks: [hr]
 order: 15
 estimatedMinutes: 10
 status: published
@@ -288,7 +288,7 @@ quiz:
 
 ## You Made It
 
-You've worked through AAP Start — and that matters. Completing your onboarding modules means you've built the foundation you need to show up confidently from day one.
+You've put in the work — now prove it to yourself. This final review pulls together the key ideas from every module into one quiz. Pass it, confirm your acknowledgements, and your onboarding is officially complete.
 
 :::callout tip
 AAP Start is always available at [aapstart.com](https://aapstart.com). Bookmark it — you can return to any module anytime you need a refresher.
