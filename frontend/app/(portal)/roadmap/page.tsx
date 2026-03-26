@@ -105,7 +105,7 @@ export default function RoadmapPage() {
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="text-[0.58rem] font-bold uppercase tracking-[0.15em]" style={{ color: phase.accent }}>
-                    {phase.chapter}
+                    {phase.range}
                   </p>
                   <h2 className="mt-1 text-[1.22rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>{phase.title}</h2>
                   <p className="mt-1 text-[0.83rem] leading-[1.6]" style={{ color: "var(--card-desc)" }}>{phase.subtitle}</p>
