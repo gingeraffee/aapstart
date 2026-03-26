@@ -122,7 +122,7 @@ Good administrative execution creates momentum across the business.
 :::
 
 :::track [warehouse]
-### Warehouse Track: Speed With Accuracy
+### Speed With Accuracy
 
 Every order that ships correctly and on time starts with you. Your attention to detail, your consistency, and your commitment to doing things the right way — that's what keeps our operation running and our customers taken care of.
 
