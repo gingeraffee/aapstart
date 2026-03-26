@@ -74,10 +74,12 @@ AAP has a workplace safety program and provides training — but the best safety
 - Follow posted procedures and complete assigned training
 - Ask questions when something doesn't feel right
 
+:::track [administrative, hr]
 **Office Safety**
 - Watch for slips, trips, and fall hazards — wet floors, cords, boxes in walkways
 - Take regular screen breaks and adjust your workstation for good ergonomics. Staring at a screen for 8 hours straight isn't productive, it's a health risk
 - Practice safe work habits, even when the work doesn't feel dangerous
+:::
 
 **Building Security**
 - **Always scan your badge** when entering or exiting any part of the building
@@ -85,6 +87,20 @@ AAP has a workplace safety program and provides training — but the best safety
 - If someone doesn't have a badge, direct them to check in at the front desk
 
 Safety applies to every employee, in every role, every day.
+
+:::track [warehouse]
+## Warehouse Safety & OSHA Highlights
+
+Warehouse teams have additional safety requirements on top of the shared AAP expectations.
+
+- Closed-toe, closed-heel footwear is required on the floor.
+- Report all injuries and near-misses immediately to your supervisor.
+- Do not operate forklifts or pallet jacks unless you are currently certified.
+- Use safe lifting form: assess the load, bend at the knees, keep the load close, and avoid twisting.
+- Review Safety Data Sheets (SDS) before handling unfamiliar materials.
+
+If any task feels unsafe, stop and escalate before continuing.
+:::
 
 ## Reporting Injuries and Incidents
 
@@ -118,18 +134,3 @@ AAP prohibits drugs, alcohol, firearms, and other improper materials on company 
 ## Need Help?
 
 Start with your **supervisor** for immediate safety concerns. Use **HR** when the issue requires follow-up, support, or escalation.
-
-
-:::track [warehouse]
-## Warehouse Safety & OSHA Highlights
-
-Warehouse teams have additional safety requirements on top of the shared AAP expectations.
-
-- Closed-toe, closed-heel footwear is required on the floor.
-- Report all injuries and near-misses immediately to your supervisor.
-- Do not operate forklifts or pallet jacks unless you are currently certified.
-- Use safe lifting form: assess the load, bend at the knees, keep the load close, and avoid twisting.
-- Review Safety Data Sheets (SDS) before handling unfamiliar materials.
-
-If any task feels unsafe, stop and escalate before continuing.
-:::
