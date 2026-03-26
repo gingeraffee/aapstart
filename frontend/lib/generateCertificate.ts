@@ -1,10 +1,27 @@
 import { jsPDF } from "jspdf";
 import { CERTIFICATE_LOGO } from "./certificateLogo";
+import { INTER_REGULAR } from "./certificateFontRegular";
+import { INTER_BOLD } from "./certificateFontBold";
+import { INTER_BOLD_ITALIC } from "./certificateFontBoldItalic";
+
+function registerInterFont(doc: jsPDF) {
+  doc.addFileToVFS("Inter-Regular.ttf", INTER_REGULAR);
+  doc.addFont("Inter-Regular.ttf", "Inter", "normal");
+
+  doc.addFileToVFS("Inter-Bold.ttf", INTER_BOLD);
+  doc.addFont("Inter-Bold.ttf", "Inter", "bold");
+
+  doc.addFileToVFS("Inter-BoldItalic.ttf", INTER_BOLD_ITALIC);
+  doc.addFont("Inter-BoldItalic.ttf", "Inter", "bolditalic");
+}
 
 export function generateCertificate(name: string, completedCount: number) {
   const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "letter" });
   const w = doc.internal.pageSize.getWidth();
   const h = doc.internal.pageSize.getHeight();
+
+  // Register Inter font
+  registerInterFont(doc);
 
   // --- Colors ---
   const navy = [15, 29, 60] as const;
@@ -49,13 +66,13 @@ export function generateCertificate(name: string, completedCount: number) {
   doc.addImage(CERTIFICATE_LOGO, "PNG", w / 2 - logoW / 2, 52, logoW, logoH);
 
   // --- "AAP START" eyebrow ---
-  doc.setFont("helvetica", "bold");
+  doc.setFont("Inter", "bold");
   doc.setFontSize(10);
   doc.setTextColor(...gold);
   doc.text("AAP START", w / 2, 132, { align: "center" });
 
   // --- Title ---
-  doc.setFont("helvetica", "bold");
+  doc.setFont("Inter", "bold");
   doc.setFontSize(34);
   doc.setTextColor(...navy);
   doc.text("Certificate of Completion", w / 2, 172, { align: "center" });
@@ -72,13 +89,13 @@ export function generateCertificate(name: string, completedCount: number) {
   doc.triangle(cx, 182, cx - 4, 186, cx, 190, "F");
 
   // --- "This certifies that" ---
-  doc.setFont("helvetica", "normal");
+  doc.setFont("Inter", "normal");
   doc.setFontSize(13);
   doc.setTextColor(...slate);
   doc.text("This certifies that", w / 2, 220, { align: "center" });
 
   // --- Employee name ---
-  doc.setFont("helvetica", "bold");
+  doc.setFont("Inter", "bold");
   doc.setFontSize(30);
   doc.setTextColor(...navy);
   doc.text(name, w / 2, 260, { align: "center" });
@@ -90,7 +107,7 @@ export function generateCertificate(name: string, completedCount: number) {
   doc.line(w / 2 - nameW / 2 - 30, 270, w / 2 + nameW / 2 + 30, 270);
 
   // --- Body text ---
-  doc.setFont("helvetica", "normal");
+  doc.setFont("Inter", "normal");
   doc.setFontSize(12);
   doc.setTextColor(...slate);
   doc.text(
@@ -104,13 +121,13 @@ export function generateCertificate(name: string, completedCount: number) {
 
   // --- Stats ---
   const sy = 355;
-  doc.setFont("helvetica", "bold");
+  doc.setFont("Inter", "bold");
   doc.setFontSize(20);
   doc.setTextColor(...navy);
   doc.text(String(completedCount), w / 2 - 80, sy, { align: "center" });
   doc.text("100%", w / 2 + 80, sy, { align: "center" });
 
-  doc.setFont("helvetica", "normal");
+  doc.setFont("Inter", "normal");
   doc.setFontSize(8);
   doc.setTextColor(...slate);
   doc.text("MODULES COMPLETE", w / 2 - 80, sy + 14, { align: "center" });
@@ -127,13 +144,13 @@ export function generateCertificate(name: string, completedCount: number) {
     month: "long",
     day: "numeric",
   });
-  doc.setFont("helvetica", "normal");
+  doc.setFont("Inter", "normal");
   doc.setFontSize(11);
   doc.setTextColor(...slate);
   doc.text(`Completed on ${dateStr}`, w / 2, sy + 48, { align: "center" });
 
   // --- Encouraging message ---
-  doc.setFont("helvetica", "bolditalic");
+  doc.setFont("Inter", "bolditalic");
   doc.setFontSize(14);
   doc.setTextColor(...navy);
   doc.text(
@@ -142,7 +159,7 @@ export function generateCertificate(name: string, completedCount: number) {
   );
 
   // --- Footer ---
-  doc.setFont("helvetica", "normal");
+  doc.setFont("Inter", "normal");
   doc.setFontSize(9);
   doc.setTextColor(150, 155, 165);
   doc.text("American Associated Pharmacies", w / 2, h - 42, { align: "center" });
