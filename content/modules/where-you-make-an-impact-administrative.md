@@ -1,7 +1,7 @@
 ---
 slug: where-you-make-an-impact-administrative
 title: Where You Make an Impact
-description: How your work in an administrative role directly supports the AAP team and mission.
+description: This is where onboarding gets personal. Every role at AAP contributes differently, and this module walks you through exactly how yours fits into the bigger picture — what's expected, what good looks like, and why your work matters.
 tracks: [administrative]
 order: 9
 estimatedMinutes: 10

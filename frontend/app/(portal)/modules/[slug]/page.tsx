@@ -590,8 +590,8 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
       },
       {
         eyebrow: "Good To Know",
-        title: "What 'good' looks like is simpler than you'd think",
-        body: "Show up, communicate, follow procedures, and escalate when something's off. Consistency beats perfection here. The people who do well aren't flashy — they're reliable.",
+        title: "You don't need to know everything on day one",
+        body: "Nobody expects you to have the whole warehouse memorized by Friday. What matters is that you ask questions, follow the process, and get a little better each shift. The people who ramp up fastest aren't the ones who already know — they're the ones who aren't afraid to say they don't.",
         tone: "cyan" as const,
       },
       {
