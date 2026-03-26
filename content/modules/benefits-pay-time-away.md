@@ -258,12 +258,6 @@ description: A quick-reference guide to the attendance point system, reporting r
 
 Everyone needs time away — and AAP has a structured system to make sure you know exactly what's available to you. Vacation, personal leave, and paid holidays are all tracked in **BambooHR**, with eligibility kicking in after 60 days of service. Here's how each one works.
 
-:::link
-url: https://aap.bamboohr.com
-label: Request Time Off in BambooHR
-description: Submit vacation, personal leave, and other time-off requests.
-:::
-
 **Personal Leave**
 
 Personal time is yours to use when life happens — appointments, errands, days you just need a breather. After 60 days of employment, full-time employees will see a lump sum of personal time added to **BambooHR**. Each year on your hire anniversary, you'll get a fresh balance. But here's the catch: **whatever you didn't use is gone.** It doesn't roll over into the new balance, and it doesn't pay out if you leave.
