@@ -274,10 +274,14 @@
   }
 
   .prose-module h3 {
-    @apply text-h3 mt-10 mb-4;
+    @apply mt-10 mb-4;
+    font-size: 1.08rem;
+    font-weight: 700;
+    letter-spacing: -0.015em;
     color: var(--heading-color);
     padding-left: 1rem;
-    border-left: 3px solid var(--accent);
+    border-left: 3px solid transparent;
+    border-image: linear-gradient(180deg, #22d3ee 0%, #0ea5d9 100%) 1;
   }
 
   .prose-module p {
