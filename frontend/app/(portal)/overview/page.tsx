@@ -10,6 +10,7 @@ import { WelcomeHeader } from "@/components/features/overview/WelcomeHeader";
 import { CelebrationModal } from "@/components/features/overview/CelebrationModal";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn, pickRandom } from "@/lib/utils";
+import { generateCertificate } from "@/lib/generateCertificate";
 import { COACH_TIPS } from "@/lib/coachTips";
 import type { ModuleSummary, ProgressRecord, UiContent, DashboardData, Resource } from "@/lib/types";
 
@@ -1087,6 +1088,26 @@ export default function OverviewPage() {
               );
             })}
           </div>
+
+          {/* ── Download Certificate (100% complete) ── */}
+          {!isManagement && journeyModules.length > 0 && completedCount === journeyModules.length && (
+            <button
+              onClick={() => generateCertificate(user?.full_name ?? firstName, completedCount)}
+              className="mt-5 flex w-full items-center justify-center gap-2.5 rounded-[14px] border px-5 py-3.5 text-[0.88rem] font-bold transition-all duration-200 hover:-translate-y-px hover:shadow-[0_8px_18px_rgba(15,127,179,0.16)]"
+              style={{
+                borderColor: "rgba(15,127,179,0.28)",
+                backgroundColor: "rgba(15,127,179,0.06)",
+                color: "#0f6da3",
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Download Certificate
+            </button>
+          )}
 
           {/* ── Management Processes section (HR only) ── */}
           {isHRAdmin && managementModules.length > 0 && (
