@@ -1127,7 +1127,7 @@ export default function ModulePage() {
     // If every block is a track_block and none match the effective track, hide the whole section
     if (section.blocks.length > 0 && section.blocks.every((b) => b.type === "track_block")) {
       const hasVisibleBlock = section.blocks.some((b) => {
-        const tracks = (b.tracks as string[]) || [];
+        const tracks = ((b as Record<string, unknown>).tracks as string[]) || [];
         return tracks.includes("all") || tracks.includes(effectiveTrack);
       });
       if (!hasVisibleBlock) return false;
