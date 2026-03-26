@@ -245,7 +245,7 @@ function buildOutcomeLines(
   return lines.slice(0, 3);
 }
 
-function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledgement: boolean) {
+function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledgement: boolean, track?: string) {
   const title = moduleTitle.toLowerCase();
 
   if (title.includes("how work works")) {
@@ -366,10 +366,76 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
 
   // ── Safety at AAP ──
   if (title === "safety at aap") {
+    if (track === "warehouse") {
+      return [
+        {
+          eyebrow: "Non-Negotiable",
+          title: "Closed-toe shoes aren't a suggestion",
+          body: "Steel-toed or closed-toe, closed-heel footwear is required every time you step on the warehouse floor. No exceptions, no 'just for a minute.' The same goes for any PPE your area requires — if you're not sure what's needed, ask your supervisor before you start.",
+          tone: "navy" as const,
+        },
+        {
+          eyebrow: "Heads Up",
+          title: "Report it. Every time. Even the small stuff.",
+          body: "That bruise from bumping into a shelf. The near-miss with a pallet jack. The wet spot nobody cleaned up yet. Report it anyway. Small things become big things when they go undocumented — and the safety team tracks near-misses specifically to fix hazards before someone actually gets hurt.",
+          tone: "cyan" as const,
+        },
+        {
+          eyebrow: "Real Talk",
+          title: "If it feels unsafe, stop.",
+          body: "You are never expected to push through a task that doesn't feel right. If something seems off — a load that's too heavy, equipment that's acting up, a process that skips a step — stop what you're doing and escalate before continuing. That's not slowing things down, that's doing your job.",
+          tone: "red" as const,
+        },
+      ];
+    }
+    if (track === "administrative") {
+      return [
+        {
+          eyebrow: "Heads Up",
+          title: "Your workspace has hazards too",
+          body: "Slips, trips, and ergonomics aren't just warehouse concerns. Spilled coffee, a cord across the walkway, or 8 hours of bad posture add up. If you see something, fix it or report it.",
+          tone: "navy" as const,
+        },
+        {
+          eyebrow: "Non-Negotiable",
+          title: "Report it. Even if it seems minor.",
+          body: "A headache from a strange smell, a bruise from a file cabinet, a near-miss on a wet floor. Report it anyway. Small things become big things when they go undocumented.",
+          tone: "cyan" as const,
+        },
+        {
+          eyebrow: "Good To Know",
+          title: "See something? Say something.",
+          body: "An unfamiliar visitor, a propped-open door, a coworker who seems off — trust your instincts and speak up. Your supervisor or HR would rather hear about a false alarm than miss a real one.",
+          tone: "red" as const,
+        },
+      ];
+    }
+    if (track === "hr") {
+      return [
+        {
+          eyebrow: "Heads Up",
+          title: "You'll field these questions, not just follow the rules",
+          body: "As HR, you're the person people come to when they're unsure about safety reporting, injury procedures, or who to call. Know this module well enough to guide others through it.",
+          tone: "navy" as const,
+        },
+        {
+          eyebrow: "Non-Negotiable",
+          title: "Delayed reporting creates real problems",
+          body: "When an employee reports an injury late — or not at all — it complicates everything from workers' comp to OSHA documentation. Reinforce the 'report it now' message every chance you get.",
+          tone: "cyan" as const,
+        },
+        {
+          eyebrow: "Real Talk",
+          title: "Safety culture starts with how you respond",
+          body: "If someone reports a near-miss and gets brushed off, they won't report the next one. How you receive safety concerns sets the tone for whether people speak up or stay quiet.",
+          tone: "red" as const,
+        },
+      ];
+    }
     return [
       {
         eyebrow: "Heads Up",
-        title: "It's Not Just the Warehouse",
+        title: "Safety applies to every role",
         body: "Slips, trips, and falls are the #1 cause of office injuries. Spilled coffee, a box in the walkway, a cord across the floor — it doesn't take heavy machinery to get hurt. If you see it, fix it or report it.",
         tone: "navy" as const,
       },
@@ -1485,7 +1551,7 @@ export default function ModulePage() {
   const totalModules = liveModules.length || currentModule.order;
   const completedModules = (progress ?? []).filter((item) => item.module_completed).length;
   const outcomeLines = buildOutcomeLines(displaySections, hasQuiz, hasAcknowledgement);
-  const humanMoments = buildHumanMoments(currentModule.title, hasQuiz, hasAcknowledgement);
+  const humanMoments = buildHumanMoments(currentModule.title, hasQuiz, hasAcknowledgement, effectiveTrack);
   const whyThisMatters =
     firstKeyLine ??
     currentModule.description ??
