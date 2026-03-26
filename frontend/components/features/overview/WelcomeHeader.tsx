@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { pickRandom } from "@/lib/utils";
+import { generateCertificate } from "@/lib/generateCertificate";
 import type { ModuleSummary } from "@/lib/types";
 
 const FALLBACK_HEADERS = [
@@ -188,6 +189,24 @@ export function WelcomeHeader({
                   ? "Every module complete. You can review anything anytime."
                   : `${completedCount} complete, ${remaining} to go.`}
             </p>
+            {isComplete && (
+              <button
+                onClick={() => generateCertificate(name, completedCount)}
+                className="mt-3 inline-flex items-center gap-2 rounded-[10px] border px-4 py-2 text-[0.78rem] font-bold transition-all duration-200 hover:-translate-y-px hover:shadow-[0_6px_14px_rgba(15,127,179,0.14)]"
+                style={{
+                  borderColor: "rgba(15,127,179,0.3)",
+                  backgroundColor: "rgba(15,127,179,0.08)",
+                  color: "#0f6da3",
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                Download Certificate
+              </button>
+            )}
           </div>
 
           <div className="hidden min-w-[210px] pl-4 text-[0.72rem] font-semibold italic lg:block" style={{ borderLeft: "1px solid var(--welcome-quote-border)", color: "var(--welcome-quote-text)" }}>
