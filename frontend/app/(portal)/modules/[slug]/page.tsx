@@ -1457,6 +1457,65 @@ export default function ModulePage() {
     },
   ] : [];
 
+  // Gut Check scenarios for Where You Make An Impact (warehouse)
+  const impactGutChecks = (currentModule.slug === "where-you-make-an-impact-warehouse") ? [
+    {
+      scenario: "What's the most accurate way to describe your impact in the warehouse?",
+      options: [
+        { id: "a", text: "Getting through as many orders as possible each shift" },
+        { id: "b", text: "Every order that ships correctly and on time starts with you" },
+        { id: "c", text: "Following instructions from your supervisor without questions" },
+        { id: "d", text: "Making sure the warehouse looks clean at the end of the day" },
+      ],
+      correctId: "b",
+      explanation: "Your impact isn't just about speed — it's about every order leaving correctly and on time. That accuracy and consistency is what keeps the whole operation running.",
+    },
+    {
+      scenario: "A box on your station has a slightly damaged label but the product inside looks fine. What should you do?",
+      options: [
+        { id: "a", text: "Ship it — the product is fine and relabeling slows things down" },
+        { id: "b", text: "Set it aside and flag it so it can be relabeled correctly" },
+        { id: "c", text: "Ask a coworker what they'd do" },
+        { id: "d", text: "Toss it in the returns pile and move on" },
+      ],
+      correctId: "b",
+      explanation: "A damaged label can cause real problems downstream — wrong product, wrong pharmacy, wrong patient. Flagging it is the right call every time.",
+    },
+    {
+      scenario: "Which of these best describes what \"good\" looks like at AAP?",
+      options: [
+        { id: "a", text: "Never making mistakes" },
+        { id: "b", text: "Being the fastest person on the floor" },
+        { id: "c", text: "Being reliable, coachable, and getting a little better every day" },
+        { id: "d", text: "Handling everything on your own without asking questions" },
+      ],
+      correctId: "c",
+      explanation: "Nobody expects perfection on day one. What matters most is showing up consistently, being open to feedback, and improving over time.",
+    },
+    {
+      scenario: "Why does following the process matter — even when a shortcut seems faster?",
+      options: [
+        { id: "a", text: "Because supervisors are always watching" },
+        { id: "b", text: "Because every step exists for a reason and skipping one can cause problems downstream" },
+        { id: "c", text: "Because shortcuts are against company policy regardless of outcome" },
+        { id: "d", text: "Because the process was designed to slow things down for safety audits" },
+      ],
+      correctId: "b",
+      explanation: "Every step in the process exists for a reason. Skipping one might save a minute now, but it can create bigger problems for pharmacies, patients, or your teammates.",
+    },
+    {
+      scenario: "You notice a coworker skipping a check step to keep up with the pace. What's the right mindset?",
+      options: [
+        { id: "a", text: "It's not your business — everyone has their own workflow" },
+        { id: "b", text: "Report them to a supervisor immediately" },
+        { id: "c", text: "Catching mistakes before they reach pharmacies and patients is everyone's responsibility" },
+        { id: "d", text: "Skip it too — if they're doing it, it's probably fine" },
+      ],
+      correctId: "c",
+      explanation: "Quality isn't just one person's job. When you see something that could affect accuracy or safety, speaking up or flagging it is always the right move.",
+    },
+  ] : [];
+
   // Override first section for How We Show Up (both all and HR versions)
   if (currentModule.title.toLowerCase().includes("how we show up")) {
     const coverSection = sections.find(
@@ -2039,6 +2098,13 @@ export default function ModulePage() {
           <div className="mt-2">
             <ModulePanel>
               <GutCheckBlock scenarios={toolkitGutChecks} />
+            </ModulePanel>
+          </div>
+        )}
+        {!isManagement && impactGutChecks.length > 0 && (
+          <div className="mt-2">
+            <ModulePanel>
+              <GutCheckBlock scenarios={impactGutChecks} />
             </ModulePanel>
           </div>
         )}
