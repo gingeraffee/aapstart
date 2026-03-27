@@ -277,7 +277,7 @@ export function ContentBlock({ block, emphasizeLead = false, variant = "training
       return (
         <div
           className={cn(
-            "prose-module text-[0.95rem] leading-[1.72] text-text-secondary",
+            "prose-module prose-track text-[0.95rem] leading-[1.72] text-text-secondary",
             "[&_strong]:font-semibold [&_strong]:text-text-primary",
             "[&_a]:text-brand-bright [&_a]:underline-offset-2 [&_a]:hover:underline",
             "[&_p]:max-w-none",
