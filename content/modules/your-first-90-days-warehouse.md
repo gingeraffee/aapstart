@@ -30,77 +30,55 @@ There are no dumb questions — the question you are embarrassed to ask on day o
 
 Select your location below to learn who your go-to contacts are.
 
-<details>
-<summary><strong>Scottsboro, AL</strong></summary>
+### Scottsboro, AL
 
-**Your Supervisors**
-
-Your supervisor is your go-to for day-to-day direction, attendance, performance feedback, and escalations. If something feels off or you are unsure about a process, start here.
+**Your Supervisors** — Your go-to for day-to-day direction, attendance, performance feedback, and escalations. If something feels off or you are unsure about a process, start here.
 
 | Name | Role | Contact |
 |---|---|---|
 | Robby Donnelly | Warehouse Supervisor | 256-574-6819 x 255 · robert.donnelly@apirx.com |
 | Linda Dodson | Assistant Warehouse Supervisor | linda.dodson@apirx.com |
 
-**Your Trainers**
-
-You will be assigned a trainer for your first few days. They are the person walking you through processes hands-on — how things actually get done on the floor. Ask them the step-by-step questions. That is exactly what they are there for.
+**Your Trainers** — You will be assigned a trainer for your first few days. They walk you through processes hands-on — how things actually get done on the floor. Ask them the step-by-step questions. That is exactly what they are there for.
 
 Laura Still · Becky Hoskins · Christa Ledwell · Cheryl Hancock
 
-**IT**
-
-Login issues, equipment problems, and system access. If something is not working or you cannot get in, reach out to IT so it gets fixed before it slows you down.
+**IT** — Login issues, equipment problems, and system access. If something is not working or you cannot get in, reach out to IT so it gets fixed before it slows you down.
 
 | Name | Role | Contact |
 |---|---|---|
 | Trevor Bowen | IT Technician | trevor.bowen@apirx.com |
 
-**HR**
-
-Benefits, leave, sensitive workplace concerns, and policy questions all go through HR. If it is personal, confidential, or you are not sure who else to ask — HR is the right call.
+**HR** — Benefits, leave, sensitive workplace concerns, and policy questions. If it is personal, confidential, or you are not sure who else to ask — HR is the right call.
 
 | Name | Role | Contact |
 |---|---|---|
 | Nicole Thornton | HR Manager | 256-574-7528 · nicole.thornton@apirx.com |
 
-</details>
+### Memphis, TN
 
-<details>
-<summary><strong>Memphis, TN</strong></summary>
-
-**Your Supervisors**
-
-Your supervisor is your go-to for day-to-day direction, attendance, performance feedback, and escalations. If something feels off or you are unsure about a process, start here.
+**Your Supervisors** — Your go-to for day-to-day direction, attendance, performance feedback, and escalations. If something feels off or you are unsure about a process, start here.
 
 | Name | Role | Contact |
 |---|---|---|
 | Joseph Isom | Warehouse Supervisor | 901-623-5778 · joseph.isom@apirx.com |
 | Bryan Hawthorn | Maintenance Supervisor | bryan.hawthorn@apirx.com |
 
-**Your Trainers**
-
-You will be assigned a trainer for your first few days. They are the person walking you through processes hands-on — how things actually get done on the floor. Ask them the step-by-step questions. That is exactly what they are there for.
+**Your Trainers** — You will be assigned a trainer for your first few days. They walk you through processes hands-on — how things actually get done on the floor. Ask them the step-by-step questions. That is exactly what they are there for.
 
 Terri Jackson · Veronica Jackson
 
-**IT**
-
-Login issues, equipment problems, and system access. If something is not working or you cannot get in, reach out to IT so it gets fixed before it slows you down.
+**IT** — Login issues, equipment problems, and system access. If something is not working or you cannot get in, reach out to IT so it gets fixed before it slows you down.
 
 | Name | Role | Contact |
 |---|---|---|
 | Dylan Willis | IT Technician | dylan.willis@apirx.com |
 
-**HR**
-
-Benefits, leave, sensitive workplace concerns, and policy questions all go through HR. If it is personal, confidential, or you are not sure who else to ask — HR is the right call.
+**HR** — Benefits, leave, sensitive workplace concerns, and policy questions. If it is personal, confidential, or you are not sure who else to ask — HR is the right call.
 
 | Name | Role | Contact |
 |---|---|---|
 | Nicole Thornton | HR Manager | 256-574-7528 · nicole.thornton@apirx.com |
-
-</details>
 
 ## How to Ask for Help
 
