@@ -1,7 +1,7 @@
 ---
 slug: your-first-90-days-warehouse
 title: Your First 30 Days
-description: What to expect in your first month — who to go to, what your 30-day check-in looks like, and how to build strong habits early.
+description: Your first month is about learning the job, finding your footing, and building habits that actually stick. The goal at the end of this module is to know who to go to, when to ask for help, and what good habits look like before they become second nature.
 tracks: [warehouse]
 order: 10
 estimatedMinutes: 10
@@ -10,11 +10,9 @@ requiresQuiz: false
 requiresAcknowledgement: false
 ---
 
-## What This Module Covers
+## Before You Hit Full Speed
 
-The first month is about learning the job, building confidence, and getting your footing — without feeling like you are supposed to be a seasoned pro by Friday.
-
-This module covers what to expect in your first week, who to go to for help on the floor, what the 30-day check-in looks like, and how to build habits that will actually serve you long-term.
+You are brand new. That means everything is unfamiliar, most names have not stuck yet, and the job still feels like a lot of moving parts. That is exactly where you are supposed to be right now. This module is the cheat sheet — the stuff that helps your first month feel less like guesswork and more like progress.
 
 ## Your First Week
 
