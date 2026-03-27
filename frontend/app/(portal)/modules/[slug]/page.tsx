@@ -700,7 +700,7 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
   }
 
   // ── Your First 30 Days — HR ──
-  if (title.includes("first") && title.includes("days") && title.includes("hr")) {
+  if (title.includes("first") && title.includes("days") && track === "hr") {
     return [
       {
         eyebrow: "Heads Up",
@@ -724,7 +724,7 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
   }
 
   // ── Your First 30 Days — Warehouse ──
-  if (title.includes("first") && title.includes("days") && title.includes("warehouse")) {
+  if (title.includes("first") && title.includes("days") && track === "warehouse") {
     return [
       {
         eyebrow: "Heads Up",
@@ -748,7 +748,7 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
   }
 
   // ── Your First 30 Days — Administrative ──
-  if (title.includes("first") && title.includes("days") && title.includes("administrative")) {
+  if (title.includes("first") && title.includes("days") && track === "administrative") {
     return [
       {
         eyebrow: "Heads Up",
