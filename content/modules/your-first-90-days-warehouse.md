@@ -6,8 +6,85 @@ tracks: [warehouse]
 order: 10
 estimatedMinutes: 10
 status: published
-requiresQuiz: false
-requiresAcknowledgement: false
+requiresQuiz: true
+requiresAcknowledgement: true
+acknowledgements:
+  - id: ack-1
+    statement: I understand how my first week is structured.
+  - id: ack-2
+    statement: I know who my go-to contacts are and I know what each contact can help with.
+  - id: ack-3
+    statement: I understand that I should ask questions early and often.
+  - id: ack-4
+    statement: I understand what to expect in the 30 Day Check In.
+  - id: ack-5
+    statement: I understand that building consistent habits is more important than speed in my first 30 days.
+quiz:
+  questions:
+    - id: q1
+      text: "It is your third day and your trainer showed you a process yesterday, but you cannot remember one of the steps. You remember most of it. What should you do?"
+      options:
+        - id: a
+          text: Work through it from memory and fill in the gap as you go since you are close to having it down.
+        - id: b
+          text: Watch a nearby coworker do it first and match your approach to theirs before starting.
+        - id: c
+          text: Ask your trainer to walk you through it again so you can get the full process down correctly.
+        - id: d
+          text: Move on to a different task you are confident in and circle back to this one later in the shift.
+      correctId: c
+
+    - id: q2
+      text: "You need to take a day off next week for a personal appointment. What is the correct way to request time off?"
+      options:
+        - id: a
+          text: Let your supervisor know in person so they can plan coverage for your shift.
+        - id: b
+          text: Submit your request through BambooHR so your supervisor and HR are both notified at the same time.
+        - id: c
+          text: Send your supervisor an email with the date and reason so there is a written record.
+        - id: d
+          text: Call HR directly and ask them to coordinate the time off with your supervisor on your behalf.
+      correctId: b
+
+    - id: q3
+      text: "You notice a coworker doing a process differently than what your trainer taught you. Their way is faster and skips a step. What is the best way to handle this?"
+      options:
+        - id: a
+          text: Follow the coworker's approach since they have been here longer and clearly know a more efficient way.
+        - id: b
+          text: Continue doing it the way your trainer taught you and ask your supervisor about the difference later.
+        - id: c
+          text: Try the coworker's method on your next task to see if it works just as well before committing to it.
+        - id: d
+          text: Let your trainer know what you observed so they can address it with the coworker directly.
+      correctId: b
+
+    - id: q4
+      text: "Your 30-day check-in is coming up. You feel confident in most areas but you are struggling with one part of the job. How should you handle it?"
+      options:
+        - id: a
+          text: Lead with what is going well and bring up the struggle only if your supervisor asks about that area.
+        - id: b
+          text: Mention it briefly but keep the focus on your strengths so the overall impression stays positive.
+        - id: c
+          text: Be upfront about where you are struggling so your supervisor can connect you with the right support.
+        - id: d
+          text: Ask a coworker for help with that area before the check-in so you can show improvement on your own.
+      correctId: c
+
+    - id: q5
+      text: "You have been on the floor for two weeks and a newer employee asks you how to do something. You are fairly sure you know the answer but you have only done it a few times. What should you do?"
+      options:
+        - id: a
+          text: Walk them through what you know and point them to the trainer to confirm the details afterward.
+        - id: b
+          text: Show them how you have been doing it since hands-on help is more useful than sending them to someone else.
+        - id: c
+          text: Direct them to the trainer so they get the correct process from someone who is fully up to speed.
+        - id: d
+          text: Explain the steps you remember and suggest they check the training materials if they need more detail.
+      correctId: a
 ---
 
 ## Before You Hit Full Speed
@@ -108,7 +185,7 @@ Your supervisor uses a framework for this conversation, so it is consistent and 
 
 **Goal-setting for days 31 through 90.** The first month was about learning the foundation. The next stretch is about building on it. You and your supervisor will set specific goals so the next 60 days have direction — not just "keep doing what you are doing."
 
-**Your feedback on the training.** This one matters more than you think. What worked? What did not? What would have helped you learn faster? Your answers feed directly into improving onboarding for the people who come after you.
+**Your feedback on the training.** This one matters more than you think. What worked? What did not? What would have helped you learn faster? Your answers feed directly into improving onboarding for the people who come after you. Around this time, you will also receive a 30-day survey in BambooHR — take a few minutes to complete it. It is your chance to share honest feedback about your onboarding experience, and it goes a long way in helping us make the process better for future new hires.
 
 ### How to Prepare
 
