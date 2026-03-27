@@ -281,15 +281,8 @@
   }
 
   .prose-track h2 {
-    font-size: 1.08rem;
-    font-weight: 700;
-    letter-spacing: -0.015em;
+    @apply text-h2 mt-16 mb-5 first:mt-0;
     color: var(--heading-color);
-    padding-left: 0.625rem;
-    border-left: 3px solid transparent;
-    border-image: linear-gradient(180deg, #22d3ee 0%, #0ea5d9 100%) 1;
-    margin-top: 0.25rem;
-    margin-bottom: 1.25rem;
   }
 
   .prose-module p {

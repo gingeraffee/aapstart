@@ -5,7 +5,7 @@ description: No matter where you work at AAP, your work connects to something bi
 tracks: [warehouse]
 order: 8
 estimatedMinutes: 12
-status: published
+status: draft
 requiresQuiz: true
 requiresAcknowledgement: false
 quiz:

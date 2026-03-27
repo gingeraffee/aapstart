@@ -241,7 +241,7 @@ export function AppShell({ children }: AppShellProps) {
                             <path d="M2.5 4V2.5a1.5 1.5 0 013 0V4" stroke="currentColor" strokeWidth="1.2" />
                           </svg>
                         </span>
-                        <span className="truncate text-[0.76rem] leading-tight" style={{ color: "var(--sidebar-locked-text)" }}>{m.title}</span>
+                        <span className="text-[0.76rem] leading-tight" style={{ color: "var(--sidebar-locked-text)" }}>{m.title}</span>
                       </div>
                     );
                   }
@@ -291,7 +291,7 @@ export function AppShell({ children }: AppShellProps) {
                           i + 1
                         )}
                       </span>
-                      <span className="truncate leading-tight">{m.title}</span>
+                      <span className="leading-tight">{m.title}</span>
                     </Link>
                   );
                 })}
@@ -391,7 +391,7 @@ export function AppShell({ children }: AppShellProps) {
                           <path d="M2 3h8M2 6h8M2 9h5" />
                         </svg>
                       </span>
-                      <span className="truncate leading-tight">{m.title}</span>
+                      <span className="leading-tight">{m.title}</span>
                     </Link>
                   );
                 })}
