@@ -295,3 +295,11 @@ resources:
     filename: CS-04_Escalation_Route.docx
     category: training
     tracks: [hr]
+
+  - id: 30-day-check-in-framework
+    title: 30-Day Check-In Framework
+    description: Structured guide for supervisors to conduct consistent, high-value 30-day check-ins with new warehouse employees.
+    type: download
+    filename: 30_Day_Check_In_Framework.md
+    category: training
+    tracks: [warehouse, hr, management]
