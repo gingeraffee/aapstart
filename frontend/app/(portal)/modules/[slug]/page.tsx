@@ -1494,6 +1494,40 @@ export default function ModulePage() {
     },
   ] : [];
 
+  // Gut Check scenarios for Quality & Accuracy (warehouse)
+  const qualityGutChecks = (currentModule.slug === "quality-accuracy-warehouse") ? [
+    {
+      scenario: "You are pulling orders and notice the product on the shelf looks similar to what the scanner is asking for, but the label does not quite match. You are close to hitting your quota for the hour. What do you do?",
+      options: [
+        { id: "a", text: "Scan it and see if the system accepts it — if it does, it is the right product" },
+        { id: "b", text: "Pull it and make a note to mention it to your supervisor at the end of your shift" },
+        { id: "c", text: "Stop, verify the label against the scanner, and flag it if it does not match" },
+      ],
+      correctId: "c",
+      explanation: "Scanning it to \"see what happens\" might work — but if the item is similar enough to pass the scan and it is still wrong, you have just sent a bad pick downstream. And waiting until end of shift means the error has already moved on. Stop and verify in the moment.",
+    },
+    {
+      scenario: "You scan a product and the scanner confirms it is correct. You place it in the basket and move on to the next pick. A moment later, you realize you might have grabbed the bottle next to the one you scanned. What should you do?",
+      options: [
+        { id: "a", text: "The scanner confirmed it, so the system would have caught a mismatch" },
+        { id: "b", text: "Go back and verify that the product in the basket matches what you scanned" },
+        { id: "c", text: "Keep going — if it is wrong, the packing team will catch it before it ships" },
+      ],
+      correctId: "b",
+      explanation: "The scanner confirmed what you scanned, not what you grabbed. A mis-pull happens when the right product gets scanned but the wrong one ends up in the basket. The packing team is not checking every item against your picks — that is your responsibility.",
+    },
+    {
+      scenario: "You realize mid-cart that you may have placed a product in the wrong basket a few picks ago. What should you do?",
+      options: [
+        { id: "a", text: "Finish the cart first, then go back and check before you turn it in" },
+        { id: "b", text: "It was a few picks ago — if it were wrong, the scanner would have flagged something by now" },
+        { id: "c", text: "Stop now, go back and check the basket, and fix it if needed" },
+      ],
+      correctId: "c",
+      explanation: "Finishing the cart first sounds reasonable, but every pick you add on top of a potential error makes it harder to sort out. The scanner does not track which basket you physically placed items in — that is on you. Stop, check, and fix it now while you still remember which pick it was.",
+    },
+  ] : [];
+
   // Override first section for How We Show Up (both all and HR versions)
   if (currentModule.title.toLowerCase().includes("how we show up")) {
     const coverSection = sections.find(
@@ -2083,6 +2117,13 @@ export default function ModulePage() {
           <div className="mt-2">
             <ModulePanel>
               <GutCheckBlock scenarios={impactGutChecks} />
+            </ModulePanel>
+          </div>
+        )}
+        {!isManagement && qualityGutChecks.length > 0 && (
+          <div className="mt-2">
+            <ModulePanel>
+              <GutCheckBlock scenarios={qualityGutChecks} />
             </ModulePanel>
           </div>
         )}
