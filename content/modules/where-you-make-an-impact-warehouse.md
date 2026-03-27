@@ -6,8 +6,62 @@ tracks: [warehouse]
 order: 8
 estimatedMinutes: 12
 status: published
-requiresQuiz: false
+requiresQuiz: true
 requiresAcknowledgement: false
+quiz:
+  questions:
+    - id: q1
+      tracks: [warehouse]
+      text: "What is the most important thing that defines your impact in the warehouse?"
+      options:
+        - id: a
+          text: Speed — getting through as many orders as possible
+        - id: b
+          text: Accuracy and consistency — every order ships correctly and on time
+        - id: c
+          text: Following your supervisor's instructions exactly as given
+        - id: d
+          text: Keeping your work area looking clean throughout the shift
+      correctId: b
+    - id: q2
+      tracks: [warehouse]
+      text: "You're falling behind on your pick rate and notice you could skip a verification step to catch up. What's the right call?"
+      options:
+        - id: a
+          text: Skip it this once — you'll be more careful on the next batch
+        - id: b
+          text: Keep following the full process, even if it means a slower pace
+        - id: c
+          text: Ask the person next to you if they ever skip it
+        - id: d
+          text: Speed up on the other steps so you can still fit the check in
+      correctId: b
+    - id: q3
+      tracks: [warehouse]
+      text: "What does \"being coachable\" look like on the warehouse floor?"
+      options:
+        - id: a
+          text: Only accepting feedback from your direct supervisor
+        - id: b
+          text: Listening to feedback, applying it, and asking questions when something isn't clear
+        - id: c
+          text: Doing exactly what you're told without pushing back
+        - id: d
+          text: Waiting until your performance review to discuss how you're doing
+      correctId: b
+    - id: q4
+      tracks: [warehouse]
+      text: "What does \"taking ownership of your space\" actually mean in the warehouse?"
+      options:
+        - id: a
+          text: Decorating your station so it feels like yours
+        - id: b
+          text: Making sure no one else uses your equipment
+        - id: c
+          text: Keeping your work area clean and organized for safety and speed
+        - id: d
+          text: Staying in your assigned zone and not helping other areas
+      correctId: c
 ---
 
 ## Your Role in the Bigger Picture

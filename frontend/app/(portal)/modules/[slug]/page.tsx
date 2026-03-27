@@ -1460,17 +1460,6 @@ export default function ModulePage() {
   // Gut Check scenarios for Where You Make An Impact (warehouse)
   const impactGutChecks = (currentModule.slug === "where-you-make-an-impact-warehouse") ? [
     {
-      scenario: "What's the most accurate way to describe your impact in the warehouse?",
-      options: [
-        { id: "a", text: "Getting through as many orders as possible each shift" },
-        { id: "b", text: "Every order that ships correctly and on time starts with you" },
-        { id: "c", text: "Following instructions from your supervisor without questions" },
-        { id: "d", text: "Making sure the warehouse looks clean at the end of the day" },
-      ],
-      correctId: "b",
-      explanation: "Your impact isn't just about speed — it's about every order leaving correctly and on time. That accuracy and consistency is what keeps the whole operation running.",
-    },
-    {
       scenario: "A box on your station has a slightly damaged label but the product inside looks fine. What should you do?",
       options: [
         { id: "a", text: "Ship it — the product is fine and relabeling slows things down" },
@@ -1480,17 +1469,6 @@ export default function ModulePage() {
       ],
       correctId: "b",
       explanation: "A damaged label can cause real problems downstream — wrong product, wrong pharmacy, wrong patient. Flagging it is the right call every time.",
-    },
-    {
-      scenario: "Which of these best describes what \"good\" looks like at AAP?",
-      options: [
-        { id: "a", text: "Never making mistakes" },
-        { id: "b", text: "Being the fastest person on the floor" },
-        { id: "c", text: "Being reliable, coachable, and getting a little better every day" },
-        { id: "d", text: "Handling everything on your own without asking questions" },
-      ],
-      correctId: "c",
-      explanation: "Nobody expects perfection on day one. What matters most is showing up consistently, being open to feedback, and improving over time.",
     },
     {
       scenario: "Why does following the process matter — even when a shortcut seems faster?",
