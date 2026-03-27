@@ -203,16 +203,19 @@ You do not need to have perfect answers. The point is to show up thinking about 
 
 ## Building Good Habits from Day One
 
-The habits you build early tend to stick. Build good ones.
+The habits you build in your first 30 days tend to be the ones that stick. These six are not flashy, but they are what separate someone who is just getting by from someone people actually want to work with.
 
-- Show up ready
-- Scan everything
-- Keep your area clean
-- Speak up early when something is off
-- Treat people well
-- Ask before assuming
+**Show up ready.** That means on time, in the right gear, and mentally prepared to work. Not still waking up in the parking lot. The people who depend on you notice when you are ready before the shift starts — and they notice when you are not.
 
-Nothing here is glamorous. But this is the stuff that makes someone dependable, respected, and a whole lot easier to work with.
+**Scan everything.** Every item, every time. Skipping a scan might save you five seconds now, but it creates problems that take someone else much longer to fix. Accuracy is the job.
+
+**Keep your area clean.** A cluttered workspace slows you down, creates safety hazards, and makes more work for the next person. Clean as you go — do not leave it for the end of the shift.
+
+**Speak up early when something is off.** A small issue reported now is a quick fix. That same issue ignored for a week becomes a much bigger conversation. If something does not look right, say something before it gets worse.
+
+**Treat people well.** You are going to work alongside these people every day. A little respect, a little patience, and a willingness to help go further than you think. Nobody remembers who was the fastest — they remember who was good to work with.
+
+**Ask before assuming.** If you are not sure, ask. If you think you are sure but it has been a while, ask anyway. An honest question takes 30 seconds. A wrong assumption can take hours to undo.
 
 :::callout tip
 Consistent and reliable beats fast and inconsistent every single time. Speed comes with repetition. Accuracy and habits come with intention.
