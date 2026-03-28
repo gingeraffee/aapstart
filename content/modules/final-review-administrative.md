@@ -230,28 +230,69 @@ AAP Start is always available at [aapstart.com](https://aapstart.com). Bookmark 
 
 ## What You've Covered
 
-Here's a brief look back at everything you've worked through:
+:::track [warehouse]
+You didn't just read a handbook — you built a foundation. Here's what you're walking away with:
 
-**Who We Are**
-You learned AAP's mission, vision, and values — and why they're more than words on a wall. Culture here is built through everyday choices.
+**Welcome to AAP** — The pharmacies you serve are member-owners, not customers. That changes everything about why your work matters.
 
-**How We Show Up**
-You reviewed conduct expectations, professionalism, and what it means to represent AAP — including in digital and social spaces.
+**How We Show Up** — Raise it early, raise it honestly. AAP protects you from retaliation when you report something in good faith.
 
-**How Work Works**
-You covered the practical side: attendance, scheduling, timekeeping, how and when you get paid, and your benefits and time-off options.
+**Where To Go** — EAP is live on day one. Password is AAP1. Free, confidential, and nobody at AAP sees what you use.
 
-**Safety at AAP**
-You learned AAP's commitment to a safe workplace, your role in maintaining it, and how to report incidents or concerns.
+**Benefits, Pay & Time Away** — Payday is every Thursday. Most benefits kick in at 60 days. Eight attendance points in a rolling 12 months triggers termination.
 
-**Tools & Systems**
-You set up your core accounts and learned which systems you'll use for HR, payroll, and professional development.
+**How Work Works** — Clock overtime the moment it's worked, not later. Skip helping a struggling coworker and you're missing the point of a cooperative.
 
-**Your First 30 Days**
-You mapped out the phases of your first month and what success looks like at each milestone.
+**Safety at AAP** — Report every injury immediately — even the ones that don't seem like a big deal. Near-misses count because they show where the next one's coming from.
+
+**Your Toolkit** — BambooHR for HR and time off. Paylocity for paychecks. LinkedIn Learning for 10,000+ free courses. Get your profiles done before your first shift ends.
+
+**Where You Make an Impact** — Every line you pick reaches a real pharmacy. Accuracy and consistency beat speed — always.
+
+**Quality & Accuracy** — Your scanner can't catch you grabbing the wrong item or dropping it in the wrong basket. That's on you. Every error costs 25% of your production bonus.
+
+**Safety & OSHA — Warehouse** — Never touch a forklift without current certification. Not even for a quick move. 100 lbs is the single-person limit — anything heavier, get a second set of hands.
+
+**Your First 30 Days** — You've got 30 days to hit the 250 lines/hour quota without penalty. Build the habits now — scan everything, keep your area clean, speak up early.
+:::
+
+:::track [administrative]
+You didn't just read a handbook — you built a foundation. Here's what you're walking away with:
+
+**Welcome to AAP** — The pharmacies you serve are member-owners, not customers. That changes everything about why your work matters.
+
+**How We Show Up** — Raise it early, raise it honestly. AAP protects you from retaliation when you report something in good faith.
+
+**Where To Go** — EAP is live on day one. Password is AAP1. Free, confidential, and nobody at AAP sees what you use.
+
+**Benefits, Pay & Time Away** — Payday is every Thursday. Most benefits kick in at 60 days. Eight attendance points in a rolling 12 months triggers termination.
+
+**How Work Works** — Clock overtime the moment it's worked, not later. Skip helping a struggling coworker and you're missing the point of a cooperative.
+
+**Safety at AAP** — Report every injury immediately — even the ones that don't seem like a big deal. Near-misses count because they show where the next one's coming from.
+
+**Your Toolkit** — BambooHR for HR and time off. Paylocity for paychecks. LinkedIn Learning for 10,000+ free courses. Get your profiles done before your first shift ends.
+
+**Where You Make an Impact** — You're the reason the day-to-day runs. When administrative work is done right, nobody notices — and that's the point.
+
+**Your First 30 Days** — A strong first month isn't about being perfect. It's about being dependable, coachable, and consistent.
+:::
 
 ## A Few Things Worth Repeating
 
+:::track [warehouse]
+If everything you just went through had to fit on one page taped to the breakroom wall, it'd be this:
+
+**Every order ends up somewhere real.** Every line you pick, every label you scan, every tote you pack — it lands in a pharmacy that a real community depends on. That's not a slogan. That's your shift.
+
+**Say something before it becomes something.** A near-miss you don't report turns into an injury someone else takes. A question you swallow turns into a mistake the team absorbs. Speaking up early is always the right call.
+
+**Right beats fast. Every time.** You can rush through a pick and hope it's close enough, or you can do it right and know it is. The production standards, the bonus structure, the way this warehouse runs — all of it is built around accuracy, not speed.
+
+**You're not figuring this out alone.** Your supervisor is your first call for day-to-day questions. HR is here for the bigger stuff — pay, benefits, leave, anything sensitive. EAP is available from day one for the personal stuff, and it's completely confidential. Nobody expects you to have all the answers. They expect you to ask.
+:::
+
+:::track [administrative]
 Before you close out, here are the key points that come up most often in that first week:
 
 **Your supervisor is your first stop.** For most questions — about your schedule, your role, a process you're unsure about — start there.
@@ -261,9 +302,12 @@ Before you close out, here are the key points that come up most often in that fi
 **The Employee Handbook is your reference.** When you have a policy question, that's where to look first.
 
 **You're not expected to know everything.** You're expected to ask when you don't.
+:::
 
 ## Congratulations
 
-Once you submit your final acknowledgements and pass the review quiz, your onboarding is complete.
+You didn't just check boxes — you learned how this place works, what it stands for, and where you fit in. That matters.
 
-Welcome to the team. We're glad you're here.
+Submit your final acknowledgements, pass the review quiz, and your onboarding is officially in the books.
+
+Welcome to AAP. We're glad you're here — and we mean that.
