@@ -50,7 +50,7 @@ const WAREHOUSE_PHASES = [
       "Hit and maintain the production standard consistently across full shifts.",
       "Keep your area clean and organized as a default, not an afterthought.",
       "Be someone your team can count on — show up consistently, help when you can, and be the kind of coworker people want on their shift.",
-      "Complete your 90-day performance review with your supervisor. This one comes with a raise based on how you've shown up across work quality, productivity, job knowledge, reliability, independence, adaptability, initiative, adherence to policy, teamwork, and judgment.",
+      "Complete your 90-day performance review with your supervisor. This one comes with a raise based on how you've shown up and shown out for your first 3 months.",
     ],
   },
 ];
