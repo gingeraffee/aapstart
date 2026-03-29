@@ -1,6 +1,61 @@
 "use client";
 
-const PHASES = [
+import { usePreview } from "@/lib/context/PreviewContext";
+
+const WAREHOUSE_PHASES = [
+  {
+    range: "Days 1-30",
+    chapter: "Chapter 01",
+    title: "Learn the Floor",
+    subtitle: "Your job right now is to absorb everything and build the habits that will carry you. Speed comes later — accuracy and consistency come first.",
+    focus: "Focus: training, floor processes, safety habits, and building your foundation.",
+    accent: "#0f7fb3",
+    accentSoft: "rgba(15,127,179,0.09)",
+    border: "rgba(15,127,179,0.28)",
+    checkpoints: [
+      "Complete all onboarding modules and get signed off by your trainer on core floor processes.",
+      "Build the scan-everything habit — every item, every time, no shortcuts.",
+      "Know your PPE requirements cold and follow them without being reminded.",
+      "Learn who to go to for what — your supervisor, your trainer, HR, and IT.",
+      "Complete your 30-day check-in and the 30-day survey in BambooHR — your feedback shapes what comes next.",
+    ],
+  },
+  {
+    range: "Days 31-60",
+    chapter: "Chapter 02",
+    title: "Work Without a Net",
+    subtitle: "You've got the basics down. Now it's about doing the work consistently on your own and closing the gaps your trainer can't close for you.",
+    focus: "Focus: independent execution, production ramp-up, and fewer questions about the same things.",
+    accent: "#1f4f84",
+    accentSoft: "rgba(31,79,132,0.09)",
+    border: "rgba(31,79,132,0.28)",
+    checkpoints: [
+      "Work your station independently and handle a full shift without needing a trainer nearby.",
+      "Start tracking toward the 250 lines per hour production target — focus on accuracy first, then speed.",
+      "Report safety concerns and near-misses without hesitation. That habit is the job now.",
+      "Set clear goals for the next 30 days with your supervisor.",
+      "Complete the 60-day survey in BambooHR — it helps us know where you are and what you need.",
+    ],
+  },
+  {
+    range: "Days 61-90",
+    chapter: "Chapter 03",
+    title: "Own Your Shift",
+    subtitle: "By now you should be someone the floor can count on. Consistent, accurate, and pulling your weight every day.",
+    focus: "Focus: full production, reliability, and setting up your next chapter.",
+    accent: "#c43a5d",
+    accentSoft: "rgba(196,58,93,0.1)",
+    border: "rgba(196,58,93,0.28)",
+    checkpoints: [
+      "Hit and maintain the production standard consistently across full shifts.",
+      "Keep your area clean and organized as a default, not an afterthought.",
+      "Be someone your team can count on — show up consistently, help when you can, and be the kind of coworker people want on their shift.",
+      "Complete your 90-day performance review with your supervisor. This one comes with a raise based on how you've shown up across work quality, productivity, job knowledge, reliability, independence, adaptability, initiative, adherence to policy, teamwork, and judgment.",
+    ],
+  },
+];
+
+const DEFAULT_PHASES = [
   {
     range: "Days 1-30",
     chapter: "Chapter 01",
@@ -52,6 +107,10 @@ const PHASES = [
 ];
 
 export default function RoadmapPage() {
+  const { effectiveTrack } = usePreview();
+  const isWarehouse = effectiveTrack === "warehouse";
+  const PHASES = isWarehouse ? WAREHOUSE_PHASES : DEFAULT_PHASES;
+
   return (
     <div className="w-full px-6 py-6 lg:px-8 lg:py-8">
       <section
@@ -142,9 +201,20 @@ export default function RoadmapPage() {
       >
         <p className="text-[0.82rem] leading-[1.65]" style={{ color: "var(--card-desc)" }}>
           <span className="font-semibold" style={{ color: "var(--welcome-label-text)" }}>How to use this roadmap:</span> revisit it at the start of each week,
-          check your current chapter, and align one clear priority with your manager.
+          check your current chapter, and align one clear priority with your {isWarehouse ? "supervisor" : "manager"}.
         </p>
       </section>
+
+      {isWarehouse && (
+        <section
+          className="mt-4 rounded-[14px] border px-6 py-4 animate-fade-up"
+          style={{ borderColor: "rgba(196,58,93,0.28)", background: "rgba(196,58,93,0.06)", animationDelay: "220ms" }}
+        >
+          <p className="text-[0.82rem] leading-[1.65]" style={{ color: "var(--card-desc)" }}>
+            <span className="font-semibold" style={{ color: "var(--welcome-label-text)" }}>Pro tip:</span> Your 90-day review covers ten metrics — work quality, productivity, job knowledge, reliability, independence, adaptability, initiative, adherence to policy, teamwork, and judgment. That sounds like a lot to track. But here's the shortcut — live the company values every day and you'll hit the mark on every single one.
+          </p>
+        </section>
+      )}
     </div>
   );
 }
