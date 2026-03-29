@@ -1,7 +1,7 @@
 ---
 slug: how-we-show-up-hr
 title: How We Show Up
-description: Who AAP is, what we stand for, your role expectations, and the confidentiality rules that protect everyone.
+description: You'll handle information most people never see. This module covers the values behind the work, the standards your role is held to, and the privacy rules that protect every employee — including you.
 tracks: [hr]
 order: 2
 estimatedMinutes: 14
