@@ -1,7 +1,7 @@
 ---
 slug: welcome-to-aap
 title: Welcome to AAP
-description: Discover how AAP came to be, how the organization is structured, and what your role connects to.
+description: This is where it all starts — who AAP is, why it exists, how 2,000+ pharmacies depend on the work you're about to do, and what it actually means to be part of a cooperative.
 tracks: [all]
 order: 1
 estimatedMinutes: 10
