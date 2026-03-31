@@ -1328,7 +1328,7 @@ export default function ModulePage() {
   ] : [];
 
   // Gut Check scenarios for Where To Go (Support, Leave & Resources)
-  const whereToGoGutChecks = (currentModule.title.toLowerCase().includes("where to go") || currentModule.slug === "where-to-go") ? [
+  const whereToGoGutChecks = (currentModule.title.toLowerCase().includes("where to go") || currentModule.slug === "where-to-go" || currentModule.slug === "where-to-go-hr") ? [
     {
       scenario: "A coworker mentions they need surgery next month and asks you what they should do about time off. What's the best advice?",
       options: [
