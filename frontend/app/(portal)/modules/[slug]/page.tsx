@@ -342,6 +342,28 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
 
   // ── Support, Leave & Resources ("Where To Go") ──
   if (title.includes("where to go") || title.includes("support") || title.includes("leave")) {
+    if (track === "hr") {
+      return [
+        {
+          eyebrow: "Heads Up",
+          title: "You'll hear things you can't repeat",
+          body: "Medical situations, leave reasons, accommodation details — employees will share sensitive information because they trust HR. That trust is protected by HIPAA and federal employment law. What you hear stays between you, Nicole, and the file. No exceptions.",
+          tone: "navy" as const,
+        },
+        {
+          eyebrow: "Non-Negotiable",
+          title: "Route it — don't resolve it",
+          body: "FMLA, ADA accommodations, medical leave — these have legal requirements that go beyond paperwork. Your job is to listen, document what you can, and get it to Nicole. Do not advise, interpret eligibility, or make promises about what's covered.",
+          tone: "cyan" as const,
+        },
+        {
+          eyebrow: "Real Talk",
+          title: "The EAP is a tool you should know cold",
+          body: "Employees won't always tell you what's really going on — they'll just seem stressed, frustrated, or checked out. Knowing how to mention the EAP without overstepping is one of the most useful things you can do in this role. It's free, it's confidential, and it's available from day one.",
+          tone: "red" as const,
+        },
+      ];
+    }
     return [
       {
         eyebrow: "Heads Up",
@@ -1306,7 +1328,7 @@ export default function ModulePage() {
   ] : [];
 
   // Gut Check scenarios for Where To Go (Support, Leave & Resources)
-  const whereToGoGutChecks = (currentModule.title.toLowerCase().includes("where to go") || currentModule.slug === "support-leave-resources") ? [
+  const whereToGoGutChecks = (currentModule.title.toLowerCase().includes("where to go") || currentModule.slug === "where-to-go") ? [
     {
       scenario: "A coworker mentions they need surgery next month and asks you what they should do about time off. What's the best advice?",
       options: [
