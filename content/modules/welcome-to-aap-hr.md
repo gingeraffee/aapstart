@@ -74,10 +74,6 @@ quiz:
       correctId: d
 ---
 
-## Your New Role Starts Here.
-
-You're stepping into HR, and AAP Start is built to get you there. Policies, procedures, systems — it's all here.
-
 ## Your Next Chapter at AAP.
 
 You're not new here — but this role is. Transitioning into HR means learning new systems, new responsibilities, and a whole new side of how AAP operates. AAP Start is designed to walk you through everything you need to know as an HR Administrative Assistant — from policies and procedures to the tools you'll use every day. Think of it as your training guide and your reference manual, all in one place.

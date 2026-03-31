@@ -85,15 +85,13 @@ alt: AAP Values
 
 ## Who We Are
 
-**American Associated Pharmacies (AAP)** is a national cooperative of more than **2,000 independent pharmacies**, formed in **2009** when United Drugs of Phoenix, AZ and Associated Pharmacies, Inc. (API) of Scottsboro, AL joined forces.
-
-**Locations:**
+You know the cooperative. You've seen how the warehouse side keeps pharmacies supplied. But there's another side to keeping this organization running — the people side. That's where you are now. AAP's HR team supports every employee across all three locations, from the warehouse floors in Scottsboro and Memphis to the desks at AAP corporate. Payroll, onboarding, benefits, employee records — it all flows through HR, and a lot of it will flow through you.
 
 | Site | Address |
 |------|---------|
+| AAP (your base) | 201 Lonnie E Crawford Blvd, Scottsboro, AL 35769 |
 | Scottsboro API | 211 Lonnie E Crawford Blvd, Scottsboro, AL 35769 |
 | Memphis API | 5375 Mineral Wells Road, Memphis, TN 38125 |
-| AAP | 201 Lonnie E Crawford Blvd, Scottsboro, AL 35769 |
 
 ## Your Role & Success Standards
 
@@ -112,6 +110,8 @@ There are five standards that define success in this role:
 **Professional Tone** — You'll handle frustrated employees, sensitive conversations, and uncomfortable questions. Keep your communication calm, respectful, and clear — even when the other person isn't.
 
 ## Confidentiality & Data Privacy (POL-06)
+
+There's a reason confidentiality shows up as a success standard for this role. The information you'll access daily — compensation, personnel files, leave documentation, screening results — belongs to real people who trust that it stays protected. That trust is what allows HR to function. If employees don't believe their information is safe, they stop coming to HR. And when that happens, the entire support system breaks down.
 
 :::callout warning
 Non-negotiable rules — these apply from Day 1 and every day after.
@@ -138,13 +138,3 @@ Non-negotiable rules — these apply from Day 1 and every day after.
 - *"Thanks for bringing this to me — I'm going to look into it and get you a clear answer."*
 - *"I want to make sure I give you the correct information. Let me verify and follow up with you."*
 - *"I may need to check a couple of things before I answer — thank you for your patience."*
-
-:::checklist
-- [ ] I understand AAP's mission, vision, and core values
-- [ ] I know all three AAP/API locations and their addresses
-- [ ] I understand my role's five success standards
-- [ ] I know the confidentiality rules and approved default language (POL-06)
-- [ ] I know how to handle personnel file access requests (route through HR)
-- [ ] I know to immediately report any suspected privacy breach to HR
-- [ ] I know who my direct supervisor is (HR Manager)
-:::
