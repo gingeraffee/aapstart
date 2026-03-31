@@ -295,6 +295,28 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
   }
 
   if (title.includes("benefits")) {
+    if (track === "hr") {
+      return [
+        {
+          eyebrow: "In The Loop",
+          title: "You'll live in BambooHR and Paylocity — learn them now",
+          body: "These two systems are where PTO balances, pay stubs, benefit elections, and attendance records live. Employees will ask you to look things up, walk them through screens, and fix what looks wrong. The faster you learn to navigate both, the fewer times you'll need to ask for help.",
+          tone: "navy" as const,
+        },
+        {
+          eyebrow: "Heads Up",
+          title: "Enrollment deadlines are the #1 thing employees miss",
+          body: "When someone misses their benefits enrollment window, there's almost nothing you can do to fix it. Know the timeline cold so you can remind employees early — and flag it to Nicole if someone's window is about to close.",
+          tone: "cyan" as const,
+        },
+        {
+          eyebrow: "Real Talk",
+          title: "You're the first person they'll ask — not the last",
+          body: "Before an employee calls Paylocity support or emails Nicole, they'll stop at your desk. Most of the time it's a simple question — PTO balance, enrollment status, where to find a form. Having quick, accurate answers builds the kind of trust that makes everything else in HR easier.",
+          tone: "red" as const,
+        },
+      ];
+    }
     return [
       {
         eyebrow: "In The Loop",
@@ -1291,41 +1313,77 @@ export default function ModulePage() {
   ] : [];
 
   // Gut Check scenarios for Benefits, Pay & Time Away
-  const benefitsGutChecks = currentModule.title.toLowerCase().includes("benefits") ? [
-    {
-      scenario: "You need to leave 2 hours early on Friday for a dentist appointment. What's the smallest amount of personal leave you can use?",
-      options: [
-        { id: "a", text: "Half a day" },
-        { id: "b", text: "2 hours" },
-        { id: "c", text: "1 hour" },
-        { id: "d", text: "You have to take the full day" },
-      ],
-      correctId: "c",
-      explanation: "Personal leave can be used in 1-hour increments — so you only need to use exactly what you need. Vacation time, on the other hand, has a 2-hour minimum.",
-    },
-    {
-      scenario: "A paid holiday falls during your first month on the job. What happens?",
-      options: [
-        { id: "a", text: "You get holiday pay like everyone else" },
-        { id: "b", text: "You work the holiday and get overtime" },
-        { id: "c", text: "You get the day off but without pay" },
-        { id: "d", text: "You get a floating holiday to use later" },
-      ],
-      correctId: "c",
-      explanation: "Holiday pay doesn't kick in until after 60 calendar days of full-time employment. You'll still get the day off if AAP is closed, but it won't be paid until you hit that milestone.",
-    },
-    {
-      scenario: "You want to take a week-long trip for your anniversary. You have the PTO balance. What else do you need?",
-      options: [
-        { id: "a", text: "Nothing — just submit it in BambooHR" },
-        { id: "b", text: "A verbal okay from your supervisor" },
-        { id: "c", text: "Written approval from the Company President" },
-        { id: "d", text: "HR has to sign off on anything over 3 days" },
-      ],
-      correctId: "c",
-      explanation: "Any vacation request over 5 consecutive days requires written approval from the Company President. Having the PTO balance isn't enough — plan ahead for that extra step.",
-    },
-  ] : [];
+  const benefitsGutChecks = currentModule.title.toLowerCase().includes("benefits") ? (
+    effectiveTrack === "hr" ? [
+      {
+        scenario: "A new hire is approaching their 60-day mark and asks you if their medical benefits will start automatically. They haven't filled out any enrollment paperwork yet. What do you do?",
+        options: [
+          { id: "a", text: "Let them know benefits start automatically after 60 days — they don't need to do anything" },
+          { id: "b", text: "Tell them they need to enroll, explain there's a limited window, and confirm with Nicole that their enrollment materials have been sent" },
+          { id: "c", text: "Pull up the enrollment forms and help them fill everything out right now" },
+          { id: "d", text: "Tell them to wait for the enrollment email from HR — it'll have everything they need" },
+        ],
+        correctId: "b",
+        explanation: "Benefits don't start automatically — employees must actively enroll during their window. Waiting for an email risks them missing it. Filling out forms yourself isn't your role. The right move is to confirm they know enrollment is required and verify with Nicole that the process is on track.",
+      },
+      {
+        scenario: "An employee's supervisor calls you and says they want to deny a vacation request because the team is short-staffed that week. The employee has the PTO balance and submitted the request on time. What do you do?",
+        options: [
+          { id: "a", text: "Let the supervisor know that if the employee followed the process and has the balance, the request should be approved" },
+          { id: "b", text: "Deny the request in BambooHR on behalf of the supervisor since they called you directly" },
+          { id: "c", text: "Tell the supervisor it's their call and stay out of it" },
+          { id: "d", text: "Let the supervisor know you'll flag it to Nicole so she can review the situation and advise" },
+        ],
+        correctId: "d",
+        explanation: "You don't approve or deny requests, and you don't override a supervisor's decision. But you also shouldn't just stay out of it when there's a potential policy question. The right move is to route it to Nicole so she can advise the supervisor on how to handle it properly.",
+      },
+      {
+        scenario: "An employee tells you they've been clocking in on time every day but their attendance report shows 3.5 points. They're frustrated and want you to fix it. What do you do?",
+        options: [
+          { id: "a", text: "Pull up their attendance record in BambooHR and correct the points that look wrong" },
+          { id: "b", text: "Explain how points accumulate and roll off, then let them know you'll flag the discrepancy to Nicole for review" },
+          { id: "c", text: "Tell them to take it up with their supervisor since attendance is managed at the department level" },
+          { id: "d", text: "Remove the points they're disputing so they don't hit the next threshold while waiting for a review" },
+        ],
+        correctId: "b",
+        explanation: "You don't modify attendance records yourself, and you don't dismiss the concern. Explain the system so they understand how points work, then escalate the discrepancy to Nicole for proper review. Removing points without authorization or passing it off entirely both create problems.",
+      },
+    ] : [
+      {
+        scenario: "You need to leave 2 hours early on Friday for a dentist appointment. What's the smallest amount of personal leave you can use?",
+        options: [
+          { id: "a", text: "Half a day" },
+          { id: "b", text: "2 hours" },
+          { id: "c", text: "1 hour" },
+          { id: "d", text: "You have to take the full day" },
+        ],
+        correctId: "c",
+        explanation: "Personal leave can be used in 1-hour increments — so you only need to use exactly what you need. Vacation time, on the other hand, has a 2-hour minimum.",
+      },
+      {
+        scenario: "A paid holiday falls during your first month on the job. What happens?",
+        options: [
+          { id: "a", text: "You get holiday pay like everyone else" },
+          { id: "b", text: "You work the holiday and get overtime" },
+          { id: "c", text: "You get the day off but without pay" },
+          { id: "d", text: "You get a floating holiday to use later" },
+        ],
+        correctId: "c",
+        explanation: "Holiday pay doesn't kick in until after 60 calendar days of full-time employment. You'll still get the day off if AAP is closed, but it won't be paid until you hit that milestone.",
+      },
+      {
+        scenario: "You want to take a week-long trip for your anniversary. You have the PTO balance. What else do you need?",
+        options: [
+          { id: "a", text: "Nothing — just submit it in BambooHR" },
+          { id: "b", text: "A verbal okay from your supervisor" },
+          { id: "c", text: "Written approval from the Company President" },
+          { id: "d", text: "HR has to sign off on anything over 3 days" },
+        ],
+        correctId: "c",
+        explanation: "Any vacation request over 5 consecutive days requires written approval from the Company President. Having the PTO balance isn't enough — plan ahead for that extra step.",
+      },
+    ]
+  ) : [];
 
   // Gut Check scenarios for Where To Go (Support, Leave & Resources)
   const whereToGoGutChecks = (currentModule.title.toLowerCase().includes("where to go") || currentModule.slug === "where-to-go" || currentModule.slug === "where-to-go-hr") ? (
