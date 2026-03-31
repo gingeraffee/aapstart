@@ -1529,7 +1529,7 @@ export default function ModulePage() {
   ] : [];
 
   // Override first section for How We Show Up (both all and HR versions)
-  if (currentModule.title.toLowerCase().includes("how we show up")) {
+  if (currentModule.title.toLowerCase().includes("how we show up") && !currentModule.slug.endsWith("-hr")) {
     const coverSection = sections.find(
       (s) => s.title?.toLowerCase().includes("what this module covers") || s.title?.toLowerCase().includes("welcome to aap")
     );

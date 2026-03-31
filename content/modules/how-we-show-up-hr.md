@@ -74,11 +74,14 @@ quiz:
       correctId: c
 ---
 
-## Welcome to AAP
+## Good People Who Do Great Work
 
-AAP's CEO, Jon Copeland, R.Ph., says it best:
+In HR, how you show up isn't just about you — it sets the standard for everyone else. You're the person employees come to when they have questions, concerns, or problems. How you handle those moments — with professionalism, discretion, and follow-through — shapes what people believe HR stands for at AAP. This module covers the values that drive the work, the standards your role is held to, and the privacy rules that protect every employee, including you.
 
-> *"We believe that each employee contributes directly to AAP's growth and success, and we hope you will take pride in being a member of our team."*
+:::video
+src: https://www.youtube.com/embed/I1RvGairzZM?si=4YAX0Q8w7XxeFSPp&rel=0&modestbranding=1
+alt: AAP Values
+:::
 
 ## Who We Are
 
