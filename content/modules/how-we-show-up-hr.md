@@ -95,25 +95,21 @@ alt: AAP Values
 | Memphis API | 5375 Mineral Wells Road, Memphis, TN 38125 |
 | AAP | 201 Lonnie E Crawford Blvd, Scottsboro, AL 35769 |
 
-## Mission, Vision & Values
-
-**Mission:** Support and provide customized solutions for independent community pharmacies to enhance profitability, streamline operations, and improve patient care.
-
-**Vision:** Helping independent pharmacies thrive in a competitive healthcare market.
-
-**Values:** Customer Focus | Integrity | Respect | Excellence | Ownership
-
 ## Your Role & Success Standards
 
-**HR Administrative Assistant** | Scottsboro, AL | Reports to: HR Manager
+As an HR Administrative Assistant, you report directly to the HR Manager and play a hands-on role in keeping HR operations running smoothly. Your work touches payroll, onboarding, employee records, and policy enforcement — which means the quality of what you do directly affects every employee at AAP.
 
-| Standard | Meaning |
-|----------|---------|
-| **Accuracy** | Timecard entries, employee data, and documentation are correct and complete |
-| **Confidentiality** | Sensitive information shared only on a need-to-know basis |
-| **Responsiveness** | Requests acknowledged promptly and tracked to completion |
-| **Consistency** | Approved templates and naming conventions used every time |
-| **Professional Tone** | Communication is calm, respectful, and clear |
+There are five standards that define success in this role:
+
+**Accuracy** — When you process a timecard, update an employee record, or file documentation, it needs to be right. Mistakes in HR don't just create extra work — they affect people's paychecks, benefits, and trust in the department.
+
+**Confidentiality** — You'll have access to information most employees never see. Pay rates, disciplinary actions, medical leave, background checks. That access comes with a responsibility: share only on a need-to-know basis, and when in doubt, don't.
+
+**Responsiveness** — When someone reaches out to HR, they're usually waiting on something that matters to them. Acknowledge requests promptly, track them to completion, and follow up — even if the answer is "I'm still working on it."
+
+**Consistency** — Use the approved templates, follow the naming conventions, and run the process the same way every time. Consistency is what makes HR reliable and auditable.
+
+**Professional Tone** — You'll handle frustrated employees, sensitive conversations, and uncomfortable questions. Keep your communication calm, respectful, and clear — even when the other person isn't.
 
 ## Confidentiality & Data Privacy (POL-06)
 
