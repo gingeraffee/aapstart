@@ -65,15 +65,22 @@ Some of the most sensitive conversations at AAP will start at your desk. An empl
 
 ## Where to Start
 
-For most day-to-day questions, your supervisor is the right starting point. But not everything belongs in that conversation — and that's okay. Some situations should go straight to HR:
+Employees will come to you before they go to anyone else — that's the nature of sitting in HR. Some of what they bring you is routine. Some of it isn't. Knowing the difference is one of the most important parts of this role.
 
-- Leave or accommodation questions
+**Handle directly:**
+- Paperwork, enrollment questions, system access
+- Routine PTO or scheduling questions
+- Pointing people to the right resource
+- Escalate to Nicole:
+
+**Escalate to Nicole:**
+- Leave or accommodation requests
 - Workplace concerns or conflicts
 - Harassment, bullying, or anything that feels unsafe
 - Injury follow-up that needs HR involvement
-- Anything you're not comfortable raising through the usual path
+- Anything you're not comfortable answering on your own
 
-You don't need permission to skip a step when the situation calls for it.
+If you're not sure whether something needs to go to Nicole, it does..
 
 ## Who to Know
 
