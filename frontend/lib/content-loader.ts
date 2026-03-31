@@ -105,6 +105,8 @@ export function getModulesForTrack(track: string) {
 
     if (track === "hr") {
       // HR sees shared modules, HR-specific modules, and management process modules.
+      // Skip shared (tracks: [all]) modules when an HR-specific version exists (slug ending in -hr).
+      if (mod.tracks.includes("all") && cache.has(`${mod.slug}-hr`)) continue;
       if (mod.tracks.includes("all") || mod.tracks.includes("hr") || mod.tracks.includes("management")) {
         result.push(moduleSummary(mod));
       }
@@ -126,6 +128,11 @@ export function getModulesForTrack(track: string) {
 
 export function getModule(slug: string, track: string) {
   const cache = getCache();
+  // For HR users, prefer the HR-specific version when requesting a shared module
+  if (track === "hr" && cache.has(`${slug}-hr`)) {
+    const hrMod = cache.get(`${slug}-hr`)!;
+    return moduleForClient(hrMod, track);
+  }
   const mod = cache.get(slug);
   if (!mod) return null;
 
