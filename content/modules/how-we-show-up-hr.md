@@ -74,11 +74,14 @@ quiz:
       correctId: c
 ---
 
-## Welcome to AAP
+## Good People Who Do Great Work
 
-AAP's CEO, Jon Copeland, R.Ph., says it best:
+In HR, how you show up isn't just about you — it sets the standard for everyone else. You're the person employees come to when they have questions, concerns, or problems. How you handle those moments — with professionalism, discretion, and follow-through — shapes what people believe HR stands for at AAP. This module covers the values that drive the work, the standards your role is held to, and the privacy rules that protect every employee, including you.
 
-> *"We believe that each employee contributes directly to AAP's growth and success, and we hope you will take pride in being a member of our team."*
+:::video
+src: https://www.youtube.com/embed/I1RvGairzZM?si=4YAX0Q8w7XxeFSPp&rel=0&modestbranding=1
+alt: AAP Values
+:::
 
 ## Who We Are
 
@@ -90,25 +93,21 @@ You know the cooperative. You've seen how the warehouse side keeps pharmacies su
 | Scottsboro API | 211 Lonnie E Crawford Blvd, Scottsboro, AL 35769 |
 | Memphis API | 5375 Mineral Wells Road, Memphis, TN 38125 |
 
-## Mission, Vision & Values
-
-**Mission:** Support and provide customized solutions for independent community pharmacies to enhance profitability, streamline operations, and improve patient care.
-
-**Vision:** Helping independent pharmacies thrive in a competitive healthcare market.
-
-**Values:** Customer Focus | Integrity | Respect | Excellence | Ownership
-
 ## Your Role & Success Standards
 
-**HR Administrative Assistant** | Scottsboro, AL | Reports to: HR Manager
+As an HR Administrative Assistant, you report directly to the HR Manager and play a hands-on role in keeping HR operations running smoothly. Your work touches payroll, onboarding, employee records, and policy enforcement — which means the quality of what you do directly affects every employee at AAP.
 
-| Standard | Meaning |
-|----------|---------|
-| **Accuracy** | Timecard entries, employee data, and documentation are correct and complete |
-| **Confidentiality** | Sensitive information shared only on a need-to-know basis |
-| **Responsiveness** | Requests acknowledged promptly and tracked to completion |
-| **Consistency** | Approved templates and naming conventions used every time |
-| **Professional Tone** | Communication is calm, respectful, and clear |
+There are five standards that define success in this role:
+
+**Accuracy** — When you process a timecard, update an employee record, or file documentation, it needs to be right. Mistakes in HR don't just create extra work — they affect people's paychecks, benefits, and trust in the department.
+
+**Confidentiality** — You'll have access to information most employees never see. Pay rates, disciplinary actions, medical leave, background checks. That access comes with a responsibility: share only on a need-to-know basis, and when in doubt, don't.
+
+**Responsiveness** — When someone reaches out to HR, they're usually waiting on something that matters to them. Acknowledge requests promptly, track them to completion, and follow up — even if the answer is "I'm still working on it."
+
+**Consistency** — Use the approved templates, follow the naming conventions, and run the process the same way every time. Consistency is what makes HR reliable and auditable.
+
+**Professional Tone** — You'll handle frustrated employees, sensitive conversations, and uncomfortable questions. Keep your communication calm, respectful, and clear — even when the other person isn't.
 
 ## Confidentiality & Data Privacy (POL-06)
 

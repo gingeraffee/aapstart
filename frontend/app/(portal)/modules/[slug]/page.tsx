@@ -1529,7 +1529,7 @@ export default function ModulePage() {
   ] : [];
 
   // Override first section for How We Show Up (both all and HR versions)
-  if (currentModule.title.toLowerCase().includes("how we show up")) {
+  if (currentModule.title.toLowerCase().includes("how we show up") && !currentModule.slug.endsWith("-hr")) {
     const coverSection = sections.find(
       (s) => s.title?.toLowerCase().includes("what this module covers") || s.title?.toLowerCase().includes("welcome to aap")
     );
@@ -1551,11 +1551,11 @@ export default function ModulePage() {
     }
   }
 
-  // Override "Mission, Vision, and Values" section content
+  // Override "Mission, Vision, and Values" section content (skip for HR-specific modules)
   const missionSection = sections.find(
     (s) => s.title?.toLowerCase().includes("mission") && s.title?.toLowerCase().includes("values")
   );
-  if (missionSection) {
+  if (missionSection && !currentModule.slug.endsWith("-hr")) {
     missionSection.blocks = [
       {
         type: "text",
