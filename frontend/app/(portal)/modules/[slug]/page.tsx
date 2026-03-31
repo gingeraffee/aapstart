@@ -1551,11 +1551,11 @@ export default function ModulePage() {
     }
   }
 
-  // Override "Mission, Vision, and Values" section content
+  // Override "Mission, Vision, and Values" section content (skip for HR-specific modules)
   const missionSection = sections.find(
     (s) => s.title?.toLowerCase().includes("mission") && s.title?.toLowerCase().includes("values")
   );
-  if (missionSection) {
+  if (missionSection && !currentModule.slug.endsWith("-hr")) {
     missionSection.blocks = [
       {
         type: "text",
