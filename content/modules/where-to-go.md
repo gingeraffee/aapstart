@@ -1,7 +1,7 @@
 ---
-slug: support-leave-resources
+slug: where-to-go
 title: Where To Go
-description: "Life happens — and when it does, AAP has your back. This module walks you through your leave options, the Employee Assistance Program, and exactly who to reach out to when you need support."
+description: "Some of the most sensitive conversations at AAP will start at your desk. This module covers what's protected, what you need to know, and how to route it correctly."
 tracks: [all]
 order: 3
 estimatedMinutes: 10
@@ -63,7 +63,7 @@ quiz:
 
 ## When It's More Than Just a Day Off
 
-Not every absence is a vacation day, and not every question belongs in a casual conversation. Medical leave, FMLA, accommodations, workplace concerns — they all have their own rules and their own routes. This module breaks down what's available, who handles what, and how to get the right support without the runaround.
+Some of the most sensitive conversations at AAP will start at your desk. An employee dealing with a medical situation, a leave request they don't fully understand, an accommodation they're nervous to ask about. You're not expected to have the answers — but you are expected to handle it correctly. That means knowing the basics, protecting the information, and getting it to Nicole. Everything in this module falls under HIPAA and federal employment law, and mishandling it isn't just a mistake — it's a liability.
 
 ## Where to Start
 
