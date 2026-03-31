@@ -1328,41 +1328,77 @@ export default function ModulePage() {
   ] : [];
 
   // Gut Check scenarios for Where To Go (Support, Leave & Resources)
-  const whereToGoGutChecks = (currentModule.title.toLowerCase().includes("where to go") || currentModule.slug === "where-to-go" || currentModule.slug === "where-to-go-hr") ? [
-    {
-      scenario: "A coworker mentions they need surgery next month and asks you what they should do about time off. What's the best advice?",
-      options: [
-        { id: "a", text: "Tell them to submit a PTO request in BambooHR" },
-        { id: "b", text: "Suggest they talk to their supervisor first, and if it involves medical leave, go directly to HR" },
-        { id: "c", text: "Let them know they'll need to use vacation time" },
-        { id: "d", text: "Tell them to call the EAP" },
-      ],
-      correctId: "b",
-      explanation: "A surgery likely involves medical leave, which has its own rules and protections. Their supervisor is a good starting point, but HR needs to be involved early for anything medical or leave-related.",
-    },
-    {
-      scenario: "You're going through a stressful time at home and it's starting to affect your focus at work. What resource is available to you right now?",
-      options: [
-        { id: "a", text: "Submit a PTO request and take time off" },
-        { id: "b", text: "Wait until your 60-day benefits kick in" },
-        { id: "c", text: "The Employee Assistance Program — it's free, confidential, and available from day one" },
-        { id: "d", text: "Ask your supervisor for a schedule change" },
-      ],
-      correctId: "c",
-      explanation: "The EAP is available from day one to you and your household — no waiting period, no enrollment. It covers counseling, financial guidance, legal support, and more. Everything is confidential.",
-    },
-    {
-      scenario: "You have a concern about something happening at work, but you're not comfortable bringing it to your supervisor. What should you do?",
-      options: [
-        { id: "a", text: "Wait and see if it resolves itself" },
-        { id: "b", text: "Bring it up at your next performance review" },
-        { id: "c", text: "Go directly to HR — you don't need permission to skip a step" },
-        { id: "d", text: "Ask a coworker to bring it up for you" },
-      ],
-      correctId: "c",
-      explanation: "You never need permission to skip a step when the situation calls for it. If you're not comfortable going to your supervisor, go directly to HR. That's exactly what they're there for.",
-    },
-  ] : [];
+  const whereToGoGutChecks = (currentModule.title.toLowerCase().includes("where to go") || currentModule.slug === "where-to-go" || currentModule.slug === "where-to-go-hr") ? (
+    effectiveTrack === "hr" ? [
+      {
+        scenario: "An employee stops by your desk and says they need surgery next month. They start sharing medical details — diagnosis, procedure, recovery time. They seem relieved to finally tell someone. What do you do?",
+        options: [
+          { id: "a", text: "Listen carefully, take notes on everything they share so you have a complete record for Nicole" },
+          { id: "b", text: "Let them talk, then gently let them know you'll connect them with Nicole — without writing down any medical specifics yourself" },
+          { id: "c", text: "Stop them and explain that you're not the right person to hear medical details — they need to go directly to Nicole" },
+          { id: "d", text: "Listen, pull up the FMLA forms, and walk them through the initial paperwork so Nicole has a head start" },
+        ],
+        correctId: "b",
+        explanation: "You don't shut them down, but you don't document medical details either. HIPAA applies here. Let them feel heard, then route it properly. Taking clinical notes or starting FMLA paperwork yourself creates risk — that's Nicole's lane.",
+      },
+      {
+        scenario: "A warehouse supervisor calls and says one of their employees has been missing shifts and acting erratic. They ask if HR has \"anything on file\" that might explain what's going on. What do you say?",
+        options: [
+          { id: "a", text: "Check BambooHR and share any relevant notes — the supervisor needs to manage their team effectively" },
+          { id: "b", text: "Let them know you can't share personnel information, but offer to have Nicole follow up if there's a concern worth escalating" },
+          { id: "c", text: "Tell them you're not allowed to say anything, and leave it at that" },
+          { id: "d", text: "Confirm whether or not the employee has any active leave requests without going into detail" },
+        ],
+        correctId: "b",
+        explanation: "Option A is a confidentiality breach. Option C is technically correct but unhelpful — it leaves the supervisor with nowhere to go. Option D still discloses protected information. B protects the employee while keeping the supervisor supported.",
+      },
+      {
+        scenario: "An employee comes to you upset after a conflict with their supervisor. They say they want to \"file a complaint\" but ask you not to tell anyone — especially not their supervisor. They want it on record, just in case. What do you do?",
+        options: [
+          { id: "a", text: "Document what they told you and keep it between the two of you — they asked for confidentiality and you should honor that" },
+          { id: "b", text: "Let them know you'll keep it as private as possible, but explain that some situations require Nicole to be involved — then bring it to her" },
+          { id: "c", text: "Tell them that if they're not ready to move forward officially, there's nothing you can do yet" },
+          { id: "d", text: "Encourage them to go home, cool off, and come back if they still feel the same way tomorrow" },
+        ],
+        correctId: "b",
+        explanation: "You can't promise full confidentiality when a workplace complaint is involved — some things require action regardless of the employee's preference. But you can be honest about that while still making them feel safe. Sitting on it or dismissing it creates liability and erodes trust.",
+      },
+    ] : [
+      {
+        scenario: "A coworker mentions they need surgery next month and asks you what they should do about time off. What's the best advice?",
+        options: [
+          { id: "a", text: "Tell them to submit a PTO request in BambooHR" },
+          { id: "b", text: "Suggest they talk to their supervisor first, and if it involves medical leave, go directly to HR" },
+          { id: "c", text: "Let them know they'll need to use vacation time" },
+          { id: "d", text: "Tell them to call the EAP" },
+        ],
+        correctId: "b",
+        explanation: "A surgery likely involves medical leave, which has its own rules and protections. Their supervisor is a good starting point, but HR needs to be involved early for anything medical or leave-related.",
+      },
+      {
+        scenario: "You're going through a stressful time at home and it's starting to affect your focus at work. What resource is available to you right now?",
+        options: [
+          { id: "a", text: "Submit a PTO request and take time off" },
+          { id: "b", text: "Wait until your 60-day benefits kick in" },
+          { id: "c", text: "The Employee Assistance Program — it's free, confidential, and available from day one" },
+          { id: "d", text: "Ask your supervisor for a schedule change" },
+        ],
+        correctId: "c",
+        explanation: "The EAP is available from day one to you and your household — no waiting period, no enrollment. It covers counseling, financial guidance, legal support, and more. Everything is confidential.",
+      },
+      {
+        scenario: "You have a concern about something happening at work, but you're not comfortable bringing it to your supervisor. What should you do?",
+        options: [
+          { id: "a", text: "Wait and see if it resolves itself" },
+          { id: "b", text: "Bring it up at your next performance review" },
+          { id: "c", text: "Go directly to HR — you don't need permission to skip a step" },
+          { id: "d", text: "Ask a coworker to bring it up for you" },
+        ],
+        correctId: "c",
+        explanation: "You never need permission to skip a step when the situation calls for it. If you're not comfortable going to your supervisor, go directly to HR. That's exactly what they're there for.",
+      },
+    ]
+  ) : [];
 
   // Gut Check scenarios for How We Show Up
   const howWeShowUpGutChecks = currentModule.title.toLowerCase().includes("how we show up") ? [

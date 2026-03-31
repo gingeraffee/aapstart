@@ -11,52 +11,67 @@ requiresAcknowledgement: true
 
 acknowledgements:
   - id: ack-1
-    statement: I understand that not all time away follows the same rules and that HR should be involved early for leave questions.
+    statement: I understand that medical leave, FMLA, and accommodation requests must be routed to the HR Manager and are not mine to interpret or resolve.
+  - id: ack-2
+    statement: I understand that employee information shared with HR is protected by HIPAA and federal employment law, and that confidentiality is a legal obligation — not a preference.
   - id: ack-3
-    statement: I understand that the Employee Assistance Program is available to me starting on day one.
+    statement: I understand the difference between what I can handle independently and what must be escalated, and that when in doubt, I escalate to Nicole.
   - id: ack-4
-    statement: I know when to contact HR instead of handling a leave or support question informally.
+    statement: I understand that workplace complaints — even informal ones — may require action regardless of whether the employee wants to move forward, and must be brought to Nicole.
 
 quiz:
   questions:
     - id: q1
-      text: When should you involve HR for a leave question?
+      text: "An employee emails you asking if they qualify for FMLA. You've read about FMLA in this module and you're fairly confident they do. What's the right move?"
       options:
         - id: a
-          text: Only after your supervisor approves it
+          text: Reply and let them know they likely qualify based on what you've learned
         - id: b
-          text: Only if the leave is longer than two weeks
+          text: Forward the email to Nicole and let the employee know she'll follow up with them directly
         - id: c
-          text: After 90 days of employment
+          text: Ask the employee for more details about their situation so you can give Nicole a complete picture
         - id: d
-          text: Involve HR early — especially for medical leave, accommodations, or protected leave
-      correctId: d
+          text: Send them the FMLA forms and let them get started while you loop in Nicole
+      correctId: b
 
     - id: q2
-      text: When is the Employee Assistance Program (EAP) available?
+      text: "A supervisor stops you in the hallway and says, \"Off the record — is [employee name] on some kind of leave? They've been out a lot.\" What do you say?"
       options:
         - id: a
-          text: On day one
+          text: Confirm they've had some absences but don't go into detail
         - id: b
-          text: After 60 days
+          text: Tell the supervisor you can't discuss it and suggest they talk to Nicole if they have staffing concerns
         - id: c
-          text: After 30 days
+          text: Say you're not sure and offer to check BambooHR for them
         - id: d
-          text: After 90 days
-      correctId: a
+          text: Let them know you can't share specifics but reassure them that HR is aware of the situation
+      correctId: b
+
+    - id: q3
+      text: "An employee tells you they need to take time off for a family member's medical emergency. They're emotional and clearly overwhelmed. They ask you what paperwork they need to fill out. What do you do?"
+      options:
+        - id: a
+          text: Pull up the FMLA and leave request forms so they can get started right away
+        - id: b
+          text: Let them know Nicole handles leave requests and walk them to her office or send an introduction email
+        - id: c
+          text: Tell them to take the day and come back tomorrow when they're calmer to sort out the paperwork
+        - id: d
+          text: Ask for details about the family member's condition so you can flag the right forms for Nicole
+      correctId: b
 
     - id: q4
-      text: Who is the escalation contact for HR issues that go beyond Nicole Thornton?
+      text: "You overhear two employees talking in the break room. One says their supervisor \"crossed a line\" last week but they don't want to \"make it a thing.\" No one has come to you directly. What do you do?"
       options:
         - id: a
-          text: Your direct supervisor
+          text: Nothing — no one filed a complaint and it's not your conversation
         - id: b
-          text: A co-worker in HR
+          text: Approach the employee privately, let them know you're available if they want to talk, and document what you overheard for Nicole
         - id: c
-          text: Brandy Hooper, VP of HR
+          text: Go directly to the supervisor and ask them what happened
         - id: d
-          text: LinkedIn Learning support
-      correctId: c
+          text: Report it to Nicole immediately without talking to the employee first
+      correctId: b
 ---
 
 ## When It's More Than Just a Day Off
@@ -84,30 +99,40 @@ If you're not sure whether something needs to go to Nicole, it does..
 
 ## Who to Know
 
-AAP has an open-door policy. You are always welcome to raise a question or concern with anyone on this list — the order below is just a general guide for where to start.
+You're going to interact with people across every location and department. This isn't a hierarchy — it's a working reference for who handles what and who to loop in when something comes up.
 
-- **Your Supervisor** — your first point of contact for day-to-day questions, scheduling, and routine support needs
-- **HR Administrative Assistant** — can help with paperwork, benefits enrollment questions, and pointing you in the right direction
-- **IT Technicians** — your go-to for equipment issues, system access, password resets, and anything technology-related
-- **Nicole Thornton, HR Manager** — handles leave, accommodations, workplace concerns, and anything that needs HR involvement
-- **Brandy Hooper, VP of HR** — escalation path when a situation requires senior leadership or when you are not comfortable going through the usual channels
+**Your HR Chain**
+- **Nicole Thornton, HR Manager** — your direct supervisor and first call for anything policy, leave, or employee-related
+- **Brandy Hooper, VP of HR** — escalation for sensitive situations or decisions above Nicole's level
 
-:::callout tip
-You do not need to follow this list in order. If something feels urgent, sensitive, or you are just not sure where to start — go directly to whoever you feel most comfortable reaching out to. That is what open-door means.
-:::
+**Warehouse Leadership**
+- **Robby Donnelly** — Scottsboro Warehouse Supervisor
+- **Linda Dodson** — Scottsboro Assistant Warehouse Supervisor
+- **Amanda Gorham** — Scottsboro Warehouse Operations Manager and Receiving Manager
+- **Joseph Isom** — Memphis Warehouse Supervisor
+- **Bryan Hawthorn** — Memphis Assistant Warehouse Supervisor and Maintenance Supervisor
+
+**IT**
+- **Trevor Bowen** — Scottsboro IT Technician
+- **Dylan Willis** — Memphis IT Assistant
+- **Austin Wilson** — AAP IT Assistant
 
 ## Employee Assistance Program
 
-You don't have to wait for a crisis to use the **Employee Assistance Program (EAP)** — AAP has you covered from Day One. It's a free, confidential platform available to you and your household from **day one**. Whether you're dealing with stress, navigating a personal situation, or just looking for tools to grow personally or professionally — the EAP is built for that.
+Employees won't always know the EAP exists — and even when they do, they'll ask you about it before they look it up. You need to know what it covers, how it works, and how to mention it without overstepping.
 
-Here's what's available:
+The **Employee Assistance Program (EAP)** is a free, confidential resource available to every employee and their household from **day one**. It's provided through Life Matters and covers:
 
 - Counseling and mental health support
 - Financial and legal guidance
 - Stress management and resilience tools
 - Work-life balance and relationship resources
 
-Access it through the link on your **BambooHR home page** under Company Links, or use the direct link below. The company password is **AAP1**. Everything is confidential — no one at AAP sees what you use or when you use it.
+**What to say when someone asks:** "There's a free program called the EAP — it covers counseling, legal advice, financial help, and more. It's confidential and available to you and your household. I can send you the link."
+
+**What not to do:** Don't diagnose, don't pry into why they need it, and don't share that someone else used it. You point them to the door — you don't walk them through it.
+
+The login link is on the **BambooHR home page** under Company Links. The company password is **AAP1**. Nothing is tracked — no one at AAP sees who uses it or when.
 
 :::link
 url: https://eap.mylifematters.com/login
@@ -117,12 +142,22 @@ description: Log in with company password AAP1 to explore EAP resources.
 
 ## When to Escalate
 
-Life situations aren't one-size-fits-all — and some need more than a standard process. When something comes up that needs a customized solution, HR is the right place to start. Here are a few examples:
+Not everything that lands on your desk is yours to resolve. Part of this role is knowing when to hand something off — and doing it quickly. Until you develop a sense for what's routine and what isn't, use this as your guide.
 
-- Leave or support questions that go beyond regular PTO
-- A medical leave or accommodation request
-- A situation where you're not comfortable going to your supervisor
-- Anything involving harassment, bullying, retaliation, or other sensitive concerns
-- Something that's too important for your best guess
+**Handle yourself:**
+- Routine questions about PTO balances, paperwork, or system access
+- Pointing employees to the right form or resource
+- Scheduling or logistical coordination
 
-Don't overthink whether it's "big enough" to involve HR. If you're unsure, that's reason enough to reach out.
+**Bring to Nicole:**
+- Any leave request beyond standard PTO — medical, FMLA, personal
+- Accommodation requests under ADA
+- Workplace complaints, conflicts, or concerns about a supervisor
+- Anything involving harassment, bullying, or retaliation — even if it's just a rumor
+- Any situation where you're unsure of the right answer
+
+**Escalate to Brandy:**
+- Situations Nicole flags for senior leadership
+- Anything you're not comfortable bringing to Nicole directly
+
+Speed matters more than certainty. Route it fast, explain what you know, and let Nicole take it from there. A five-minute delay is fine. A five-day delay is a problem.
