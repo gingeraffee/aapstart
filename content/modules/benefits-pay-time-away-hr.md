@@ -65,43 +65,69 @@ quiz:
       correctId: c
 
     - id: q4
-      text: "An employee's personal leave balance shows zero, and their hire anniversary is next week. They want to take a personal day tomorrow. What do you tell them?"
+      text: "A full-time employee was hired part-time two years ago and converted to full-time six months ago. They want to know their vacation accrual rate. Which date determines their accrual?"
       options:
         - id: a
-          text: They can borrow against next year's balance since their anniversary is so close
+          text: Their original part-time hire date — total time with AAP is what counts
         - id: b
-          text: Their current balance is gone — personal leave doesn't roll over. Their new balance will be added on their anniversary date
+          text: Their full-time conversion date — vacation accrual is tied to full-time tenure
         - id: c
-          text: Submit the request anyway and HR will manually adjust it after their anniversary
+          text: The date they completed their 60-day waiting period after converting to full-time
         - id: d
-          text: Suggest they use vacation time instead since vacation balances roll over
+          text: January 1st of the current year — all vacation resets annually
       correctId: b
 
     - id: q5
-      text: "A warehouse supervisor asks you to pull an employee's attendance points so they can prepare for a corrective action conversation. The employee is at 5.5 points. What do you do?"
+      text: "An employee was absent on Tuesday and didn't request vacation in advance. Their supervisor approved same-day vacation so the employee could get paid. The employee assumes this means no point was added. What do you tell them?"
       options:
         - id: a
-          text: Pull the attendance record and send it to the supervisor with a summary of the points
+          text: They're correct — approved vacation covers the absence completely, no point is added
         - id: b
-          text: Tell the supervisor you can't share that information without the employee present
+          text: Same-day vacation allows them to be paid for the absence, but the attendance point still applies
         - id: c
-          text: Pull the record, confirm the point total with Nicole, and provide it to the supervisor so they can have the conversation
+          text: It depends on whether the supervisor submitted the approval before or after the shift started
         - id: d
-          text: Let the supervisor know they need to submit a formal written request to HR before you can release any records
-      correctId: c
+          text: The point will be added temporarily but will be removed once the vacation is processed in BambooHR
+      correctId: b
 
     - id: q6
-      text: "An employee asks you if they get paid for Christmas Eve this year. They've been with AAP for four months. What's the correct answer?"
+      text: "It's the last week of the month and you're auditing the point notebook. An employee accrued 1.0 point in the same month two years ago and has had two consecutive clean months. What should you flag?"
       options:
         - id: a
-          text: Yes — all employees get paid holidays after 60 days. Full-time employees receive 8 hours and part-time receive 4 hours
+          text: Only the 2-month roll-off — the YTD roll-off won't happen until January
         - id: b
-          text: Yes — but only if they're scheduled to work that day
+          text: Only the YTD roll-off — the 2-month roll-off doesn't apply since the point is already rolling off by date
         - id: c
-          text: No — Christmas Eve is one of the holidays staffed based on business needs, so it depends
+          text: Both — the 2-month consecutive clean record removes 1.0 point, and the point from two years ago already rolled off at the one-year mark
         - id: d
-          text: No — holiday pay doesn't start until after one year of employment
-      correctId: a
+          text: Neither — points older than 12 months are already off the books, and the 2-month roll-off only matters if the employee is above a threshold
+      correctId: c
+
+    - id: q7
+      text: "It's Monday morning and Nicole sends you last week's attendance point report. What are you responsible for doing with it?"
+      options:
+        - id: a
+          text: Review it for accuracy, email a copy to each supervisor, and file the original
+        - id: b
+          text: Enter the points into the point notebook and flag any discrepancies to Nicole
+        - id: c
+          text: Upload the report directly into BambooHR under each employee's attendance record
+        - id: d
+          text: Hold it until the end of the month and enter all weekly reports at once during the monthly audit
+      correctId: b
+
+    - id: q8
+      text: "A full-time employee started 45 days ago and asks you to help them submit a vacation request for next week. What's the right move?"
+      options:
+        - id: a
+          text: Submit the request in BambooHR on their behalf so it routes to their supervisor quickly
+        - id: b
+          text: Let them know PTO isn't available until after 60 days, and direct them to submit the request themselves once they're eligible
+        - id: c
+          text: Approve the request since they're close enough to the 60-day mark
+        - id: d
+          text: Tell them to email their supervisor directly since BambooHR won't allow a request before 60 days
+      correctId: b
 ---
 
 ## Look Alive — You'll Get Asked About This Weekly
@@ -151,6 +177,8 @@ Medical, dental, vision, and 401(k) become available the first of the month afte
 - *"What's the EAP?"* — Free, confidential resource for counseling, financial guidance, and legal support. Available to them and their household from day one. You should be able to explain this in one sentence.
 
 ## Know Your Benefits
+
+You're the first person most employees will come to with benefits questions — so you need to know what's available, when it kicks in, and how to explain it clearly. Review each benefit below so you're ready to answer confidently instead of guessing.
 
 ### LinkedIn Learning
 
@@ -233,6 +261,10 @@ Three consecutive months with no tardies or unexcused absences earns a **$75 bon
 
 Employees must report absences or tardiness within **15 minutes** of their scheduled shift start. They should log it in **BambooHR**, or contact their supervisor or HR directly if they don't have access. When an employee calls in to you, document it accurately and make sure it's reflected in the system. If there's a pattern forming, bring it to Nicole's attention.
 
+**Tracking Points**
+
+Points are tracked in multiple places. The HR Manager maintains a digital point tracker that you will eventually learn to use. Until then, your primary tool is the **point notebook**. Each Monday, the HR Manager will send you a report of all points issued during the prior week — your responsibility is entering them into the point notebook accurately. At the end of each month, audit the notebook for any employee with a **2-month roll-off**, **YTD roll-offs**, and eligibility for the **perfect attendance bonus**.
+
 **Cheat Sheet**
 
 This is a lot to keep in your head, so use the quick reference guide below — and know where to find it when an employee or supervisor asks you a question.
@@ -292,6 +324,8 @@ Two things to flag for employees:
 **Requesting Time Off**
 
 Vacation requests go through BambooHR by 5:00 PM the day before. Last-minute vacation requests may not be approved. For unexpected absences, employees should notify their supervisor before their scheduled start time and log it in BambooHR. If employees come to you with time-off questions, make sure they understand the process and are submitting requests themselves — don't submit on their behalf.
+
+Vacation time that is not requested in advance is called **Same-Day Vacation**. It may or may not be approved at the supervisor's discretion — but even if it is approved, the employee still receives a point for the absence. The vacation time simply allows them to be paid for the day. Make sure employees understand this distinction — approving same-day vacation does not erase the attendance point.
 
 :::callout tip
 Not all time away follows the same rules. Medical leave, accommodations, and protected leave have separate processes and legal requirements. If an employee's time-off question starts sounding like it might involve any of these, stop and route it to Nicole.
