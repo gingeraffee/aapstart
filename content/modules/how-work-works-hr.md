@@ -11,98 +11,100 @@ requiresAcknowledgement: true
 
 acknowledgements:
   - id: ack-1
-    statement: I can explain the attendance point system and corrective action thresholds.
+    statement: I can explain the attendance point system, corrective action thresholds, and how points roll off.
   - id: ack-2
-    statement: I know the full vacation and personal leave accrual schedules and rules.
+    statement: I understand that anything that sounds like it could involve FMLA must be escalated to Nicole immediately — no medical questions, no eligibility analysis, no paperwork.
   - id: ack-3
-    statement: I understand that FMLA requests must be escalated immediately and kept confidential from everyone including supervisors.
+    statement: I know my role in corrective action documentation — receive, scan, upload, verify, label — and I understand when to escalate automatically.
   - id: ack-4
-    statement: I know the benefits eligibility timeline and my role in corrective action filing.
+    statement: I understand the benefits eligibility milestones that go beyond the basics, including part-time 401(k) criteria, Long Term Sick Leave, and Service Awards.
 
 quiz:
   questions:
     - id: q1
-      text: An employee calls in 20 minutes after their shift with no prior notice. How many points?
+      text: "A warehouse employee calls you at 8:20 to say they won't make it in. Their shift started at 8:00 and they didn't give any prior notice. How many points does this earn?"
       options:
         - id: a
-          text: 0 — grace period
+          text: "1.0 — it's a full absence"
         - id: b
-          text: Half a point
+          text: "0.5 — they called within the first hour"
         - id: c
-          text: 1 point
+          text: "1.5 — no report or call within 15 minutes of shift start"
         - id: d
-          text: 1 and a half points
-      correctId: d
-
-    - id: q2
-      text: How many consecutive perfect months earn a $75 bonus?
-      options:
-        - id: a
-          text: "1"
-        - id: b
-          text: "2"
-        - id: c
-          text: "3"
-        - id: d
-          text: "6"
+          text: "1.0 plus a verbal warning for not calling sooner"
       correctId: c
 
-    - id: q3
-      text: An employee says they need FMLA leave. What do you do?
+    - id: q2
+      text: "An employee at 4.5 points has been clean for the last six weeks. They ask you if any points have dropped off yet. What do you tell them?"
       options:
         - id: a
-          text: Start the paperwork yourself
+          text: "Yes — one point should have rolled off after 30 clean days"
         - id: b
-          text: Tell them to wait until 366 days of service
+          text: "Not yet — the 2-month roll-off requires two full consecutive months with no tardies or unexcused absences"
         - id: c
-          text: Escalate immediately to the HR Manager — FMLA is confidential
+          text: "You'd need to check with their supervisor since attendance adjustments are handled at the department level"
         - id: d
-          text: Approve in BambooHR
+          text: "Points only roll off at the one-year mark — there's no early removal"
+      correctId: b
+
+    - id: q3
+      text: "An employee mentions they've been having back problems and asks if there's any kind of leave they can take for surgery. They haven't said the word 'FMLA.' What do you do?"
+      options:
+        - id: a
+          text: Explain the FMLA eligibility requirements and help them figure out if they qualify
+        - id: b
+          text: Let them know about the EAP since it covers medical guidance and leave it at that
+        - id: c
+          text: Recognize this could involve FMLA, avoid discussing medical specifics, and escalate to Nicole immediately
+        - id: d
+          text: Ask them how long the surgery recovery would be so you can check whether FMLA would apply
       correctId: c
 
     - id: q4
-      text: When does a full-time employee become eligible for Medical, Dental, Vision, and 401(k)?
+      text: "A part-time employee who has been with AAP for 14 months and is 22 years old asks you about 401(k) eligibility. They've worked about 800 hours. Are they eligible?"
       options:
         - id: a
-          text: Day 1
+          text: "Yes — they meet the age and service requirements, which is enough"
         - id: b
-          text: After 60 days
+          text: "Not yet — all three criteria must be met: 1 year of service, 1,000 hours worked, and age 21. They're short on hours"
         - id: c
-          text: On the 1st of the month after 60 days
+          text: "Yes — part-time employees become eligible after 1 year regardless of hours"
         - id: d
-          text: After 1 year
-      correctId: c
+          text: "Not yet — part-time employees aren't eligible for the 401(k) until they convert to full-time"
+      correctId: b
 
     - id: q5
-      text: A full-time employee hired part-time two years ago asks about their personal leave accrual date. What date applies?
+      text: "A manager hands you a corrective action form, but the employee refused to sign it. The manager asks what to do. How do you handle it?"
       options:
         - id: a
-          text: Their original part-time hire date
+          text: "Tell the manager the corrective action can't be filed without the employee's signature"
         - id: b
-          text: Their full-time conversion date
+          text: "File the documentation as normal and let Nicole handle the signature issue — the employee's refusal to sign doesn't stop the process"
         - id: c
-          text: January 1st each year
+          text: Send the form back to the manager and ask them to try again with a witness present
         - id: d
-          text: Their 60-day anniversary
+          text: "Note 'employee refused to sign' on the form and file it yourself without involving Nicole"
       correctId: b
 
     - id: q6
-      text: A manager brings you a signed corrective action form. What are your next steps?
+      text: "You're reviewing an employee's file and notice they've received three written warnings for tardiness in the last six months. No one has flagged it to Nicole. What do you do?"
       options:
         - id: a
-          text: File it in the general personnel folder
+          text: "Document the pattern and bring it to Nicole immediately — three corrective actions for the same reason is an automatic escalation"
         - id: b
-          text: Scan, upload to the BambooHR Corrective Action folder, verify it's readable, label with date + type + reason
+          text: Let the employee's supervisor know so they can address it in their next one-on-one
         - id: c
-          text: Email it to Paylocity for recordkeeping
+          text: Add a note to the file and monitor for a fourth occurrence before escalating
         - id: d
-          text: Give it back — managers keep corrective action on file
-      correctId: b
+          text: "It's already been handled through the corrective action process — no additional action needed"
+      correctId: a
 ---
 
 ## Attendance Policy (Section 704)
 
-AAP uses a **no-fault point-based system.**
+Attendance is one of the most common reasons employees end up in corrective action — and one of the most common things they'll ask you about. AAP uses a **no-fault point-based system** for hourly team members. The system doesn't care about the reason for the absence — it tracks patterns. Your job is to understand the policy well enough to answer questions accurately, track points consistently, and know when to escalate.
+
+**How Points Work**
 
 | Situation | Points |
 |-----------|--------|
@@ -111,121 +113,131 @@ AAP uses a **no-fault point-based system.**
 | Full shift absence / tardy / early leave half of shift or more | 1.0 |
 | No report or call 15+ min after shift start | 1.5 |
 
-**Corrective Action (12-month rolling):** 5 pts = Coaching | 6 = Verbal | 7 = Written | 8 = Termination
+Points accumulate on a **12-month rolling basis.** As employees hit certain thresholds, corrective action is triggered — and the supervisor is the one who delivers it. But you'll often be the one pulling the records, confirming the totals, and preparing the documentation.
 
-**Earning points back:** 2 perfect months = 1 point removed | 3 perfect months = **$75 bonus**
+**Corrective Action Thresholds**
 
-**Excluded:** FMLA, pre-approved leave, bereavement, jury duty, pre-approved vacation, holidays, short-term disability, unsafe travel.
+| Points | Action |
+|--------|--------|
+| 5.0 | Coaching conversation |
+| 6.0 | Verbal warning |
+| 7.0 | Written warning |
+| 8.0 | Termination (supervisor discretion) |
 
-**2-Day No-Call/No-Show = Voluntary Quit.** Doctor's note required for illness greater than 1 day.
+If you notice an employee approaching a threshold, flag it to Nicole before it gets there — don't wait for a supervisor to ask.
 
-**Points verification (CS-02):** Use BambooHR, the Point Notebook, OR the Point Website — any is acceptable. Always provide current point total, roll-off dates, and any perfect attendance bonuses.
+**Earning Points Back**
 
-## PTO Policies (PTO-01)
+Employees can work points off their record. Two consecutive months without a tardy or unexcused absence removes **1.0 point automatically**. Three consecutive perfect months earns a **$75 bonus** on the employee's first paycheck of the following month. These are good things to mention when an employee asks about their points — it shows them a clear path forward.
 
-**Vacation — Regular full-time employees (after 60 days, paid out at termination):**
+**What's Excluded**
 
-| Length of Employment | Days/Year | Hours/Year |
-|---------------------|-----------|------------|
-| 60 days–1st Anniversary | 3 | 24 |
-| 1st–2nd Anniversary | 5 | 40 |
-| 2nd–3rd Anniversary | 7 | 56 |
-| 3rd–5th Anniversary | 10 | 80 |
-| 5th–9th Anniversary | 15 | 120 |
-| 10th–19th Anniversary | 17 | 136 |
-| 20th Anniversary+ | 19 | 152 |
+Not everything counts against an employee. The following are excluded from the point system: FMLA, pre-approved leave, bereavement, jury duty, pre-approved vacation, holidays, short-term disability, and unsafe travel conditions. If an employee disputes a point because they believe it falls under one of these categories, document the claim and bring it to Nicole.
 
-Vacation must be taken in **2-hour minimum increments.**
-More than 5 consecutive vacation days requires **written approval from the Company President.**
+**No-Call / No-Show**
 
-**Personal Leave (all employees after 60-day waiting period):**
+Two consecutive no-call/no-shows is treated as a **voluntary quit** — no corrective action process, no warning. This one moves fast, so if you become aware of it, notify Nicole immediately. Also, any illness lasting more than one day requires a **doctor's note** upon return.
 
-- Regular full-time: 3 days (24 hrs) initially → 4 days (32 hrs) after 1 yr → 5 days (40 hrs) after 5 yrs
-- Part-time: 1 hour per 30 hours worked (updated Monday of following week)
-- Personal leave accrual date = **full-time hire date** (not original hire date if converted from part-time)
-- Must be taken in **1-hour minimum increments**
-- **Does NOT carry over. NOT paid out at termination.**
+**Points Verification (CS-02)**
 
-**Planned PTO:** Submit request no later than **5:00 PM the day before** time off is needed.
-
-**Unplanned absence:** Notify supervisor before your scheduled start time on each day of absence.
-
-**Holiday Schedule:**
-
-- New Year's Day | Memorial Day | Independence Day | Labor Day | Thanksgiving | Day after Thanksgiving or Floating Holiday | Christmas Eve or Floating Holiday | Christmas Day
-- Holidays falling on Saturday → observed Friday; falling on Sunday → observed Monday
-- If required to work a holiday → employee receives a Floating Holiday to be used **within 90 days**
+When an employee or supervisor asks for a point total, you can pull it from **BambooHR**, the **Point Notebook**, or the **Point Website** — any of the three is acceptable. Always provide the current point total, upcoming roll-off dates, and any perfect attendance bonuses. Be accurate — employees use this information to understand where they stand, and supervisors use it to prepare for corrective action conversations.
 
 ## FMLA (FMLA-01)
 
-**Eligibility:** Employee must have worked at least **366 days** AND **1,250 hours** in the last 12 months.
+The Family and Medical Leave Act gives eligible employees the right to take unpaid, job-protected leave for qualifying medical and family reasons. You won't be processing FMLA paperwork — that's Nicole's responsibility — but you need to understand the basics well enough to recognize when FMLA might apply and respond appropriately when it comes up.
 
-**Entitlement:** Up to **480 hours** (12 weeks) unpaid leave per 12-month period.
+**Eligibility**
 
-**Pay status:** FMLA is **unpaid.** Employees are NOT required to exhaust PTO before taking FMLA.
+To qualify, an employee must have worked at least **366 days** AND logged at least **1,250 hours** in the last 12 months. Both conditions must be met. If an employee asks whether they're eligible, you can share these two requirements — but do not confirm or deny their eligibility yourself. That determination is Nicole's to make.
 
-**FMLA may be taken in 1-hour increments.**
+**What FMLA Provides**
 
-**Your role — intake only:**
+- Up to **480 hours** (12 weeks) of unpaid, job-protected leave per 12-month period
+- FMLA is **unpaid** — employees are not required to exhaust PTO before taking it
+- Leave may be taken in **1-hour increments**, which means it can cover intermittent absences — not just extended time off
 
-1. If an employee asks about FMLA (or even hints at a need for medical leave) → **escalate immediately to HR Manager**
-2. Do NOT discuss details, request medical information, or promise approval
-3. You may provide general answers only: eligibility requirements (366 days + 1,250 hours) and pay status (unpaid)
-4. HR Manager issues the FMLA Certification and processes the leave in BambooHR
-5. If absence approaches/exceeds **30 consecutive work days**, notify HR Manager
+**What You Can Say**
+
+When an employee asks about FMLA, you can share general information: the eligibility requirements (366 days + 1,250 hours), that it's unpaid, and that it provides up to 12 weeks of job-protected leave. That's it. Do not discuss their specific situation, ask about their medical condition, or give any indication of whether their request will be approved.
+
+**What You Should Not Do**
+
+- Do not request or accept medical documentation — that goes directly to Nicole
+- Do not promise approval or tell an employee they "probably qualify"
+- Do not share any FMLA-related information with the employee's supervisor or anyone else — FMLA status is strictly confidential
+- Do not attempt to process FMLA paperwork or make entries in BambooHR related to FMLA leave
+
+**Your Role**
+
+Your job is recognition and routing. If an employee mentions needing medical leave, surgery, a family medical situation, or anything that sounds like it could involve FMLA — escalate to Nicole immediately. You don't need to diagnose whether it's FMLA. Just get it to her. If an employee's absence approaches or exceeds **30 consecutive work days**, notify Nicole regardless of whether FMLA has been discussed.
 
 :::callout warning
-FMLA information is strictly confidential — cannot be shared with anyone, including supervisors.
+FMLA information is strictly confidential — it cannot be shared with anyone, including the employee's supervisor.
 :::
 
 ## Benefits Eligibility (BEN-01)
 
-| Milestone | Who Is Eligible | Benefits |
-|-----------|----------------|---------|
-| Day 1 | All employees | LinkedIn Learning, EAP, AAP Perks (free) |
-| 1st of month after hire | All employees | Teladoc (free) |
-| 60 days | All employees | Personal Time Off eligibility begins |
-| 60 days (full-time only) | Full-time employees | Vacation Time eligibility begins |
-| 1st of month after 60 days | Full-time employees | Medical, Dental, Vision, 401(k), supplemental — biweekly payroll deductions |
-| 1 year + 1,000 hours + age 21 | Part-time employees | 401(k) eligibility (all three criteria must be met) |
-| 4-year anniversary (then every 5 yrs) | Full-time employees | Long Term Sick Leave: 80 hrs added; bank max 180 hrs; requires 3+ consecutive days + doctor's note |
-| Every 5 years starting at 5th anniversary | All employees | Service Awards |
+The Benefits, Pay & Time Away module covers the core eligibility timeline and individual benefit details. This section focuses on the milestones and edge cases that come up less often — but that employees will still expect you to know.
 
-**401(k) match:** 100% of first 3% + 50% of next 2% (employee contributes 5% → AAP matches 4%).
+**Part-Time 401(k) Eligibility**
 
-**Dental/Vision:** Through Guardian — no insurance cards issued. Coverage via **Guardian Anytime app.**
+Part-time employees become eligible for the 401(k) plan when **all three** of the following criteria are met: at least **1 year of service**, at least **1,000 hours worked**, and the employee must be **age 21 or older**. This is a common point of confusion — if a part-time employee asks about 401(k) eligibility, make sure all three boxes are checked before directing them to enrollment.
 
-**Medical:** PPO or HDHP with HSA options available.
+**Long Term Sick Leave**
+
+Full-time employees receive **80 hours** of Long Term Sick Leave at their **4-year anniversary**, and again every 5 years after that. The bank caps at **180 hours**. To use it, the employee must be out for **3 or more consecutive days** and provide a **doctor's note**. This benefit doesn't come up often, but when it does, employees usually don't know they have it. Check BambooHR if someone with long tenure asks about extended sick leave options.
+
+**Service Awards**
+
+Every **5 years** starting at the **5th anniversary**, employees receive a Service Award. These are easy to miss if you're not tracking milestones — keep an eye on upcoming anniversaries so recognition doesn't slip through the cracks.
+
+**Insurance Details Worth Knowing**
+
+- **Medical:** AAP offers a **PPO** and a **High Deductible Health Plan (HDHP)** with HSA options through BlueCross BlueShield
+- **Dental/Vision:** Coverage is through **Guardian** — no physical insurance cards are issued. Employees access coverage through the **Guardian Anytime app**. This is one of the most common questions you'll get after enrollment, so know it before they ask
+
+For the full breakdown of plan options, costs, and coverage details, refer to the 2026 AAP Employee Benefits Guide below.
+
+:::download
+url: /downloads/2026_AAP_Employee_Benefits_Guide.pdf
+label: 2026 AAP Employee Benefits Guide
+description: The complete benefits guide covering medical, dental, vision, 401(k), supplemental coverages, and more.
+:::
 
 ## Corrective Action Process (CA-01)
 
-**Corrective action may be issued for:** Insubordination, carelessness, unsatisfactory productivity, poor attitude, handbook/code of conduct violations, inflammatory statements, and other performance or conduct issues.
+Corrective action isn't just about attendance. It can be issued for insubordination, carelessness, unsatisfactory productivity, poor attitude, handbook or code of conduct violations, inflammatory statements, or any other performance or conduct issue that warrants documentation. The goal isn't punishment — it's a paper trail that gives employees a chance to course-correct and protects the company if they don't.
 
-**Point Warnings (attendance-specific):**
+**Attendance-Based Corrective Action**
 
-- 5 points = Coaching | 6 = Verbal Warning | 7 = Written Warning | 8 = Termination (supervisor discretion)
-- Point warnings issued by **HR** and delivered by the employee's **direct supervisor**
+You already know the thresholds from the Attendance section — 5.0, 6.0, 7.0, and 8.0 points. What's important here is the workflow: attendance-based corrective actions are initiated by **HR** and delivered by the employee's **direct supervisor**. You may be the one pulling the records and preparing the documentation that makes that conversation happen.
 
-**HR Administrative Assistant role:**
+**Your Role — Filing, Not Judging**
 
-1. Receive completed corrective action documentation from the manager
-2. Scan (if paper) and upload to employee's **Corrective Action folder in BambooHR**
-3. Verify the file is readable; label consistently: **date + type + reason**
-4. Employee signature = acknowledgment of receipt, not necessarily agreement
+When a manager hands you a completed corrective action form, your job is clean, consistent documentation. You're not evaluating whether the corrective action was deserved — you're making sure the record is airtight.
+
+1. **Receive** the completed documentation from the manager
+2. **Scan** it if it's on paper
+3. **Upload** to the employee's **Corrective Action folder in BambooHR**
+4. **Verify** the file is readable and labeled consistently: **date + type + reason**
+
+One thing that trips people up: an employee's signature on a corrective action form means they received it — not that they agree with it. If an employee pushes back on signing, that's not your problem to solve. Let Nicole handle it.
+
+**When to Escalate — No Hesitation**
+
+Some situations skip the normal process entirely. If any of the following come up, stop what you're doing and bring it to Nicole immediately:
+
+- Harassment, discrimination, or retaliation
+- Threats or violence
+- Safety risks
+- Medical or disability accommodation concerns
+- An employee requests leave related to a medical condition
+- Termination is being considered
+- An employee has received **3 corrective actions for the same reason**
+
+These aren't judgment calls — they're automatic escalations. If you're wondering whether something qualifies, it probably does. Flag it.
 
 :::callout warning
-Escalate immediately if: Harassment, discrimination, retaliation, threats/violence, safety risk, medical/disability accommodation concerns, employee requests leave related to a medical condition, termination is being considered, or 3 corrective actions for the same reason have occurred.
+When in doubt, escalate. It's always better to bring something to Nicole that didn't need escalating than to sit on something that did.
 :::
 
-:::checklist
-- [ ] I can explain the attendance point system and corrective action thresholds
-- [ ] I know which absences are excluded from the no-fault system
-- [ ] I know the full vacation accrual schedule with hours per year (PTO-01)
-- [ ] I know personal leave increments (1-hour min), accrual rules, and that it is not paid out at termination
-- [ ] I know vacation requires 2-hour minimum increments and 5+ days needs President approval
-- [ ] I know FMLA eligibility (366 days + 1,250 hours) and entitlement (480 hours) (FMLA-01)
-- [ ] I know FMLA = escalate immediately; confidential from everyone including supervisors
-- [ ] I know the benefits eligibility timeline milestones (BEN-01)
-- [ ] I know the 401(k) match formula and that Dental/Vision uses Guardian Anytime (no cards)
-- [ ] I know my role in corrective action: scan, upload to BambooHR Corrective Action folder, label correctly
-:::

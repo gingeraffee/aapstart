@@ -249,6 +249,28 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
   const title = moduleTitle.toLowerCase();
 
   if (title.includes("how work works")) {
+    if (track === "hr") {
+      return [
+        {
+          eyebrow: "Heads Up",
+          title: "You're on both sides of these policies",
+          body: "As an AAP employee, these rules apply to you. As the HR Administrative Assistant, you're also the person tracking points, pulling records, and answering questions about them. Know the policies well enough to explain them — and well enough to follow them yourself.",
+          tone: "navy" as const,
+        },
+        {
+          eyebrow: "Non-Negotiable",
+          title: "Accuracy isn't optional when you're the one keeping the records",
+          body: "Point totals, roll-off dates, corrective action thresholds — supervisors and employees both rely on what you have documented. A wrong number can delay a corrective conversation or give someone bad information about where they stand. Double-check before you hand anything off.",
+          tone: "cyan" as const,
+        },
+        {
+          eyebrow: "Real Talk",
+          title: "You won't always have the answer — and that's the job working correctly",
+          body: "FMLA questions, payroll disputes, gray-area situations — those go to Nicole. The fastest way to build trust in this role isn't knowing everything, it's knowing exactly when to stop and route it to the right person.",
+          tone: "red" as const,
+        },
+      ];
+    }
     return [
       {
         eyebrow: "Heads Up",
@@ -1276,41 +1298,77 @@ export default function ModulePage() {
   }
 
   // Gut Check scenarios for How Work Works
-  const howWorkWorksGutChecks = currentModule.title.toLowerCase().includes("how work works") ? [
-    {
-      scenario: "Your shift ends at 5:00 and your supervisor asks you to stay until 6:30 to help finish a rush order. What's the right move?",
-      options: [
-        { id: "a", text: "Stay and log the extra time — you'll get paid either way" },
-        { id: "b", text: "Stay, but don't clock the extra time since it was a favor" },
-        { id: "c", text: "Get overtime approved before working the extra hours" },
-        { id: "d", text: "Tell your supervisor you can't stay without 24 hours notice" },
-      ],
-      correctId: "c",
-      explanation: "Overtime must always be approved before it's worked. Even if your supervisor asks directly, the approval step still applies. It protects both of you.",
-    },
-    {
-      scenario: "You've been clocking in at 8:04 every morning for the past two weeks. Your shift starts at 8:00. Are you in the clear?",
-      options: [
-        { id: "a", text: "Yes — it's within the 5-minute grace period" },
-        { id: "b", text: "No — routinely using the grace period can still get flagged" },
-        { id: "c", text: "Yes — as long as you're within 5 minutes, there's no consequence" },
-        { id: "d", text: "No — anything after 8:00 is an automatic half-point" },
-      ],
-      correctId: "b",
-      explanation: "The 5-minute grace period isn't a daily strategy. Routinely clocking in at the edge will get noticed and may result in corrective action, even if no individual day triggers a point.",
-    },
-    {
-      scenario: "A coworker makes an offhand comment that feels disrespectful, but it wasn't directed at you. You're not sure if it's worth bringing up. What do you do?",
-      options: [
-        { id: "a", text: "Ignore it — it wasn't about you" },
-        { id: "b", text: "Confront the coworker directly and tell them to stop" },
-        { id: "c", text: "Mention it to your supervisor or HR — that's what the open door policy is for" },
-        { id: "d", text: "Wait and see if it happens again before doing anything" },
-      ],
-      correctId: "c",
-      explanation: "The open door policy exists for exactly this kind of situation. You don't have to wait for something to escalate. Raising it early — with your supervisor or HR — is always the right call.",
-    },
-  ] : [];
+  const howWorkWorksGutChecks = currentModule.title.toLowerCase().includes("how work works") ? (
+    effectiveTrack === "hr" ? [
+      {
+        scenario: "A supervisor calls and asks you how many points one of their employees has. They say they need it for a corrective action conversation this afternoon. What do you do?",
+        options: [
+          { id: "a", text: "Pull the record from BambooHR and send it over right away — they need it for the meeting" },
+          { id: "b", text: "Pull the record, verify the point total with Nicole, and then provide it to the supervisor" },
+          { id: "c", text: "Tell the supervisor they need to submit a formal request through email before you can share attendance records" },
+          { id: "d", text: "Let them know attendance records are confidential and you can't share them without the employee present" },
+        ],
+        correctId: "b",
+        explanation: "You can provide attendance records to a supervisor for corrective action purposes, but verify the total with Nicole first. A wrong number in a corrective conversation creates problems for everyone.",
+      },
+      {
+        scenario: "An employee stops by your desk and says they need to take time off next month for surgery. They start giving you details about their diagnosis. What do you do?",
+        options: [
+          { id: "a", text: "Listen carefully and take notes so you have everything documented for the file" },
+          { id: "b", text: "Let them share what they want to share, then let them know you'll connect them with Nicole — without writing down any medical specifics yourself" },
+          { id: "c", text: "Stop them immediately and tell them they need to speak with Nicole directly — you can't hear medical information" },
+          { id: "d", text: "Pull up the FMLA forms and start walking them through the initial paperwork" },
+        ],
+        correctId: "b",
+        explanation: "You don't shut them down, but you don't document medical details either. Let them feel heard, then route it to Nicole. Starting FMLA paperwork or recording clinical details yourself creates risk.",
+      },
+      {
+        scenario: "You're entering last week's attendance points into the point notebook and you notice one employee's total doesn't match what you expected — they seem to have fewer points than they should. What do you do?",
+        options: [
+          { id: "a", text: "Adjust the total to match what you think it should be based on the call-in log" },
+          { id: "b", text: "Enter what the report shows and flag the discrepancy to Nicole for review" },
+          { id: "c", text: "Skip that employee and come back to it after you've checked BambooHR yourself" },
+          { id: "d", text: "Email the employee's supervisor to ask if they know about any approved absences you might be missing" },
+        ],
+        correctId: "b",
+        explanation: "Enter what the report says and flag the discrepancy. Don't adjust records on your own judgment, and don't go around Nicole to resolve it. She'll sort it out.",
+      },
+    ] : [
+      {
+        scenario: "Your shift ends at 5:00 and your supervisor asks you to stay until 6:30 to help finish a rush order. What's the right move?",
+        options: [
+          { id: "a", text: "Stay and log the extra time — you'll get paid either way" },
+          { id: "b", text: "Stay, but don't clock the extra time since it was a favor" },
+          { id: "c", text: "Get overtime approved before working the extra hours" },
+          { id: "d", text: "Tell your supervisor you can't stay without 24 hours notice" },
+        ],
+        correctId: "c",
+        explanation: "Overtime must always be approved before it's worked. Even if your supervisor asks directly, the approval step still applies. It protects both of you.",
+      },
+      {
+        scenario: "You've been clocking in at 8:04 every morning for the past two weeks. Your shift starts at 8:00. Are you in the clear?",
+        options: [
+          { id: "a", text: "Yes — it's within the 5-minute grace period" },
+          { id: "b", text: "No — routinely using the grace period can still get flagged" },
+          { id: "c", text: "Yes — as long as you're within 5 minutes, there's no consequence" },
+          { id: "d", text: "No — anything after 8:00 is an automatic half-point" },
+        ],
+        correctId: "b",
+        explanation: "The 5-minute grace period isn't a daily strategy. Routinely clocking in at the edge will get noticed and may result in corrective action, even if no individual day triggers a point.",
+      },
+      {
+        scenario: "A coworker makes an offhand comment that feels disrespectful, but it wasn't directed at you. You're not sure if it's worth bringing up. What do you do?",
+        options: [
+          { id: "a", text: "Ignore it — it wasn't about you" },
+          { id: "b", text: "Confront the coworker directly and tell them to stop" },
+          { id: "c", text: "Mention it to your supervisor or HR — that's what the open door policy is for" },
+          { id: "d", text: "Wait and see if it happens again before doing anything" },
+        ],
+        correctId: "c",
+        explanation: "The open door policy exists for exactly this kind of situation. You don't have to wait for something to escalate. Raising it early — with your supervisor or HR — is always the right call.",
+      },
+    ]
+  ) : [];
 
   // Gut Check scenarios for Benefits, Pay & Time Away
   const benefitsGutChecks = currentModule.title.toLowerCase().includes("benefits") ? (
