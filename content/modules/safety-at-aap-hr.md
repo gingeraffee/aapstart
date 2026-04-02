@@ -124,7 +124,6 @@ Staffing and schedule changes happen — just because you recognize someone does
 - **Always scan your badge** when entering or exiting any part of the building
 - **Never hold the door** for someone behind you — everyone badges in individually. It's not rude, it's policy
 - If someone doesn't have a badge, direct them to check in at the front desk
-- When onboarding new hires, make sure badge access is set up before their first day — coordinate with facilities to avoid gaps
 
 **AAP Safety Committee**
 You're already a member of the Safety Committee, so you know how it operates. In your HR role, your responsibilities on the committee expand. You'll be responsible for taking meeting minutes, providing communication with the company president on safety matters, and spearheading safety initiatives — including planning and coordinating emergency drills. Keep documentation organized and accessible so the committee can track progress on open items between meetings.

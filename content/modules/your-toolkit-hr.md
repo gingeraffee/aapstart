@@ -1,7 +1,7 @@
 ---
 slug: your-toolkit-hr
 title: Your Toolkit
-description: BambooHR, PayClock, Employvio, and every system you need to do your job — with step-by-step workflows for each.
+description: The systems you'll use every day — BambooHR, PayClock, Employvio, and more — with step-by-step workflows so you're not guessing when it matters.
 tracks: [hr]
 order: 7
 estimatedMinutes: 18
@@ -102,6 +102,8 @@ quiz:
 
 ## Systems Overview
 
+These are the systems you'll touch daily — or close to it. You already know some of them from the employee side, but from HR, you'll be using them differently. Bookmark them, learn the logins, and get comfortable navigating each one early.
+
 | System | Link | Primary Use |
 |--------|------|-------------|
 | **BambooHR** | [aap.bamboohr.com](https://aap.bamboohr.com) | Employee profiles, onboarding, PTO, job postings, ATS |
@@ -118,13 +120,15 @@ Passwords go in Proton Pass only. Never email or Teams a password.
 
 ## BambooHR — Payroll Change Report (BH-02)
 
+This is one of the last checks before payroll goes out the door — and it's on you to catch anything that doesn't look right. If something slips past this report, it hits someone's paycheck.
+
 **When:** Each payroll cycle during reconciliation, before Tuesday 6:00 PM CST submission.
 
 **Steps:**
 
 1. Go to Reports → open the **Payroll Change Report** for the correct pay date/range
 2. Review all changes: pay rates, job/comp changes, new hires/terminations, time off edits
-3. Flag any unexpected items to the HR Manager **before** payroll is submitted
+3. Flag any unexpected items to Nicole **before** payroll is submitted
 
 **Escalate if:** Unexpected pay changes, retro adjustments, or report access issues.
 

@@ -521,7 +521,7 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
   }
 
   // ── Your Toolkit (general) ──
-  if (title === "your toolkit" && !title.includes("hr")) {
+  if (title === "your toolkit" && track !== "hr") {
     return [
       {
         eyebrow: "Start Here",
@@ -545,7 +545,7 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
   }
 
   // ── Your Toolkit — HR ──
-  if (title.includes("your toolkit") && title.includes("hr")) {
+  if (title.includes("your toolkit") && track === "hr") {
     return [
       {
         eyebrow: "Critical",
@@ -622,7 +622,7 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
   }
 
   // ── Where You Make an Impact — HR ──
-  if (title.includes("your impact") || (title.includes("impact") && title.includes("hr"))) {
+  if (title.includes("impact") && track === "hr") {
     return [
       {
         eyebrow: "Heads Up",
@@ -1641,7 +1641,7 @@ export default function ModulePage() {
   ) : [];
 
   // Gut Check scenarios for Your Toolkit
-  const toolkitGutChecks = (currentModule.title.toLowerCase() === "your toolkit" && !currentModule.title.toLowerCase().includes("hr")) ? [
+  const toolkitGutChecks = (currentModule.title.toLowerCase() === "your toolkit" && effectiveTrack !== "hr") ? [
     {
       scenario: "You need to review your pay stub from last week. Where do you go?",
       options: [
