@@ -1717,6 +1717,54 @@ export default function ModulePage() {
     ]
   ) : [];
 
+  // Gut Check scenarios for Where You Make An Impact (HR)
+  const impactGutChecksHR = (currentModule.slug === "where-you-make-an-impact-hr") ? [
+    {
+      scenario: "An employee stops you in the hallway and asks why they were written up last week. They seem upset and want details. What do you do?",
+      options: [
+        { id: "a", text: "Explain the corrective action process so they understand the steps" },
+        { id: "b", text: "Pull up their file and review the write-up with them" },
+        { id: "c", text: "Listen, document the interaction, and route them to Nicole — corrective action guidance is the HR Manager's territory" },
+        { id: "d", text: "Tell them to talk to their supervisor since the supervisor initiated the write-up" },
+      ],
+      correctId: "c",
+      explanation: "Corrective action guidance belongs to Nicole. Your job is to listen, document the conversation, and route it. Don't try to explain or interpret the write-up — that's not your lane.",
+    },
+    {
+      scenario: "It's Tuesday at 3 PM. You're reviewing timecards and find a missing punch for an employee. You emailed their supervisor this morning but haven't heard back. What do you do?",
+      options: [
+        { id: "a", text: "Skip it and submit payroll without it — one missing punch won't matter" },
+        { id: "b", text: "Follow up with the supervisor now and escalate to Nicole if you don't hear back before 5 PM — the 6 PM deadline doesn't wait" },
+        { id: "c", text: "Enter your best guess based on the employee's usual schedule and note it for next cycle" },
+        { id: "d", text: "Hold payroll submission until you get the answer, even if it means missing the deadline" },
+      ],
+      correctId: "b",
+      explanation: "The deadline is the deadline. Follow up immediately, and if the supervisor doesn't respond, escalate to Nicole. Don't guess, don't skip it, and don't miss the deadline.",
+    },
+    {
+      scenario: "A supervisor asks you to look into whether one of their employees has enough vacation time for a trip next month. What do you do?",
+      options: [
+        { id: "a", text: "Check BambooHR and give the supervisor the employee's vacation balance" },
+        { id: "b", text: "Tell the supervisor to check BambooHR themselves — you're not responsible for balance inquiries" },
+        { id: "c", text: "Check BambooHR, tell the employee their balance, and let them work it out with their supervisor" },
+        { id: "d", text: "Route it to Nicole — PTO balances are sensitive information" },
+      ],
+      correctId: "a",
+      explanation: "Basic PTO balance inquiries from supervisors are in your lane. Check BambooHR and give the supervisor the information they need. This isn't a pay question or a sensitive matter — it's a routine lookup.",
+    },
+    {
+      scenario: "You're in week 3 and a new hire's onboarding paperwork hasn't been completed. You've sent two reminders. What's your next step?",
+      options: [
+        { id: "a", text: "Send a third reminder — persistence is part of the job" },
+        { id: "b", text: "Let it go — some employees just take longer" },
+        { id: "c", text: "Escalate to Nicole — you've followed up twice and the paperwork is overdue" },
+        { id: "d", text: "Call the employee's supervisor and ask them to handle it" },
+      ],
+      correctId: "c",
+      explanation: "Two follow-ups is your due diligence. After that, escalate. Onboarding paperwork that drags on too long creates compliance issues — and Nicole needs to know before it becomes a problem.",
+    },
+  ] : [];
+
   // Gut Check scenarios for Where You Make An Impact (warehouse)
   const impactGutChecks = (currentModule.slug === "where-you-make-an-impact-warehouse") ? [
     {
@@ -2370,6 +2418,13 @@ export default function ModulePage() {
           <div className="mt-2">
             <ModulePanel>
               <GutCheckBlock scenarios={toolkitGutChecks} />
+            </ModulePanel>
+          </div>
+        )}
+        {!isManagement && impactGutChecksHR.length > 0 && (
+          <div className="mt-2">
+            <ModulePanel>
+              <GutCheckBlock scenarios={impactGutChecksHR} />
             </ModulePanel>
           </div>
         )}
