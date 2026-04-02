@@ -1554,48 +1554,91 @@ export default function ModulePage() {
   ] : [];
 
   // Gut Check scenarios for Safety at AAP
-  const safetyGutChecks = currentModule.title.toLowerCase().includes("safety") ? [
-    {
-      scenario: "You notice a small puddle near the break room from a leaky coffee maker. Nobody's slipped yet. What do you do?",
-      options: [
-        { id: "a", text: "Step over it — it's not that big" },
-        { id: "b", text: "Clean it up or report it to your supervisor so it gets addressed" },
-        { id: "c", text: "Assume someone else will take care of it" },
-      ],
-      correctId: "b",
-      explanation: "Slips, trips, and falls are the #1 cause of office injuries. A small puddle today can be a workers' comp claim tomorrow. Fix it or flag it.",
-    },
-    {
-      scenario: "You bump your elbow on a filing cabinet hard enough to leave a bruise, but it's not serious. Do you report it?",
-      options: [
-        { id: "a", text: "No — it isn't affecting my work" },
-        { id: "b", text: "Only if it still hurts the next day" },
-        { id: "c", text: "Yes — report it to your supervisor immediately, no matter how minor" },
-      ],
-      correctId: "c",
-      explanation: "Every incident gets reported, even the small ones. AAP's safety team uses these reports to spot patterns and prevent future accidents.",
-    },
-    {
-      scenario: "Someone you don't recognize is walking through the office without a badge. They look like they know where they're going. What should you do?",
-      options: [
-        { id: "a", text: "Nothing — they probably work here" },
-        { id: "b", text: "Direct them to the reception area or notify your supervisor" },
-        { id: "c", text: "Wait and see if someone else says something" },
-      ],
-      correctId: "b",
-      explanation: "All visitors must check in at reception. It's not awkward to ask — it's your job to keep the workplace secure.",
-    },
-    {
-      scenario: "A coworker sends a joke through the company email system that you find funny, but you think others might find offensive. Is this a problem?",
-      options: [
-        { id: "a", text: "It's fine — it was just a joke between friends" },
-        { id: "b", text: "Yes — company email is for business use, and offensive content is prohibited regardless of intent" },
-        { id: "c", text: "Only if someone complains about it" },
-      ],
-      correctId: "b",
-      explanation: "AAP's computer and email policy is clear: company systems should never be used in ways that are disruptive or offensive to others.",
-    },
-  ] : [];
+  const safetyGutChecks = currentModule.title.toLowerCase().includes("safety") ? (
+    effectiveTrack === "hr" ? [
+      {
+        scenario: "A supervisor calls to let you know an employee slipped on a wet floor near the warehouse break room. The employee says they're fine and doesn't want to make a big deal about it. What do you do?",
+        options: [
+          { id: "a", text: "If the employee says they're fine, there's nothing to document" },
+          { id: "b", text: "Document the incident, file it in their medical folder in BambooHR, post it to the accident report groups, and let Nicole know" },
+          { id: "c", text: "Tell the supervisor to keep an eye on the employee and only follow up if symptoms appear" },
+        ],
+        correctId: "b",
+        explanation: "\"I'm fine\" doesn't close the loop. Every incident gets documented — no exceptions. File it, post it, and route it. That's the process whether the employee thinks it's a big deal or not.",
+      },
+      {
+        scenario: "You receive an accident report from a supervisor, but the details are vague — no time of injury, no description of what happened, just \"employee hurt their back.\" What do you do?",
+        options: [
+          { id: "a", text: "File it as-is — at least you have something on record" },
+          { id: "b", text: "Send it back to the supervisor and ask them to fill in the missing details before you file it" },
+          { id: "c", text: "Fill in the gaps yourself based on what you think probably happened" },
+        ],
+        correctId: "b",
+        explanation: "Incomplete documentation creates problems down the road. You need the basics — date, time, what happened, and how — before it goes into BambooHR. Send it back and get it right.",
+      },
+      {
+        scenario: "A Safety Committee meeting is coming up and you realize the minutes from the last meeting were never distributed to the company president. What do you do?",
+        options: [
+          { id: "a", text: "Skip it — if no one's asked for them, it's probably not a priority" },
+          { id: "b", text: "Get the minutes finalized and sent before the next meeting, and set a reminder so it doesn't happen again" },
+          { id: "c", text: "Wait until after the upcoming meeting and send both sets at once" },
+        ],
+        correctId: "b",
+        explanation: "Communication with the company president on safety matters is your responsibility. Don't let it slide — get it out the door and build a system so it doesn't fall through the cracks again.",
+      },
+      {
+        scenario: "An employee forwards you a joke that was sent through company email. It's not directed at anyone specific, but it's definitely inappropriate. They want to know if it's worth reporting. What do you tell them?",
+        options: [
+          { id: "a", text: "It's not worth the drama — just delete it and move on" },
+          { id: "b", text: "Yes — company email is for business use, and offensive content is a policy violation regardless of intent. Document it and escalate to Nicole" },
+          { id: "c", text: "Only if the person who sent it has been warned before" },
+        ],
+        correctId: "b",
+        explanation: "AAP's computer and email policy doesn't have a \"first offense\" loophole. Offensive content through company systems is a violation, period. Document it and let Nicole take it from there.",
+      },
+    ] : [
+      {
+        scenario: "You notice a small puddle near the break room from a leaky coffee maker. Nobody's slipped yet. What do you do?",
+        options: [
+          { id: "a", text: "Step over it — it's not that big" },
+          { id: "b", text: "Clean it up or report it to your supervisor so it gets addressed" },
+          { id: "c", text: "Assume someone else will take care of it" },
+        ],
+        correctId: "b",
+        explanation: "Slips, trips, and falls are the #1 cause of office injuries. A small puddle today can be a workers' comp claim tomorrow. Fix it or flag it.",
+      },
+      {
+        scenario: "You bump your elbow on a filing cabinet hard enough to leave a bruise, but it's not serious. Do you report it?",
+        options: [
+          { id: "a", text: "No — it isn't affecting my work" },
+          { id: "b", text: "Only if it still hurts the next day" },
+          { id: "c", text: "Yes — report it to your supervisor immediately, no matter how minor" },
+        ],
+        correctId: "c",
+        explanation: "Every incident gets reported, even the small ones. AAP's safety team uses these reports to spot patterns and prevent future accidents.",
+      },
+      {
+        scenario: "Someone you don't recognize is walking through the office without a badge. They look like they know where they're going. What should you do?",
+        options: [
+          { id: "a", text: "Nothing — they probably work here" },
+          { id: "b", text: "Direct them to the reception area or notify your supervisor" },
+          { id: "c", text: "Wait and see if someone else says something" },
+        ],
+        correctId: "b",
+        explanation: "All visitors must check in at reception. It's not awkward to ask — it's your job to keep the workplace secure.",
+      },
+      {
+        scenario: "A coworker sends a joke through the company email system that you find funny, but you think others might find offensive. Is this a problem?",
+        options: [
+          { id: "a", text: "It's fine — it was just a joke between friends" },
+          { id: "b", text: "Yes — company email is for business use, and offensive content is prohibited regardless of intent" },
+          { id: "c", text: "Only if someone complains about it" },
+        ],
+        correctId: "b",
+        explanation: "AAP's computer and email policy is clear: company systems should never be used in ways that are disruptive or offensive to others.",
+      },
+    ]
+  ) : [];
 
   // Gut Check scenarios for Your Toolkit
   const toolkitGutChecks = (currentModule.title.toLowerCase() === "your toolkit" && !currentModule.title.toLowerCase().includes("hr")) ? [
