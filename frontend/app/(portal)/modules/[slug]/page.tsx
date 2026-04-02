@@ -1880,6 +1880,50 @@ export default function ModulePage() {
     },
   ] : [];
 
+  // Gut Check scenarios for After the Offer (HR)
+  const afterOfferGutChecks = (currentModule.slug === "after-the-offer") ? [
+    {
+      scenario: "You're setting up a new hire in BambooHR and you're about to click Hire. You notice the \"close job posting\" checkbox is checked. The supervisor hasn't said whether the role is filled. What do you do?",
+      options: [
+        { id: "a", text: "Leave it checked — if they hired someone, the role is probably filled" },
+        { id: "b", text: "Uncheck it — always uncheck unless you've been specifically told the role is filled" },
+        { id: "c", text: "Message the supervisor to ask before proceeding" },
+      ],
+      correctId: "b",
+      explanation: "Always uncheck. If the role is still open, closing the posting shuts off your applicant pipeline. It's easier to close a posting later than to reopen one you accidentally shut down.",
+    },
+    {
+      scenario: "A new hire's documents are coming in. Their signed W-4 is back, and you're about to file it. You're not sure if it goes in New Hire Forms or Payroll Related Documents. What do you do?",
+      options: [
+        { id: "a", text: "New Hire Forms — it came in as part of the new hire packet" },
+        { id: "b", text: "Payroll Related Documents — W-4s, ACH forms, and state tax forms always go here" },
+        { id: "c", text: "Either folder works as long as it's in BambooHR somewhere" },
+      ],
+      correctId: "b",
+      explanation: "Payroll Related Documents. W-4s, ACH, and state tax forms go in Payroll — not New Hire Forms. Filing in the wrong folder means someone can't find it when they need it.",
+    },
+    {
+      scenario: "An employee who's been here for 45 days comes to you and asks when they can enroll in health insurance. What do you tell them?",
+      options: [
+        { id: "a", text: "They can enroll now — 45 days is close enough to the 60-day mark" },
+        { id: "b", text: "Enrollment opens on the 1st of the month after they hit 60 days of employment" },
+        { id: "c", text: "Route it to Nicole — benefits enrollment questions go to the HR Manager" },
+      ],
+      correctId: "b",
+      explanation: "Health insurance enrollment opens on the 1st of the month after 60 days. You can answer this one — it's a timeline question, not a pay question. Give them the clear answer so they can plan.",
+    },
+    {
+      scenario: "A supervisor tells you that an employee hasn't shown up or called in for two days straight. They ask what happens next. What do you say?",
+      options: [
+        { id: "a", text: "Try calling the employee one more time before taking any action" },
+        { id: "b", text: "Two consecutive no-call/no-shows is treated as a voluntary quit — you're notifying Nicole immediately" },
+        { id: "c", text: "Issue a written warning and give the employee a chance to explain" },
+      ],
+      correctId: "b",
+      explanation: "Two consecutive no-call/no-shows is a voluntary quit under policy. No warning, no investigation. Notify Nicole immediately — she handles the separation from there.",
+    },
+  ] : [];
+
   // Override first section for How We Show Up (both all and HR versions)
   if (currentModule.title.toLowerCase().includes("how we show up") && !currentModule.slug.endsWith("-hr")) {
     const coverSection = sections.find(
@@ -2490,6 +2534,13 @@ export default function ModulePage() {
           <div className="mt-2">
             <ModulePanel>
               <GutCheckBlock scenarios={beforeOfferGutChecks} />
+            </ModulePanel>
+          </div>
+        )}
+        {!isManagement && afterOfferGutChecks.length > 0 && (
+          <div className="mt-2">
+            <ModulePanel>
+              <GutCheckBlock scenarios={afterOfferGutChecks} />
             </ModulePanel>
           </div>
         )}
