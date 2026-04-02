@@ -1836,6 +1836,50 @@ export default function ModulePage() {
     },
   ] : [];
 
+  // Gut Check scenarios for Before the Offer (HR)
+  const beforeOfferGutChecks = (currentModule.slug === "before-the-offer") ? [
+    {
+      scenario: "You check BambooHR and see a candidate was moved to \"Schedule Interview\" two days ago. Nobody told you about it. What do you do?",
+      options: [
+        { id: "a", text: "Wait for the supervisor to reach out — they may still be deciding" },
+        { id: "b", text: "Call the applicant now to schedule — the status change was your trigger and you're already behind" },
+        { id: "c", text: "Message the supervisor to confirm before reaching out to the candidate" },
+      ],
+      correctId: "b",
+      explanation: "The status change is the trigger. You don't wait for a separate notification. Two days is already a delayed response — call the applicant and get it scheduled.",
+    },
+    {
+      scenario: "During a reference check, a former employer says \"She's great — and she just got engaged, so she's in a really good place right now.\" What do you do?",
+      options: [
+        { id: "a", text: "Smile, say congratulations, and keep going — it's a positive comment" },
+        { id: "b", text: "Note it as context but don't weight it in your evaluation" },
+        { id: "c", text: "Redirect to job-related topics immediately and don't document the comment" },
+      ],
+      correctId: "c",
+      explanation: "Marital status is a protected characteristic. It doesn't matter that it was positive or volunteered — you redirect immediately and never write it down.",
+    },
+    {
+      scenario: "An offer letter was signed on Wednesday. It's now Monday morning and the candidate hasn't completed their drug screening. They say they'll go tomorrow. What do you do?",
+      options: [
+        { id: "a", text: "That's fine — tomorrow is still within the window" },
+        { id: "b", text: "Let them know today is the last business day in the 3-day window and they need to go today" },
+        { id: "c", text: "Escalate to Nicole — the deadline has passed" },
+      ],
+      correctId: "b",
+      explanation: "Wednesday to Monday is 3 business days (Thursday, Friday, Monday). Today is the deadline — not tomorrow. Follow up firmly and make sure they understand the urgency.",
+    },
+    {
+      scenario: "You've reached 2 references — both positive. You've called the remaining 4 numbers and nobody picked up. The supervisor is asking when the candidate can start. What do you do?",
+      options: [
+        { id: "a", text: "Two strong references is enough — move forward with the hire" },
+        { id: "b", text: "Keep trying until you reach a third contact — the minimum is 3, with at least 1 employer and 1 personal" },
+        { id: "c", text: "Ask the candidate for additional references since the ones provided aren't responsive" },
+      ],
+      correctId: "b",
+      explanation: "The minimum is 3 successful contacts. Two isn't enough, no matter how positive they were. Keep calling — and if you truly can't reach a third after multiple attempts, escalate.",
+    },
+  ] : [];
+
   // Override first section for How We Show Up (both all and HR versions)
   if (currentModule.title.toLowerCase().includes("how we show up") && !currentModule.slug.endsWith("-hr")) {
     const coverSection = sections.find(
@@ -2439,6 +2483,13 @@ export default function ModulePage() {
           <div className="mt-2">
             <ModulePanel>
               <GutCheckBlock scenarios={qualityGutChecks} />
+            </ModulePanel>
+          </div>
+        )}
+        {!isManagement && beforeOfferGutChecks.length > 0 && (
+          <div className="mt-2">
+            <ModulePanel>
+              <GutCheckBlock scenarios={beforeOfferGutChecks} />
             </ModulePanel>
           </div>
         )}
