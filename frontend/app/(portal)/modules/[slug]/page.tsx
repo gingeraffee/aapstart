@@ -1644,14 +1644,14 @@ export default function ModulePage() {
   const toolkitGutChecks = currentModule.title.toLowerCase() === "your toolkit" ? (
     effectiveTrack === "hr" ? [
       {
-        scenario: "You're entering PTO in PayClock and notice the employee's time off request in BambooHR says \"Pending\" — not \"Approved.\" What do you do?",
+        scenario: "You're entering PTO in PayClock from the Time Off Taken Report. The report shows 8 hours of sick time, but you accidentally enter it in the vacation column. You haven't saved yet. What do you do?",
         options: [
-          { id: "a", text: "Enter it anyway — they probably just forgot to approve it" },
-          { id: "b", text: "Don't enter it — no approval means no entry. Flag it to the employee's supervisor for approval" },
-          { id: "c", text: "Approve the request yourself in BambooHR and then enter it" },
+          { id: "a", text: "Save it — PTO is PTO, the column doesn't matter" },
+          { id: "b", text: "Fix it before saving — clear the vacation column and enter the hours under sick instead" },
+          { id: "c", text: "Save it and make a note to fix it next pay period" },
         ],
         correctId: "b",
-        explanation: "No approval, no entry. You don't approve PTO — that's the supervisor's call. Flag it and move on.",
+        explanation: "The PTO type matters. Wrong column means wrong label on the employee's pay stub — and that leads to questions and corrections you could have avoided. Fix it before you save.",
       },
       {
         scenario: "A supervisor sends you a text asking you to edit an employee's time punch from last Tuesday. No email, no correction form — just the text. What do you do?",
