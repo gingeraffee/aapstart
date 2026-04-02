@@ -1641,38 +1641,81 @@ export default function ModulePage() {
   ) : [];
 
   // Gut Check scenarios for Your Toolkit
-  const toolkitGutChecks = (currentModule.title.toLowerCase() === "your toolkit" && effectiveTrack !== "hr") ? [
-    {
-      scenario: "You need to review your pay stub from last week. Where do you go?",
-      options: [
-        { id: "a", text: "BambooHR" },
-        { id: "b", text: "Paylocity" },
-        { id: "c", text: "Ask your supervisor to print it off" },
-      ],
-      correctId: "b",
-      explanation: "Paylocity handles everything tied to your paycheck — pay stubs, tax forms, direct deposit, and withholding. Need a copy of your pay stub? Ask HR to print it off for you!",
-    },
-    {
-      scenario: "You just got hired and HR says you have tasks waiting in your inbox. Where do you find them?",
-      options: [
-        { id: "a", text: "Your personal email" },
-        { id: "b", text: "Paylocity" },
-        { id: "c", text: "BambooHR inbox" },
-      ],
-      correctId: "c",
-      explanation: "BambooHR is your HR home base. New hire tasks, forms, and documents all live in your BambooHR inbox.",
-    },
-    {
-      scenario: "Your supervisor mentions a required training course you need to complete. Where do you find it?",
-      options: [
-        { id: "a", text: "Paylocity" },
-        { id: "b", text: "LinkedIn Learning" },
-        { id: "c", text: "BambooHR" },
-      ],
-      correctId: "b",
-      explanation: "Supervisors can assign LinkedIn Learning trainings to help you reach your goals or catch you up on company trainings — plus thousands of optional courses you can explore on your own.",
-    },
-  ] : [];
+  const toolkitGutChecks = currentModule.title.toLowerCase() === "your toolkit" ? (
+    effectiveTrack === "hr" ? [
+      {
+        scenario: "You're entering PTO in PayClock and notice the employee's time off request in BambooHR says \"Pending\" — not \"Approved.\" What do you do?",
+        options: [
+          { id: "a", text: "Enter it anyway — they probably just forgot to approve it" },
+          { id: "b", text: "Don't enter it — no approval means no entry. Flag it to the employee's supervisor for approval" },
+          { id: "c", text: "Approve the request yourself in BambooHR and then enter it" },
+        ],
+        correctId: "b",
+        explanation: "No approval, no entry. You don't approve PTO — that's the supervisor's call. Flag it and move on.",
+      },
+      {
+        scenario: "A supervisor sends you a text asking you to edit an employee's time punch from last Tuesday. No email, no correction form — just the text. What do you do?",
+        options: [
+          { id: "a", text: "Make the edit — a text from a supervisor counts as documentation" },
+          { id: "b", text: "Ask the supervisor to send the request via email or correction form before you make any changes" },
+          { id: "c", text: "Make the edit and screenshot the text as backup documentation" },
+        ],
+        correctId: "b",
+        explanation: "Punch edits require documentation — supervisor note, email, or correction form. A text isn't it. Get it in writing before you touch anything.",
+      },
+      {
+        scenario: "You're setting up a new Scottsboro hire in Employvio and accidentally select the Memphis drug screening workflow. You haven't submitted yet. What do you do?",
+        options: [
+          { id: "a", text: "Submit it — a drug test is a drug test regardless of location" },
+          { id: "b", text: "Back out, start over, and select the correct Scottsboro workflow before submitting" },
+          { id: "c", text: "Submit and make a note to correct it later" },
+        ],
+        correctId: "b",
+        explanation: "Memphis and Scottsboro use different drug screening processes. Wrong workflow means wrong test, which means a delayed hire. Catch it now.",
+      },
+      {
+        scenario: "It's been three hours since your last PayClock poll and you've been busy with other tasks. Does it matter?",
+        options: [
+          { id: "a", text: "Not really — polling once in the morning and once before you leave is enough" },
+          { id: "b", text: "Yes — you're an hour overdue. Poll now so timecards stay current" },
+          { id: "c", text: "Only if payroll is due today" },
+        ],
+        correctId: "b",
+        explanation: "Polling every 2 hours keeps timecards current. Skipping it means incomplete data when it's time to review — and that creates more work later.",
+      },
+    ] : [
+      {
+        scenario: "You need to review your pay stub from last week. Where do you go?",
+        options: [
+          { id: "a", text: "BambooHR" },
+          { id: "b", text: "Paylocity" },
+          { id: "c", text: "Ask your supervisor to print it off" },
+        ],
+        correctId: "b",
+        explanation: "Paylocity handles everything tied to your paycheck — pay stubs, tax forms, direct deposit, and withholding. Need a copy of your pay stub? Ask HR to print it off for you!",
+      },
+      {
+        scenario: "You just got hired and HR says you have tasks waiting in your inbox. Where do you find them?",
+        options: [
+          { id: "a", text: "Your personal email" },
+          { id: "b", text: "Paylocity" },
+          { id: "c", text: "BambooHR inbox" },
+        ],
+        correctId: "c",
+        explanation: "BambooHR is your HR home base. New hire tasks, forms, and documents all live in your BambooHR inbox.",
+      },
+      {
+        scenario: "Your supervisor mentions a required training course you need to complete. Where do you find it?",
+        options: [
+          { id: "a", text: "Paylocity" },
+          { id: "b", text: "LinkedIn Learning" },
+          { id: "c", text: "BambooHR" },
+        ],
+        correctId: "b",
+        explanation: "Supervisors can assign LinkedIn Learning trainings to help you reach your goals or catch you up on company trainings — plus thousands of optional courses you can explore on your own.",
+      },
+    ]
+  ) : [];
 
   // Gut Check scenarios for Where You Make An Impact (warehouse)
   const impactGutChecks = (currentModule.slug === "where-you-make-an-impact-warehouse") ? [

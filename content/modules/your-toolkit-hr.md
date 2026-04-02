@@ -134,6 +134,8 @@ This is one of the last checks before payroll goes out the door — and it's on 
 
 ## PayClock — PC-03 Poll Timeclocks
 
+Polling is how punches get from the physical timeclock into PayClock. If you don't poll, the data doesn't move — and that means timecards are incomplete when it's time to review them. This is one of those small tasks that causes big problems if it gets skipped.
+
 **When:** Every 2 hours — imports recent Face Clock punches into PayClock.
 
 **Steps:**
@@ -149,9 +151,9 @@ This is one of the last checks before payroll goes out the door — and it's on 
 
 ## PayClock — PC-04 Add New Employee
 
-**When:** Before the employee's first shift (part of the onboarding task list).
+Every new hire needs to exist in PayClock before they walk in on Day 1 — otherwise they can't clock in, and you're starting their first day with a problem. This is part of the onboarding task list, and it's one you don't want to leave until the last minute.
 
-**Before you start:** Confirm employee is active in BambooHR and start date is set. Create employee number in New Hires, Changes and Terminations. Verify department, location, employment status and schedule ready.
+**Before you start:** Confirm the employee is active in BambooHR and their start date is set. Create their employee number in New Hires, Changes and Terminations. Verify department, location, employment status, and schedule are ready.
 
 **Steps:**
 
@@ -169,15 +171,17 @@ This is one of the last checks before payroll goes out the door — and it's on 
 
 ## PayClock — PC-01 Enter PTO & PC-02 Edit Punches
 
+These two tasks will eat up more of your time than you'd expect. PTO entry and punch edits are where small mistakes turn into payroll problems — so slow down, double-check, and don't skip the documentation step.
+
 **PC-01 — Enter PTO:**
 
-- Verify PTO is approved in BambooHR before entering
+- Verify PTO is approved in BambooHR before entering — no approval, no entry
 - Open Timecards → select employee → add the PTO hours into the corresponding column
-- Always double check that PTO is entered for the correct date
+- Always double-check that PTO is entered for the correct date — one day off means the wrong paycheck
 
 **PC-02 — Edit Time Punches:**
 
-- Always obtain documentation (supervisor note/email/correction form) **before** making any change
+- Always obtain documentation (supervisor note/email/correction form) **before** making any change — no exceptions
 - To edit: double-click the cell → type corrected time (verify AM or PM) → Enter to save
 - To add missing punch: double-click the **last** Out punch in the row → enter time + verify AM or PM → Enter to Save. The added punch will automatically move to the corresponding column.
 - To delete: only with documentation; note the reason → click in the cell → click/press **Delete**
@@ -189,7 +193,7 @@ Escalate if repeated fixes for same employee, conflicting instructions, or polic
 
 ## PC-05 — Review Timecards Using BambooHR Time Off Used Report
 
-**Setup:** Two monitors required — BambooHR report on one screen, PayClock timecards on the other.
+This is your daily reconciliation — matching what BambooHR says was approved against what PayClock actually shows. It's the task that catches missed PTO entries, exception flags, and discrepancies before they snowball into payroll issues. Two monitors aren't a suggestion — they're a requirement.
 
 **When:** Enter PTO for the previous work day **daily.**
 
@@ -204,6 +208,8 @@ Escalate if repeated fixes for same employee, conflicting instructions, or polic
 **Escalate if:** Time off is disputed/unclear, appears unapproved, doesn't match BambooHR, or has unusual payroll impact.
 
 ## Employvio — Location-Specific Workflows
+
+Employvio handles background checks and drug screening — and the process is different depending on whether the applicant is Memphis or Scottsboro. Mix these up and you'll delay a hire, so know which workflow you're in before you click anything.
 
 **Memphis applicants (HRA-03):**
 
@@ -220,15 +226,3 @@ Escalate if repeated fixes for same employee, conflicting instructions, or polic
 
 **File naming:** `YYYY-MM-DD DOC NAME - FIRST NAME LAST NAME` | Save within **48 hours** of receipt.
 
-:::checklist
-- [ ] I have confirmed system access: BambooHR, PayClock, Employvio, Phoenix LIS, HR Drive
-- [ ] I can poll timeclocks in PayClock (PC-03) and know what to do if polling fails
-- [ ] I can add a new employee in PayClock (PC-04) before their first shift
-- [ ] I can enter approved PTO in PayClock (PC-01) without overlapping worked time
-- [ ] I can edit/add a time punch in PayClock (PC-02) — documentation required first
-- [ ] I can run the PC-05 workflow using two monitors (BambooHR Time Off Used + PayClock)
-- [ ] I know the Memphis vs. Scottsboro Employvio workflows (correct drug test for each)
-- [ ] I know the BambooHR document folder rules and which folders are restricted
-- [ ] I know the file naming convention (YYYY-MM-DD DOC NAME - FIRST NAME LAST NAME)
-- [ ] I have Proton Pass access and understand the password rules
-:::
