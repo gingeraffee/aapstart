@@ -184,14 +184,3 @@ You won't get a scorecard taped to your desk, but there's a clear picture of wha
 **Documentation habits.** This is the one that separates good from great. Anyone can document when they remember to. The standard here is documenting every time, without exception, without reminders. If Nicole can pull up any employee interaction and find a complete record with date, time, method, and follow-up — you're doing it right.
 
 **Escalation judgment.** Knowing when something is yours and when it isn't. Not sitting on things that need attention. Not overstepping into decisions that belong to Nicole. The goal isn't to handle everything — it's to handle your part well and route the rest quickly. Over-escalating is forgivable. Under-escalating is not.
-
-:::checklist
-- [ ] I know my daily morning, midday, and end-of-day routine
-- [ ] I understand the full weekly payroll cycle (PC-03 → PC-05 → CS-01 → BH-02 → submit)
-- [ ] I know what I own vs. what belongs to the HR Manager or IT
-- [ ] I've reviewed my 30/60/90 plan and know the phase expectations
-- [ ] I have confirmed system access for all required platforms
-- [ ] I know I must document every employee interaction (date/time, topic, what was said, follow-up)
-- [ ] I understand common first-90-day mistakes and how to avoid them
-- [ ] I know how success is measured — accuracy, timeliness, documentation, escalation judgment
-:::
