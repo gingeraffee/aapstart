@@ -24,69 +24,69 @@ acknowledgements:
 quiz:
   questions:
     - id: q1
-      text: You check BambooHR and see a candidate's status was changed to "Schedule Interview" yesterday. You weren't told about it. What do you do?
+      text: You're about to send an offer letter and notice the pay rate field is blank in the template. The supervisor told you the rate verbally last week. What do you do?
       options:
         - id: a
-          text: Wait for the hiring manager to email you with the details before reaching out
+          text: Enter the rate the supervisor told you — you remember it clearly
         - id: b
-          text: Call the applicant to coordinate the interview — the status change is your trigger
+          text: Call the supervisor to confirm the rate in writing before sending anything
         - id: c
-          text: Message the supervisor to confirm they want you to schedule before you reach out
+          text: Send the offer letter without the rate and add it later once confirmed
         - id: d
-          text: Send the applicant an email with available times and let them pick
+          text: Check BambooHR for the posted rate on the job listing and use that
       correctId: b
 
     - id: q2
-      text: An offer letter was signed on Monday. It's now Thursday morning and the applicant hasn't completed their drug screening. What do you do?
+      text: You call a candidate to extend a verbal offer and get voicemail. What do you do?
       options:
         - id: a
-          text: Give them until Friday — 3 business days means they have until end of day Friday
+          text: Leave a voicemail with the offer details so they can call back to accept
         - id: b
-          text: Follow up with the applicant immediately — they have until end of day today to complete the screening
+          text: Don't leave offer details in a voicemail — try again later and keep it to a live conversation
         - id: c
-          text: Rescind the offer — they missed the deadline
+          text: Send an email with the offer details instead since they didn't answer
         - id: d
-          text: Escalate to Nicole and let her decide how to handle it
+          text: Leave a message asking them to call back, then send the offer letter so they can review it while they wait
       correctId: b
 
     - id: q3
-      text: During a reference check, the former employer mentions that the candidate just got married. What do you do?
+      text: A candidate's offer letter was signed on Friday. When does the 3-business-day drug screening window close?
       options:
         - id: a
-          text: Congratulate them and note it as a positive personal detail
+          text: Monday — 3 days from Friday
         - id: b
-          text: Don't document it but continue the conversation naturally
+          text: Wednesday — 3 business days (Monday, Tuesday, Wednesday)
         - id: c
-          text: Redirect to job-related topics immediately — marital status is protected and never gets documented
+          text: Thursday — the weekend counts as one day
         - id: d
-          text: Note it in case it's relevant to availability or scheduling
-      correctId: c
+          text: The following Friday — one full business week
+      correctId: b
 
     - id: q4
-      text: You've contacted 4 of the 6 references a candidate provided. Two answered and gave positive feedback. Two didn't pick up. What do you do?
+      text: You're doing reference checks for a warehouse role. You've completed 2 employer references and need one more contact. The only remaining numbers are personal references. Is this acceptable?
       options:
         - id: a
-          text: Two positive references is enough — move forward
+          text: No — you need at least 2 employer references for warehouse roles
         - id: b
-          text: Keep calling until you reach 3 contacts — you need at least 1 employer and 1 personal reference
+          text: Yes — the minimum is 3 contacts with at least 1 employer and 1 personal, and you already have 2 employers
         - id: c
-          text: Email the remaining references instead of calling
+          text: Only if the personal reference has worked with the candidate in some capacity
         - id: d
-          text: Ask the candidate to provide additional references since some aren't responding
+          text: No — personal references don't count toward the 3-contact minimum
       correctId: b
 
     - id: q5
-      text: A candidate's background check comes back with a flag you weren't expecting. The drug screen is still pending. What do you do?
+      text: You sent the interview confirmation email but forgot to include the location. The interview is tomorrow. What do you do?
       options:
         - id: a
-          text: Wait for the drug screen results so you can escalate everything at once
+          text: Send a follow-up email with the location right away — don't wait
         - id: b
-          text: Escalate the background check flag to Nicole immediately — don't wait for the drug screen
+          text: Call the candidate to give them the location verbally — it's faster
         - id: c
-          text: Review the flag yourself to determine if it's relevant to the position before escalating
+          text: The candidate can figure it out from the job listing address
         - id: d
-          text: Contact the candidate to ask about the flag before involving Nicole
-      correctId: b
+          text: Ask the supervisor to let the candidate know when they arrive
+      correctId: a
 ---
 
 ## The Recruiting Workflow (HRA-02)
