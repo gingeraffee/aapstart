@@ -1,6 +1,6 @@
 ---
 slug: your-first-90-days-hr
-title: Your First 30 Days
+title: What's Ahead
 description: What to expect — and what's expected of you — during your first three months as an HR Administrative Assistant at AAP.
 tracks: [hr]
 order: 14

@@ -193,7 +193,7 @@ function coachTipsForModule(moduleTitle: string, hasQuiz: boolean, hasAcknowledg
     ];
   }
 
-  if (title.includes("first 30") || title.includes("first 90") || title.includes("first day")) {
+  if (title.includes("first 30") || title.includes("first 90") || title.includes("first day") || title.includes("what's ahead") || title.includes("whats ahead")) {
     return [
       "Your first month is about building habits, not proving yourself. Ask every question that comes to mind.",
       "Write things down as you learn them. Your notes from week one will be your best resource in week four.",
@@ -766,8 +766,8 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
     ];
   }
 
-  // ── Your First 30 Days — HR ──
-  if (title.includes("first") && title.includes("days") && track === "hr") {
+  // ── What's Ahead / Your First 90 Days — HR ──
+  if ((title.includes("what's ahead") || title.includes("whats ahead") || (title.includes("first") && title.includes("days"))) && track === "hr") {
     return [
       {
         eyebrow: "Heads Up",
