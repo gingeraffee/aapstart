@@ -99,7 +99,14 @@ Once a corrective action is documented and signed, two things happen — and the
 **Why this matters:** The Corrective Action tab in BambooHR gives you and HR a quick, searchable view of an employee's corrective action history — without digging through filed documents. It makes it easy to spot patterns, identify recurring issues, and reference previous conversations when deciding next steps. It also gives leadership visibility into which types of issues are coming up most often and where additional training or support might be needed.
 
 :::callout tip
-Enter the corrective action in BambooHR the same day you have the conversation. The longer you wait, the more details you forget — and those details matter if the situation escalates later.
+Enter the corrective action in BambooHR using the date the incident occurred — not the date of the conversation. The longer you wait to enter it, the more details you forget — and those details matter if the situation escalates later.
+:::
+
+**Here's a quick walkthrough of how to enter a corrective action in BambooHR:**
+
+:::video
+src: /downloads/Corrective_Action_Demo.mp4
+alt: How to enter a corrective action in BambooHR
 :::
 
 ## Resources & Templates
