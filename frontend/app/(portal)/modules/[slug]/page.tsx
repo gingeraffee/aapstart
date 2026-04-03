@@ -179,7 +179,7 @@ function coachTipsForModule(moduleTitle: string, hasQuiz: boolean, hasAcknowledg
   if (title.includes("exit") || title.includes("offboarding")) {
     return [
       "Your role changes depending on whether someone quits or gets let go. Read both sections carefully — the boundaries matter.",
-      "System cleanup is three steps, same day, every time: BambooHR, IT, Proton Pass. Build the habit now.",
+      "System cleanup is two steps, same day, every time: BambooHR and IT notification. Build the habit now.",
       "Employees will ask about PTO payouts before, during, and after separation. Know the answer cold so you don't have to look it up.",
       "If someone approaches you about a termination before Nicole has talked to them, redirect — don't confirm, deny, or discuss.",
     ];
@@ -581,7 +581,7 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
       {
         eyebrow: "Heads Up",
         title: "System cleanup happens the same day — no exceptions",
-        body: "BambooHR, IT notification, Proton Pass. Three steps, same day, every time. An ex-employee with overnight access to company systems is a security gap you don't want to explain.",
+        body: "BambooHR and IT notification. Two steps, same day, every time. An ex-employee with overnight access to company systems is a security gap you don't want to explain.",
         tone: "cyan" as const,
       },
       {
@@ -1938,14 +1938,14 @@ export default function ModulePage() {
       explanation: "Involuntary terminations require Nicole's involvement before the first step is taken. Your job isn't to prepare the paperwork on a supervisor's say-so — it's to make sure the right process is being followed. Loop Nicole in first, every time.",
     },
     {
-      scenario: "You just processed a voluntary separation. It's 4:45 PM on the employee's last day. You've updated BambooHR and notified IT, but you haven't checked Proton Pass yet. You're about to head out. What do you do?",
+      scenario: "An employee's last day is today. You updated BambooHR this morning, but it's now 4:30 PM and you realize you forgot to send the IT notification. The employee already left the building an hour ago. What do you do?",
       options: [
-        { id: "a", text: "Check Proton Pass in the morning — IT already has the access removal covered" },
-        { id: "b", text: "Check Proton Pass now — if they had HR vault access, you need to remove it today, not tomorrow" },
-        { id: "c", text: "Send Nicole a message to check Proton Pass since you're heading out" },
+        { id: "a", text: "Send the IT notification first thing tomorrow morning — the employee is already gone, so there's no rush" },
+        { id: "b", text: "Send the IT notification now — access removal happens the same day, even if the employee has already left" },
+        { id: "c", text: "Check with Nicole first to see if it can wait until tomorrow since it's late in the day" },
       ],
       correctId: "b",
-      explanation: "Proton Pass is your responsibility, not IT's. System cleanup happens the same day — all three steps. An ex-employee with overnight access to the HR credential vault is a security gap you don't want to explain.",
+      explanation: "The employee being gone doesn't mean their access is gone. They can still log into email, systems, and network resources remotely until IT revokes it. Same-day means same-day — send that notification now.",
     },
     {
       scenario: "A departing employee catches you in the break room and asks, \"I heard I'm being terminated — is that true?\" Nicole hasn't spoken to them yet. What do you say?",

@@ -17,7 +17,7 @@ acknowledgements:
   - id: ack-3
     statement: I understand that involuntary terminations are communicated by Nicole only — I never deliver or hint at a termination, even if I know it's coming.
   - id: ack-4
-    statement: I know the full system cleanup checklist — BambooHR, IT notification, and Proton Pass — and I complete it the same day as separation.
+    statement: I know the full system cleanup checklist — BambooHR and IT notification — and I complete it the same day as separation.
   - id: ack-5
     statement: I know the 2-day no-call/no-show rule, that it's treated as a voluntary quit under policy, and that I notify Nicole immediately when it happens.
 
@@ -162,12 +162,10 @@ Here's the checklist:
 
 **2. Notify IT.** IT handles computer access, email accounts, network credentials, and software licenses. Send the notification as soon as the separation is confirmed — don't wait for the employee to physically leave the building.
 
-**3. Proton Pass.** If the departing employee had access to the HR vault in Proton Pass, remove them. This is your responsibility, not IT's. IT handles network and software — Proton Pass is an HR system.
-
-**4. Confirm completion.** Before you close out the day, verify that all three steps are done. A missed step means an ex-employee still has access to systems they shouldn't — and that's a security and compliance issue.
+**3. Confirm completion.** Before you close out the day, verify that both steps are done. A missed step means an ex-employee still has access to systems they shouldn't — and that's a security and compliance issue.
 
 :::callout tip
-Build a mental habit: every separation triggers the same three-step sequence — BambooHR, IT, Proton Pass. Do it in that order, do it the same day, and check it off before you log out.
+Build a mental habit: every separation triggers the same sequence — BambooHR, then IT. Do it the same day, and check it off before you log out.
 :::
 
 ## When Employees Ask Questions
