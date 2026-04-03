@@ -178,9 +178,10 @@ function coachTipsForModule(moduleTitle: string, hasQuiz: boolean, hasAcknowledg
 
   if (title.includes("exit") || title.includes("offboarding")) {
     return [
-      "Involuntary terminations are HR Manager territory. Your role is support and documentation, never communication.",
-      "The 2-day no-call/no-show rule is policy, not a judgment call. Notify HR Manager immediately when it happens.",
-      "Vacation pays out at termination. Personal leave does not. Know the difference — employees will ask.",
+      "Your role changes depending on whether someone quits or gets let go. Read both sections carefully — the boundaries matter.",
+      "System cleanup is three steps, same day, every time: BambooHR, IT, Proton Pass. Build the habit now.",
+      "Employees will ask about PTO payouts before, during, and after separation. Know the answer cold so you don't have to look it up.",
+      "If someone approaches you about a termination before Nicole has talked to them, redirect — don't confirm, deny, or discuss.",
     ];
   }
 
@@ -572,21 +573,21 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
   if (title.includes("exits") || title.includes("offboarding")) {
     return [
       {
-        eyebrow: "Heads Up",
-        title: "Final pay depends on how someone leaves",
-        body: "Vacation gets paid out, but personal leave and long-term sick time don't. Voluntary and involuntary separations follow different timelines. Understanding the rules now prevents awkward conversations later.",
+        eyebrow: "Non-Negotiable",
+        title: "Terminations come from Nicole — never you",
+        body: "Involuntary separations are communicated by the HR Manager only. You don't hint, you don't confirm, you don't prep the employee. Your role is support, documentation, and system cleanup after the conversation happens.",
         tone: "navy" as const,
       },
       {
-        eyebrow: "Good To Know",
-        title: "Two no-call/no-shows means voluntary quit",
-        body: "If someone doesn't show up and doesn't call in for two consecutive days, that's treated as a voluntary resignation. It's not a gray area — know the policy so you can communicate it clearly.",
+        eyebrow: "Heads Up",
+        title: "System cleanup happens the same day — no exceptions",
+        body: "BambooHR, IT notification, Proton Pass. Three steps, same day, every time. An ex-employee with overnight access to company systems is a security gap you don't want to explain.",
         tone: "cyan" as const,
       },
       {
         eyebrow: "Real Talk",
-        title: "System access gets cut fast",
-        body: "When someone separates, their access to company systems is removed quickly — sometimes the same day. That's not personal, it's protocol. The smoother the process, the better for everyone.",
+        title: "Know the PTO payout rules cold",
+        body: "Vacation is paid out. Personal leave is forfeited. Sick leave is relinquished. Employees will ask — and they'll ask you before they ask anyone else. Have the answer ready, not a guess.",
         tone: "red" as const,
       },
     ];
@@ -1924,6 +1925,50 @@ export default function ModulePage() {
     },
   ] : [];
 
+  // Gut Check scenarios for Exits & Offboarding (HR)
+  const exitsGutChecks = (currentModule.slug === "exits-and-offboarding") ? [
+    {
+      scenario: "A supervisor stops you in the hallway and says, \"Just so you know, we're letting Marcus go on Friday. Can you get the paperwork ready?\" What do you do?",
+      options: [
+        { id: "a", text: "Start preparing the separation paperwork so everything is ready by Friday" },
+        { id: "b", text: "Ask the supervisor if Nicole is aware and involved — involuntary terminations require HR Manager involvement before anything moves forward" },
+        { id: "c", text: "Let Marcus know he should talk to Nicole before Friday" },
+      ],
+      correctId: "b",
+      explanation: "Involuntary terminations require Nicole's involvement before the first step is taken. Your job isn't to prepare the paperwork on a supervisor's say-so — it's to make sure the right process is being followed. Loop Nicole in first, every time.",
+    },
+    {
+      scenario: "You just processed a voluntary separation. It's 4:45 PM on the employee's last day. You've updated BambooHR and notified IT, but you haven't checked Proton Pass yet. You're about to head out. What do you do?",
+      options: [
+        { id: "a", text: "Check Proton Pass in the morning — IT already has the access removal covered" },
+        { id: "b", text: "Check Proton Pass now — if they had HR vault access, you need to remove it today, not tomorrow" },
+        { id: "c", text: "Send Nicole a message to check Proton Pass since you're heading out" },
+      ],
+      correctId: "b",
+      explanation: "Proton Pass is your responsibility, not IT's. System cleanup happens the same day — all three steps. An ex-employee with overnight access to the HR credential vault is a security gap you don't want to explain.",
+    },
+    {
+      scenario: "A departing employee catches you in the break room and asks, \"I heard I'm being terminated — is that true?\" Nicole hasn't spoken to them yet. What do you say?",
+      options: [
+        { id: "a", text: "Be honest — they deserve to know what's coming" },
+        { id: "b", text: "Say \"I don't know anything about that\" even though you do" },
+        { id: "c", text: "Say \"Let me get Nicole — she'll be able to walk you through everything\" and find Nicole immediately" },
+      ],
+      correctId: "c",
+      explanation: "You don't confirm, deny, or discuss it. Redirect to Nicole — that's the script. Lying isn't great either, which is why option C works: you're not saying you don't know, you're saying Nicole is the right person to talk to. Then you go find her.",
+    },
+    {
+      scenario: "An employee has missed two consecutive days without calling in. Their coworker tells you they saw the employee post on social media that they're \"done with this place.\" What do you do?",
+      options: [
+        { id: "a", text: "Wait one more day to see if they come back — the social media post isn't official" },
+        { id: "b", text: "Notify Nicole immediately — two consecutive no-call/no-shows is a voluntary quit under policy" },
+        { id: "c", text: "Call the employee to confirm they've quit before notifying Nicole" },
+      ],
+      correctId: "b",
+      explanation: "The social media post doesn't matter. What matters is the policy: two consecutive days without reporting in and without calling is a voluntary quit. You don't investigate, you don't wait, you don't call. You notify Nicole and she handles it from there.",
+    },
+  ] : [];
+
   // Override first section for How We Show Up (both all and HR versions)
   if (currentModule.title.toLowerCase().includes("how we show up") && !currentModule.slug.endsWith("-hr")) {
     const coverSection = sections.find(
@@ -2541,6 +2586,13 @@ export default function ModulePage() {
           <div className="mt-2">
             <ModulePanel>
               <GutCheckBlock scenarios={afterOfferGutChecks} />
+            </ModulePanel>
+          </div>
+        )}
+        {!isManagement && exitsGutChecks.length > 0 && (
+          <div className="mt-2">
+            <ModulePanel>
+              <GutCheckBlock scenarios={exitsGutChecks} />
             </ModulePanel>
           </div>
         )}
