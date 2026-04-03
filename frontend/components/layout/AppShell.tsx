@@ -90,7 +90,7 @@ export function AppShell({ children }: AppShellProps) {
 
   // Show journey section for non-management tracks
   const showJourney = !isManagement;
-  const showManagementSection = isManagement || isEffectiveHR;
+  const showManagementSection = isManagement;
 
   const completedCount = progress
     ? journeyModules.filter((m) => progress.find((p) => p.module_slug === m.slug)?.module_completed).length
