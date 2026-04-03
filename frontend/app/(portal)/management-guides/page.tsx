@@ -11,30 +11,6 @@ import type { ModuleSummary } from "@/lib/types";
 
 type GuideFilter = "all" | "quick" | "deep";
 
-function statCard(label: string, value: string | number, note: string) {
-  return (
-    <div
-      key={label}
-      className="rounded-[20px] p-5"
-      style={{
-        background: "var(--card-bg)",
-        border: "1px solid var(--card-border)",
-        boxShadow: "0 14px 28px rgba(17, 41, 74, 0.12)",
-      }}
-    >
-      <p className="text-[0.64rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>
-        {label}
-      </p>
-      <p className="mt-3 text-[2rem] font-extrabold leading-none" style={{ color: "var(--heading-color)" }}>
-        {value}
-      </p>
-      <p className="mt-1 text-[0.76rem]" style={{ color: "var(--card-desc)" }}>
-        {note}
-      </p>
-    </div>
-  );
-}
-
 function toneForLength(minutes: number) {
   if (minutes <= 8) {
     return {
@@ -76,9 +52,6 @@ export default function ManagementGuidesPage() {
     .filter((module) => module.status === "published" && module.tracks?.includes("management"))
     .sort((a, b) => a.order - b.order);
 
-  const totalMinutes = managementGuides.reduce((sum, module) => sum + Math.max(module.estimated_minutes, 1), 0);
-  const quickReads = managementGuides.filter((module) => module.estimated_minutes <= 8).length;
-  const deepDives = managementGuides.length - quickReads;
   const deferredQueryValue = deferredQuery.trim().toLowerCase();
 
   const filteredGuides = useMemo(() => {
@@ -96,8 +69,6 @@ export default function ManagementGuidesPage() {
       return matchesQuery && matchesFilter;
     });
   }, [deferredQueryValue, filter, managementGuides]);
-
-  const featuredGuide = managementGuides[0];
 
   if (!user) {
     return (
@@ -172,16 +143,7 @@ export default function ManagementGuidesPage() {
         </div>
       </section>
 
-      <section className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {[
-          statCard("Guide Library", managementGuides.length, "Published manager playbooks ready to open"),
-          statCard("Quick Reads", quickReads, "Short process refreshers for fast answers"),
-          statCard("Deep Dives", deepDives, "Longer guides for detailed situations"),
-          statCard("Estimated Time", `${totalMinutes} min`, "Total reading time across the full library"),
-        ]}
-      </section>
-
-      <section className="mt-5 grid gap-4 xl:grid-cols-[0.92fr,1.08fr]">
+      <section className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <div
           className="rounded-[24px] p-5 lg:p-6"
           style={{
@@ -190,46 +152,73 @@ export default function ManagementGuidesPage() {
             boxShadow: "0 18px 36px rgba(17, 41, 74, 0.12)",
           }}
         >
-          <p className="text-[0.64rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>
-            Library Focus
+          <p className="inline-flex items-center gap-2 text-[0.62rem] font-bold uppercase tracking-[0.14em]" style={{ color: "#8f1239" }}>
+            <span className="h-1.5 w-1.5 rounded-full bg-[#d63964]" />
+            What&apos;s New
           </p>
-          <h2 className="mt-2 text-[1.18rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>
-            Browse by process, not by dashboard section
+          <h2 className="mt-2 text-[1.1rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>
+            Coaching &amp; Corrective Action — Updated
           </h2>
           <p className="mt-2 text-[0.83rem] leading-[1.7]" style={{ color: "var(--card-desc)" }}>
-            Each guide opens as its own polished module, but this page keeps discovery simple with a dedicated library view made for manager support work.
+            New section added: how to record corrective actions in BambooHR. Managers enter the type and details in the Corrective Action tab — HR files the signed documents. Includes a video walkthrough.
           </p>
-
-          {featuredGuide && (
-            <div
-              className="mt-5 rounded-[18px] p-4"
-              style={{
-                background: "linear-gradient(180deg, rgba(248, 252, 255, 0.98) 0%, rgba(255, 255, 255, 0.98) 100%)",
-                border: "1px solid rgba(17, 38, 74, 0.12)",
-              }}
-            >
-              <p className="text-[0.62rem] font-bold uppercase tracking-[0.12em]" style={{ color: "#8f1239" }}>
-                Featured Guide
-              </p>
-              <h3 className="mt-2 text-[0.98rem] font-semibold" style={{ color: "var(--heading-color)" }}>
-                {featuredGuide.title}
-              </h3>
-              {featuredGuide.description && (
-                <p className="mt-2 text-[0.78rem] leading-[1.65]" style={{ color: "var(--card-desc)" }}>
-                  {featuredGuide.description}
-                </p>
-              )}
-              <Link
-                href={`/modules/${featuredGuide.slug}`}
-                className="mt-4 inline-flex rounded-[11px] px-3.5 py-2 text-[0.74rem] font-semibold transition-all duration-200 hover:-translate-y-px"
-                style={{ background: "rgba(17, 38, 74, 0.94)", color: "#ffffff" }}
-              >
-                Open featured guide
-              </Link>
-            </div>
-          )}
+          <Link
+            href="/modules/coaching-corrective-action"
+            className="mt-4 inline-flex rounded-[11px] px-3.5 py-2 text-[0.74rem] font-semibold transition-all duration-200 hover:-translate-y-px"
+            style={{ background: "rgba(17, 38, 74, 0.94)", color: "#ffffff" }}
+          >
+            View updated guide →
+          </Link>
         </div>
 
+        <div
+          className="rounded-[24px] p-5 lg:p-6"
+          style={{
+            background: "var(--card-bg)",
+            border: "1px solid var(--card-border)",
+            boxShadow: "0 18px 36px rgba(17, 41, 74, 0.12)",
+          }}
+        >
+          <p className="text-[0.62rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>
+            Library
+          </p>
+          <h2 className="mt-2 text-[1.1rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>
+            {managementGuides.length} process guides available
+          </h2>
+          <p className="mt-2 text-[0.83rem] leading-[1.7]" style={{ color: "var(--card-desc)" }}>
+            Each guide covers a specific management process step by step — from hiring and onboarding to corrective action and offboarding. Search or filter below to find what you need.
+          </p>
+        </div>
+
+        <div
+          className="rounded-[24px] p-5 lg:p-6"
+          style={{
+            background: "var(--card-bg)",
+            border: "1px solid var(--card-border)",
+            boxShadow: "0 18px 36px rgba(17, 41, 74, 0.12)",
+          }}
+        >
+          <p className="inline-flex items-center gap-2 text-[0.62rem] font-bold uppercase tracking-[0.14em]" style={{ color: "#0f7fb3" }}>
+            <span className="h-1.5 w-1.5 rounded-full bg-[#0ea5d9]" />
+            Most Referenced
+          </p>
+          <h2 className="mt-2 text-[1.1rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>
+            Terminations &amp; Offboarding
+          </h2>
+          <p className="mt-2 text-[0.83rem] leading-[1.7]" style={{ color: "var(--card-desc)" }}>
+            The most frequently accessed guide in the library. Covers BambooHR offboarding requests, immediate vs. scheduled access removal, IT task selection, and manager responsibilities.
+          </p>
+          <Link
+            href="/modules/terminations-offboarding"
+            className="mt-4 inline-flex rounded-[11px] px-3.5 py-2 text-[0.74rem] font-semibold transition-all duration-200 hover:-translate-y-px"
+            style={{ background: "rgba(15, 127, 179, 0.1)", border: "1px solid rgba(15, 127, 179, 0.2)", color: "#0d6b9d" }}
+          >
+            View guide →
+          </Link>
+        </div>
+      </section>
+
+      <section className="mt-5">
         <div
           className="rounded-[24px] p-5 lg:p-6"
           style={{
