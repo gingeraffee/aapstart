@@ -90,9 +90,7 @@ export function AppShell({ children }: AppShellProps) {
 
   // Show journey section for non-management tracks
   const showJourney = !isManagement;
-  // Show management section for management track and HR admins only
-  const isHRAdmin = user?.track === "hr" && user?.is_admin === true;
-  const showManagementSection = isManagement || (isEffectiveHR && isHRAdmin);
+  const showManagementSection = isManagement || isEffectiveHR;
 
   const completedCount = progress
     ? journeyModules.filter((m) => progress.find((p) => p.module_slug === m.slug)?.module_completed).length
@@ -101,7 +99,8 @@ export function AppShell({ children }: AppShellProps) {
   const isLearningProgramPage = pathname.startsWith("/learning-program");
   const isManagementGuidesPage = pathname.startsWith("/management-guides");
   const isJourneyActive = pathname === "/overview" || pathname.startsWith("/modules") || pathname === "/roadmap" || isLearningProgramPage;
-  const isResourcesActive = pathname.startsWith("/resources") || isManagementGuidesPage;
+  const isResourcesActive = pathname.startsWith("/resources");
+  const showManagementTab = isEffectiveHR && !isManagement;
   const isRoadmapActive = pathname === "/roadmap";
 
   const isJourneyModuleUnlocked = (index: number) => {
@@ -524,7 +523,7 @@ export function AppShell({ children }: AppShellProps) {
             {isManagement ? "Training" : isLearningProgramPage ? "Learning Program" : "Your Journey"}
           </button>
           <button
-            onClick={() => router.push(isManagementGuidesPage ? "/management-guides" : "/resources")}
+            onClick={() => router.push("/resources")}
             className={cn(
               "rounded-[9px] px-5 py-1.5 text-[0.8rem] font-semibold transition-all duration-200",
               isResourcesActive ? "shadow-[0_1px_8px_rgba(15,29,60,0.16)]" : ""
@@ -539,8 +538,28 @@ export function AppShell({ children }: AppShellProps) {
                 : undefined),
             }}
           >
-            {isManagementGuidesPage ? "Management Guides" : "Resource Hub"}
+            Resource Hub
           </button>
+          {showManagementTab && (
+            <button
+              onClick={() => router.push("/management-guides")}
+              className={cn(
+                "rounded-[9px] px-5 py-1.5 text-[0.8rem] font-semibold transition-all duration-200",
+                isManagementGuidesPage ? "shadow-[0_1px_8px_rgba(15,29,60,0.16)]" : ""
+              )}
+              style={{
+                color: isManagementGuidesPage ? "var(--tab-text-active)" : "var(--tab-text)",
+                ...(isManagementGuidesPage
+                  ? {
+                      background: "var(--tab-active-bg)",
+                      boxShadow: "var(--tab-active-shadow)",
+                    }
+                  : undefined),
+              }}
+            >
+              Manager Resources
+            </button>
+          )}
         </div>
 
         <div className="ml-auto hidden items-center gap-3 md:flex">

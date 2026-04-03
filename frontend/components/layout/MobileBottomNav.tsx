@@ -33,7 +33,7 @@ export function MobileBottomNav() {
   const isManagementGuidesPage = pathname.startsWith("/management-guides");
   const isHomeActive = pathname === "/overview" || isLearningProgramPage;
   const isModulesActive = pathname.startsWith("/modules");
-  const isResourcesActive = pathname.startsWith("/resources") || isManagementGuidesPage;
+  const isResourcesActive = pathname.startsWith("/resources");
 
   const activeNavStyle = {
     background: "var(--sidebar-active-bg)",
@@ -70,7 +70,7 @@ export function MobileBottomNav() {
           <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2V3zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7V3z" />
         </svg>
       ),
-      onClick: () => router.push(isManagementGuidesPage ? "/management-guides" : "/resources"),
+      onClick: () => router.push("/resources"),
     },
     {
       label: "More",

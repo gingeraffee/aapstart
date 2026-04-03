@@ -28,7 +28,7 @@ export function useSidebarData() {
 
   const showJourney = !isManagement;
   const isHRAdmin = user?.track === "hr" && user?.is_admin === true;
-  const showManagementSection = isManagement || (isEffectiveHR && isHRAdmin);
+  const showManagementSection = isManagement || isEffectiveHR;
 
   const completedCount = progress
     ? journeyModules.filter((m) => progress.find((p) => p.module_slug === m.slug)?.module_completed).length
