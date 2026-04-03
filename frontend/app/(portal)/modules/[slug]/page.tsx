@@ -2046,10 +2046,14 @@ export default function ModulePage() {
   const firstKeyLine = sectionKeyLine(displaySections[0]?.blocks ?? []);
   const liveModules = (moduleCatalog ?? [])
     .filter((item) => item.status === "published")
+    .filter((item) => !item.tracks?.includes("management"))
     .sort((a, b) => a.order - b.order);
   const modulePosition = liveModules.findIndex((item) => item.slug === currentModule.slug) + 1 || currentModule.order;
   const totalModules = liveModules.length || currentModule.order;
-  const completedModules = (progress ?? []).filter((item) => item.module_completed).length;
+  const completedModules = (progress ?? []).filter((item) => {
+    const mod = liveModules.find((m) => m.slug === item.module_slug);
+    return mod && item.module_completed;
+  }).length;
   const outcomeLines = buildOutcomeLines(displaySections, hasQuiz, hasAcknowledgement);
   const humanMoments = buildHumanMoments(currentModule.title, hasQuiz, hasAcknowledgement, effectiveTrack, currentModule.slug);
   const whyThisMatters =
