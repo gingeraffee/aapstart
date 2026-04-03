@@ -60,17 +60,17 @@ export default function ManagementGuidesPage() {
   const [filter, setFilter] = useState<GuideFilter>("all");
   const deferredQuery = useDeferredValue(query);
 
-  const isHRAdmin = user?.track === "hr" && user?.is_admin === true;
+  const isHR = user?.track === "hr";
 
   const { data: modules, isLoading, error } = useSWR("modules", () =>
     modulesApi.list() as Promise<ModuleSummary[]>
   );
 
   useEffect(() => {
-    if (user && !isHRAdmin) {
+    if (user && !isHR) {
       router.replace("/overview");
     }
-  }, [isHRAdmin, router, user]);
+  }, [isHR, router, user]);
 
   const managementGuides = (modules ?? [])
     .filter((module) => module.status === "published" && module.tracks?.includes("management"))
@@ -107,7 +107,7 @@ export default function ManagementGuidesPage() {
     );
   }
 
-  if (!isHRAdmin) return null;
+  if (!isHR) return null;
 
   if (isLoading) {
     return (
