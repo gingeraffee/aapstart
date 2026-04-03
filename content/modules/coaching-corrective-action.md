@@ -88,6 +88,20 @@ Managers should allow the employee to respond to any write-up and share their si
 If an issue is not documented, it's as if it didn't happen and becomes much harder to support later. Incident statements, complaints, verbal warnings, and written corrective action should all be documented using the appropriate form and signed by the appropriate parties.
 :::
 
+## 10. Recording Corrective Actions in BambooHR
+
+Once a corrective action is documented and signed, two things happen — and they're handled by two different people.
+
+**You (the manager) enter the corrective action in BambooHR.** Open the employee's profile, go to the **Corrective Action** tab, and log the entry. Include the type of corrective action (verbal warning, written warning, PIP, final warning) and the details — what happened, what was discussed, what the expectations are going forward. This is your responsibility, not HR's.
+
+**HR files the signed document.** Once the employee has signed the corrective action notice (or the refusal has been documented), provide the signed copy to HR. They'll file it in the employee's record in BambooHR under the appropriate folder.
+
+**Why this matters:** The Corrective Action tab in BambooHR gives you and HR a quick, searchable view of an employee's corrective action history — without digging through filed documents. It makes it easy to spot patterns, identify recurring issues, and reference previous conversations when deciding next steps. It also gives leadership visibility into which types of issues are coming up most often and where additional training or support might be needed.
+
+:::callout tip
+Enter the corrective action in BambooHR the same day you have the conversation. The longer you wait, the more details you forget — and those details matter if the situation escalates later.
+:::
+
 ## Resources & Templates
 
 Managers should use the available tools and templates to support a consistent process. Resources for this page include the full Coaching and Corrective Action Guide, a Performance Improvement Plan (PIP) Template, and an Employee Warning Notice.
