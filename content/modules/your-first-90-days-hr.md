@@ -130,7 +130,7 @@ Month two is where observation turns into action. You've seen the workflows enou
 If your supervisor hasn't checked in on a task you've been handling for a few weeks, that's usually a good sign — it means they trust the work. Keep going.
 :::
 
-**How to know you're on track at day 60:** You can run the weekly payroll cycle from start to finish. You handle routine tasks without reminders. When something comes up that isn't yours, you route it quickly instead of sitting on it.
+**How to know you're on track at day 60:** You can answer employee questions confidently. You handle routine tasks without reminders. When something comes up that isn't yours, you route it quickly instead of sitting on it.
 
 ## Days 61–90: Make It Better
 
