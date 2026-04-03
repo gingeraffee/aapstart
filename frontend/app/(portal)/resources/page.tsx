@@ -8,40 +8,108 @@ import { cn } from "@/lib/utils";
 import type { Resource, ResourceCategory } from "@/lib/types";
 
 const CONTACTS = [
+  // HR
   {
     name: "Nicole Thornton",
     title: "HR Manager",
-    phone: "256-574-7528",
+    phone: "256-574-7528 ext 252",
     email: "nicole.thornton@apirx.com",
     color: "#df0030",
   },
   {
     name: "Brandy Hooper",
     title: "VP of HR",
-    phone: "256-574-7526",
+    phone: "256-574-7526 ext 226",
     email: "brandy.hooper@rxaap.com",
     color: "#1b2c56",
   },
+  // Executive
+  {
+    name: "Tracie Heyrman",
+    title: "Chief Operating Officer",
+    phone: "256-808-2144",
+    email: "tracie.heyrman@rxaap.com",
+    color: "#1b2c56",
+  },
+  // IT
   {
     name: "Trevor Bowen",
-    title: "IT Technician - Scottsboro",
-    phone: "Ext. 214",
+    title: "IT - Scottsboro",
+    phone: "256-574-6819 ext 214",
     email: "trevor.bowen@apirx.com",
     color: "#0f7fb3",
   },
   {
+    name: "Phil Horton",
+    title: "IT - Memphis",
+    phone: "901-800-4605 ext 405",
+    email: "phil.horton@apirx.com",
+    color: "#0f7fb3",
+  },
+  {
     name: "Austin Wilson",
-    title: "IT Technician - AAP",
-    phone: "Ext. 527",
+    title: "IT - AAP",
+    phone: "256-218-5527 ext 527",
     email: "austin.wilson@rxaap.com",
     color: "#0f7fb3",
   },
   {
     name: "Dylan Willis",
-    title: "IT Technician - Memphis",
-    phone: "Ext. 427",
+    title: "IT - Memphis",
+    phone: "901-800-4605 ext 427",
     email: "dylan.willis@apirx.com",
     color: "#0f7fb3",
+  },
+  // Operations — Scottsboro
+  {
+    name: "Amanda Gorham",
+    title: "Warehouse Ops Manager - Scottsboro",
+    phone: "256-574-6819 ext 203",
+    email: "amanda.gorham@apirx.com",
+    color: "#1f4f84",
+  },
+  {
+    name: "David Johnson",
+    title: "Warehouse Ops Assistant - Scottsboro",
+    phone: "256-574-6819 ext 254",
+    email: "david@apirx.com",
+    color: "#1f4f84",
+  },
+  {
+    name: "Robby Donnelly",
+    title: "Warehouse Supervisor - Scottsboro",
+    phone: "256-574-6819 ext 255",
+    email: "robert.donnelly@apirx.com",
+    color: "#1f4f84",
+  },
+  {
+    name: "Linda Dodson",
+    title: "Asst. Warehouse Supervisor - Scottsboro",
+    phone: "256-574-6819 ext 255",
+    email: "linda.dodson@apirx.com",
+    color: "#1f4f84",
+  },
+  // Operations — Memphis
+  {
+    name: "Will Ward",
+    title: "Warehouse Ops Manager - Memphis",
+    phone: "901-800-4600 ext 413",
+    email: "will.ward@apirx.com",
+    color: "#1f4f84",
+  },
+  {
+    name: "Joseph Isom",
+    title: "Warehouse Supervisor - Memphis",
+    phone: "901-623-5778",
+    email: "joseph.isom@apirx.com",
+    color: "#1f4f84",
+  },
+  {
+    name: "Bryan Hawthorn",
+    title: "Asst. Warehouse Supervisor - Memphis",
+    phone: "501-230-9132",
+    email: "bryan.hawthorn@apirx.com",
+    color: "#1f4f84",
   },
 ];
 
