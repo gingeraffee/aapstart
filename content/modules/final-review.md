@@ -188,7 +188,7 @@ quiz:
         - id: b
           text: "Last Name, First Name"
         - id: c
-          text: Last Name First Name — no comma
+          text: Last Name First Name
         - id: d
           text: Employee ID followed by Last Name
       correctId: c
