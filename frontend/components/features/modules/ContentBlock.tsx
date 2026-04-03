@@ -121,6 +121,10 @@ export function ContentBlock({ block, emphasizeLead = false, variant = "training
 
     case "video": {
       const isEmbed = block.src?.startsWith("http") && !block.src?.endsWith(".mp4");
+      // Local video files (e.g. /downloads/...) need to be served from the backend
+      const videoSrc = block.src && !block.src.startsWith("http")
+        ? `${(process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api").replace(/\/api$/, "")}${block.src}`
+        : block.src;
       return (
         <div
           className="overflow-hidden rounded-[14px] border"
@@ -140,7 +144,7 @@ export function ContentBlock({ block, emphasizeLead = false, variant = "training
               />
             ) : (
               <video
-                src={block.src}
+                src={videoSrc}
                 title={block.alt ?? "Video"}
                 className="h-full w-full object-contain bg-black"
                 controls

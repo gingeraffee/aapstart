@@ -1,5 +1,7 @@
+from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware  # noqa: F401
 from app.config import get_settings
 from app.database.connection import init_db
@@ -62,6 +64,11 @@ app.include_router(modules_router)
 app.include_router(progress_router)
 app.include_router(resources_router)
 app.include_router(admin_router)
+
+# ── Static files (serves videos/media from backend/static/downloads/) ────────
+_DOWNLOADS_DIR = Path(__file__).parent.parent / "static" / "downloads"
+if _DOWNLOADS_DIR.exists():
+    app.mount("/downloads", StaticFiles(directory=str(_DOWNLOADS_DIR)), name="downloads")
 
 
 # ── Startup ───────────────────────────────────────────────────────────────────
