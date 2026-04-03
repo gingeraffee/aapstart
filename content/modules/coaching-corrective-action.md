@@ -92,7 +92,7 @@ If an issue is not documented, it's as if it didn't happen and becomes much hard
 
 Once a corrective action is documented and signed, two things happen — and they're handled by two different people.
 
-**You (the manager) enter the corrective action in BambooHR.** Open the employee's profile, go to the **Corrective Action** tab, and log the entry. Include the type of corrective action (verbal warning, written warning, PIP, final warning) and the details — what happened, what was discussed, what the expectations are going forward. This is your responsibility, not HR's.
+**The manager enters the corrective action in BambooHR.** Open the employee's profile, go to the **Corrective Action** tab, and log the entry. Select the type — Attendance, Shortage, Violation of Code of Conduct, etc. — and fill in the details: what happened, what was discussed, and what the expectations are going forward. Categorizing by type is what makes it easy to spot trends later. When you can pull up an employee's history and see three attendance entries in two months, the pattern tells the story for you.
 
 **HR files the signed document.** Once the employee has signed the corrective action notice (or the refusal has been documented), provide the signed copy to HR. They'll file it in the employee's record in BambooHR under the appropriate folder.
 
