@@ -64,17 +64,17 @@ quiz:
       correctId: b
 
     - id: q4
-      text: An employee was 25 minutes late on Monday and didn't call until after their shift started. On Wednesday, they called in before their shift and missed the full day. Their attendance balance was 4.5 points. What's their new total and what does it trigger?
+      text: An employee was 25 minutes late on Monday — they called their supervisor before their shift to let them know. On Wednesday, they called in before their shift and missed the full day. Their attendance balance was 4.5 points. What's their new total and what does it trigger?
       options:
         - id: a
           text: 6.0 points — verbal warning
         - id: b
-          text: 6.5 points — verbal warning
+          text: 5.5 points — coaching conversation
         - id: c
           text: 7.0 points — written warning
         - id: d
-          text: 5.5 points — coaching conversation
-      correctId: c
+          text: 5.0 points — coaching conversation
+      correctId: a
 
     - id: q5
       text: An employee asks if they can use 30 minutes of vacation time to leave early for an appointment. What do you tell them?
