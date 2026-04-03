@@ -456,25 +456,6 @@ export function AppShell({ children }: AppShellProps) {
                 </svg>
                 Security
               </Link>
-              <button
-                onClick={() => logout()}
-                className="flex w-full items-center justify-center gap-2 rounded-[10px] px-3.5 py-2 text-[0.78rem] font-semibold transition-all duration-200"
-                style={{
-                  background: "linear-gradient(135deg, #0f6da3, #1e3a66)",
-                  border: "1px solid var(--sidebar-user-border)",
-                  boxShadow: "0 2px 8px rgba(12, 24, 47, 0.15), 0 1px 3px rgba(12, 24, 47, 0.1), inset 0 1px 0 rgba(255,255,255,0.08)",
-                  color: "#ffffff",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.9")}
-                onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
-                  <polyline points="16 17 21 12 16 7" />
-                  <line x1="21" y1="12" x2="9" y2="12" />
-                </svg>
-                Sign out
-              </button>
             </div>
           )}
         </div>
@@ -585,6 +566,22 @@ export function AppShell({ children }: AppShellProps) {
               {completedCount} complete
             </div>
           )}
+          <button
+            onClick={() => logout()}
+            className="flex items-center gap-1.5 rounded-[10px] px-3 py-1.5 text-[0.74rem] font-semibold transition-all duration-200 hover:opacity-80"
+            style={{
+              background: "var(--tab-group-bg)",
+              border: "1px solid var(--tab-group-border)",
+              color: "var(--tab-text)",
+            }}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            Sign out
+          </button>
         </div>
       </header>
 

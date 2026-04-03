@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     admin_track: str = "administrative"
     # TOTP 2FA
     totp_issuer_name: str = "AAP Start"
-    totp_required: bool = False
+    totp_required: bool = True
 
     class Config:
         env_file = ".env"
