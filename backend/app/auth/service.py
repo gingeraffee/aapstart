@@ -3,10 +3,15 @@ Auth Service
 ============
 Validates login credentials against the Employee table in SQLite,
 then issues a signed JWT stored in an httpOnly cookie.
+Includes TOTP two-factor authentication helpers.
 """
 
+import base64
+import io
 from datetime import datetime, timedelta, timezone
 
+import pyotp
+import qrcode
 from fastapi import HTTPException, Request, status
 from jose import JWTError, jwt
 
@@ -49,10 +54,12 @@ def _get_dev_user(*, for_token: bool = False) -> dict:
 def validate_login(employee_id: str, first_name: str, last_name: str) -> dict:
     """
     Validates credentials against the employees table.
-    Returns {employee_id, full_name, track, is_admin} on success.
+    Returns {employee_id, full_name, track, is_admin, totp_enabled} on success.
     """
     if settings.dev_auth_bypass:
-        return _get_dev_user()
+        user = _get_dev_user()
+        user["totp_enabled"] = False
+        return user
 
     submitted_id = employee_id.strip()
     submitted_first = first_name.strip().lower()
@@ -82,6 +89,7 @@ def validate_login(employee_id: str, first_name: str, last_name: str) -> dict:
             "full_name": f"{employee.first_name} {employee.last_name}",
             "track": _normalize_track(employee.track),
             "is_admin": employee.is_admin,
+            "totp_enabled": bool(employee.totp_enabled),
         }
     finally:
         db.close()
@@ -134,3 +142,34 @@ def require_admin(request: Request) -> dict:
             detail="Admin access required.",
         )
     return user
+
+
+# ── TOTP helpers ──────────────────────────────────────────────────────────────
+
+def generate_totp_secret() -> str:
+    """Generate a new random TOTP secret."""
+    return pyotp.random_base32()
+
+
+def get_totp_provisioning_uri(secret: str, employee_id: str) -> str:
+    """Build the otpauth:// URI that authenticator apps scan."""
+    totp = pyotp.TOTP(secret)
+    return totp.provisioning_uri(
+        name=employee_id,
+        issuer_name=settings.totp_issuer_name,
+    )
+
+
+def generate_qr_code_base64(uri: str) -> str:
+    """Generate a QR code PNG and return it as a base64 string."""
+    img = qrcode.make(uri)
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    buf.seek(0)
+    return base64.b64encode(buf.read()).decode("utf-8")
+
+
+def verify_totp_code(secret: str, code: str) -> bool:
+    """Verify a 6-digit TOTP code, allowing 1 window of clock drift."""
+    totp = pyotp.TOTP(secret)
+    return totp.verify(code, valid_window=1)

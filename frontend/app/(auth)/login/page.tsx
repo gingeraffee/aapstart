@@ -10,16 +10,16 @@ import { FullPageSpinner } from "@/components/ui/Spinner";
 const SCENE_COUNT = 5;
 
 export default function LoginPage() {
-  const { user, loading } = useAuth();
+  const { user, loading, mustSetupTotp } = useAuth();
   const router = useRouter();
   const storyPanelRef = useRef<HTMLElement>(null);
   const [activeScene, setActiveScene] = useState(0);
 
   useEffect(() => {
-    if (!loading && user) {
+    if (!loading && user && !mustSetupTotp) {
       router.replace("/overview");
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, mustSetupTotp]);
 
   const updateActiveSceneFromScroll = () => {
     const panel = storyPanelRef.current;
@@ -62,7 +62,7 @@ export default function LoginPage() {
   }
 
   if (loading) return <FullPageSpinner />;
-  if (user) return null;
+  if (user && !mustSetupTotp) return null;
 
   return (
     <div className="flex h-screen overflow-hidden bg-brand-ink">

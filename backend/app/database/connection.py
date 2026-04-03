@@ -49,6 +49,14 @@ def _migrate():
             with engine.begin() as conn:
                 conn.execute(text("ALTER TABLE employees ADD COLUMN last_login_at DATETIME"))
             print("[OK] Added last_login_at column to employees table")
+        if "totp_secret" not in cols:
+            with engine.begin() as conn:
+                conn.execute(text("ALTER TABLE employees ADD COLUMN totp_secret VARCHAR"))
+            print("[OK] Added totp_secret column to employees table")
+        if "totp_enabled" not in cols:
+            with engine.begin() as conn:
+                conn.execute(text("ALTER TABLE employees ADD COLUMN totp_enabled BOOLEAN DEFAULT 0"))
+            print("[OK] Added totp_enabled column to employees table")
 
 
 def _seed_admin():

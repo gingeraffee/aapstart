@@ -42,6 +42,14 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   return res.json();
 }
 
+export const authApi = {
+  totpSetup: () => request<{ secret: string; qr_code: string; provisioning_uri: string }>("/auth/totp/setup", { method: "POST" }),
+  totpConfirmSetup: (code: string) =>
+    request("/auth/totp/confirm-setup", { method: "POST", body: JSON.stringify({ code }) }),
+  totpValidate: (employee_id: string, code: string) =>
+    request("/auth/totp/validate", { method: "POST", body: JSON.stringify({ employee_id, code }) }),
+};
+
 export const modulesApi = {
   list: () => request("/modules"),
   get: (slug: string) => request(`/modules/${slug}`),
@@ -75,6 +83,8 @@ export const adminApi = {
   resetProgress: (employee_id: string) =>
     request(`/admin/employees/${employee_id}/reset-progress`, { method: "POST" }),
   dashboard: () => request("/admin/dashboard"),
+  resetTotp: (employee_id: string) =>
+    request(`/admin/employees/${employee_id}/reset-totp`, { method: "POST" }),
 };
 
 export const resourcesApi = {

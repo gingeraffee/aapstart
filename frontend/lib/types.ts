@@ -92,6 +92,7 @@ export interface EmployeeRecord {
   full_name: string;
   track: string;
   is_admin: boolean;
+  totp_enabled: boolean;
   created_at: string | null;
   first_login_at: string | null;
   progress: {
@@ -148,6 +149,22 @@ export interface LoginPayload {
   employee_id: string;
   first_name: string;
   last_name: string;
+}
+
+export interface LoginResponse {
+  employee_id: string;
+  full_name: string;
+  track: Track;
+  is_admin: boolean;
+  requires_totp: boolean;
+  totp_enabled: boolean;
+  totp_required: boolean;
+}
+
+export interface TotpSetupData {
+  secret: string;
+  qr_code: string;
+  provisioning_uri: string;
 }
 
 export interface UiContent {

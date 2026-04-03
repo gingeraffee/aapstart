@@ -12,6 +12,8 @@ class Employee(Base):
     last_name = Column(String, nullable=False)
     track = Column(String, nullable=False, default="hr")
     is_admin = Column(Boolean, default=False)
+    totp_secret = Column(String, nullable=True)
+    totp_enabled = Column(Boolean, default=False)
     created_at = Column(DateTime, default=func.now())
     first_login_at = Column(DateTime, nullable=True)
     last_login_at = Column(DateTime, nullable=True)

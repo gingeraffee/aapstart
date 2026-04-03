@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
-import type { User, LoginPayload } from "@/lib/types";
+import type { User, LoginPayload, LoginResponse } from "@/lib/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api";
 const DEV_AUTH_BYPASS = process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === "true";
@@ -9,11 +9,30 @@ const STORAGE_KEY = "aapstart_user";
 const INACTIVITY_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes
 const LAST_ACTIVITY_KEY = "aapstart_last_activity";
 
+/** Returned when the backend says TOTP is required before a session is issued. */
+export interface TotpPending {
+  employee_id: string;
+  full_name: string;
+  track: string;
+  is_admin: boolean;
+}
+
 interface AuthContextValue {
   user: User | null;
   loading: boolean;
+  /** Step 1: validate name + employee ID.  Resolves normally if TOTP not required. */
   login: (payload: LoginPayload) => Promise<void>;
   logout: () => Promise<void>;
+  /** Non-null when the user passed step 1 but still needs to enter a TOTP code. */
+  totpPending: TotpPending | null;
+  /** Step 2: submit the 6-digit TOTP code to complete login. */
+  completeTotpLogin: (code: string) => Promise<void>;
+  /** Cancel the TOTP step (go back to the credential form). */
+  cancelTotp: () => void;
+  /** True when org policy requires TOTP but this user hasn't set it up yet. */
+  mustSetupTotp: boolean;
+  /** Clear the mustSetupTotp flag after the user completes setup. */
+  clearMustSetupTotp: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue>({
@@ -21,6 +40,11 @@ const AuthContext = createContext<AuthContextValue>({
   loading: true,
   login: async () => {},
   logout: async () => {},
+  totpPending: null,
+  completeTotpLogin: async () => {},
+  cancelTotp: () => {},
+  mustSetupTotp: false,
+  clearMustSetupTotp: () => {},
 });
 
 export function useAuth() {
@@ -30,6 +54,8 @@ export function useAuth() {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [totpPending, setTotpPending] = useState<TotpPending | null>(null);
+  const [mustSetupTotp, setMustSetupTotp] = useState(false);
   const inactivityTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ---------- Inactivity auto-logout ----------
@@ -125,6 +151,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(false);
   }, []);
 
+  // ---------- Helpers ----------
+
+  function _persistUser(data: { employee_id: string; full_name: string; track: string; is_admin: boolean }, payload?: LoginPayload) {
+    const parts = data.full_name.split(" ");
+    const loggedInUser: User = {
+      employee_id: data.employee_id,
+      first_name: payload?.first_name ?? parts[0] ?? "",
+      last_name: payload?.last_name ?? parts.slice(1).join(" ") ?? "",
+      full_name: data.full_name,
+      track: (data.track as User["track"]) ?? "administrative",
+      is_admin: data.is_admin ?? false,
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(loggedInUser));
+    setUser(loggedInUser);
+    setTotpPending(null);
+  }
+
+  // ---------- Login (step 1) ----------
+
   const login = useCallback(async (payload: LoginPayload) => {
     // Dev bypass: skip API call entirely, create a local-only user
     if (DEV_AUTH_BYPASS) {
@@ -166,25 +211,76 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error(body.detail ?? "Login failed");
     }
 
-    const data = await res.json();
-    const loggedInUser: User = {
-      employee_id: data.employee_id ?? payload.employee_id,
-      first_name: data.first_name ?? payload.first_name,
-      last_name: data.last_name ?? payload.last_name,
-      full_name: data.full_name ?? `${payload.first_name} ${payload.last_name}`.trim(),
-      track: data.track ?? "administrative",
-      is_admin: data.is_admin ?? false,
-    };
+    const data: LoginResponse = await res.json();
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(loggedInUser));
-    setUser(loggedInUser);
+    // If TOTP is required, park here — don't issue a session yet
+    if (data.requires_totp) {
+      setTotpPending({
+        employee_id: data.employee_id,
+        full_name: data.full_name,
+        track: data.track,
+        is_admin: data.is_admin,
+      });
+      return;
+    }
+
+    // No TOTP — complete login, but check if policy requires setup
+    _persistUser(data, payload);
+    if (data.totp_required && !data.totp_enabled) {
+      setMustSetupTotp(true);
+    }
   }, []);
+
+  // ---------- TOTP verification (step 2) ----------
+
+  const completeTotpLogin = useCallback(async (code: string) => {
+    if (!totpPending) throw new Error("No TOTP verification pending.");
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10_000);
+    let res: Response;
+    try {
+      res = await fetch(`${API_BASE}/auth/totp/validate`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ employee_id: totpPending.employee_id, code }),
+        signal: controller.signal,
+      });
+    } catch (err: unknown) {
+      clearTimeout(timeout);
+      if (err instanceof Error && err.name === "AbortError") {
+        throw new Error("Request timed out.");
+      }
+      throw new Error("Cannot reach the server.");
+    }
+    clearTimeout(timeout);
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.detail ?? "Verification failed");
+    }
+
+    const data = await res.json();
+    _persistUser(data);
+  }, [totpPending]);
+
+  const cancelTotp = useCallback(() => {
+    setTotpPending(null);
+  }, []);
+
+  const clearMustSetupTotp = useCallback(() => {
+    setMustSetupTotp(false);
+  }, []);
+
+  // ---------- Logout ----------
 
   const logout = useCallback(async () => {
     clearInactivityTimer();
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(LAST_ACTIVITY_KEY);
     setUser(null);
+    setTotpPending(null);
     // Fire backend logout as best-effort, don't wait for it
     fetch(`${API_BASE}/auth/logout`, {
       method: "POST",
@@ -194,7 +290,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [clearInactivityTimer]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, totpPending, completeTotpLogin, cancelTotp, mustSetupTotp, clearMustSetupTotp }}>
       {children}
     </AuthContext.Provider>
   );

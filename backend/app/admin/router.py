@@ -67,6 +67,7 @@ def _serialize(emp: Employee, db: Session) -> dict:
         "full_name": f"{emp.first_name} {emp.last_name}",
         "track": emp.track,
         "is_admin": emp.is_admin,
+        "totp_enabled": bool(emp.totp_enabled),
         "created_at": emp.created_at.isoformat() if emp.created_at else None,
         "first_login_at": emp.first_login_at.isoformat() if emp.first_login_at else None,
         "progress": _progress_summary(emp.employee_id, db),
@@ -264,6 +265,22 @@ def reset_employee_progress(
     deleted = db.query(UserProgress).filter_by(employee_id=employee_id).delete()
     db.commit()
     return {"detail": f"Reset {deleted} progress records for {emp.first_name} {emp.last_name}."}
+
+
+@router.post("/employees/{employee_id}/reset-totp", status_code=status.HTTP_200_OK)
+def reset_employee_totp(
+    employee_id: str,
+    admin: dict = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Disable and clear TOTP for an employee so they can re-enroll."""
+    emp = db.query(Employee).filter_by(employee_id=employee_id).first()
+    if not emp:
+        raise HTTPException(status_code=404, detail="Employee not found.")
+    emp.totp_secret = None
+    emp.totp_enabled = False
+    db.commit()
+    return {"detail": f"Two-factor authentication reset for {emp.first_name} {emp.last_name}."}
 
 
 # ── Dashboard ────────────────────────────────────────────────────────────────

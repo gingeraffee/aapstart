@@ -442,6 +442,20 @@ export function AppShell({ children }: AppShellProps) {
           {user && (
             <div className="space-y-2.5">
               <p className="truncate px-2.5 text-center text-[0.73rem] font-semibold leading-tight" style={{ color: "var(--sidebar-user-name)" }}>{user.full_name}</p>
+              <Link
+                href="/security"
+                className="flex w-full items-center justify-center gap-2 rounded-[10px] px-3.5 py-2 text-[0.78rem] font-semibold transition-all duration-200"
+                style={{
+                  background: "var(--sidebar-icon-bg)",
+                  border: "1px solid var(--sidebar-active-border, rgba(130,160,194,0.4))",
+                  color: "var(--sidebar-text)",
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+                Security
+              </Link>
               <button
                 onClick={() => logout()}
                 className="flex w-full items-center justify-center gap-2 rounded-[10px] px-3.5 py-2 text-[0.78rem] font-semibold transition-all duration-200"

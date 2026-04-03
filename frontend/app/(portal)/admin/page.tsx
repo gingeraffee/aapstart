@@ -260,6 +260,7 @@ function EmployeeRow({ emp, currentUserId, onDeleted }: { emp: EmployeeRecord; c
   const [saving, setSaving] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [confirmingReset, setConfirmingReset] = useState(false);
+  const [resettingTotp, setResettingTotp] = useState(false);
   const isSelf = emp.employee_id === currentUserId;
   const firstLogin = emp.first_login_at
     ? new Date(emp.first_login_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
@@ -301,6 +302,18 @@ function EmployeeRow({ emp, currentUserId, onDeleted }: { emp: EmployeeRecord; c
       onDeleted(err instanceof Error ? err.message : "Failed to reset progress.", "error");
     } finally {
       setResetting(false);
+    }
+  }
+
+  async function handleResetTotp() {
+    setResettingTotp(true);
+    try {
+      await adminApi.resetTotp(emp.employee_id);
+      onDeleted(`Two-factor authentication reset for ${emp.full_name}.`);
+    } catch (err) {
+      onDeleted(err instanceof Error ? err.message : "Failed to reset 2FA.", "error");
+    } finally {
+      setResettingTotp(false);
     }
   }
 
@@ -349,6 +362,7 @@ function EmployeeRow({ emp, currentUserId, onDeleted }: { emp: EmployeeRecord; c
               {TRACK_LABELS[emp.track] ?? emp.track}
             </span>
             {emp.is_admin && <span className="ml-2 inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-[0.68rem] font-semibold text-slate-600">Admin</span>}
+            {emp.totp_enabled && <span className="ml-2 inline-flex rounded-full bg-purple-50 px-2.5 py-1 text-[0.68rem] font-semibold text-purple-700">2FA</span>}
           </>
         )}
       </td>
@@ -431,6 +445,16 @@ function EmployeeRow({ emp, currentUserId, onDeleted }: { emp: EmployeeRecord; c
             >
               Reset
             </button>
+            {emp.totp_enabled && (
+              <button
+                onClick={handleResetTotp}
+                disabled={resettingTotp}
+                className="rounded-[10px] px-3 py-1.5 text-[0.74rem] font-semibold transition-all hover:bg-purple-50 disabled:cursor-not-allowed disabled:opacity-50"
+                style={{ color: "#7c3aed" }}
+              >
+                {resettingTotp ? "Resetting..." : "Reset 2FA"}
+              </button>
+            )}
             {!isSelf && (
               <button
                 onClick={() => setConfirmingDelete(true)}
