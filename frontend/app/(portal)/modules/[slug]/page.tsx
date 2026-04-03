@@ -246,7 +246,7 @@ function buildOutcomeLines(
   return lines.slice(0, 3);
 }
 
-function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledgement: boolean, track?: string) {
+function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledgement: boolean, track?: string, slug?: string) {
   const title = moduleTitle.toLowerCase();
 
   if (title.includes("how work works")) {
@@ -767,7 +767,7 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
   }
 
   // ── What's Ahead / Your First 90 Days — HR ──
-  if ((title.includes("what's ahead") || title.includes("whats ahead") || (title.includes("first") && title.includes("days"))) && track === "hr") {
+  if (slug === "your-first-90-days-hr" || ((title.includes("what's ahead") || title.includes("whats ahead") || (title.includes("first") && title.includes("days"))) && track === "hr")) {
     return [
       {
         eyebrow: "Heads Up",
@@ -2051,7 +2051,7 @@ export default function ModulePage() {
   const totalModules = liveModules.length || currentModule.order;
   const completedModules = (progress ?? []).filter((item) => item.module_completed).length;
   const outcomeLines = buildOutcomeLines(displaySections, hasQuiz, hasAcknowledgement);
-  const humanMoments = buildHumanMoments(currentModule.title, hasQuiz, hasAcknowledgement, effectiveTrack);
+  const humanMoments = buildHumanMoments(currentModule.title, hasQuiz, hasAcknowledgement, effectiveTrack, currentModule.slug);
   const whyThisMatters =
     firstKeyLine ??
     currentModule.description ??
