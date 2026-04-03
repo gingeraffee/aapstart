@@ -36,6 +36,7 @@ export default function CompletePage() {
 
   const liveModules = (allModules ?? [])
     .filter((item) => item.status === "published")
+    .filter((item) => !item.tracks?.includes("management"))
     .sort((a, b) => a.order - b.order);
   const hasAcknowledgement = module.requires_acknowledgement || module.acknowledgements.length > 0;
   const hasQuiz = module.requires_quiz || (module.quiz?.questions?.length ?? 0) > 0;

@@ -153,9 +153,10 @@ export default function QuizPage() {
   const shouldRevealCorrect = isRevealed && (isCorrect || currentWrongAttempts >= 2);
   const canRetry = isRevealed && !isCorrect && currentWrongAttempts < 2;
 
-  // Determine next module
+  // Determine next module (exclude management modules — they're resource guides, not onboarding)
   const liveModules = (allModules ?? [])
     .filter((item) => item.status === "published")
+    .filter((item) => !item.tracks?.includes("management"))
     .sort((a, b) => a.order - b.order);
   const currentIndex = liveModules.findIndex((item) => item.slug === slug);
   const nextModule = currentIndex >= 0 ? liveModules[currentIndex + 1] ?? null : null;
