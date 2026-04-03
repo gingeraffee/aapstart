@@ -55,6 +55,60 @@ const WAREHOUSE_PHASES = [
   },
 ];
 
+const HR_PHASES = [
+  {
+    range: "Days 1-30",
+    chapter: "Chapter 01",
+    title: "Learn the Machine",
+    subtitle: "Your first month is about absorbing, not performing. Learn how things work, where things live, and who does what. The goal isn't speed — it's being accurate when you start doing things on your own.",
+    focus: "Focus: onboarding, system access, shadowing, and building the daily routine.",
+    accent: "#0f7fb3",
+    accentSoft: "rgba(15,127,179,0.09)",
+    border: "rgba(15,127,179,0.28)",
+    checkpoints: [
+      "Complete every AAP Start module, quiz, and acknowledgement — this is the foundation for everything else you'll do.",
+      "Log in to and navigate BambooHR, PayClock, Employvio, and Paylocity. Know what each system does and bookmark them.",
+      "Shadow Nicole through the daily rhythm — morning checks, midday follow-ups, end-of-day filing. Watch how she handles judgment calls.",
+      "Know the key contacts by name: warehouse supervisors, IT, and operations managers at both locations.",
+      "Read the Employee Handbook — not cover to cover, but enough to know where to find an answer when an employee asks.",
+      "Complete your 30-day self-assessment survey in BambooHR — your honest feedback helps shape what comes next.",
+    ],
+  },
+  {
+    range: "Days 31-60",
+    chapter: "Chapter 02",
+    title: "Start Doing the Work",
+    subtitle: "Observation turns into action. You've seen the workflows enough times to start owning them. Nicole is still there for guidance, but the training wheels are coming off.",
+    focus: "Focus: independent task execution, handling employee questions, and recognizing the weekly patterns.",
+    accent: "#1f4f84",
+    accentSoft: "rgba(31,79,132,0.09)",
+    border: "rgba(31,79,132,0.28)",
+    checkpoints: [
+      "Own the routine: timecard follow-ups, PTO entry, onboarding paperwork tracking, and document filing — without step-by-step guidance.",
+      "Answer common employee questions yourself — PTO rules, attendance points, benefits timeline — and route the ones that aren't yours.",
+      "Recognize the weekly patterns: the same timecard exceptions, the same benefits questions, the same Tuesday follow-ups. Get ahead of the work instead of reacting to it.",
+      "Flag your own gaps. If something still feels shaky, bring it to Nicole in week six — not week ten.",
+      "Complete your 60-day self-assessment survey in BambooHR — it helps us understand where you are and what support you need heading into month three.",
+    ],
+  },
+  {
+    range: "Days 61-90",
+    chapter: "Chapter 03",
+    title: "Make It Better",
+    subtitle: "You've been doing the job long enough to see what works and what doesn't. This is when you shift from just doing the work to thinking about the work.",
+    focus: "Focus: confident ownership, relationship building, process improvement, and your 90-day performance review.",
+    accent: "#c43a5d",
+    accentSoft: "rgba(196,58,93,0.1)",
+    border: "rgba(196,58,93,0.28)",
+    checkpoints: [
+      "Handle your responsibilities confidently — timekeeping, onboarding, recruiting coordination, and filing should feel like a routine, not a challenge.",
+      "Build relationships intentionally. The supervisors, IT contacts, and warehouse managers you work with every week — those connections pay off when you need a fast answer or context on a tricky situation.",
+      "Spot things that could be better. If an SOP doesn't match reality, flag it. If a process has a gap, say something. Your fresh perspective is an asset.",
+      "Complete your 90-day performance review — a self-evaluation followed by a sit-down with Nicole. Come prepared to discuss what's going well, where you want support, and what you want to grow into.",
+    ],
+  },
+];
+
 const DEFAULT_PHASES = [
   {
     range: "Days 1-30",
@@ -109,7 +163,8 @@ const DEFAULT_PHASES = [
 export default function RoadmapPage() {
   const { effectiveTrack } = usePreview();
   const isWarehouse = effectiveTrack === "warehouse";
-  const PHASES = isWarehouse ? WAREHOUSE_PHASES : DEFAULT_PHASES;
+  const isHR = effectiveTrack === "hr";
+  const PHASES = isWarehouse ? WAREHOUSE_PHASES : isHR ? HR_PHASES : DEFAULT_PHASES;
 
   return (
     <div className="w-full px-6 py-6 lg:px-8 lg:py-8">
@@ -212,6 +267,17 @@ export default function RoadmapPage() {
         >
           <p className="text-[0.82rem] leading-[1.65]" style={{ color: "var(--card-desc)" }}>
             <span className="font-semibold" style={{ color: "var(--welcome-label-text)" }}>Pro tip:</span> Your 90-day review covers ten metrics — work quality, productivity, job knowledge, reliability, independence, adaptability, initiative, adherence to policy, teamwork, and judgment. That sounds like a lot to track. But here's the shortcut — live the company values every day and you'll hit the mark on every single one.
+          </p>
+        </section>
+      )}
+
+      {isHR && (
+        <section
+          className="mt-4 rounded-[14px] border px-6 py-4 animate-fade-up"
+          style={{ borderColor: "rgba(196,58,93,0.28)", background: "rgba(196,58,93,0.06)", animationDelay: "220ms" }}
+        >
+          <p className="text-[0.82rem] leading-[1.65]" style={{ color: "var(--card-desc)" }}>
+            <span className="font-semibold" style={{ color: "var(--welcome-label-text)" }}>Pro tip:</span> The 30-day and 60-day surveys are self-assessments — they're about your honest reflection on how you're settling in, not a test. The 90-day review is a self-evaluation followed by a sit-down with Nicole. Come prepared with notes on what's going well, where you want growth, and anything you've noticed about processes that could improve. The people who get the most out of this conversation are the ones who've been writing things down along the way.
           </p>
         </section>
       )}
