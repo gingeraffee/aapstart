@@ -57,7 +57,7 @@ quiz:
         - id: b
           text: Saturday through the following Friday — it aligns with the warehouse shift schedule
         - id: c
-          text: Sunday through Saturday — biweekly pay periods
+          text: Saturday through the following Sunday — biweekly pay periods
         - id: d
           text: The 1st through the 15th and the 16th through end of month — semi-monthly
       correctId: c
@@ -169,7 +169,7 @@ These are the values that come up constantly — in conversations with employees
 
 ### Pay Period & Payroll
 
-- **Pay period:** Biweekly (Sunday through Saturday)
+- **Pay period:** Biweekly (Saturday through the following Sunday)
 - **Payroll deadline:** Tuesday at 6:00 PM CST — no exceptions
 - **File naming standard:** `YYYY-MM-DD DOC NAME - FIRST NAME LAST NAME`
 
