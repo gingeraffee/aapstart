@@ -4,10 +4,10 @@ import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { useAuth } from "@/lib/context/AuthContext";
-import { adminApi } from "@/lib/api";
+import { adminApi, modulesApi } from "@/lib/api";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
-import type { EmployeeImportResult, EmployeeImportRowInput, EmployeeRecord } from "@/lib/types";
+import type { EmployeeImportResult, EmployeeImportRowInput, EmployeeRecord, ModuleSummary } from "@/lib/types";
 
 const TRACKS = ["hr", "warehouse", "administrative", "management"] as const;
 const TRACK_LABELS: Record<string, string> = {
@@ -251,7 +251,19 @@ function AddEmployeeForm({ onAdded }: { onAdded: (message: string) => void }) {
   );
 }
 
-function EmployeeRow({ emp, currentUserId, onDeleted }: { emp: EmployeeRecord; currentUserId: string; onDeleted: (message: string, tone?: "success" | "error") => void }) {
+interface ModuleProgress {
+  module_slug: string;
+  visited: boolean;
+  visited_at: string | null;
+  acknowledgements_completed: boolean;
+  quiz_passed: boolean;
+  quiz_score: number | null;
+  quiz_attempts: number;
+  module_completed: boolean;
+  completed_at: string | null;
+}
+
+function EmployeeRow({ emp, currentUserId, modules, onDeleted }: { emp: EmployeeRecord; currentUserId: string; modules: ModuleSummary[]; onDeleted: (message: string, tone?: "success" | "error") => void }) {
   const [deleting, setDeleting] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -261,10 +273,32 @@ function EmployeeRow({ emp, currentUserId, onDeleted }: { emp: EmployeeRecord; c
   const [resetting, setResetting] = useState(false);
   const [confirmingReset, setConfirmingReset] = useState(false);
   const [resettingTotp, setResettingTotp] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [moduleProgress, setModuleProgress] = useState<ModuleProgress[] | null>(null);
+  const [loadingProgress, setLoadingProgress] = useState(false);
   const isSelf = emp.employee_id === currentUserId;
-  const firstLogin = emp.first_login_at
-    ? new Date(emp.first_login_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+  const lastLogin = emp.last_login_at
+    ? new Date(emp.last_login_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
     : "Not yet";
+
+  async function handleExpand() {
+    if (expanded) {
+      setExpanded(false);
+      return;
+    }
+    setExpanded(true);
+    if (!moduleProgress) {
+      setLoadingProgress(true);
+      try {
+        const data = await adminApi.employeeProgress(emp.employee_id) as ModuleProgress[];
+        setModuleProgress(data);
+      } catch {
+        setModuleProgress([]);
+      } finally {
+        setLoadingProgress(false);
+      }
+    }
+  }
 
   async function handleDelete() {
     setDeleting(true);
@@ -318,10 +352,35 @@ function EmployeeRow({ emp, currentUserId, onDeleted }: { emp: EmployeeRecord; c
   }
 
   return (
-    <tr className="border-b border-slate-100 last:border-0">
+    <>
+    <tr className={cn("border-b border-slate-100 last:border-0", expanded && "border-b-0")}>
       <td className="px-6 py-4">
-        <p className="text-[0.86rem] font-semibold leading-tight" style={{ color: "var(--heading-color)" }}>{emp.full_name}</p>
-        <p className="mt-0.5 text-[0.72rem]" style={{ color: "var(--module-context)" }}>{emp.employee_id}</p>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleExpand}
+            className="flex h-5 w-5 shrink-0 items-center justify-center rounded transition-all hover:bg-slate-100"
+            title={expanded ? "Collapse" : "View module progress"}
+          >
+            <svg
+              width="10"
+              height="10"
+              viewBox="0 0 10 10"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className={cn("transition-transform duration-200", expanded && "rotate-90")}
+              style={{ color: "var(--card-desc)" }}
+            >
+              <path d="M3 1.5L7 5L3 8.5" />
+            </svg>
+          </button>
+          <div>
+            <p className="text-[0.86rem] font-semibold leading-tight" style={{ color: "var(--heading-color)" }}>{emp.full_name}</p>
+            <p className="mt-0.5 text-[0.72rem]" style={{ color: "var(--module-context)" }}>{emp.employee_id}</p>
+          </div>
+        </div>
       </td>
       <td className="px-6 py-4">
         {editing ? (
@@ -370,7 +429,7 @@ function EmployeeRow({ emp, currentUserId, onDeleted }: { emp: EmployeeRecord; c
         <p className="text-[0.82rem] font-semibold" style={{ color: "var(--heading-color)" }}>{emp.progress.modules_completed} completed</p>
         <p className="text-[0.7rem]" style={{ color: "var(--module-context)" }}>{emp.progress.total_modules_seen} touched</p>
       </td>
-      <td className="px-6 py-4 text-[0.78rem]" style={{ color: "var(--card-desc)" }}>{firstLogin}</td>
+      <td className="px-6 py-4 text-[0.78rem]" style={{ color: "var(--card-desc)" }}>{lastLogin}</td>
       <td className="px-6 py-4 text-right">
         {editing ? (
           <div className="flex items-center justify-end gap-2">
@@ -469,6 +528,88 @@ function EmployeeRow({ emp, currentUserId, onDeleted }: { emp: EmployeeRecord; c
         )}
       </td>
     </tr>
+    {expanded && (
+      <tr className="border-b border-slate-100">
+        <td colSpan={5} className="px-6 pb-4 pt-0">
+          <div
+            className="rounded-[14px] p-4"
+            style={{ background: "rgba(241, 245, 249, 0.6)", border: "1px solid rgba(153,182,218,0.25)" }}
+          >
+            <p className="mb-3 text-[0.66rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>
+              Module Progress
+            </p>
+            {loadingProgress ? (
+              <div className="flex items-center gap-2 py-2">
+                <Spinner />
+                <span className="text-[0.76rem]" style={{ color: "var(--card-desc)" }}>Loading...</span>
+              </div>
+            ) : (
+              <div className="space-y-1.5">
+                {modules
+                  .filter((m) => m.status === "published")
+                  .sort((a, b) => a.order - b.order)
+                  .map((m) => {
+                    const prog = moduleProgress?.find((p) => p.module_slug === m.slug);
+                    const isCompleted = prog?.module_completed ?? false;
+                    const isVisited = prog?.visited ?? false;
+                    const completedDate = prog?.completed_at
+                      ? new Date(prog.completed_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                      : null;
+                    return (
+                      <div
+                        key={m.slug}
+                        className="flex items-center gap-2.5 rounded-[10px] px-3 py-2"
+                        style={{
+                          background: isCompleted ? "rgba(22, 163, 74, 0.06)" : isVisited ? "rgba(255,255,255,0.7)" : "transparent",
+                          border: isCompleted ? "1px solid rgba(22, 163, 74, 0.15)" : "1px solid transparent",
+                        }}
+                      >
+                        {/* Status icon */}
+                        <span
+                          className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full"
+                          style={{
+                            background: isCompleted ? "rgba(22, 163, 74, 0.12)" : isVisited ? "rgba(14, 165, 233, 0.1)" : "rgba(148, 163, 184, 0.15)",
+                          }}
+                        >
+                          {isCompleted ? (
+                            <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M2 5.5l2 2L8 2.5" />
+                            </svg>
+                          ) : isVisited ? (
+                            <svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="#0ea5e9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <circle cx="5" cy="5" r="2" />
+                            </svg>
+                          ) : (
+                            <span className="h-1.5 w-1.5 rounded-full" style={{ background: "rgba(148, 163, 184, 0.5)" }} />
+                          )}
+                        </span>
+
+                        {/* Module title */}
+                        <span
+                          className="flex-1 text-[0.76rem] font-medium leading-tight"
+                          style={{ color: isCompleted ? "#15803d" : isVisited ? "var(--heading-color)" : "var(--card-desc)" }}
+                        >
+                          {m.title}
+                        </span>
+
+                        {/* Status label */}
+                        {isCompleted && completedDate ? (
+                          <span className="text-[0.64rem] font-medium" style={{ color: "#16a34a" }}>{completedDate}</span>
+                        ) : isVisited ? (
+                          <span className="text-[0.64rem] font-medium" style={{ color: "#0ea5e9" }}>In progress</span>
+                        ) : (
+                          <span className="text-[0.64rem] font-medium" style={{ color: "rgba(148, 163, 184, 0.8)" }}>Not started</span>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
+          </div>
+        </td>
+      </tr>
+    )}
+    </>
   );
 }
 
@@ -640,6 +781,8 @@ export default function AdminPage() {
   const [toast, setToast] = useState<ToastState | null>(null);
 
   const { data: employees, isLoading, mutate } = useSWR("admin-employees", () => adminApi.listEmployees() as Promise<EmployeeRecord[]>);
+  const { data: allModules } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
+  const publishedModules = (allModules ?? []).filter((m) => m.status === "published").sort((a, b) => a.order - b.order);
 
   useEffect(() => {
     if (user && !user.is_admin) {
@@ -812,7 +955,7 @@ export default function AdminPage() {
             <table className="w-full min-w-[780px]">
               <thead>
                 <tr className="border-b" style={{ borderColor: "var(--card-border)" }}>
-                  {["Employee", "Track", "Progress", "First Login", ""].map((header) => (
+                  {["Employee", "Track", "Progress", "Last Login", ""].map((header) => (
                     <th key={header} className="px-6 py-3 text-left text-[0.66rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>
                       {header}
                     </th>
@@ -825,6 +968,7 @@ export default function AdminPage() {
                     key={employee.employee_id}
                     emp={employee}
                     currentUserId={user.employee_id}
+                    modules={publishedModules}
                     onDeleted={(message, tone = "success") => {
                       setToast({ message, tone });
                       void mutate();

@@ -85,6 +85,8 @@ export const adminApi = {
   dashboard: () => request("/admin/dashboard"),
   resetTotp: (employee_id: string) =>
     request(`/admin/employees/${employee_id}/reset-totp`, { method: "POST" }),
+  employeeProgress: (employee_id: string) =>
+    request(`/admin/employees/${employee_id}/progress`),
 };
 
 export const resourcesApi = {

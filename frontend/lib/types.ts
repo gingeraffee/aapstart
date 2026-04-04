@@ -95,6 +95,7 @@ export interface EmployeeRecord {
   totp_enabled: boolean;
   created_at: string | null;
   first_login_at: string | null;
+  last_login_at: string | null;
   progress: {
     modules_completed: number;
     total_modules_seen: number;
