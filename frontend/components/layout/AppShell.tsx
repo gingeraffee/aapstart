@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import useSWR from "swr";
 import { useAuth } from "@/lib/context/AuthContext";
 import { usePreview } from "@/lib/context/PreviewContext";
-import { modulesApi, progressApi } from "@/lib/api";
+import { modulesApi, progressApi, adminApi } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { MobileBottomNav } from "./MobileBottomNav";
 import { ScrollProgressBar } from "../ui/ScrollProgressBar";
@@ -36,25 +36,39 @@ function ViewAsSelector() {
       >
         Preview as
       </label>
-      <select
-        value={effectiveTrack}
-        onChange={(e) => {
-          const val = e.target.value as Track;
-          setPreviewTrack(val === "hr" ? null : val);
-        }}
-        className="w-full cursor-pointer rounded-[10px] px-3 py-2.5 text-[0.82rem] font-semibold outline-none transition-all duration-150"
-        style={{
-          background: isPreviewing ? "rgba(15, 109, 163, 0.08)" : "var(--sidebar-icon-bg)",
-          border: isPreviewing ? "1px solid rgba(15, 109, 163, 0.35)" : "1px solid var(--sidebar-active-border, rgba(130,160,194,0.4))",
-          color: isPreviewing ? "#0f6da3" : "var(--sidebar-text)",
-        }}
-      >
-        {(Object.keys(TRACK_LABELS) as Track[]).map((track) => (
-          <option key={track} value={track}>
-            {TRACK_LABELS[track]}
-          </option>
-        ))}
-      </select>
+      <div className="grid grid-cols-2 gap-1.5">
+        {(Object.keys(TRACK_LABELS) as Track[]).map((track) => {
+          const isSelected = effectiveTrack === track;
+          const isPreviewingOther = isPreviewing && isSelected;
+          return (
+            <button
+              key={track}
+              onClick={() => setPreviewTrack(track === "hr" ? null : track)}
+              className="rounded-[10px] px-2 py-2 text-[0.72rem] font-semibold text-center transition-all duration-150 cursor-pointer"
+              style={{
+                background: isSelected
+                  ? isPreviewingOther
+                    ? "rgba(15, 109, 163, 0.08)"
+                    : "var(--sidebar-icon-bg)"
+                  : "var(--sidebar-icon-bg)",
+                border: isSelected
+                  ? isPreviewingOther
+                    ? "1px solid rgba(15, 109, 163, 0.35)"
+                    : "1px solid var(--sidebar-active-border, rgba(130,160,194,0.4))"
+                  : "1px solid transparent",
+                color: isSelected
+                  ? isPreviewingOther
+                    ? "#0f6da3"
+                    : "var(--sidebar-text)"
+                  : "var(--sidebar-text)",
+                opacity: isSelected ? 1 : 0.65,
+              }}
+            >
+              {TRACK_LABELS[track]}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -74,6 +88,10 @@ export function AppShell({ children }: AppShellProps) {
 
   const { data: modules } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
   const { data: progress } = useSWR("progress", () => progressApi.getAll() as Promise<ProgressRecord[]>);
+  const { data: dashboardData } = useSWR(
+    user?.is_admin ? "admin-dashboard" : null,
+    () => adminApi.dashboard()
+  );
 
   const allModules = modules ?? [];
   const liveModules = allModules
@@ -334,6 +352,67 @@ export function AppShell({ children }: AppShellProps) {
             </details>
           )}
 
+          {/* ── Manager Resources section (HR admins, collapsed by default) ── */}
+          {showManagementTab && managementModules.length > 0 && (
+            <details className="group mt-5 border-t pt-4 [&_summary::-webkit-details-marker]:hidden" style={{ borderColor: "var(--sidebar-divider)" }}>
+              <summary
+                className="mb-2.5 flex cursor-pointer list-none items-center justify-between px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]"
+                style={{ color: "var(--sidebar-label)" }}
+              >
+                <span>Manager Resources</span>
+                <span className="flex items-center gap-2">
+                  <span className="rounded-full px-2 py-0.5 text-[0.5rem]" style={{ background: "var(--sidebar-icon-bg)", color: "var(--sidebar-text)" }}>
+                    {managementModules.length}
+                  </span>
+                  <span className="text-[0.7rem] transition-transform duration-200 group-open:rotate-90">&gt;</span>
+                </span>
+              </summary>
+
+              <div className="space-y-1">
+                {managementModules.map((m) => {
+                  const isActive = pathname.startsWith(`/modules/${m.slug}`);
+
+                  return (
+                    <Link
+                      key={m.slug}
+                      href={`/modules/${m.slug}`}
+                      className={cn(
+                        "flex items-center gap-2.5 rounded-[12px] px-3.5 py-2.5 text-[0.8rem] font-semibold transition-all duration-200",
+                        isActive ? "shadow-[0_8px_14px_rgba(16,35,60,0.16)]" : ""
+                      )}
+                      style={{
+                        color: isActive ? "var(--sidebar-text-active)" : "var(--sidebar-text)",
+                        ...(isActive ? activeNavStyle : undefined),
+                      }}
+                    >
+                      <span
+                        className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full transition-all"
+                        style={{
+                          color: isActive ? "var(--sidebar-icon-active-text)" : "var(--sidebar-icon-text)",
+                          background: isActive ? "var(--sidebar-icon-active-bg)" : "var(--sidebar-icon-bg)",
+                        }}
+                      >
+                        <svg
+                          width="10"
+                          height="10"
+                          viewBox="0 0 12 12"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M2 3h8M2 6h8M2 9h5" />
+                        </svg>
+                      </span>
+                      <span className="leading-tight">{m.title}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </details>
+          )}
+
           {/* ── Management Processes section (management + HR) ── */}
           {showManagementSection && managementModules.length > 0 && (
             <details open className={cn("group [&_summary::-webkit-details-marker]:hidden", showJourney ? "mt-5 border-t pt-4" : "mt-3")} style={showJourney ? { borderColor: "var(--sidebar-divider)" } : undefined}>
@@ -396,6 +475,112 @@ export function AppShell({ children }: AppShellProps) {
                 })}
               </div>
             </details>
+          )}
+
+          {/* ── Team Pulse — admin-only sidebar metrics ── */}
+          {user?.is_admin && dashboardData && (
+            <div className="mt-5 border-t pt-4" style={{ borderColor: "var(--sidebar-divider)" }}>
+              <p
+                className="mb-2.5 px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]"
+                style={{ color: "var(--sidebar-label)" }}
+              >
+                Team Pulse
+              </p>
+              <div
+                className="space-y-0 rounded-[12px] p-3"
+                style={{
+                  background: "rgba(255,255,255,0.35)",
+                  border: "1px solid rgba(153,182,218,0.3)",
+                }}
+              >
+                {/* Completion rate */}
+                {(() => {
+                  const total = dashboardData.total_employees || 1;
+                  const completed = dashboardData.completion?.all_complete ?? 0;
+                  const pct = Math.round((completed / total) * 100);
+                  return (
+                    <div className="pb-2.5">
+                      <div className="mb-1.5 flex items-baseline justify-between">
+                        <span className="text-[0.6rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>Completed</span>
+                        <span className="text-[0.82rem] font-bold" style={{ color: "var(--sidebar-text)" }}>{pct}%</span>
+                      </div>
+                      <div className="h-[5px] w-full rounded-full" style={{ background: "var(--sidebar-icon-bg)" }}>
+                        <div
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{
+                            width: `${pct}%`,
+                            background: "linear-gradient(90deg, #0f6da3, #38bdf8)",
+                          }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* Active this week */}
+                <div
+                  className="flex items-center gap-2.5 border-t py-2.5"
+                  style={{ borderColor: "rgba(153,182,218,0.25)" }}
+                >
+                  <span
+                    className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full"
+                    style={{ background: "var(--sidebar-icon-bg)" }}
+                  >
+                    <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--sidebar-icon-text)" }}>
+                      <circle cx="6" cy="4" r="2" />
+                      <path d="M2 10c0-2.2 1.8-4 4-4s4 1.8 4 4" />
+                    </svg>
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[0.76rem] font-semibold leading-tight" style={{ color: "var(--sidebar-text)" }}>
+                      {dashboardData.recent_logins?.length ?? 0} <span style={{ color: "var(--sidebar-label)" }}>/ {dashboardData.total_employees}</span>
+                    </p>
+                    <p className="text-[0.58rem] font-medium" style={{ color: "var(--sidebar-label)" }}>active this week</p>
+                  </div>
+                </div>
+
+                {/* Needs attention */}
+                <div
+                  className="flex items-center gap-2.5 border-t pt-2.5"
+                  style={{ borderColor: "rgba(153,182,218,0.25)" }}
+                >
+                  <span
+                    className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full"
+                    style={{
+                      background: (dashboardData.completion?.not_started ?? 0) > 0
+                        ? "rgba(245, 158, 11, 0.12)"
+                        : "var(--sidebar-icon-bg)",
+                    }}
+                  >
+                    {(dashboardData.completion?.not_started ?? 0) > 0 ? (
+                      <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#b45309" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="6" cy="6" r="5" />
+                        <path d="M6 4v3" />
+                        <circle cx="6" cy="9" r="0.5" fill="#b45309" />
+                      </svg>
+                    ) : (
+                      <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--sidebar-complete-icon-text, #16a34a)" }}>
+                        <path d="M2 6.5l2.5 2.5L10 3" />
+                      </svg>
+                    )}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    {(dashboardData.completion?.not_started ?? 0) > 0 ? (
+                      <>
+                        <p className="text-[0.76rem] font-semibold leading-tight" style={{ color: "#b45309" }}>
+                          {dashboardData.completion.not_started}
+                        </p>
+                        <p className="text-[0.58rem] font-medium" style={{ color: "var(--sidebar-label)" }}>not started</p>
+                      </>
+                    ) : (
+                      <p className="text-[0.72rem] font-semibold leading-tight" style={{ color: "var(--sidebar-complete-icon-text, #16a34a)" }}>
+                        All on track
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
         </div>
 
