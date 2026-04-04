@@ -399,65 +399,82 @@ export function AppShell({ children }: AppShellProps) {
           )}
         </div>
 
-        {user?.is_admin && (
-          <div className="px-3.5 pb-2" style={{ borderTop: "1px solid var(--sidebar-divider)", paddingTop: "10px" }}>
+        {/* ── Unified user footer ── */}
+        <div
+          className="flex items-center gap-2 px-3.5 py-3"
+          style={{ borderTop: "1px solid var(--sidebar-divider)" }}
+        >
+          {/* Admin button (left) — only for admins */}
+          {user?.is_admin && (
             <Link
               href="/admin"
+              title="Admin"
               className={cn(
-                "flex items-center gap-2.5 rounded-[12px] px-3.5 py-2.5 text-[0.79rem] font-semibold transition-all duration-200",
-                pathname === "/admin" ? "shadow-[0_8px_14px_rgba(16,35,60,0.16)]" : ""
+                "flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] transition-all duration-200",
+                pathname === "/admin"
+                  ? "shadow-[0_4px_10px_rgba(16,35,60,0.18)]"
+                  : "hover:opacity-80"
               )}
               style={{
-                color: pathname === "/admin" ? "var(--sidebar-text-active)" : "var(--sidebar-text)",
-                ...(pathname === "/admin" ? activeNavStyle : undefined),
+                background: pathname === "/admin"
+                  ? "linear-gradient(135deg, #11264a 0%, #0f7fb3 82%)"
+                  : "var(--sidebar-icon-bg)",
               }}
             >
-              <span
-                className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full"
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 style={{
-                  background: pathname === "/admin" ? "var(--sidebar-icon-active-bg)" : "var(--sidebar-icon-bg)",
+                  color: pathname === "/admin" ? "#ffffff" : "var(--sidebar-icon-text)",
                 }}
               >
-                <svg
-                  width="10"
-                  height="10"
-                  viewBox="0 0 12 12"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  style={{ color: pathname === "/admin" ? "var(--sidebar-icon-active-text)" : "var(--sidebar-icon-text)" }}
-                >
-                  <circle cx="6" cy="4" r="2" />
-                  <path d="M2 10c0-2.2 1.8-4 4-4s4 1.8 4 4" />
-                </svg>
-              </span>
-              Admin
+                <path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7z" />
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+              </svg>
             </Link>
-          </div>
-        )}
-
-        <div className="px-3.5 py-4" style={{ borderTop: "1px solid var(--sidebar-divider)" }}>
-          {user && (
-            <div className="space-y-2.5">
-              <p className="truncate px-2.5 text-center text-[0.73rem] font-semibold leading-tight" style={{ color: "var(--sidebar-user-name)" }}>{user.full_name}</p>
-              <Link
-                href="/security"
-                className="flex w-full items-center justify-center gap-2 rounded-[10px] px-3.5 py-2 text-[0.78rem] font-semibold transition-all duration-200"
-                style={{
-                  background: "var(--sidebar-icon-bg)",
-                  border: "1px solid var(--sidebar-active-border, rgba(130,160,194,0.4))",
-                  color: "var(--sidebar-text)",
-                }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                </svg>
-                Security
-              </Link>
-            </div>
           )}
+
+          {/* User name (center, fills remaining space) */}
+          {user && (
+            <p
+              className="min-w-0 flex-1 truncate text-center text-[0.73rem] font-semibold leading-tight"
+              style={{ color: "var(--sidebar-user-name)" }}
+            >
+              {user.full_name}
+            </p>
+          )}
+
+          {/* Sign out button (right) */}
+          <button
+            onClick={() => logout()}
+            title="Sign out"
+            className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] transition-all duration-200 hover:opacity-80"
+            style={{
+              background: "var(--sidebar-icon-bg)",
+            }}
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ color: "var(--sidebar-icon-text)" }}
+            >
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+          </button>
         </div>
       </nav>
 
