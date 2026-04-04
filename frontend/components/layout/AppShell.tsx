@@ -10,7 +10,7 @@ import { modulesApi, progressApi, adminApi } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { MobileBottomNav } from "./MobileBottomNav";
 import { ScrollProgressBar } from "../ui/ScrollProgressBar";
-import type { ModuleSummary, ProgressRecord, Track } from "@/lib/types";
+import type { ModuleSummary, ProgressRecord, Track, DashboardData } from "@/lib/types";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -90,7 +90,7 @@ export function AppShell({ children }: AppShellProps) {
   const { data: progress } = useSWR("progress", () => progressApi.getAll() as Promise<ProgressRecord[]>);
   const { data: dashboardData } = useSWR(
     user?.is_admin ? "admin-dashboard" : null,
-    () => adminApi.dashboard()
+    () => adminApi.dashboard() as Promise<DashboardData>
   );
 
   const allModules = modules ?? [];
@@ -353,7 +353,7 @@ export function AppShell({ children }: AppShellProps) {
           )}
 
           {/* ── Manager Resources section (HR admins, collapsed by default) ── */}
-          {showManagementTab && managementModules.length > 0 && (
+          {showManagementTab && managementModules.length > 0 ? (
             <details className="group mt-5 border-t pt-4 [&_summary::-webkit-details-marker]:hidden" style={{ borderColor: "var(--sidebar-divider)" }}>
               <summary
                 className="mb-2.5 flex cursor-pointer list-none items-center justify-between px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]"
@@ -411,7 +411,7 @@ export function AppShell({ children }: AppShellProps) {
                 })}
               </div>
             </details>
-          )}
+          ) : null}
 
           {/* ── Management Processes section (management + HR) ── */}
           {showManagementSection && managementModules.length > 0 && (
