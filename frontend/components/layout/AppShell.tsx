@@ -86,7 +86,7 @@ export function AppShell({ children }: AppShellProps) {
   // For section visibility, check effectiveTrack
   const isEffectiveHR = effectiveTrack === "hr";
 
-  const { data: modules } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
+  const { data: modules } = useSWR(`modules:${effectiveTrack}`, () => modulesApi.list(effectiveTrack) as Promise<ModuleSummary[]>);
   const { data: progress } = useSWR("progress", () => progressApi.getAll() as Promise<ProgressRecord[]>);
   const { data: dashboardData } = useSWR(
     user?.is_admin ? "admin-dashboard" : null,
@@ -103,16 +103,7 @@ export function AppShell({ children }: AppShellProps) {
   const isHRReplacement = (slug: string) => slug.endsWith("-hr");
   const journeyModules = liveModules
     .filter((m) => !m.tracks?.includes("management"))
-    .filter((m) => {
-      if (!isPreviewing) return true;
-      if (m.tracks?.includes(effectiveTrack)) return true;
-      if (m.tracks?.includes("all")) {
-        if (effectiveTrack === "hr" && liveModules.some((hr) => hr.slug === `${m.slug}-hr`)) return false;
-        return true;
-      }
-      if (isHRReplacement(m.slug) && effectiveTrack === "hr") return true;
-      return false;
-    });
+    .filter((m) => !isPreviewing || m.tracks?.includes("all") || m.tracks?.includes(effectiveTrack) || isHRReplacement(m.slug));
   const managementModules = liveModules.filter((m) => m.tracks?.includes("management"));
 
   // Show journey section for non-management tracks

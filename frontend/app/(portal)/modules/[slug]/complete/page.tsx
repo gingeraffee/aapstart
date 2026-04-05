@@ -20,8 +20,8 @@ export default function CompletePage() {
     () => modulesApi.get(slug, effectiveTrack) as Promise<ModuleDetail>
   );
   const { data: allModules, isLoading: loadingModules } = useSWR(
-    "modules",
-    () => modulesApi.list() as Promise<ModuleSummary[]>
+    `modules:${effectiveTrack}`,
+    () => modulesApi.list(effectiveTrack) as Promise<ModuleSummary[]>
   );
   const { data: progress, isLoading: loadingProgress } = useSWR(
     "progress",

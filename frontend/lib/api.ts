@@ -51,7 +51,8 @@ export const authApi = {
 };
 
 export const modulesApi = {
-  list: () => request("/modules"),
+  list: (track?: string) =>
+    request(`/modules${track ? `?track=${encodeURIComponent(track)}` : ""}`),
   get: (slug: string, track?: string) =>
     request(`/modules/${slug}${track ? `?track=${encodeURIComponent(track)}` : ""}`),
 };

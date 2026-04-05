@@ -113,7 +113,7 @@ export default function QuizPage() {
   const { isPreviewing, effectiveTrack } = usePreview();
 
   const { data: module, isLoading } = useSWR(`module:${slug}:${effectiveTrack}`, () => modulesApi.get(slug, effectiveTrack) as Promise<ModuleDetail>);
-  const { data: allModules } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
+  const { data: allModules } = useSWR(`modules:${effectiveTrack}`, () => modulesApi.list(effectiveTrack) as Promise<ModuleSummary[]>);
   const { data: progress } = useSWR("progress", () => progressApi.getAll() as Promise<ProgressRecord[]>);
 
   const [currentQ, setCurrentQ] = useState(0);

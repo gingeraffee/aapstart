@@ -1063,7 +1063,7 @@ export default function ModulePage() {
   const { user } = useAuth();
   const { effectiveTrack, isPreviewing } = usePreview();
   const { data: module, isLoading, error } = useSWR(`module:${slug}:${effectiveTrack}`, () => modulesApi.get(slug, effectiveTrack) as Promise<ModuleDetail>);
-  const { data: moduleCatalog } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
+  const { data: moduleCatalog } = useSWR(`modules:${effectiveTrack}`, () => modulesApi.list(effectiveTrack) as Promise<ModuleSummary[]>);
   const { data: progress } = useSWR("progress", () => progressApi.getAll() as Promise<ProgressRecord[]>);
 
   // Coach tip hooks must be before early returns to satisfy React's rules of hooks
