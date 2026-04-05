@@ -3,7 +3,7 @@ slug: terminations-offboarding
 title: Terminations & Offboarding
 description: Step-by-step manager workflow for HR-approved terminations, BambooHR offboarding requests, and coordinated access removal.
 tracks: [hr, management]
-order: 104
+order: 105
 estimatedMinutes: 12
 status: published
 requiresQuiz: false

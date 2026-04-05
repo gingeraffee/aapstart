@@ -3,7 +3,7 @@ slug: coaching-corrective-action
 title: Coaching & Corrective Action
 description: A structured, fair, and legally compliant approach to coaching employees, addressing performance issues, and documenting corrective action.
 tracks: [hr, management]
-order: 106
+order: 107
 estimatedMinutes: 14
 status: published
 requiresQuiz: false

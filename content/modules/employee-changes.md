@@ -3,7 +3,7 @@ slug: employee-changes
 title: Employee Changes
 description: The official manager workflow for submitting employee changes in BambooHR, including approvals, documentation, payroll impact, and operational follow-up.
 tracks: [hr, management]
-order: 103
+order: 104
 estimatedMinutes: 12
 status: published
 requiresQuiz: false
