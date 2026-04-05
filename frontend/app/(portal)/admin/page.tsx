@@ -779,6 +779,7 @@ export default function AdminPage() {
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [lastImportResult, setLastImportResult] = useState<EmployeeImportResult | null>(null);
   const [toast, setToast] = useState<ToastState | null>(null);
+  const [trackFilter, setTrackFilter] = useState<string>("all");
 
   const { data: employees, isLoading, mutate } = useSWR("admin-employees", () => adminApi.listEmployees() as Promise<EmployeeRecord[]>);
   const { data: allModules } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
@@ -936,12 +937,37 @@ export default function AdminPage() {
       </div>
 
       <div className="mt-6 overflow-hidden rounded-[24px]" style={cardStyle()}>
-        <div className="flex items-center justify-between gap-3 border-b px-6 py-4" style={{ borderColor: "var(--card-border)" }}>
+        <div className="flex flex-col gap-3 border-b px-6 py-4 sm:flex-row sm:items-center sm:justify-between" style={{ borderColor: "var(--card-border)" }}>
           <div>
             <p className="text-[0.64rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>Employee Roster</p>
             <h2 className="mt-1 text-[1rem] font-bold" style={{ color: "var(--heading-color)" }}>Current employees</h2>
           </div>
-          <p className="text-[0.76rem]" style={{ color: "var(--card-desc)" }}>{total} total employees</p>
+          <div className="flex items-center gap-1.5">
+            {[
+              { value: "all", label: "All" },
+              { value: "hr", label: "HR" },
+              { value: "warehouse", label: "Warehouse" },
+              { value: "administrative", label: "Administrative" },
+            ].map((opt) => {
+              const isActive = trackFilter === opt.value;
+              const count = opt.value === "all"
+                ? (employees?.length ?? 0)
+                : (employees?.filter((e) => e.track === opt.value).length ?? 0);
+              return (
+                <button
+                  key={opt.value}
+                  onClick={() => setTrackFilter(opt.value)}
+                  className="rounded-full px-3 py-1.5 text-[0.72rem] font-semibold transition-all duration-150"
+                  style={isActive
+                    ? { background: "var(--heading-color, #11264a)", color: "#fff" }
+                    : { background: "transparent", color: "var(--card-desc)", border: "1px solid var(--card-border)" }
+                  }
+                >
+                  {opt.label} <span style={{ opacity: 0.7 }}>({count})</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {isLoading ? (
@@ -963,7 +989,10 @@ export default function AdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {[...employees].sort((a, b) => a.last_name.localeCompare(b.last_name)).map((employee) => (
+                {[...employees]
+                  .filter((e) => trackFilter === "all" || e.track === trackFilter)
+                  .sort((a, b) => a.last_name.localeCompare(b.last_name))
+                  .map((employee) => (
                   <EmployeeRow
                     key={employee.employee_id}
                     emp={employee}
