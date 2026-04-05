@@ -963,7 +963,7 @@ export default function AdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {employees.map((employee) => (
+                {[...employees].sort((a, b) => a.last_name.localeCompare(b.last_name)).map((employee) => (
                   <EmployeeRow
                     key={employee.employee_id}
                     emp={employee}
