@@ -1062,7 +1062,7 @@ export default function ModulePage() {
   const router = useRouter();
   const { user } = useAuth();
   const { effectiveTrack, isPreviewing } = usePreview();
-  const { data: module, isLoading, error } = useSWR(`module:${slug}`, () => modulesApi.get(slug) as Promise<ModuleDetail>);
+  const { data: module, isLoading, error } = useSWR(`module:${slug}:${effectiveTrack}`, () => modulesApi.get(slug, effectiveTrack) as Promise<ModuleDetail>);
   const { data: moduleCatalog } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
   const { data: progress } = useSWR("progress", () => progressApi.getAll() as Promise<ProgressRecord[]>);
 

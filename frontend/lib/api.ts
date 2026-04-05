@@ -52,7 +52,8 @@ export const authApi = {
 
 export const modulesApi = {
   list: () => request("/modules"),
-  get: (slug: string) => request(`/modules/${slug}`),
+  get: (slug: string, track?: string) =>
+    request(`/modules/${slug}${track ? `?track=${encodeURIComponent(track)}` : ""}`),
 };
 
 export const progressApi = {

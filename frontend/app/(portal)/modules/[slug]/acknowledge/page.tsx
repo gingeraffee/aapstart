@@ -14,9 +14,9 @@ export default function AcknowledgePage() {
   const { slug } = useParams<{ slug: string }>();
   const router = useRouter();
   const { mutate } = useSWRConfig();
-  const { isPreviewing } = usePreview();
+  const { isPreviewing, effectiveTrack } = usePreview();
 
-  const { data: module, isLoading } = useSWR(`module:${slug}`, () => modulesApi.get(slug) as Promise<ModuleDetail>);
+  const { data: module, isLoading } = useSWR(`module:${slug}:${effectiveTrack}`, () => modulesApi.get(slug, effectiveTrack) as Promise<ModuleDetail>);
 
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [submitting, setSubmitting] = useState(false);

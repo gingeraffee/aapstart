@@ -103,7 +103,16 @@ export function AppShell({ children }: AppShellProps) {
   const isHRReplacement = (slug: string) => slug.endsWith("-hr");
   const journeyModules = liveModules
     .filter((m) => !m.tracks?.includes("management"))
-    .filter((m) => !isPreviewing || m.tracks?.includes("all") || m.tracks?.includes(effectiveTrack) || isHRReplacement(m.slug));
+    .filter((m) => {
+      if (!isPreviewing) return true;
+      if (m.tracks?.includes(effectiveTrack)) return true;
+      if (m.tracks?.includes("all")) {
+        if (effectiveTrack === "hr" && liveModules.some((hr) => hr.slug === `${m.slug}-hr`)) return false;
+        return true;
+      }
+      if (isHRReplacement(m.slug) && effectiveTrack === "hr") return true;
+      return false;
+    });
   const managementModules = liveModules.filter((m) => m.tracks?.includes("management"));
 
   // Show journey section for non-management tracks

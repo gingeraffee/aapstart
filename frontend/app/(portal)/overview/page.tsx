@@ -207,7 +207,19 @@ export default function OverviewPage() {
   const isHRReplacement = (slug: string) => slug.endsWith("-hr");
   const journeyModules = liveModules
     .filter((m) => !m.tracks?.includes("management"))
-    .filter((m) => !isPreviewing || m.tracks?.includes("all") || m.tracks?.includes(effectiveTrack) || isHRReplacement(m.slug));
+    .filter((m) => {
+      if (!isPreviewing) return true;
+      if (m.tracks?.includes(effectiveTrack)) return true;
+      // Only show "all" modules if no HR replacement exists for that slug in this track
+      if (m.tracks?.includes("all")) {
+        // When previewing as HR, skip "all" modules that have an HR-specific version
+        if (effectiveTrack === "hr" && liveModules.some((hr) => hr.slug === `${m.slug}-hr`)) return false;
+        return true;
+      }
+      // HR replacement modules only shown when effective track is HR
+      if (isHRReplacement(m.slug) && effectiveTrack === "hr") return true;
+      return false;
+    });
   const managementModules = liveModules.filter((m) => m.tracks?.includes("management"));
 
   const comingSoonCount = allModules.filter((m) => m.status === "coming_soon").length;

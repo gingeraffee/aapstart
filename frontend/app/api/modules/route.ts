@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { getModulesForTrack } from "@/lib/content-loader";
+import { getAllPublishedModules } from "@/lib/content-loader";
 
 export async function GET() {
-  const modules = getModulesForTrack("administrative");
+  const modules = getAllPublishedModules();
   return NextResponse.json(modules);
 }

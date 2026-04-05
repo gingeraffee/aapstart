@@ -97,6 +97,26 @@ function getCache(): Map<string, RawModule> {
 
 // ── Public API ──────────────────────────────────────────────────────────────
 
+/** Return all published modules (no track filtering) — client handles filtering */
+export function getAllPublishedModules() {
+  const cache = getCache();
+  const result: Record<string, unknown>[] = [];
+  for (const mod of cache.values()) {
+    if (mod.status === "draft") continue;
+    result.push(moduleSummary(mod));
+  }
+  result.sort((a, b) => (a.order as number) - (b.order as number));
+  return result;
+}
+
+/** Return a single module without track-based content filtering */
+export function getModuleUnfiltered(slug: string) {
+  const cache = getCache();
+  const mod = cache.get(slug);
+  if (!mod || mod.status === "draft") return null;
+  return moduleForClient(mod, "hr"); // "hr" sees all track_block content
+}
+
 export function getModulesForTrack(track: string) {
   const cache = getCache();
   const result: Record<string, unknown>[] = [];

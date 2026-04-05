@@ -5,6 +5,7 @@ import useSWR from "swr";
 import { useParams } from "next/navigation";
 import confetti from "canvas-confetti";
 import { modulesApi, progressApi } from "@/lib/api";
+import { usePreview } from "@/lib/context/PreviewContext";
 import { ModuleFooter, ModulePanel, ModuleShell, buildModuleSteps } from "@/components/features/modules/ModuleShell";
 import { Spinner } from "@/components/ui/Spinner";
 import type { ModuleDetail, ModuleSummary, ProgressRecord } from "@/lib/types";
@@ -12,10 +13,11 @@ import type { ModuleDetail, ModuleSummary, ProgressRecord } from "@/lib/types";
 
 export default function CompletePage() {
   const { slug } = useParams<{ slug: string }>();
+  const { effectiveTrack } = usePreview();
 
   const { data: module, isLoading: loadingModule } = useSWR(
-    `module:${slug}`,
-    () => modulesApi.get(slug) as Promise<ModuleDetail>
+    `module:${slug}:${effectiveTrack}`,
+    () => modulesApi.get(slug, effectiveTrack) as Promise<ModuleDetail>
   );
   const { data: allModules, isLoading: loadingModules } = useSWR(
     "modules",
