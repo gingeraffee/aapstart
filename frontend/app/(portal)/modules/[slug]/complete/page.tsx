@@ -13,7 +13,14 @@ import type { ModuleDetail, ModuleSummary, ProgressRecord } from "@/lib/types";
 
 export default function CompletePage() {
   const { slug } = useParams<{ slug: string }>();
-  const { effectiveTrack } = usePreview();
+  const { effectiveTrack, isPreviewing, markPreviewCompleted } = usePreview();
+
+  // Mark this module as "completed" in preview state so sidebar updates
+  useEffect(() => {
+    if (isPreviewing) {
+      markPreviewCompleted(slug);
+    }
+  }, [isPreviewing, slug, markPreviewCompleted]);
 
   const { data: module, isLoading: loadingModule } = useSWR(
     `module:${slug}:${effectiveTrack}`,

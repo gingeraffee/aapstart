@@ -6,7 +6,7 @@ import type { ModuleSummary, ProgressRecord } from "@/lib/types";
 
 export function useSidebarData() {
   const { user } = useAuth();
-  const { effectiveTrack, isPreviewing, canPreview } = usePreview();
+  const { effectiveTrack, isPreviewing, canPreview, previewCompletedSlugs } = usePreview();
 
   const isManagement = effectiveTrack === "management";
   const isRealHR = canPreview;
@@ -30,20 +30,16 @@ export function useSidebarData() {
   const isHRAdmin = user?.track === "hr" && user?.is_admin === true;
   const showManagementSection = isManagement;
 
-  const completedCount = progress
-    ? journeyModules.filter((m) => progress.find((p) => p.module_slug === m.slug)?.module_completed).length
-    : 0;
+  const isSlugCompleted = (slug: string) =>
+    (isPreviewing && previewCompletedSlugs.has(slug)) ||
+    (progress?.find((p) => p.module_slug === slug)?.module_completed ?? false);
+
+  const completedCount = journeyModules.filter((m) => isSlugCompleted(m.slug)).length;
 
   const isJourneyModuleUnlocked = (index: number) => {
     if (isEffectiveHR) return true;
-    if (isPreviewing) {
-      if (index === 0) return true;
-      const prevSlug = journeyModules[index - 1].slug;
-      return progress?.find((p) => p.module_slug === prevSlug)?.module_completed ?? false;
-    }
     if (index === 0) return true;
-    const prevSlug = journeyModules[index - 1].slug;
-    return progress?.find((p) => p.module_slug === prevSlug)?.module_completed ?? false;
+    return isSlugCompleted(journeyModules[index - 1].slug);
   };
 
   const canCollapse = isRealHR && isEffectiveHR;

@@ -77,7 +77,7 @@ export function AppShell({ children }: AppShellProps) {
   const { user, logout } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
-  const { effectiveTrack, isPreviewing, canPreview, setPreviewTrack } = usePreview();
+  const { effectiveTrack, isPreviewing, canPreview, setPreviewTrack, previewCompletedSlugs } = usePreview();
 
   // Use effectiveTrack for rendering decisions
   const isManagement = effectiveTrack === "management";
@@ -110,9 +110,11 @@ export function AppShell({ children }: AppShellProps) {
   const showJourney = !isManagement;
   const showManagementSection = isManagement;
 
-  const completedCount = progress
-    ? journeyModules.filter((m) => progress.find((p) => p.module_slug === m.slug)?.module_completed).length
-    : 0;
+  const isSlugCompleted = (slug: string) =>
+    (isPreviewing && previewCompletedSlugs.has(slug)) ||
+    (progress?.find((p) => p.module_slug === slug)?.module_completed ?? false);
+
+  const completedCount = journeyModules.filter((m) => isSlugCompleted(m.slug)).length;
 
   const isLearningProgramPage = pathname.startsWith("/learning-program");
   const isManagementGuidesPage = pathname.startsWith("/management-guides");
@@ -122,17 +124,9 @@ export function AppShell({ children }: AppShellProps) {
   const isRoadmapActive = pathname === "/roadmap";
 
   const isJourneyModuleUnlocked = (index: number) => {
-    // When previewing as a non-HR track, simulate sequential unlock
     if (isEffectiveHR) return true;
-    if (isPreviewing) {
-      // In preview mode, show sequential unlock based on progress
-      if (index === 0) return true;
-      const prevSlug = journeyModules[index - 1].slug;
-      return progress?.find((p) => p.module_slug === prevSlug)?.module_completed ?? false;
-    }
     if (index === 0) return true;
-    const prevSlug = journeyModules[index - 1].slug;
-    return progress?.find((p) => p.module_slug === prevSlug)?.module_completed ?? false;
+    return isSlugCompleted(journeyModules[index - 1].slug);
   };
 
   // Collapsibility: HR users can collapse, previewed tracks behave like their real track
@@ -238,8 +232,7 @@ export function AppShell({ children }: AppShellProps) {
 
               <div className="space-y-1">
                 {journeyModules.map((m, i) => {
-                  const prog = progress?.find((p) => p.module_slug === m.slug);
-                  const isComplete = prog?.module_completed ?? false;
+                  const isComplete = isSlugCompleted(m.slug);
                   const isActive = pathname.startsWith(`/modules/${m.slug}`);
                   const unlocked = isJourneyModuleUnlocked(i);
 

@@ -164,7 +164,7 @@ function ManagementOverview({ firstName, managementModules }: { firstName: strin
 
 export default function OverviewPage() {
   const { user } = useAuth();
-  const { effectiveTrack, isPreviewing } = usePreview();
+  const { effectiveTrack, isPreviewing, previewCompletedSlugs } = usePreview();
   const isManagement = effectiveTrack === "management";
   const isHR = effectiveTrack === "hr";
 
@@ -210,10 +210,14 @@ export default function OverviewPage() {
     .filter((m) => !isPreviewing || m.tracks?.includes("all") || m.tracks?.includes(effectiveTrack) || isHRReplacement(m.slug));
   const managementModules = liveModules.filter((m) => m.tracks?.includes("management"));
 
-  const comingSoonCount = allModules.filter((m) => m.status === "coming_soon").length;
-  const completedCount = journeyModules.filter((m) => progressMap.get(m.slug)?.module_completed).length;
+  const isSlugCompleted = (slug: string) =>
+    (isPreviewing && previewCompletedSlugs.has(slug)) ||
+    (progressMap.get(slug)?.module_completed ?? false);
 
-  const currentModule = journeyModules.find((m) => !progressMap.get(m.slug)?.module_completed);
+  const comingSoonCount = allModules.filter((m) => m.status === "coming_soon").length;
+  const completedCount = journeyModules.filter((m) => isSlugCompleted(m.slug)).length;
+
+  const currentModule = journeyModules.find((m) => !isSlugCompleted(m.slug));
 
   useEffect(() => {
     if (isManagement) return; // No celebration for management track
@@ -231,8 +235,7 @@ export default function OverviewPage() {
   const isJourneyModuleUnlocked = (index: number) => {
     if (isHRAdmin && !isPreviewing) return true;
     if (index === 0) return true;
-    const prevSlug = journeyModules[index - 1].slug;
-    return progressMap.get(prevSlug)?.module_completed ?? false;
+    return isSlugCompleted(journeyModules[index - 1].slug);
   };
 
   const nextToUnlockIndex = journeyModules.findIndex((_, i) => !isJourneyModuleUnlocked(i));
@@ -876,7 +879,7 @@ export default function OverviewPage() {
           <div className={`space-y-3.5 ${isHRAdmin && !journeyExpanded ? "hidden" : ""}`}>
             {journeyModules.map((module, index) => {
               const prog = progressMap.get(module.slug);
-              const isComplete = prog?.module_completed ?? false;
+              const isComplete = isSlugCompleted(module.slug);
               const isInProgress = !isComplete && (prog?.visited || prog?.acknowledgements_completed || prog?.quiz_passed);
               const isCurrent = module.slug === currentModule?.slug;
               const unlocked = isJourneyModuleUnlocked(index);

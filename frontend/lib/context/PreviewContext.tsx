@@ -19,6 +19,10 @@ interface PreviewContextValue {
   canPreview: boolean;
   /** Set preview to a specific track, or null to reset */
   setPreviewTrack: (track: Track | null) => void;
+  /** Slugs "completed" during preview (in-memory only, resets on track switch) */
+  previewCompletedSlugs: Set<string>;
+  /** Mark a module as completed during preview */
+  markPreviewCompleted: (slug: string) => void;
 }
 
 const PreviewContext = createContext<PreviewContextValue>({
@@ -28,6 +32,8 @@ const PreviewContext = createContext<PreviewContextValue>({
   isPreviewing: false,
   canPreview: false,
   setPreviewTrack: () => {},
+  previewCompletedSlugs: new Set(),
+  markPreviewCompleted: () => {},
 });
 
 export function usePreview() {
@@ -40,6 +46,11 @@ export function PreviewProvider({ children }: { children: React.ReactNode }) {
   const canPreview = !!user && actualTrack === "hr" && user.is_admin === true;
 
   const [previewTrack, setPreviewTrackState] = useState<Track | null>(null);
+  const [previewCompletedSlugs, setPreviewCompletedSlugs] = useState<Set<string>>(new Set());
+
+  const markPreviewCompleted = useCallback((slug: string) => {
+    setPreviewCompletedSlugs((prev) => new Set(prev).add(slug));
+  }, []);
 
   // Load persisted preview track on mount
   useEffect(() => {
@@ -63,6 +74,7 @@ export function PreviewProvider({ children }: { children: React.ReactNode }) {
       // If setting to own actual track, treat as clearing preview
       const effective = track === actualTrack ? null : track;
       setPreviewTrackState(effective);
+      setPreviewCompletedSlugs(new Set());
       try {
         if (effective) {
           localStorage.setItem(STORAGE_KEY, effective);
@@ -100,6 +112,8 @@ export function PreviewProvider({ children }: { children: React.ReactNode }) {
         isPreviewing,
         canPreview,
         setPreviewTrack,
+        previewCompletedSlugs,
+        markPreviewCompleted,
       }}
     >
       {children}
