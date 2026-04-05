@@ -121,8 +121,10 @@ export function ContentBlock({ block, emphasizeLead = false, variant = "training
 
     case "video": {
       const isEmbed = block.src?.startsWith("http") && !block.src?.endsWith(".mp4");
-      // Local video files (e.g. /downloads/...) need to be served from the backend
-      const videoSrc = block.src && !block.src.startsWith("http")
+      // Backend-served files (e.g. /downloads/..., /static/...) need the backend URL prefix;
+      // other local paths (e.g. /welcome-to-aap.mp4) are served from frontend /public
+      const needsBackendPrefix = block.src && !block.src.startsWith("http") && (block.src.startsWith("/downloads/") || block.src.startsWith("/static/"));
+      const videoSrc = needsBackendPrefix
         ? `${(process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api").replace(/\/api$/, "")}${block.src}`
         : block.src;
       return (
