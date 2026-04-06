@@ -1137,8 +1137,25 @@ export default function ModulePage() {
 
   if (error || !module) {
     return (
-      <div className="mx-auto w-full max-w-[860px] px-6 py-10">
-        <p className="text-[0.88rem] text-text-secondary">Module not found.</p>
+      <div className="flex min-h-[60vh] items-center justify-center px-6">
+        <div className="mx-auto w-full max-w-[420px] text-center">
+          <h2
+            className="mb-2 font-display text-[1.25rem] font-semibold tracking-tight"
+            style={{ color: "#0d1f3a", letterSpacing: "-0.02em" }}
+          >
+            Uh-oh, this isn&apos;t supposed to happen
+          </h2>
+          <p className="mb-6 text-[0.92rem] leading-relaxed" style={{ color: "#5b7fa6" }}>
+            Let&apos;s get you back on track.
+          </p>
+          <Link
+            href="/overview"
+            className="inline-flex items-center gap-2 rounded-[10px] px-5 py-2.5 text-[0.88rem] font-semibold text-white shadow-sm transition-all hover:brightness-110"
+            style={{ background: "linear-gradient(140deg, #17365d 0%, #0f7fb3 74%, #21b8e7 100%)" }}
+          >
+            Go to Overview
+          </Link>
+        </div>
       </div>
     );
   }
