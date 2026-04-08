@@ -11,6 +11,7 @@ from app.modules.router import router as modules_router
 from app.progress.router import router as progress_router
 from app.resources.router import router as resources_router
 from app.admin.router import router as admin_router
+from app.notes.router import router as notes_router
 from fastapi.middleware.cors import CORSMiddleware
 
 settings = get_settings()
@@ -64,6 +65,7 @@ app.include_router(modules_router)
 app.include_router(progress_router)
 app.include_router(resources_router)
 app.include_router(admin_router)
+app.include_router(notes_router)
 
 # ── Static files (serves videos/media from backend/static/downloads/) ────────
 _DOWNLOADS_DIR = Path(__file__).parent.parent / "static" / "downloads"

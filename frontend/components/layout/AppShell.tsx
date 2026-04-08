@@ -211,6 +211,43 @@ export function AppShell({ children }: AppShellProps) {
           </Link>
           )}
 
+          {/* Notes & Questions link */}
+          <Link
+            href="/notes"
+            className={cn(
+              "mb-1.5 flex items-center gap-2.5 rounded-[12px] px-3.5 py-2.5 text-[0.8rem] font-semibold transition-all duration-200",
+              pathname === "/notes"
+                ? "shadow-[0_8px_14px_rgba(16,35,60,0.16)]"
+                : ""
+            )}
+            style={{
+              color: pathname === "/notes" ? "var(--sidebar-text-active)" : "var(--sidebar-text)",
+              ...(pathname === "/notes" ? activeNavStyle : undefined),
+            }}
+          >
+            <span
+              className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full transition-all"
+              style={{
+                color: pathname === "/notes" ? "var(--sidebar-icon-active-text)" : "var(--sidebar-icon-text)",
+                background: pathname === "/notes" ? "var(--sidebar-icon-active-bg)" : "var(--sidebar-icon-bg)",
+              }}
+            >
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M8.5 1.5a1.06 1.06 0 011.5 1.5L3.5 9.5H2v-1.5L8.5 1.5z" />
+              </svg>
+            </span>
+            Notes &amp; Questions
+          </Link>
+
           {/* ── Your Journey section (warehouse, administrative, HR) ── */}
           {showJourney && (
             <details open={!canCollapse} className="group mt-5 [&_summary::-webkit-details-marker]:hidden">

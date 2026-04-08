@@ -91,6 +91,23 @@ export const adminApi = {
     request(`/admin/employees/${employee_id}/progress`),
 };
 
+export const notesApi = {
+  getAll: () => request<import("./types").UserNote[]>("/notes"),
+  getForModule: (slug: string) => request<import("./types").UserNote[]>(`/notes/${slug}`),
+  create: (slug: string, note_text: string, module_title?: string) =>
+    request<import("./types").UserNote>(`/notes/${slug}`, {
+      method: "POST",
+      body: JSON.stringify({ note_text, module_title }),
+    }),
+  updateStatus: (note_id: number, status: "open" | "answered") =>
+    request<import("./types").UserNote>(`/notes/${note_id}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status }),
+    }),
+  delete: (note_id: number) =>
+    request<void>(`/notes/${note_id}`, { method: "DELETE" }),
+};
+
 export const resourcesApi = {
   ui: () => request("/resources/ui"),
   list: (category?: string, q?: string) => {

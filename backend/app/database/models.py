@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Boolean, Integer, DateTime, func
+from sqlalchemy import Column, String, Boolean, Integer, DateTime, Text, func
 from app.database.connection import Base
 
 
@@ -51,3 +51,17 @@ class UserProgress(Base):
     completed_at = Column(DateTime, nullable=True)
 
     last_updated = Column(DateTime, default=func.now(), onupdate=func.now())
+
+
+class UserNote(Base):
+    """A note or question a user writes while working through a module."""
+    __tablename__ = "user_notes"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    employee_id = Column(String, nullable=False, index=True)
+    module_slug = Column(String, nullable=False, index=True)
+    module_title = Column(String, nullable=True)
+    note_text = Column(Text, nullable=False)
+    status = Column(String, nullable=False, default="open")  # "open" | "answered"
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())

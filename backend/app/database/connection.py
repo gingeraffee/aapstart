@@ -42,6 +42,15 @@ def init_db():
 def _migrate():
     """Add any missing columns to existing tables (lightweight auto-migration)."""
     insp = inspect(engine)
+
+    # user_notes table — created by create_all, but add any missing columns for upgrades
+    if insp.has_table("user_notes"):
+        note_cols = {c["name"] for c in insp.get_columns("user_notes")}
+        if "module_title" not in note_cols:
+            with engine.begin() as conn:
+                conn.execute(text("ALTER TABLE user_notes ADD COLUMN module_title VARCHAR"))
+            print("[OK] Added module_title column to user_notes table")
+
     # Check employees table for last_login_at column
     if insp.has_table("employees"):
         cols = {c["name"] for c in insp.get_columns("employees")}

@@ -187,3 +187,14 @@ export interface ResourceCategory {
   id: string;
   label: string;
 }
+
+export interface UserNote {
+  id: number;
+  employee_id: string;
+  module_slug: string;
+  module_title: string | null;
+  note_text: string;
+  status: "open" | "answered";
+  created_at: string;
+  updated_at: string;
+}

@@ -11,6 +11,7 @@ import { ContentBlock } from "@/components/features/modules/ContentBlock";
 import { GuidanceAccordion } from "@/components/features/modules/GuidanceAccordion";
 import { GutCheckBlock } from "@/components/features/modules/GutCheckBlock";
 import { ModulePanel, ModuleShell, buildModuleSteps } from "@/components/features/modules/ModuleShell";
+import { NoteWidget } from "@/components/features/notes/NoteWidget";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
@@ -2620,6 +2621,13 @@ export default function ModulePage() {
         {displaySections.length > 1
           ? renderSection(displaySections[displaySections.length - 1], displaySections.length - 1, "open")
           : null}
+
+        {/* Notes & Questions widget — visible on all module types */}
+        {!isPreviewing && (
+          <div className="mt-6">
+            <NoteWidget moduleSlug={currentModule.slug} moduleTitle={currentModule.title} />
+          </div>
+        )}
 
         {isManagement ? (
         <div className="mt-10 pt-5" style={{ borderTop: "1px solid var(--mgmt-section-divider)" }}>

@@ -238,6 +238,33 @@ export function MobileBottomNav() {
       {/* More sheet */}
       <MobileNavSheet open={moreOpen} onClose={() => setMoreOpen(false)} title="Settings">
         <div className="space-y-4">
+          {/* Notes & Questions */}
+          <Link
+            href="/notes"
+            onClick={() => setMoreOpen(false)}
+            className={cn(
+              "flex items-center gap-3 rounded-[12px] px-3.5 py-3 text-[0.85rem] font-semibold transition-all",
+              pathname === "/notes" ? "shadow-[0_4px_10px_rgba(16,35,60,0.12)]" : ""
+            )}
+            style={{
+              color: pathname === "/notes" ? "var(--sidebar-text-active)" : "var(--sidebar-text)",
+              ...(pathname === "/notes" ? activeNavStyle : undefined),
+            }}
+          >
+            <span
+              className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full"
+              style={{
+                color: pathname === "/notes" ? "var(--sidebar-icon-active-text)" : "var(--sidebar-icon-text)",
+                background: pathname === "/notes" ? "var(--sidebar-icon-active-bg)" : "var(--sidebar-icon-bg)",
+              }}
+            >
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M8.5 1.5a1.06 1.06 0 011.5 1.5L3.5 9.5H2v-1.5L8.5 1.5z" />
+              </svg>
+            </span>
+            Notes &amp; Questions
+          </Link>
+
           {/* Completion count */}
           {!isManagement && (
             <div
