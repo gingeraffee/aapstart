@@ -2162,6 +2162,9 @@ export default function ModulePage() {
           ))}
         </div>
       ) : null}
+      {!isPreviewing && (
+        <NoteWidget moduleSlug={currentModule.slug} moduleTitle={currentModule.title} />
+      )}
     </div>
   ) : (
     <div className="space-y-3">
@@ -2224,6 +2227,9 @@ export default function ModulePage() {
           </div>
         </div>
       ) : null}
+      {!isPreviewing && (
+        <NoteWidget moduleSlug={currentModule.slug} moduleTitle={currentModule.title} />
+      )}
     </div>
   );
 
@@ -2622,13 +2628,6 @@ export default function ModulePage() {
         {displaySections.length > 1
           ? renderSection(displaySections[displaySections.length - 1], displaySections.length - 1, "open")
           : null}
-
-        {/* Notes & Questions widget — visible on all module types */}
-        {!isPreviewing && (
-          <div className="mt-6">
-            <NoteWidget moduleSlug={currentModule.slug} moduleTitle={currentModule.title} />
-          </div>
-        )}
 
         {isManagement ? (
         <div className="mt-10 pt-5" style={{ borderTop: "1px solid var(--mgmt-section-divider)" }}>
