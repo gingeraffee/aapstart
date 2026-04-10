@@ -89,6 +89,8 @@ export const adminApi = {
     request(`/admin/employees/${employee_id}/reset-totp`, { method: "POST" }),
   employeeProgress: (employee_id: string) =>
     request(`/admin/employees/${employee_id}/progress`),
+  employeeNotes: (employee_id: string) =>
+    request(`/admin/employees/${employee_id}/notes`),
 };
 
 export const notesApi = {

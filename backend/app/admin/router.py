@@ -6,7 +6,7 @@ from sqlalchemy import func as sa_func
 
 from app.auth.service import require_admin
 from app.database.connection import get_db
-from app.database.models import Employee, UserProgress
+from app.database.models import Employee, UserProgress, UserNote
 from app.content.loader import get_modules_for_track
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
@@ -308,6 +308,32 @@ def get_employee_progress(
             "completed_at": r.completed_at.isoformat() if r.completed_at else None,
         }
         for r in rows
+    ]
+
+
+@router.get("/employees/{employee_id}/notes")
+def get_employee_notes(
+    employee_id: str,
+    admin: dict = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Return all notes written by a specific employee."""
+    emp = db.query(Employee).filter_by(employee_id=employee_id).first()
+    if not emp:
+        raise HTTPException(status_code=404, detail="Employee not found.")
+    notes = (
+        db.query(UserNote)
+        .filter_by(employee_id=employee_id)
+        .order_by(UserNote.updated_at.desc())
+        .all()
+    )
+    return [
+        {
+            "module_slug": n.module_slug,
+            "note_text": n.note_text,
+            "updated_at": n.updated_at.isoformat() if n.updated_at else None,
+        }
+        for n in notes
     ]
 
 

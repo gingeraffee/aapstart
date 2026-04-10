@@ -10,6 +10,7 @@ import { usePreview } from "@/lib/context/PreviewContext";
 import { ContentBlock } from "@/components/features/modules/ContentBlock";
 import { GuidanceAccordion } from "@/components/features/modules/GuidanceAccordion";
 import { GutCheckBlock } from "@/components/features/modules/GutCheckBlock";
+import { ModuleNotesSidebar } from "@/components/features/modules/ModuleNotesSidebar";
 import { ModulePanel, ModuleShell, buildModuleSteps } from "@/components/features/modules/ModuleShell";
 import { NoteWidget } from "@/components/features/notes/NoteWidget";
 import { Button } from "@/components/ui/Button";
@@ -2653,6 +2654,7 @@ export default function ModulePage() {
         )}
       </div>
     </ModuleShell>
+    <ModuleNotesSidebar moduleSlug={slug as string} moduleTitle={currentModule.title} />
     </>
   );
 }

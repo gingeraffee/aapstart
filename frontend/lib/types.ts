@@ -198,3 +198,9 @@ export interface UserNote {
   created_at: string;
   updated_at: string;
 }
+
+export interface NoteRecord {
+  module_slug: string;
+  note_text: string;
+  updated_at: string | null;
+}

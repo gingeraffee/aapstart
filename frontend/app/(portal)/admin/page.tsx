@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/context/AuthContext";
 import { adminApi, modulesApi } from "@/lib/api";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
-import type { EmployeeImportResult, EmployeeImportRowInput, EmployeeRecord, ModuleSummary } from "@/lib/types";
+import type { EmployeeImportResult, EmployeeImportRowInput, EmployeeRecord, ModuleSummary, NoteRecord } from "@/lib/types";
 
 const TRACKS = ["hr", "warehouse", "administrative", "management"] as const;
 const TRACK_LABELS: Record<string, string> = {
@@ -276,6 +276,7 @@ function EmployeeRow({ emp, currentUserId, modules, onDeleted }: { emp: Employee
   const [expanded, setExpanded] = useState(false);
   const [moduleProgress, setModuleProgress] = useState<ModuleProgress[] | null>(null);
   const [loadingProgress, setLoadingProgress] = useState(false);
+  const [employeeNotes, setEmployeeNotes] = useState<NoteRecord[] | null>(null);
   const isSelf = emp.employee_id === currentUserId;
   const lastLogin = emp.last_login_at
     ? new Date(emp.last_login_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
@@ -290,10 +291,15 @@ function EmployeeRow({ emp, currentUserId, modules, onDeleted }: { emp: Employee
     if (!moduleProgress) {
       setLoadingProgress(true);
       try {
-        const data = await adminApi.employeeProgress(emp.employee_id) as ModuleProgress[];
-        setModuleProgress(data);
+        const [progressData, notesData] = await Promise.all([
+          adminApi.employeeProgress(emp.employee_id) as Promise<ModuleProgress[]>,
+          adminApi.employeeNotes(emp.employee_id) as Promise<NoteRecord[]>,
+        ]);
+        setModuleProgress(progressData);
+        setEmployeeNotes(notesData);
       } catch {
         setModuleProgress([]);
+        setEmployeeNotes([]);
       } finally {
         setLoadingProgress(false);
       }
@@ -531,6 +537,7 @@ function EmployeeRow({ emp, currentUserId, modules, onDeleted }: { emp: Employee
     {expanded && (
       <tr className="border-b border-slate-100">
         <td colSpan={5} className="px-6 pb-4 pt-0">
+          <div className="space-y-3">
           <div
             className="rounded-[14px] p-4"
             style={{ background: "rgba(241, 245, 249, 0.6)", border: "1px solid rgba(153,182,218,0.25)" }}
@@ -605,6 +612,51 @@ function EmployeeRow({ emp, currentUserId, modules, onDeleted }: { emp: Employee
                   })}
               </div>
             )}
+          </div>
+
+          {/* Notes panel — only shown when there are notes */}
+          {!loadingProgress && employeeNotes && employeeNotes.length > 0 && (
+            <div
+              className="rounded-[14px] p-4"
+              style={{ background: "rgba(241, 245, 249, 0.6)", border: "1px solid rgba(153,182,218,0.25)" }}
+            >
+              <p className="mb-3 text-[0.66rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>
+                Module Notes
+              </p>
+              <div className="space-y-2">
+                {employeeNotes.map((note) => {
+                  const moduleTitle = modules.find((m) => m.slug === note.module_slug)?.title ?? note.module_slug;
+                  const updatedDate = note.updated_at
+                    ? new Date(note.updated_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                    : null;
+                  return (
+                    <div
+                      key={note.module_slug}
+                      className="rounded-[10px] px-3 py-2.5"
+                      style={{ background: "rgba(14,118,189,0.05)", border: "1px solid rgba(14,118,189,0.12)" }}
+                    >
+                      <div className="flex items-center justify-between gap-3 mb-1">
+                        <p className="text-[0.72rem] font-semibold leading-tight" style={{ color: "var(--heading-color)" }}>
+                          {moduleTitle}
+                        </p>
+                        {updatedDate && (
+                          <span className="shrink-0 text-[0.64rem]" style={{ color: "var(--module-context)" }}>
+                            {updatedDate}
+                          </span>
+                        )}
+                      </div>
+                      <p
+                        className="text-[0.76rem] leading-[1.55] whitespace-pre-wrap"
+                        style={{ color: "var(--card-desc)" }}
+                      >
+                        {note.note_text}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
           </div>
         </td>
       </tr>
