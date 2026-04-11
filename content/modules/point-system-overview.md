@@ -20,7 +20,7 @@ AAP uses a **no-fault attendance point system** to track attendance for all hour
 
 Points are tracked on a **rolling 12-month basis**. No employee may exceed **8.0 points** within any 12-month period.
 
-All point values are determined by the employee's scheduled shift length:
+All point values are determined by the employee's employment type:
 
 - **Full-time employees** are assessed based on an 8-hour shift.
 - **Part-time employees** are assessed based on a 4-hour shift.
@@ -75,12 +75,9 @@ An employee's point balance will never go below 0.0. If a roll off would reduce 
 
 ## 7. Perfect Attendance Bonus
 
-Employees who earn **no points** during an entire quarter will receive a **$75 bonus**, paid out on the first payroll of the following month. This bonus can be earned up to four times per year.
+Any employee who goes **three consecutive months** without earning any points will receive a **$75 bonus**, paid out on the first payroll of the following month. The bonus is earned every third month of perfect attendance — it is not tied to fixed calendar quarters, so any three-month stretch qualifies.
 
-- **Q1 (January – March):** Bonus paid on first payroll in April
-- **Q2 (April – June):** Bonus paid on first payroll in July
-- **Q3 (July – September):** Bonus paid on first payroll in October
-- **Q4 (October – December):** Bonus paid on first payroll in January
+For example, an employee with no points in January, February, and March earns the bonus on the first payroll in April. An employee with no points in February, March, and April earns the bonus on the first payroll in May.
 
 ## 8. Corrective Action Thresholds
 
