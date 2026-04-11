@@ -78,6 +78,7 @@ resources:
     type: download
     filename: Attendance_Point_System_Quick_Reference.pdf
     category: policies
+    module_slug: point-system-overview
 
   - id: employee-handbook
     title: AAP Employee Handbook
@@ -100,6 +101,7 @@ resources:
     filename: AAP_Point_System_Overview.pdf
     category: policies
     tracks: [hr, management]
+    module_slug: point-system-overview
 
   - id: employee-warning-notice
     title: Employee Warning Notice
@@ -108,6 +110,7 @@ resources:
     filename: Employee_Warning_Notice.pdf
     category: policies
     tracks: [hr, management]
+    module_slug: coaching-corrective-action
 
   - id: pip-template
     title: Performance Improvement Plan (PIP) Template
@@ -116,6 +119,7 @@ resources:
     filename: Performance_Improvement_Plan_Template.pdf
     category: policies
     tracks: [hr, management]
+    module_slug: coaching-corrective-action
 
   - id: pto-policy
     title: Paid Time Off Policy
@@ -342,6 +346,7 @@ resources:
     filename: AAP_API_Manager_Onboarding_Process_Guide.pdf
     category: training
     tracks: [hr, management]
+    module_slug: hiring-onboarding
 
   - id: manager-offboarding-guide
     title: Manager Offboarding Process Guide
@@ -350,6 +355,7 @@ resources:
     filename: AAP_API_Manager_Offboarding_Process_Guide.docx
     category: training
     tracks: [hr, management]
+    module_slug: exits-and-offboarding
 
   - id: coaching-corrective-action-guide
     title: Coaching & Corrective Action Guide
@@ -358,6 +364,7 @@ resources:
     filename: AAP_API_Coaching_Corrective_Action_Guide.docx
     category: training
     tracks: [hr, management]
+    module_slug: coaching-corrective-action
 
   - id: performance-management-guide
     title: Performance Management Guide
@@ -366,6 +373,7 @@ resources:
     filename: Manager_BambooHR_Performance_Management_Guide.docx
     category: training
     tracks: [hr, management]
+    module_slug: performance-management
 
   - id: employee-change-guide
     title: Employee Change Process Guide
@@ -374,6 +382,7 @@ resources:
     filename: Manager_Employee_Change_Process_Guide.pdf
     category: training
     tracks: [hr, management]
+    module_slug: employee-changes
 
   - id: recruiting-process-guide
     title: Recruiting Process Guide
@@ -382,6 +391,7 @@ resources:
     filename: manager-recruiting-process.docx
     category: training
     tracks: [hr, management]
+    module_slug: recruitment-process
 
   - id: verbal-offer-guidelines
     title: Verbal Offer Guidelines
@@ -390,6 +400,7 @@ resources:
     filename: verbal-offer-guidelines.pdf
     category: training
     tracks: [hr, management]
+    module_slug: recruitment-process
 
   - id: what-not-to-say-offer
     title: What NOT to Say During a Verbal Offer
@@ -398,6 +409,7 @@ resources:
     filename: what-not-to-say-verbal-offer.pdf
     category: training
     tracks: [hr, management]
+    module_slug: recruitment-process
 
   - id: competency-interview-questions
     title: Competency-Based Interview Questions
@@ -406,6 +418,7 @@ resources:
     filename: competency-interview-questions.pdf
     category: training
     tracks: [hr, management]
+    module_slug: recruitment-process
 
   - id: scenario-interview-questions
     title: Scenario-Based Interview Questions
@@ -414,3 +427,4 @@ resources:
     filename: scenario-based-interview-questions.pdf
     category: training
     tracks: [hr, management]
+    module_slug: recruitment-process

@@ -110,6 +110,13 @@ export const notesApi = {
     request<void>(`/notes/${note_id}`, { method: "DELETE" }),
 };
 
+export const searchApi = {
+  all: (q: string) =>
+    request<import("./types").SearchResultItem[]>(
+      `/search?q=${encodeURIComponent(q)}`
+    ),
+};
+
 export const resourcesApi = {
   ui: () => request("/resources/ui"),
   list: (category?: string, q?: string) => {

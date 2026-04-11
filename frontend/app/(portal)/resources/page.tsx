@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import useSWR from "swr";
-import { resourcesApi } from "@/lib/api";
+import { resourcesApi, searchApi } from "@/lib/api";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
-import type { Resource, ResourceCategory } from "@/lib/types";
+import type { Resource, ResourceCategory, SearchResultItem } from "@/lib/types";
 
 const CONTACTS = [
   // HR
@@ -197,6 +198,15 @@ function DownloadIcon() {
   );
 }
 
+function ModuleIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="1" width="12" height="12" rx="2" />
+      <path d="M4 4h6M4 7h6M4 10h4" />
+    </svg>
+  );
+}
+
 function SearchIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -259,31 +269,85 @@ function ResourceCard({ resource }: { resource: Resource }) {
       <p className="mb-1 text-[0.9rem] font-semibold leading-snug" style={{ color: "var(--heading-color)" }}>{resource.title}</p>
       <p className="mb-4 flex-1 text-[0.78rem] leading-relaxed" style={{ color: "var(--module-context)" }}>{resource.description}</p>
 
-      {resource.type === "link" ? (
-        <a
-          href={resource.url}
-          target={resource.url?.startsWith("/") ? "_self" : "_blank"}
-          rel="noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-[0.78rem] font-semibold transition-all duration-150 hover:-translate-y-px"
-          style={{ backgroundColor: colors.bg, color: colors.icon }}
-        >
-          Open
-          <ExternalLinkIcon />
-        </a>
-      ) : (
-        <button
-          onClick={handleDownload}
-          disabled={downloading}
-          className="inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-[0.78rem] font-semibold transition-all duration-150 hover:-translate-y-px disabled:opacity-60"
-          style={{ backgroundColor: colors.bg, color: colors.icon }}
-        >
-          {downloading ? "Downloading..." : "Download"}
-          {!downloading && <DownloadIcon />}
-        </button>
-      )}
+      <div className="flex flex-wrap items-center gap-2">
+        {resource.type === "link" ? (
+          <a
+            href={resource.url}
+            target={resource.url?.startsWith("/") ? "_self" : "_blank"}
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-[0.78rem] font-semibold transition-all duration-150 hover:-translate-y-px"
+            style={{ backgroundColor: colors.bg, color: colors.icon }}
+          >
+            Open
+            <ExternalLinkIcon />
+          </a>
+        ) : (
+          <button
+            onClick={handleDownload}
+            disabled={downloading}
+            className="inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-[0.78rem] font-semibold transition-all duration-150 hover:-translate-y-px disabled:opacity-60"
+            style={{ backgroundColor: colors.bg, color: colors.icon }}
+          >
+            {downloading ? "Downloading..." : "Download"}
+            {!downloading && <DownloadIcon />}
+          </button>
+        )}
+
+        {resource.module_slug && (
+          <Link
+            href={`/modules/${resource.module_slug}`}
+            className="inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-[0.78rem] font-semibold transition-all duration-150 hover:-translate-y-px"
+            style={{ backgroundColor: "var(--login-input-bg)", color: "var(--module-context)", border: "1px solid var(--card-border)" }}
+          >
+            View Module
+            <ModuleIcon />
+          </Link>
+        )}
+      </div>
       </div>
     </div>
   );
+}
+
+function SearchResultCard({ item }: { item: SearchResultItem }) {
+  if (item.result_type === "module") {
+    return (
+      <div
+        className="flex overflow-hidden rounded-[16px]"
+        style={{
+          background: "var(--card-bg)",
+          border: "1px solid var(--card-border)",
+          boxShadow: "0 14px 28px rgba(12, 24, 47, 0.09)",
+        }}
+      >
+        <div className="w-[4px] shrink-0 rounded-l-[16px]" style={{ background: "#0f7fb3" }} />
+        <div className="flex flex-1 flex-col p-5">
+          <div className="mb-4 flex items-center gap-2">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ backgroundColor: "rgba(15,127,179,0.14)" }}>
+              <span style={{ color: "#0f7fb3" }}><ModuleIcon /></span>
+            </div>
+            <span className="rounded-full px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide" style={{ backgroundColor: "rgba(15,127,179,0.14)", color: "#0f7fb3" }}>
+              Training Module
+            </span>
+          </div>
+          <p className="mb-1 text-[0.9rem] font-semibold leading-snug" style={{ color: "var(--heading-color)" }}>{item.title}</p>
+          <p className="mb-4 flex-1 text-[0.78rem] leading-relaxed" style={{ color: "var(--module-context)" }}>{item.description}</p>
+          <div className="mb-3 text-[0.72rem]" style={{ color: "var(--module-context)" }}>{item.estimated_minutes} min read</div>
+          <Link
+            href={`/modules/${item.slug}`}
+            className="inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-[0.78rem] font-semibold transition-all duration-150 hover:-translate-y-px"
+            style={{ backgroundColor: "rgba(15,127,179,0.14)", color: "#0f7fb3" }}
+          >
+            View Module
+            <ModuleIcon />
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Resource result — reuse ResourceCard
+  return <ResourceCard resource={item} />;
 }
 
 export default function ResourceHubPage() {
@@ -291,21 +355,32 @@ export default function ResourceHubPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
 
+  const isSearching = debouncedQuery.trim().length > 0;
+
   useEffect(() => {
     const t = setTimeout(() => setDebouncedQuery(searchQuery), 300);
     return () => clearTimeout(t);
   }, [searchQuery]);
 
-  const fetcher = useCallback(
-    () => resourcesApi.list(activeCategory !== "all" ? activeCategory : undefined, debouncedQuery || undefined) as Promise<Resource[]>,
-    [activeCategory, debouncedQuery]
+  const resourceFetcher = useCallback(
+    () => resourcesApi.list(activeCategory !== "all" ? activeCategory : undefined) as Promise<Resource[]>,
+    [activeCategory]
   );
 
-  const swrKey = `resources:${activeCategory}:${debouncedQuery}`;
-  const { data: resources, isLoading: loadingResources } = useSWR(swrKey, fetcher);
+  const { data: resources, isLoading: loadingResources } = useSWR(
+    isSearching ? null : `resources:${activeCategory}`,
+    resourceFetcher
+  );
+
+  const { data: searchResults, isLoading: loadingSearch } = useSWR(
+    isSearching ? `search:${debouncedQuery}` : null,
+    () => searchApi.all(debouncedQuery)
+  );
+
   const { data: categories } = useSWR("resource-categories", () => resourcesApi.categories() as Promise<ResourceCategory[]>);
 
   const allCategories: ResourceCategory[] = [{ id: "all", label: "All" }, ...(categories ?? [])];
+  const isLoading = isSearching ? loadingSearch : loadingResources;
 
   return (
     <div className="px-6 py-8">
@@ -337,7 +412,7 @@ export default function ResourceHubPage() {
                 </span>
                 <input
                   type="text"
-                  placeholder="Search resources..."
+                  placeholder="Search resources & modules..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full rounded-xl py-2 pl-9 pr-4 text-[0.84rem] focus:outline-none focus:ring-2 focus:ring-cyan-200"
@@ -345,7 +420,7 @@ export default function ResourceHubPage() {
                 />
               </div>
 
-              <div className="flex flex-wrap gap-1.5">
+              <div className={cn("flex flex-wrap gap-1.5 transition-opacity duration-200", isSearching && "pointer-events-none opacity-30")}>
                 {allCategories.map((cat) => (
                   <button
                     key={cat.id}
@@ -364,16 +439,29 @@ export default function ResourceHubPage() {
               </div>
             </div>
 
-            {loadingResources ? (
+            {isLoading ? (
               <div className="flex justify-center py-16">
                 <Spinner />
               </div>
+            ) : isSearching ? (
+              !searchResults || searchResults.length === 0 ? (
+                <div className="flex flex-col items-center py-16 text-center">
+                  <p className="text-[0.9rem] font-semibold" style={{ color: "var(--module-context)" }}>No results for &ldquo;{debouncedQuery}&rdquo;</p>
+                  <p className="mt-1 text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>Try a different word or phrase.</p>
+                </div>
+              ) : (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {searchResults.map((item) => (
+                    <SearchResultCard
+                      key={item.result_type === "module" ? `module:${item.slug}` : `resource:${item.id}`}
+                      item={item}
+                    />
+                  ))}
+                </div>
+              )
             ) : !resources || resources.length === 0 ? (
               <div className="flex flex-col items-center py-16 text-center">
                 <p className="text-[0.9rem] font-semibold" style={{ color: "var(--module-context)" }}>No resources found</p>
-                {debouncedQuery && (
-                  <p className="mt-1 text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>Try a different search term or clear the filter.</p>
-                )}
               </div>
             ) : (
               <div className="grid gap-4 sm:grid-cols-2">

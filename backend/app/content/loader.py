@@ -148,6 +148,53 @@ def get_resource_categories() -> list[dict]:
     return _resources_cache.get("categories", [])
 
 
+def search_all(query: str, track: str, is_admin: bool = False) -> list[dict]:
+    """
+    Flat unified search across training modules and resources for the user's track.
+    Returns a mixed list ordered by relevance (title matches first, then description).
+    Each item includes a result_type field: "module" or "resource".
+    """
+    q_lower = query.lower().strip()
+    if not q_lower:
+        return []
+
+    results = []
+
+    # ── Search modules ────────────────────────────────────────────────────────
+    modules = get_modules_for_track(track, is_admin)
+    for m in modules:
+        title_match = q_lower in m.get("title", "").lower()
+        desc_match = q_lower in m.get("description", "").lower()
+        if title_match or desc_match:
+            results.append({
+                **m,
+                "result_type": "module",
+                "_rank": 0 if title_match else 1,
+            })
+
+    # ── Search resources ──────────────────────────────────────────────────────
+    resources = get_resources(track)
+    for r in resources:
+        title_match = q_lower in r.get("title", "").lower()
+        desc_match = q_lower in r.get("description", "").lower()
+        tag_match = any(q_lower in tag.lower() for tag in r.get("tags", []))
+        if title_match or desc_match or tag_match:
+            results.append({
+                **r,
+                "result_type": "resource",
+                "_rank": 0 if title_match else 1,
+            })
+
+    # Sort by rank (title matches first), preserve original order within rank
+    results.sort(key=lambda x: x.get("_rank", 1))
+
+    # Strip internal rank key before returning
+    for item in results:
+        item.pop("_rank", None)
+
+    return results
+
+
 # ── Module loading ────────────────────────────────────────────────────────────
 
 def _load_modules():

@@ -181,7 +181,21 @@ export interface Resource {
   filename?: string;
   category: string;
   tracks?: string[];
+  module_slug?: string;
 }
+
+export type SearchResultItem =
+  | ({ result_type: "resource" } & Resource)
+  | {
+      result_type: "module";
+      slug: string;
+      title: string;
+      description: string;
+      estimated_minutes: number;
+      tracks: string[];
+      order: number;
+      status: string;
+    };
 
 export interface ResourceCategory {
   id: string;
