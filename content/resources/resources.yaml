@@ -86,6 +86,37 @@ resources:
     filename: AAP_Employee_Handbook.pdf
     category: policies
 
+  - id: benefits-guide
+    title: 2026 Employee Benefits Guide
+    description: Overview of AAP's 2026 benefit offerings including health, dental, vision, and supplemental coverage.
+    type: download
+    filename: 2026_AAP_Employee_Benefits_Guide.pdf
+    category: policies
+
+  - id: point-system-overview
+    title: Point System Overview – Supervisor Guide
+    description: Full supervisor guide to AAP's no-fault attendance point system — point values, roll offs, corrective action thresholds, and the perfect attendance bonus.
+    type: download
+    filename: AAP_Point_System_Overview.pdf
+    category: policies
+    tracks: [hr, management]
+
+  - id: employee-warning-notice
+    title: Employee Warning Notice
+    description: Standard warning notice form for documenting violations, previous warnings, and employee acknowledgment.
+    type: download
+    filename: Employee_Warning_Notice.pdf
+    category: policies
+    tracks: [hr, management]
+
+  - id: pip-template
+    title: Performance Improvement Plan (PIP) Template
+    description: Fillable PIP template for documenting performance expectations, action plans, check-in schedules, and outcomes.
+    type: download
+    filename: Performance_Improvement_Plan_Template.pdf
+    category: policies
+    tracks: [hr, management]
+
   - id: pto-policy
     title: Paid Time Off Policy
     description: PTO accrual, personal days, and how to request time away.
@@ -303,3 +334,83 @@ resources:
     filename: 30_Day_Check_In_Framework.md
     category: training
     tracks: [warehouse, hr, management]
+
+  - id: manager-onboarding-guide
+    title: Manager Onboarding Process Guide
+    description: Required steps for hiring managers to prepare a new hire from signed offer through first day — including BambooHR setup, IT, facilities, and equipment.
+    type: download
+    filename: AAP_API_Manager_Onboarding_Process_Guide.pdf
+    category: training
+    tracks: [hr, management]
+
+  - id: manager-offboarding-guide
+    title: Manager Offboarding Process Guide
+    description: Step-by-step offboarding workflow for managers — covering BambooHR, IT, property collection, and final day coordination.
+    type: download
+    filename: AAP_API_Manager_Offboarding_Process_Guide.docx
+    category: training
+    tracks: [hr, management]
+
+  - id: coaching-corrective-action-guide
+    title: Coaching & Corrective Action Guide
+    description: Manager guide to coaching employees, documenting performance concerns, and applying corrective action consistently and fairly.
+    type: download
+    filename: AAP_API_Coaching_Corrective_Action_Guide.docx
+    category: training
+    tracks: [hr, management]
+
+  - id: performance-management-guide
+    title: Performance Management Guide
+    description: How to use BambooHR Performance Management to complete reviews, set goals, document 1:1s, and support employee development.
+    type: download
+    filename: Manager_BambooHR_Performance_Management_Guide.docx
+    category: training
+    tracks: [hr, management]
+
+  - id: employee-change-guide
+    title: Employee Change Process Guide
+    description: Manager workflow for submitting employee changes in BambooHR — including pay, title, schedule, location, and status changes.
+    type: download
+    filename: Manager_Employee_Change_Process_Guide.pdf
+    category: training
+    tracks: [hr, management]
+
+  - id: recruiting-process-guide
+    title: Recruiting Process Guide
+    description: End-to-end recruiting guide for hiring managers — from identifying a need and submitting a requisition through extending an offer.
+    type: download
+    filename: manager-recruiting-process.docx
+    category: training
+    tracks: [hr, management]
+
+  - id: verbal-offer-guidelines
+    title: Verbal Offer Guidelines
+    description: Step-by-step guide with sample scripts for extending a verbal job offer to your selected candidate.
+    type: download
+    filename: verbal-offer-guidelines.pdf
+    category: training
+    tracks: [hr, management]
+
+  - id: what-not-to-say-offer
+    title: What NOT to Say During a Verbal Offer
+    description: Quick reference of statements to avoid during a verbal offer that could create legal, HR, or compliance risks.
+    type: download
+    filename: what-not-to-say-verbal-offer.pdf
+    category: training
+    tracks: [hr, management]
+
+  - id: competency-interview-questions
+    title: Competency-Based Interview Questions
+    description: Questions designed to evaluate a candidate's core competencies and past performance.
+    type: download
+    filename: competency-interview-questions.pdf
+    category: training
+    tracks: [hr, management]
+
+  - id: scenario-interview-questions
+    title: Scenario-Based Interview Questions
+    description: A collection of scenario-based questions to assess how candidates approach real-world situations.
+    type: download
+    filename: scenario-based-interview-questions.pdf
+    category: training
+    tracks: [hr, management]
