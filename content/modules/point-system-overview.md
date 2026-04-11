@@ -112,3 +112,11 @@ Before waiving a point, consider:
 :::callout tip
 It's not about the reason for the 8th point that gets the employee terminated — it's about the 7 that came before.
 :::
+
+<p style="text-align: center;"><strong>Need more help? The full guide can be downloaded below.</strong></p>
+
+:::download
+url: /downloads/AAP_Point_System_Overview.pdf
+label: Point System Overview – Supervisor Guide
+description: Download the full point system overview guide for supervisors.
+:::
