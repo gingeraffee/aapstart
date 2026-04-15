@@ -176,6 +176,10 @@ export function ContentBlock({ block, emphasizeLead = false, variant = "training
     case "link":
     case "download": {
       const isDownload = block.type === "download";
+      const needsBackendPrefix = block.url && !block.url.startsWith("http") && block.url.startsWith("/downloads/");
+      const downloadUrl = needsBackendPrefix
+        ? `${(process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api").replace(/\/api$/, "")}${block.url}`
+        : (block.url ?? "#");
       const icon = isDownload ? (
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M8 2v8M5 7l3 3 3-3" />
@@ -192,7 +196,7 @@ export function ContentBlock({ block, emphasizeLead = false, variant = "training
       if (gridItem) {
         return (
           <a
-            href={block.url ?? "#"}
+            href={downloadUrl}
             download={isDownload ? "" : undefined}
             target={isDownload ? "_self" : "_blank"}
             rel={isDownload ? undefined : "noopener noreferrer"}
@@ -222,7 +226,7 @@ export function ContentBlock({ block, emphasizeLead = false, variant = "training
 
       return (
         <a
-          href={block.url ?? "#"}
+          href={downloadUrl}
           download={isDownload ? "" : undefined}
           target={isDownload ? "_self" : "_blank"}
           rel={isDownload ? undefined : "noopener noreferrer"}
