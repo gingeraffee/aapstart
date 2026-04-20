@@ -37,7 +37,7 @@ export default function LearningProgramPage() {
   const { user } = useAuth();
   const router = useRouter();
 
-  const isHRAdmin = user?.track === "hr" && user?.is_admin === true;
+  const isHRAdmin = (user?.tracks?.includes("hr") ?? false) && user?.is_admin === true;
 
   const { data: modules, isLoading: loadingModules, error: modulesError } = useSWR("modules", () =>
     modulesApi.list() as Promise<ModuleSummary[]>

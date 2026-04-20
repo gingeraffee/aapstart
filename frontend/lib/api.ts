@@ -74,11 +74,11 @@ export const progressApi = {
 
 export const adminApi = {
   listEmployees: () => request("/admin/employees"),
-  createEmployee: (data: { employee_id: string; first_name: string; last_name: string; track: string; is_admin: boolean }) =>
+  createEmployee: (data: { employee_id: string; first_name: string; last_name: string; tracks: string[]; is_admin: boolean }) =>
     request("/admin/employees", { method: "POST", body: JSON.stringify(data) }),
   importEmployees: (employees: Array<{ employee_id: string; track: string; name?: string; full_name?: string; first_name?: string; last_name?: string; is_admin?: boolean }>) =>
     request("/admin/employees/import", { method: "POST", body: JSON.stringify({ employees }) }),
-  updateEmployee: (employee_id: string, data: { first_name?: string; last_name?: string; track?: string; is_admin?: boolean }) =>
+  updateEmployee: (employee_id: string, data: { first_name?: string; last_name?: string; tracks?: string[]; is_admin?: boolean }) =>
     request(`/admin/employees/${employee_id}`, { method: "PATCH", body: JSON.stringify(data) }),
   deleteEmployee: (employee_id: string) =>
     request(`/admin/employees/${employee_id}`, { method: "DELETE" }),

@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from app.database.models import UserProgress
 from app.content import loader
+from app.content.loader import _primary_track
 
 
 def _now():
@@ -61,8 +62,8 @@ def get_module_progress(db: Session, employee_id: str, module_slug: str) -> User
     )
 
 
-def mark_visited(db: Session, employee_id: str, module_slug: str, track: str):
-    module_meta = loader.get_module(module_slug, track)
+def mark_visited(db: Session, employee_id: str, module_slug: str, tracks: list[str]):
+    module_meta = loader.get_module(module_slug, tracks)
     if not module_meta:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Module not found.")
 
@@ -71,8 +72,8 @@ def mark_visited(db: Session, employee_id: str, module_slug: str, track: str):
         record.visited = True
         record.visited_at = _now()
 
-    # Management track: auto-complete on visit (no quiz/ack gating)
-    if track == "management" and not record.module_completed:
+    # Management-only users auto-complete on visit (no quiz/ack gating)
+    if _primary_track(tracks) == "management" and not record.module_completed:
         record.module_completed = True
         record.completed_at = _now()
     else:
@@ -84,9 +85,9 @@ def mark_visited(db: Session, employee_id: str, module_slug: str, track: str):
 
 
 def complete_acknowledgement(
-    db: Session, employee_id: str, module_slug: str, track: str, acknowledged_ids: list[str]
+    db: Session, employee_id: str, module_slug: str, tracks: list[str], acknowledged_ids: list[str]
 ):
-    module_meta = loader.get_module(module_slug, track)
+    module_meta = loader.get_module(module_slug, tracks)
     if not module_meta:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Module not found.")
 
@@ -110,7 +111,7 @@ def complete_acknowledgement(
 
 
 def submit_quiz(
-    db: Session, employee_id: str, module_slug: str, track: str, answers: dict[str, str]
+    db: Session, employee_id: str, module_slug: str, tracks: list[str], answers: dict[str, str]
 ) -> dict:
     # We need the raw module with correct answers — use the internal cache
     from app.content.loader import _modules_cache, _get_track_quiz_questions
@@ -118,7 +119,7 @@ def submit_quiz(
     if not module_raw:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Module not found.")
 
-    questions = _get_track_quiz_questions(module_raw, track)
+    questions = _get_track_quiz_questions(module_raw, _primary_track(tracks))
     if not questions:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="This module has no quiz."
@@ -148,7 +149,7 @@ def submit_quiz(
         record.quiz_passed = True
         record.quiz_passed_at = _now()
 
-    module_meta = loader.get_module(module_slug, track)
+    module_meta = loader.get_module(module_slug, tracks)
     _check_completion(record, module_meta)
     db.commit()
     db.refresh(record)

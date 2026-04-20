@@ -1,3 +1,4 @@
+import json
 from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -66,6 +67,38 @@ def _migrate():
             with engine.begin() as conn:
                 conn.execute(text("ALTER TABLE employees ADD COLUMN totp_enabled BOOLEAN DEFAULT 0"))
             print("[OK] Added totp_enabled column to employees table")
+
+        # Migrate track column from string to JSON array
+        _migrate_track_to_array()
+
+
+def _migrate_track_to_array():
+    """Convert any string track values to JSON arrays in-place."""
+    with engine.begin() as conn:
+        rows = conn.execute(text("SELECT id, track FROM employees")).fetchall()
+        for row_id, track_val in rows:
+            if track_val is None:
+                conn.execute(
+                    text("UPDATE employees SET track = :v WHERE id = :id"),
+                    {"v": json.dumps(["hr"]), "id": row_id},
+                )
+            else:
+                # Already a JSON array?
+                try:
+                    parsed = json.loads(track_val) if isinstance(track_val, str) else track_val
+                    if isinstance(parsed, list):
+                        continue  # Already migrated
+                    # It's a JSON scalar — wrap it
+                    conn.execute(
+                        text("UPDATE employees SET track = :v WHERE id = :id"),
+                        {"v": json.dumps([str(parsed)]), "id": row_id},
+                    )
+                except (ValueError, TypeError):
+                    # Plain string like "hr" — wrap it
+                    conn.execute(
+                        text("UPDATE employees SET track = :v WHERE id = :id"),
+                        {"v": json.dumps([str(track_val)]), "id": row_id},
+                    )
 
 
 def _seed_admin():

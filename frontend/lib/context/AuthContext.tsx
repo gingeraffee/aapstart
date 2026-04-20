@@ -13,7 +13,7 @@ const LAST_ACTIVITY_KEY = "aapstart_last_activity";
 export interface TotpPending {
   employee_id: string;
   full_name: string;
-  track: string;
+  tracks: string[];
   is_admin: boolean;
 }
 
@@ -153,14 +153,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // ---------- Helpers ----------
 
-  function _persistUser(data: { employee_id: string; full_name: string; track: string; is_admin: boolean }, payload?: LoginPayload) {
+  function _persistUser(data: { employee_id: string; full_name: string; tracks: string[]; is_admin: boolean }, payload?: LoginPayload) {
     const parts = data.full_name.split(" ");
     const loggedInUser: User = {
       employee_id: data.employee_id,
       first_name: payload?.first_name ?? parts[0] ?? "",
       last_name: payload?.last_name ?? parts.slice(1).join(" ") ?? "",
       full_name: data.full_name,
-      track: (data.track as User["track"]) ?? "administrative",
+      tracks: (data.tracks as User["tracks"]) ?? ["administrative"],
       is_admin: data.is_admin ?? false,
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(loggedInUser));
@@ -178,7 +178,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         first_name: payload.first_name,
         last_name: payload.last_name,
         full_name: `${payload.first_name} ${payload.last_name}`.trim(),
-        track: "administrative",
+        tracks: ["administrative"],
         is_admin: false,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(devUser));
@@ -218,7 +218,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setTotpPending({
         employee_id: data.employee_id,
         full_name: data.full_name,
-        track: data.track,
+        tracks: data.tracks,
         is_admin: data.is_admin,
       });
       return;

@@ -36,7 +36,7 @@ export default function ManagementGuidesPage() {
   const [filter, setFilter] = useState<GuideFilter>("all");
   const deferredQuery = useDeferredValue(query);
 
-  const isHR = user?.track === "hr";
+  const isHR = user?.tracks?.includes("hr") ?? false;
 
   const { data: modules, isLoading, error } = useSWR("modules", () =>
     modulesApi.list() as Promise<ModuleSummary[]>

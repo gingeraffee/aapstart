@@ -27,7 +27,7 @@ export function useSidebarData() {
   const managementModules = liveModules.filter((m) => m.tracks?.includes("management"));
 
   const showJourney = !isManagement;
-  const isHRAdmin = user?.track === "hr" && user?.is_admin === true;
+  const isHRAdmin = (user?.tracks?.includes("hr") ?? false) && user?.is_admin === true;
   const showManagementSection = isManagement;
 
   const isSlugCompleted = (slug: string) =>

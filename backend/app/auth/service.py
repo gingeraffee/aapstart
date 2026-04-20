@@ -25,6 +25,7 @@ VALID_TRACKS = {"hr", "warehouse", "administrative", "management"}
 
 
 def _normalize_track(track: str) -> str:
+    """Normalize and validate a single track string (used for dev auth bypass)."""
     normalized = track.strip().lower()
     if normalized not in VALID_TRACKS:
         raise HTTPException(
@@ -36,11 +37,25 @@ def _normalize_track(track: str) -> str:
     return normalized
 
 
+def normalize_tracks(tracks) -> list[str]:
+    """
+    Ensure tracks is a valid non-empty list of track strings.
+    Accepts a list, a single string (legacy), or any JSON-decoded value.
+    Invalid or unknown track values are dropped; defaults to ["hr"] if empty.
+    """
+    if isinstance(tracks, str):
+        tracks = [tracks]
+    if not isinstance(tracks, list):
+        tracks = ["hr"]
+    result = [t.strip().lower() for t in tracks if isinstance(t, str) and t.strip().lower() in VALID_TRACKS]
+    return result if result else ["hr"]
+
+
 def _get_dev_user(*, for_token: bool = False) -> dict:
     eid = settings.dev_auth_employee_id.strip()
     base = {
         "full_name": settings.dev_auth_full_name.strip(),
-        "track": _normalize_track(settings.dev_auth_track),
+        "tracks": [_normalize_track(settings.dev_auth_track)],
         "is_admin": True,
     }
     # Token/cookie payloads use "sub"; login response uses "employee_id"
@@ -54,7 +69,7 @@ def _get_dev_user(*, for_token: bool = False) -> dict:
 def validate_login(employee_id: str, first_name: str, last_name: str) -> dict:
     """
     Validates credentials against the employees table.
-    Returns {employee_id, full_name, track, is_admin, totp_enabled} on success.
+    Returns {employee_id, full_name, tracks, is_admin, totp_enabled} on success.
     """
     if settings.dev_auth_bypass:
         user = _get_dev_user()
@@ -87,7 +102,7 @@ def validate_login(employee_id: str, first_name: str, last_name: str) -> dict:
         return {
             "employee_id": employee.employee_id,
             "full_name": f"{employee.first_name} {employee.last_name}",
-            "track": _normalize_track(employee.track),
+            "tracks": normalize_tracks(employee.track),
             "is_admin": employee.is_admin,
             "totp_enabled": bool(employee.totp_enabled),
         }
@@ -95,12 +110,12 @@ def validate_login(employee_id: str, first_name: str, last_name: str) -> dict:
         db.close()
 
 
-def create_token(employee_id: str, full_name: str, track: str, is_admin: bool = False) -> str:
+def create_token(employee_id: str, full_name: str, tracks: list[str], is_admin: bool = False) -> str:
     expiry = datetime.now(timezone.utc) + timedelta(hours=settings.jwt_expiration_hours)
     payload = {
         "sub": employee_id,
         "full_name": full_name,
-        "track": track,
+        "tracks": tracks,
         "is_admin": is_admin,
         "exp": expiry,
     }
@@ -130,7 +145,11 @@ def get_current_user(request: Request) -> dict:
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Not authenticated.",
         )
-    return decode_token(token)
+    payload = decode_token(token)
+    # Backward compat: old tokens have track (string), new tokens have tracks (list)
+    if "track" in payload and "tracks" not in payload:
+        payload["tracks"] = normalize_tracks(payload["track"])
+    return payload
 
 
 def require_admin(request: Request) -> dict:

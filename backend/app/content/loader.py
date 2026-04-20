@@ -53,25 +53,36 @@ def load_all_content():
     _load_ui()
 
 
-def get_modules_for_track(track: str, is_admin: bool = False) -> list[dict]:
+def _primary_track(tracks: list[str]) -> str:
+    """Return the primary track for content rendering decisions.
+    Management-only employees use 'management'; others use their first non-management track."""
+    non_management = [t for t in tracks if t != "management"]
+    return non_management[0] if non_management else "management"
+
+
+def get_modules_for_tracks(tracks: list[str], is_admin: bool = False) -> list[dict]:
     """
-    Return ordered module list for a given track.
-    - HR admins see shared modules, HR-specific modules, and management process modules.
-    - HR non-admins see shared modules and HR-specific modules only.
-    - Management sees ONLY modules with tracks: [management].
-    - Other tracks see 'all' modules plus their track-specific modules.
+    Return ordered module list for one or more tracks (union of all accessible modules).
+    - HR in tracks: sees shared modules, HR-specific modules; admins also see management modules.
+    - Management-only: sees ONLY modules with tracks: [management].
+    - Other tracks: see 'all' modules plus their track-specific modules.
     Excludes draft modules (status == 'draft').
     When an HR-specific version exists (slug ending in '-hr'), the shared [all] version is excluded.
     """
-    result = []
+    has_hr = "hr" in tracks
+    primary = _primary_track(tracks)
+
     # Collect HR-specific slugs so we can exclude their [all] counterparts
-    hr_base_slugs = set()
-    if track == "hr":
+    hr_base_slugs: set[str] = set()
+    if has_hr:
         for module in _modules_cache.values():
             slug = module.get("slug", "")
             mod_tracks = module.get("tracks", ["all"])
             if slug.endswith("-hr") and "hr" in mod_tracks:
                 hr_base_slugs.add(slug.rsplit("-hr", 1)[0])
+
+    result = []
+    seen_slugs: set[str] = set()
 
     for module in _modules_cache.values():
         if module.get("status") == "draft":
@@ -79,36 +90,47 @@ def get_modules_for_track(track: str, is_admin: bool = False) -> list[dict]:
         mod_tracks = module.get("tracks", ["all"])
         slug = module.get("slug", "")
 
-        if track == "hr":
-            # Skip [all] modules that have an HR-specific replacement
-            if "all" in mod_tracks and slug in hr_base_slugs:
-                continue
-            # HR admins see shared + HR + management modules
-            if is_admin:
-                if "all" in mod_tracks or "hr" in mod_tracks or "management" in mod_tracks:
-                    result.append(_module_summary(module, track))
-            else:
-                # Non-admin HR sees shared + HR only (no management)
+        if slug in seen_slugs:
+            continue
+
+        # Skip [all] modules that have an HR-specific replacement (when user has HR)
+        if has_hr and "all" in mod_tracks and slug in hr_base_slugs:
+            continue
+
+        visible = False
+        for track in tracks:
+            if track == "hr":
                 if "all" in mod_tracks or "hr" in mod_tracks:
-                    result.append(_module_summary(module, track))
-        elif track == "management":
-            # Management only sees management-specific modules
-            if "management" in mod_tracks:
-                result.append(_module_summary(module, track))
-        else:
-            # Warehouse / administrative see 'all' + their own track
-            if "all" in mod_tracks or track in mod_tracks:
-                result.append(_module_summary(module, track))
+                    visible = True
+                    break
+                if is_admin and "management" in mod_tracks:
+                    visible = True
+                    break
+            elif track == "management":
+                if "management" in mod_tracks:
+                    visible = True
+                    break
+            else:
+                if "all" in mod_tracks or track in mod_tracks:
+                    visible = True
+                    break
+
+        if visible:
+            result.append(_module_summary(module, primary))
+            seen_slugs.add(slug)
 
     result.sort(key=lambda m: m.get("order", 99))
     return result
 
 
-def get_module(slug: str, track: str) -> dict | None:
+# Keep single-track alias for internal callers that haven't been updated
+def get_modules_for_track(track: str, is_admin: bool = False) -> list[dict]:
+    return get_modules_for_tracks([track], is_admin=is_admin)
+
+
+def get_module(slug: str, tracks: list[str]) -> dict | None:
     """
-    Return full module data for a given slug, filtered for the employee's track.
-    HR can access shared modules, HR-specific modules, and management modules.
-    Management can only access management modules.
+    Return full module data for a given slug, accessible by any of the given tracks.
     Quiz correct answers are stripped — never sent to the frontend.
     """
     module = _modules_cache.get(slug)
@@ -117,30 +139,38 @@ def get_module(slug: str, track: str) -> dict | None:
 
     mod_tracks = module.get("tracks", ["all"])
 
-    if track == "hr":
-        if "all" not in mod_tracks and "hr" not in mod_tracks and "management" not in mod_tracks:
-            return None
-    elif track == "management":
-        if "management" not in mod_tracks:
-            return None
-    else:
-        if "all" not in mod_tracks and track not in mod_tracks:
-            return None
+    can_access = False
+    for track in tracks:
+        if track == "hr":
+            if "all" in mod_tracks or "hr" in mod_tracks or "management" in mod_tracks:
+                can_access = True
+                break
+        elif track == "management":
+            if "management" in mod_tracks:
+                can_access = True
+                break
+        else:
+            if "all" in mod_tracks or track in mod_tracks:
+                can_access = True
+                break
 
-    return _module_for_client(module, track)
+    if not can_access:
+        return None
+
+    return _module_for_client(module, _primary_track(tracks))
 
 
 def get_ui_content() -> dict:
     return _ui_cache
 
 
-def get_resources(track: str) -> list[dict]:
+def get_resources(tracks: list[str]) -> list[dict]:
     all_resources = _resources_cache.get("resources", [])
-    if track == "hr":
+    if "hr" in tracks:
         return all_resources  # HR reviewers see all resources
     return [
         r for r in all_resources
-        if "all" in r.get("tracks", ["all"]) or track in r.get("tracks", [])
+        if "all" in r.get("tracks", ["all"]) or any(t in r.get("tracks", []) for t in tracks)
     ]
 
 
@@ -148,9 +178,9 @@ def get_resource_categories() -> list[dict]:
     return _resources_cache.get("categories", [])
 
 
-def search_all(query: str, track: str, is_admin: bool = False) -> list[dict]:
+def search_all(query: str, tracks: list[str], is_admin: bool = False) -> list[dict]:
     """
-    Flat unified search across training modules and resources for the user's track.
+    Flat unified search across training modules and resources for the user's tracks.
     Returns a mixed list ordered by relevance (title matches first, then description).
     Each item includes a result_type field: "module" or "resource".
     """
@@ -161,7 +191,7 @@ def search_all(query: str, track: str, is_admin: bool = False) -> list[dict]:
     results = []
 
     # ── Search modules ────────────────────────────────────────────────────────
-    modules = get_modules_for_track(track, is_admin)
+    modules = get_modules_for_tracks(tracks, is_admin)
     for m in modules:
         title_match = q_lower in m.get("title", "").lower()
         desc_match = q_lower in m.get("description", "").lower()
@@ -173,7 +203,7 @@ def search_all(query: str, track: str, is_admin: bool = False) -> list[dict]:
             })
 
     # ── Search resources ──────────────────────────────────────────────────────
-    resources = get_resources(track)
+    resources = get_resources(tracks)
     for r in resources:
         title_match = q_lower in r.get("title", "").lower()
         desc_match = q_lower in r.get("description", "").lower()
@@ -440,13 +470,14 @@ def _module_for_client(module: dict, track: str) -> dict:
     }
 
 
-def _block_visible_for_track(block: dict, track: str) -> bool:
+def _block_visible_for_track(block: dict, track: str | list) -> bool:
     if block.get("type") != "track_block":
         return True
-    if track == "hr":
+    track_list = [track] if isinstance(track, str) else track
+    if "hr" in track_list:
         return True  # HR reviewers see all track-specific content
-    tracks = block.get("tracks", [])
-    return "all" in tracks or track in tracks
+    block_tracks = block.get("tracks", [])
+    return "all" in block_tracks or any(t in block_tracks for t in track_list)
 
 
 # ── Resources ─────────────────────────────────────────────────────────────────

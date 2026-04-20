@@ -39,7 +39,7 @@ def login(payload: LoginRequest, response: Response):
         return LoginResponse(
             employee_id=user["employee_id"],
             full_name=user["full_name"],
-            track=user["track"],
+            tracks=user["tracks"],
             is_admin=user.get("is_admin", False),
             requires_totp=True,
             totp_enabled=True,
@@ -50,14 +50,14 @@ def login(payload: LoginRequest, response: Response):
     token = service.create_token(
         employee_id=user["employee_id"],
         full_name=user["full_name"],
-        track=user["track"],
+        tracks=user["tracks"],
         is_admin=user.get("is_admin", False),
     )
     _set_session_cookie(response, token)
     return LoginResponse(
         employee_id=user["employee_id"],
         full_name=user["full_name"],
-        track=user["track"],
+        tracks=user["tracks"],
         is_admin=user.get("is_admin", False),
         requires_totp=False,
         totp_enabled=False,
@@ -87,17 +87,18 @@ def totp_validate(payload: TotpVerifyRequest, response: Response):
             )
 
         full_name = f"{employee.first_name} {employee.last_name}"
+        tracks = service.normalize_tracks(employee.track)
         token = service.create_token(
             employee_id=employee.employee_id,
             full_name=full_name,
-            track=employee.track,
+            tracks=tracks,
             is_admin=employee.is_admin,
         )
         _set_session_cookie(response, token)
         return UserResponse(
             employee_id=employee.employee_id,
             full_name=full_name,
-            track=employee.track,
+            tracks=tracks,
             is_admin=employee.is_admin,
         )
     finally:
@@ -185,7 +186,7 @@ def me(current_user: dict = Depends(service.get_current_user)):
     return UserResponse(
         employee_id=current_user["sub"],
         full_name=current_user["full_name"],
-        track=current_user["track"],
+        tracks=current_user["tracks"],
         is_admin=current_user.get("is_admin", False),
     )
 

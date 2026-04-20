@@ -35,6 +35,7 @@ const IMPORT_TEMPLATE = `name,employee_id,track,is_admin
 Jane Doe,EMP-100,hr,false
 Marcus Lane,EMP-101,warehouse,false
 Olivia Grant,EMP-102,administrative,true
+Alex Kim,EMP-103,hr|warehouse,false
 `;
 
 function normalizeHeader(value: string) {
@@ -119,7 +120,7 @@ function parseImportFile(text: string): { rows: ParsedImportRow[]; fileError?: s
       if (!name) error = "Name is required.";
       else if (!employee_id) error = "Employee number is required.";
       else if (!track) error = "Track is required.";
-      else if (!TRACKS.includes(track as (typeof TRACKS)[number])) error = `Track must be one of: ${TRACKS.join(", ")}.`;
+      else if (!track.split(/[|,]/).map((t) => t.trim()).some((t) => TRACKS.includes(t as (typeof TRACKS)[number]))) error = `Track must include at least one of: ${TRACKS.join(", ")}.`;
       else if (name.trim().split(/\s+/).length < 2) error = "Name must include first and last name.";
 
       return { row: index + 2, name, employee_id, track, is_admin, error };
@@ -150,7 +151,7 @@ function AddEmployeeForm({ onAdded }: { onAdded: (message: string) => void }) {
     employee_id: "",
     first_name: "",
     last_name: "",
-    track: "hr",
+    tracks: ["hr"] as string[],
     is_admin: false,
   });
   const [loading, setLoading] = useState(false);
@@ -167,7 +168,7 @@ function AddEmployeeForm({ onAdded }: { onAdded: (message: string) => void }) {
 
     try {
       await adminApi.createEmployee(form);
-      setForm({ employee_id: "", first_name: "", last_name: "", track: "hr", is_admin: false });
+      setForm({ employee_id: "", first_name: "", last_name: "", tracks: ["hr"], is_admin: false });
       onAdded("Changes saved. Employee added.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to add employee.");
@@ -215,22 +216,28 @@ function AddEmployeeForm({ onAdded }: { onAdded: (message: string) => void }) {
           </div>
         ))}
 
-        <div>
+        <div className="sm:col-span-2">
           <label className="mb-1.5 block text-[0.64rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>
-            Track
+            Track(s)
           </label>
-          <select
-            value={form.track}
-            onChange={(event) => update("track", event.target.value)}
-            className="w-full rounded-[14px] px-3.5 py-2.5 text-[0.84rem] font-medium outline-none transition-all"
-            style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)" }}
-          >
+          <div className="flex flex-wrap gap-x-4 gap-y-1.5 rounded-[14px] px-3.5 py-2.5" style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)" }}>
             {TRACKS.map((track) => (
-              <option key={track} value={track}>
+              <label key={track} className="flex items-center gap-2 text-[0.82rem] font-medium cursor-pointer" style={{ color: "var(--heading-color)" }}>
+                <input
+                  type="checkbox"
+                  checked={form.tracks.includes(track)}
+                  onChange={(event) => {
+                    const next = event.target.checked
+                      ? [...form.tracks, track]
+                      : form.tracks.filter((t) => t !== track);
+                    update("tracks", next);
+                  }}
+                  className="rounded"
+                />
                 {TRACK_LABELS[track]}
-              </option>
+              </label>
             ))}
-          </select>
+          </div>
         </div>
       </div>
 
@@ -267,7 +274,7 @@ function EmployeeRow({ emp, currentUserId, modules, onDeleted }: { emp: Employee
   const [deleting, setDeleting] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [editTrack, setEditTrack] = useState(emp.track);
+  const [editTracks, setEditTracks] = useState<string[]>(emp.tracks ?? ["hr"]);
   const [editAdmin, setEditAdmin] = useState(emp.is_admin);
   const [saving, setSaving] = useState(false);
   const [resetting, setResetting] = useState(false);
@@ -322,9 +329,10 @@ function EmployeeRow({ emp, currentUserId, modules, onDeleted }: { emp: Employee
   async function handleSaveEdit() {
     setSaving(true);
     try {
-      await adminApi.updateEmployee(emp.employee_id, { track: editTrack, is_admin: editAdmin });
+      await adminApi.updateEmployee(emp.employee_id, { tracks: editTracks, is_admin: editAdmin });
       setEditing(false);
-      onDeleted(`Updated ${emp.full_name} — track: ${TRACK_LABELS[editTrack] ?? editTrack}${editAdmin ? " (Admin)" : ""}.`);
+      const trackLabel = editTracks.map((t) => TRACK_LABELS[t] ?? t).join(", ");
+      onDeleted(`Updated ${emp.full_name} — track: ${trackLabel}${editAdmin ? " (Admin)" : ""}.`);
     } catch (err) {
       onDeleted(err instanceof Error ? err.message : "Failed to update.", "error");
     } finally {
@@ -391,15 +399,25 @@ function EmployeeRow({ emp, currentUserId, modules, onDeleted }: { emp: Employee
       <td className="px-6 py-4">
         {editing ? (
           <div className="flex flex-col gap-2">
-            <select
-              value={editTrack}
-              onChange={(e) => setEditTrack(e.target.value)}
-              className="rounded-[8px] border border-slate-200 bg-white px-2 py-1 text-[0.76rem] font-medium"
-            >
+            <div className="flex flex-col gap-1">
               {Object.entries(TRACK_LABELS).map(([val, label]) => (
-                <option key={val} value={val}>{label}</option>
+                <label key={val} className="flex items-center gap-1.5 text-[0.72rem] font-medium" style={{ color: "var(--card-desc)" }}>
+                  <input
+                    type="checkbox"
+                    checked={editTracks.includes(val)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setEditTracks((prev) => [...prev, val]);
+                      } else {
+                        setEditTracks((prev) => prev.filter((t) => t !== val));
+                      }
+                    }}
+                    className="rounded"
+                  />
+                  {label}
+                </label>
               ))}
-            </select>
+            </div>
             <label className="flex items-center gap-1.5 text-[0.72rem] font-medium" style={{ color: "var(--card-desc)" }}>
               <input
                 type="checkbox"
@@ -412,22 +430,27 @@ function EmployeeRow({ emp, currentUserId, modules, onDeleted }: { emp: Employee
           </div>
         ) : (
           <>
-            <span
-              className={cn(
-                "inline-flex rounded-full px-2.5 py-1 text-[0.68rem] font-semibold",
-                emp.track === "hr"
-                  ? "bg-blue-50 text-blue-700"
-                  : emp.track === "warehouse"
-                    ? "bg-amber-50 text-amber-700"
-                    : emp.track === "management"
-                      ? "bg-emerald-50 text-emerald-700"
-                      : "bg-fuchsia-50 text-fuchsia-700"
-              )}
-            >
-              {TRACK_LABELS[emp.track] ?? emp.track}
-            </span>
-            {emp.is_admin && <span className="ml-2 inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-[0.68rem] font-semibold text-slate-600">Admin</span>}
-            {emp.totp_enabled && <span className="ml-2 inline-flex rounded-full bg-purple-50 px-2.5 py-1 text-[0.68rem] font-semibold text-purple-700">2FA</span>}
+            <div className="flex flex-wrap gap-1">
+              {(emp.tracks ?? []).map((t) => (
+                <span
+                  key={t}
+                  className={cn(
+                    "inline-flex rounded-full px-2.5 py-1 text-[0.68rem] font-semibold",
+                    t === "hr"
+                      ? "bg-blue-50 text-blue-700"
+                      : t === "warehouse"
+                        ? "bg-amber-50 text-amber-700"
+                        : t === "management"
+                          ? "bg-emerald-50 text-emerald-700"
+                          : "bg-fuchsia-50 text-fuchsia-700"
+                  )}
+                >
+                  {TRACK_LABELS[t] ?? t}
+                </span>
+              ))}
+            </div>
+            {emp.is_admin && <span className="mt-1 inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-[0.68rem] font-semibold text-slate-600">Admin</span>}
+            {emp.totp_enabled && <span className="mt-1 ml-1 inline-flex rounded-full bg-purple-50 px-2.5 py-1 text-[0.68rem] font-semibold text-purple-700">2FA</span>}
           </>
         )}
       </td>
@@ -440,7 +463,7 @@ function EmployeeRow({ emp, currentUserId, modules, onDeleted }: { emp: Employee
         {editing ? (
           <div className="flex items-center justify-end gap-2">
             <button
-              onClick={() => { setEditing(false); setEditTrack(emp.track); setEditAdmin(emp.is_admin); }}
+              onClick={() => { setEditing(false); setEditTracks(emp.tracks ?? ["hr"]); setEditAdmin(emp.is_admin); }}
               disabled={saving}
               className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold transition-all hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-50"
               style={{ color: "var(--card-desc)" }}
@@ -701,7 +724,7 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
       const payload: EmployeeImportRowInput[] = readyRows.map((row) => ({
         name: row.name,
         employee_id: row.employee_id,
-        track: row.track,
+        track: row.track, // backend splits on "|" or "," for multi-track
         is_admin: row.is_admin,
       }));
       const importResult = (await adminApi.importEmployees(payload)) as EmployeeImportResult;
@@ -785,7 +808,7 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
                         <span className="text-[0.68rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--module-context)" }}>Row {row.row}</span>
                       </div>
                       <p className="mt-1 text-[0.74rem]" style={{ color: "var(--card-desc)" }}>
-                        {row.employee_id || "Missing employee number"} • {TRACK_LABELS[row.track] ?? row.track}
+                        {row.employee_id || "Missing employee number"} • {row.track.split(/[|,]/).map((t) => TRACK_LABELS[t.trim()] ?? t.trim()).join(", ")}
                         {row.is_admin ? " • Admin" : ""}
                       </p>
                       {row.error && <p className="mt-1.5 text-[0.74rem] font-medium" style={{ color: "#9f1239" }}>{row.error}</p>}
@@ -1004,7 +1027,7 @@ export default function AdminPage() {
               const isActive = trackFilter === opt.value;
               const count = opt.value === "all"
                 ? (employees?.length ?? 0)
-                : (employees?.filter((e) => e.track === opt.value).length ?? 0);
+                : (employees?.filter((e) => e.tracks?.includes(opt.value)).length ?? 0);
               return (
                 <button
                   key={opt.value}
@@ -1042,7 +1065,7 @@ export default function AdminPage() {
               </thead>
               <tbody>
                 {[...employees]
-                  .filter((e) => trackFilter === "all" || e.track === trackFilter)
+                  .filter((e) => trackFilter === "all" || e.tracks?.includes(trackFilter))
                   .sort((a, b) => a.last_name.localeCompare(b.last_name))
                   .map((employee) => (
                   <EmployeeRow

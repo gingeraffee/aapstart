@@ -28,7 +28,7 @@ def visit_module(
     current_user: dict = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    return service.mark_visited(db, current_user["sub"], slug, current_user["track"])
+    return service.mark_visited(db, current_user["sub"], slug, current_user.get("tracks", ["hr"]))
 
 
 @router.post("/{slug}/acknowledge", response_model=ProgressRecord)
@@ -39,7 +39,7 @@ def acknowledge_module(
     db: Session = Depends(get_db),
 ):
     return service.complete_acknowledgement(
-        db, current_user["sub"], slug, current_user["track"], payload.acknowledged_ids
+        db, current_user["sub"], slug, current_user.get("tracks", ["hr"]), payload.acknowledged_ids
     )
 
 
@@ -51,5 +51,5 @@ def submit_quiz(
     db: Session = Depends(get_db),
 ):
     return service.submit_quiz(
-        db, current_user["sub"], slug, current_user["track"], payload.answers
+        db, current_user["sub"], slug, current_user.get("tracks", ["hr"]), payload.answers
     )

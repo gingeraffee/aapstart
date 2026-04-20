@@ -176,7 +176,7 @@ export default function OverviewPage() {
   );
   const { data: uiData } = useSWR("ui", () => resourcesApi.ui() as Promise<UiContent>);
 
-  const isHRAdmin = user?.track === "hr" && user?.is_admin === true;
+  const isHRAdmin = (user?.tracks?.includes("hr") ?? false) && user?.is_admin === true;
   const { data: dashboardData } = useSWR(
     isHRAdmin ? "dashboard" : null,
     () => adminApi.dashboard() as Promise<DashboardData>
@@ -482,7 +482,7 @@ export default function OverviewPage() {
                       <div className="min-w-0">
                         <p className="truncate text-[0.82rem] font-semibold" style={{ color: "var(--heading-color)" }}>{login.full_name}</p>
                         <p className="text-[0.72rem]" style={{ color: "var(--card-desc)" }}>
-                          {login.track === "hr" ? "HR" : login.track === "warehouse" ? "Warehouse" : login.track === "management" ? "Management" : "Administrative"} track login
+                          {(login.tracks ?? []).map((t: string) => t === "hr" ? "HR" : t === "warehouse" ? "Warehouse" : t === "management" ? "Management" : "Administrative").join(" & ")} track login
                         </p>
                       </div>
                       <span className="shrink-0 text-[0.72rem] font-medium" style={{ color: "var(--module-context)" }}>
@@ -605,7 +605,7 @@ export default function OverviewPage() {
                       <div className="min-w-0">
                         <p className="truncate text-[0.82rem] font-semibold" style={{ color: "var(--heading-color)" }}>{login.full_name}</p>
                         <p className="text-[0.72rem]" style={{ color: "var(--card-desc)" }}>
-                          {login.track === "hr" ? "HR" : login.track === "warehouse" ? "Warehouse" : login.track === "management" ? "Management" : "Administrative"} track login
+                          {(login.tracks ?? []).map((t: string) => t === "hr" ? "HR" : t === "warehouse" ? "Warehouse" : t === "management" ? "Management" : "Administrative").join(" & ")} track login
                         </p>
                       </div>
                       <span className="shrink-0 text-[0.72rem] font-medium" style={{ color: "var(--module-context)" }}>
@@ -759,7 +759,8 @@ export default function OverviewPage() {
                     const diffMs = now.getTime() - loginDate.getTime();
                     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
                     const timeLabel = diffDays === 0 ? "Today" : diffDays === 1 ? "Yesterday" : loginDate.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-                    const trackColor = login.track === "hr" ? "#3b82f6" : login.track === "warehouse" ? "#f59e0b" : login.track === "management" ? "#10b981" : "#8b5cf6";
+                    const primaryTrack = (login.tracks ?? [])[0] ?? "administrative";
+                    const trackColor = primaryTrack === "hr" ? "#3b82f6" : primaryTrack === "warehouse" ? "#f59e0b" : primaryTrack === "management" ? "#10b981" : "#8b5cf6";
 
                     return (
                       <div key={i} className="flex items-center justify-between gap-2">

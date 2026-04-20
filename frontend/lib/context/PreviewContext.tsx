@@ -42,8 +42,8 @@ export function usePreview() {
 
 export function PreviewProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
-  const actualTrack: Track = user?.track ?? "administrative";
-  const canPreview = !!user && actualTrack === "hr" && user.is_admin === true;
+  const actualTrack: Track = (user?.tracks?.[0] ?? "administrative") as Track;
+  const canPreview = !!user && (user.tracks?.includes("hr") ?? false) && user.is_admin === true;
 
   const [previewTrack, setPreviewTrackState] = useState<Track | null>(null);
   const [previewCompletedSlugs, setPreviewCompletedSlugs] = useState<Set<string>>(new Set());

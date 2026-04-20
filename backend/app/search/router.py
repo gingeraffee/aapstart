@@ -15,6 +15,6 @@ def unified_search(
     Returns a flat mixed list of results ordered by relevance.
     Each item has a result_type field: "module" or "resource".
     """
-    track = current_user["track"]
+    tracks = current_user.get("tracks", ["hr"])
     is_admin = current_user.get("is_admin", False)
-    return loader.search_all(q, track, is_admin)
+    return loader.search_all(q, tracks, is_admin)

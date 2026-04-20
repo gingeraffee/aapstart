@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Boolean, Integer, DateTime, Text, func
+from sqlalchemy import Column, String, Boolean, Integer, DateTime, Text, func, JSON
 from app.database.connection import Base
 
 
@@ -10,7 +10,7 @@ class Employee(Base):
     employee_id = Column(String, unique=True, nullable=False, index=True)
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
-    track = Column(String, nullable=False, default="hr")
+    track = Column(JSON, nullable=False, default=lambda: ["hr"])
     is_admin = Column(Boolean, default=False)
     totp_secret = Column(String, nullable=True)
     totp_enabled = Column(Boolean, default=False)

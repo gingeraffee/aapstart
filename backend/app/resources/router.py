@@ -51,7 +51,7 @@ def list_resources(
     q: str | None = Query(default=None),
     current_user: dict = Depends(get_current_user),
 ):
-    resources = loader.get_resources(current_user["track"])
+    resources = loader.get_resources(current_user.get("tracks", ["hr"]))
 
     if category:
         resources = [r for r in resources if r.get("category") == category]

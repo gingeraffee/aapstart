@@ -4,10 +4,10 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from sqlalchemy import func as sa_func
 
-from app.auth.service import require_admin
+from app.auth.service import require_admin, normalize_tracks
 from app.database.connection import get_db
 from app.database.models import Employee, UserProgress, UserNote
-from app.content.loader import get_modules_for_track
+from app.content.loader import get_modules_for_tracks
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
@@ -20,20 +20,20 @@ class EmployeeCreate(BaseModel):
     employee_id: str
     first_name: str
     last_name: str
-    track: str
+    tracks: list[str]
     is_admin: bool = False
 
 
 class EmployeeUpdate(BaseModel):
     first_name: str | None = None
     last_name: str | None = None
-    track: str | None = None
+    tracks: list[str] | None = None
     is_admin: bool | None = None
 
 
 class EmployeeImportRow(BaseModel):
     employee_id: str
-    track: str
+    track: str  # CSV column: single value or pipe-separated (e.g. "hr|warehouse")
     name: str | None = None
     full_name: str | None = None
     first_name: str | None = None
@@ -65,7 +65,7 @@ def _serialize(emp: Employee, db: Session) -> dict:
         "first_name": emp.first_name,
         "last_name": emp.last_name,
         "full_name": f"{emp.first_name} {emp.last_name}",
-        "track": emp.track,
+        "tracks": normalize_tracks(emp.track),
         "is_admin": emp.is_admin,
         "totp_enabled": bool(emp.totp_enabled),
         "created_at": emp.created_at.isoformat() if emp.created_at else None,
@@ -110,10 +110,11 @@ def create_employee(
     admin: dict = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    if payload.track not in VALID_TRACKS:
+    tracks = normalize_tracks(payload.tracks)
+    if not tracks:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Track must be one of: {', '.join(sorted(VALID_TRACKS))}",
+            detail=f"Tracks must include at least one of: {', '.join(sorted(VALID_TRACKS))}",
         )
     existing = db.query(Employee).filter_by(employee_id=payload.employee_id.strip()).first()
     if existing:
@@ -125,7 +126,7 @@ def create_employee(
         employee_id=payload.employee_id.strip(),
         first_name=payload.first_name.strip(),
         last_name=payload.last_name.strip(),
-        track=payload.track.strip().lower(),
+        track=tracks,
         is_admin=payload.is_admin,
         created_at=datetime.now(timezone.utc),
     )
@@ -151,17 +152,19 @@ def import_employees(
 
     for index, row in enumerate(payload.employees, start=1):
         employee_id = row.employee_id.strip()
-        track = row.track.strip().lower()
+        # Support pipe-separated tracks in CSV: "hr|warehouse"
+        raw_tracks = [t.strip().lower() for t in row.track.replace("|", ",").split(",")]
+        tracks = normalize_tracks(raw_tracks)
 
         if not employee_id:
             errors.append({"row": index, "employee_id": None, "detail": "Employee number is required."})
             continue
 
-        if track not in VALID_TRACKS:
+        if not tracks:
             errors.append({
                 "row": index,
                 "employee_id": employee_id,
-                "detail": f"Track '{row.track}' is invalid.",
+                "detail": f"Track '{row.track}' is invalid. Must be one of: {', '.join(sorted(VALID_TRACKS))}.",
             })
             continue
 
@@ -194,7 +197,7 @@ def import_employees(
             employee_id=employee_id,
             first_name=first_name,
             last_name=last_name,
-            track=track,
+            track=tracks,
             is_admin=row.is_admin,
             created_at=datetime.now(timezone.utc),
         )
@@ -226,10 +229,11 @@ def update_employee(
         emp.first_name = payload.first_name.strip()
     if payload.last_name is not None:
         emp.last_name = payload.last_name.strip()
-    if payload.track is not None:
-        if payload.track not in VALID_TRACKS:
-            raise HTTPException(status_code=400, detail=f"Invalid track.")
-        emp.track = payload.track.lower()
+    if payload.tracks is not None:
+        tracks = normalize_tracks(payload.tracks)
+        if not tracks:
+            raise HTTPException(status_code=400, detail=f"Tracks must include at least one valid track.")
+        emp.track = tracks
     if payload.is_admin is not None:
         emp.is_admin = payload.is_admin
     db.commit()
@@ -348,20 +352,21 @@ def get_dashboard(
     employees = db.query(Employee).all()
     total = len(employees)
 
-    # Count by track
+    # Count by track — employees with multiple tracks are counted once per track
     by_track: dict[str, int] = {}
     for emp in employees:
-        by_track[emp.track] = by_track.get(emp.track, 0) + 1
+        for t in normalize_tracks(emp.track):
+            by_track[t] = by_track.get(t, 0) + 1
 
     # Get all published non-management modules (journey modules)
     # Use HR track to get the full list including all shared modules
-    all_modules = get_modules_for_track("hr")
+    all_modules = get_modules_for_tracks(["hr"])
     journey_modules = [m for m in all_modules if "management" not in m.get("tracks", [])]
     journey_slugs = {m["slug"] for m in journey_modules}
     total_journey_modules = len(journey_modules)
 
-    # Get all non-management employees (journey participants)
-    journey_employees = [e for e in employees if e.track != "management"]
+    # Get all non-management-only employees (journey participants)
+    journey_employees = [e for e in employees if normalize_tracks(e.track) != ["management"]]
     journey_employee_ids = {e.employee_id for e in journey_employees}
 
     # Fetch all progress rows for journey modules
@@ -391,7 +396,7 @@ def get_dashboard(
         if emp.last_login_at and emp.last_login_at >= cutoff:
             recent_logins.append({
                 "full_name": f"{emp.first_name} {emp.last_name}",
-                "track": emp.track,
+                "tracks": normalize_tracks(emp.track),
                 "last_login_at": emp.last_login_at.isoformat(),
             })
 

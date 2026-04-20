@@ -11,7 +11,7 @@ class LoginRequest(BaseModel):
 class UserResponse(BaseModel):
     employee_id: str
     full_name: str
-    track: str
+    tracks: list[str]
     is_admin: bool = False
 
 
@@ -19,7 +19,7 @@ class LoginResponse(BaseModel):
     """Extended login response that signals whether TOTP verification is needed."""
     employee_id: str
     full_name: str
-    track: str
+    tracks: list[str]
     is_admin: bool = False
     requires_totp: bool = False
     totp_enabled: bool = False

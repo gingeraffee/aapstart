@@ -80,7 +80,7 @@ export interface User {
   first_name: string;
   last_name: string;
   full_name: string;
-  track: Track;
+  tracks: Track[];
   is_admin: boolean;
 }
 
@@ -90,7 +90,7 @@ export interface EmployeeRecord {
   first_name: string;
   last_name: string;
   full_name: string;
-  track: string;
+  tracks: string[];
   is_admin: boolean;
   totp_enabled: boolean;
   created_at: string | null;
@@ -105,7 +105,7 @@ export interface EmployeeRecord {
 
 export interface EmployeeImportRowInput {
   employee_id: string;
-  track: string;
+  track: string; // raw CSV value; pipe-separated for multiple (e.g. "hr|warehouse")
   name?: string;
   full_name?: string;
   first_name?: string;
@@ -135,7 +135,7 @@ export interface DashboardData {
   };
   recent_logins: {
     full_name: string;
-    track: string;
+    tracks: string[];
     last_login_at: string;
   }[];
   module_progress: {
@@ -155,7 +155,7 @@ export interface LoginPayload {
 export interface LoginResponse {
   employee_id: string;
   full_name: string;
-  track: Track;
+  tracks: Track[];
   is_admin: boolean;
   requires_totp: boolean;
   totp_enabled: boolean;
