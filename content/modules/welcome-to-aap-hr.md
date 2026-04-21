@@ -91,21 +91,39 @@ American Associated Pharmacies (AAP) is a member-owned cooperative. That means t
 
 ## Mission, Vision, and Values
 
-AAP's mission is to provide support and customized solutions for independent and community pharmacies — helping them run more profitably, operate more efficiently, and deliver better care to their patients.
+**Our Mission**
 
-The vision is straightforward: help independent pharmacies not just survive, but thrive in a competitive healthcare market.
+AAP provides support and customized solutions for independent community pharmacies to enhance their profitability, streamline their operations and improve the quality of patient care.
 
-And the values aren't just words on a wall. In HR, you're in a unique position — you don't just follow them, you help uphold them across the organization. Here's what each one looks like from your seat.
+**Our Vision**
 
-**Customer Focus** — In HR, your "customers" are the employees. Every process you touch — payroll, onboarding, benefits questions — directly affects someone's experience at work. If it's not making things easier or clearer for them, it needs a second look.
+Helping independent pharmacies thrive in a competitive healthcare market.
 
-**Integrity** — You'll handle sensitive information every day — pay rates, disciplinary actions, personal records. Integrity in this role means protecting that information, following through on what you say you'll do, and being honest even when it's uncomfortable.
+**Our Values and Guiding Principles**
 
-**Respect** — You'll interact with every department and every level of the organization. How you communicate, how you handle difficult conversations, and how you treat people when they're frustrated sets the tone for what HR means at AAP.
+Our values guide every decision, discussion and behavior. It's not only what we do that matters, but how we do it. We believe these values define our uniqueness compared to our competitors. The values we demonstrate with each action and interaction are:
 
-**Excellence** — Good enough doesn't cut it when you're processing someone's paycheck or filing their leave paperwork. Accuracy and attention to detail aren't optional — they're the standard.
+**Customer Focus**
+- Our primary focus is to meet customer requirements and to strive to exceed customer expectations.
+- Excellent service to the outside customer is dependent upon healthy internal customer service practices and teamwork.
+- Customer Service is not just a department, it is an attitude.
 
-**Ownership** — If you see a gap in a process, flag it. If something falls through the cracks, pick it up. You don't need permission to care about doing things right.
+**Integrity**
+- We act with honesty and integrity without compromising the truth.
+- We maintain consistency in what we say and what we do to build trust.
+
+**Respect**
+- We treat others with the same dignity as we wish to be treated.
+- We recognize the power of teamwork and appreciate the unique contributions that each member of a team can make.
+- We encourage open and honest communication.
+
+**Excellence**
+- We strive for the highest quality in everything that we do.
+- We seek and pursue opportunities for continuous improvement and innovation.
+
+**Ownership**
+- We seek responsibility and hold ourselves accountable for our actions.
+- When things go wrong, we take responsibility.
 
 ## What AAP Start Is For
 

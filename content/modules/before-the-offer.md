@@ -46,8 +46,8 @@ quiz:
         - id: c
           text: Send an email with the offer details instead since they didn't answer
         - id: d
-          text: Leave a message asking them to call back, then send the offer letter so they can review it while they wait
-      correctId: b
+          text: Leave a message asking them to call back — don't leave offer details — then try again until you reach them live
+      correctId: d
 
     - id: q3
       text: A candidate's offer letter was signed on Friday. When does the 3-business-day drug screening window close?
@@ -99,7 +99,7 @@ Here's how the workflow plays out from first contact to Day 1:
 
 **2. Send the confirmation email.** In BambooHR, search for the applicant (upper-right search bar) → open their screening page → go to Emails → select the correct interview confirmation template → send. Make sure the date, time, and location are all included. A confirmation email without the details isn't a confirmation — it's a source of confusion.
 
-**3. "Candidate Selected For Hire" status appears.** The supervisor has made their decision. Now you call the candidate with a verbal offer. This is a conversation, not a voicemail. If you can't reach them, try again — but don't leave offer details in a message.
+**3. "Candidate Selected For Hire" status appears.** The supervisor has made their decision. Now you call the candidate with a verbal offer. This is a conversation, not a voicemail. If you can't reach them, leave a message asking them to call you back — but never leave offer details — then keep trying until you reach them live.
 
 **4. Verbal offer accepted → send the offer letter.** Open the candidate's profile → status drop-down → **Create Offer Letter** → select the correct template → fill in every detail → send for signature. Double-check the pay rate, job title, and start date before you hit send. A wrong number here is a bad way to start a relationship.
 
