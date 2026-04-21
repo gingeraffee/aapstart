@@ -22,16 +22,16 @@ acknowledgements:
 quiz:
   questions:
     - id: q1
-      text: "An employee stops by your desk frustrated because their PTO balance looks wrong. You're not sure how to check it yet. What's the best first step?"
+      text: "A coworker stops by and asks you a question about their benefits that you don't know the answer to yet. What's the right approach?"
       options:
         - id: a
-          text: Tell them to check with their supervisor instead
+          text: Tell them to email HR and someone will get back to them
         - id: b
-          text: Try to figure it out on your own using the system
+          text: Give your best guess so they're not left waiting
         - id: c
-          text: Let them know you'll look into it and bring it to the HR Manager for guidance
+          text: Let them know you'll look into it and follow up with a confirmed answer
         - id: d
-          text: Direct them to the employee handbook
+          text: Refer them to the employee handbook and let them figure it out
       correctId: c
 
     - id: q2
