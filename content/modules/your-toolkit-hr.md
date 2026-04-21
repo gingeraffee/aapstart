@@ -74,7 +74,7 @@ quiz:
       correctId: a
 
     - id: q5
-      text: You're setting up a new Memphis hire in Employvio. Which screening do you select?
+      text: You're setting up a drug screening for a new Memphis hire in Employvio. Which screening do you select?
       options:
         - id: a
           text: Standard Screening — 1 County
@@ -87,7 +87,7 @@ quiz:
       correctId: b
 
     - id: q6
-      text: You notice a new hire on the Payroll Change Report who doesn't have a PayClock record yet. Their start date is Monday. What's the priority?
+      text: You notice a new hourly hire on the Payroll Change Report who doesn't have a PayClock record yet. Their start date is Monday. What's the priority?
       options:
         - id: a
           text: Get them into PayClock (PC-04) before their start date so they can clock in on Day 1

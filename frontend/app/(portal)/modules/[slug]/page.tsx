@@ -1744,11 +1744,11 @@ export default function ModulePage() {
       options: [
         { id: "a", text: "Explain the corrective action process so they understand the steps" },
         { id: "b", text: "Pull up their file and review the write-up with them" },
-        { id: "c", text: "Listen, document the interaction, and route them to Nicole — corrective action guidance is the HR Manager's territory" },
+        { id: "c", text: "Listen, document the interaction, and route them to the HR Manager — corrective action guidance is the HR Manager's territory" },
         { id: "d", text: "Tell them to talk to their supervisor since the supervisor initiated the write-up" },
       ],
-      correctId: "c",
-      explanation: "Corrective action guidance belongs to Nicole. Your job is to listen, document the conversation, and route it. Don't try to explain or interpret the write-up — that's not your lane.",
+      correctId: "d",
+      explanation: "Questions about a corrective action should go back to the supervisor who issued it — they're the one who can explain the reasoning and expectations. Your role is to listen and point them in the right direction, not to interpret or discuss the write-up on the supervisor's behalf.",
     },
     {
       scenario: "It's Tuesday at 3 PM. You're reviewing timecards and find a missing punch for an employee. You emailed their supervisor this morning but haven't heard back. What do you do?",
