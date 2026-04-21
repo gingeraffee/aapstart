@@ -24,7 +24,7 @@ function findAnchorId(node: Node | null): string | null {
   if (!node) return null;
   let current: HTMLElement | null = node instanceof HTMLElement ? node : node.parentElement;
   while (current) {
-    if (current.id) return current.id;
+    if (current.id?.startsWith("section-")) return current.id;
     current = current.parentElement;
   }
   return null;
@@ -53,6 +53,7 @@ export function NoteWidget({ moduleSlug, moduleTitle }: NoteWidgetProps) {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [selectionDraft, setSelectionDraft] = useState<SelectionDraft | null>(null);
+  const [noSelectionHint, setNoSelectionHint] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { mutate } = useSWRConfig();
 
@@ -186,11 +187,23 @@ export function NoteWidget({ moduleSlug, moduleTitle }: NoteWidgetProps) {
           <div className="mb-2 flex items-center justify-between">
             <button
               type="button"
-              onClick={() => setSelectionDraft(readSelectionDraft())}
+              onClick={() => {
+                const draft = readSelectionDraft();
+                if (draft) {
+                  setSelectionDraft(draft);
+                  setNoSelectionHint(false);
+                } else {
+                  setNoSelectionHint(true);
+                  setTimeout(() => setNoSelectionHint(false), 2000);
+                }
+              }}
               className="rounded-[8px] px-2.5 py-1 text-[0.68rem] font-semibold"
-              style={{ background: "rgba(15,127,179,0.08)", color: "#0f7fb3" }}
+              style={{
+                background: noSelectionHint ? "rgba(220,38,38,0.08)" : "rgba(15,127,179,0.08)",
+                color: noSelectionHint ? "#dc2626" : "#0f7fb3",
+              }}
             >
-              Use current highlight
+              {noSelectionHint ? "No text selected" : "Use current highlight"}
             </button>
             {selectionDraft && (
               <button
@@ -216,9 +229,12 @@ export function NoteWidget({ moduleSlug, moduleTitle }: NoteWidgetProps) {
                 "{selectionDraft.selectedText}"
               </p>
               {selectionDraft.anchorId && (
-                <p className="mt-1 text-[0.65rem]" style={{ color: "#5b7fa6" }}>
-                  Section anchor: {selectionDraft.anchorId}
-                </p>
+                <span
+                  className="mt-1 inline-flex items-center gap-1 text-[0.62rem] font-semibold"
+                  style={{ color: "#0f7fb3" }}
+                >
+                  ↑ Section linked
+                </span>
               )}
             </div>
           )}
