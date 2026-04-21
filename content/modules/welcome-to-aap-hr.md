@@ -61,17 +61,17 @@ quiz:
       correctId: c
 
     - id: q4
-      text: "AAP's value of \"Customer Focus\" applies differently in HR. Who is HR's primary \"customer\"?"
+      text: "An employee shares something personal during an onboarding conversation. Later, a coworker asks you about it. What does AAP's value of Integrity call for?"
       options:
         - id: a
-          text: AAP's member pharmacies
+          text: Share what you heard since it came up naturally in conversation
         - id: b
-          text: The executive leadership team
+          text: Keep it to yourself — what's shared in an HR context stays in HR
         - id: c
-          text: External job candidates
+          text: Only share it if your coworker has a reason to know
         - id: d
-          text: AAP's employees
-      correctId: d
+          text: Document it in the employee file and let your manager decide
+      correctId: b
 ---
 
 ## Your Next Chapter at AAP.
