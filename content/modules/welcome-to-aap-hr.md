@@ -35,17 +35,17 @@ quiz:
       correctId: c
 
     - id: q2
-      text: "Which of the following best describes why confidentiality matters more in HR than in most other roles at AAP?"
+      text: "AAP's value of Ownership means you don't need a manager title to take responsibility. In your HR role, what does that look like in practice?"
       options:
         - id: a
-          text: Because HR sets company policy on data storage
+          text: Handle only the tasks explicitly listed in your job description
         - id: b
-          text: Because HR regularly handles sensitive employee information like pay, disciplinary actions, and personal records
+          text: Wait to be assigned work before acting on anything you notice
         - id: c
-          text: Because HR reports directly to executive leadership
+          text: Take initiative on things you can handle and follow through without being reminded
         - id: d
-          text: Because confidentiality violations result in immediate termination
-      correctId: b
+          text: Check in with the HR Manager before completing any independent task
+      correctId: c
 
     - id: q3
       text: "You notice a step in the onboarding process that seems outdated — new hires keep asking the same question that the step doesn't address. What should you do?"
