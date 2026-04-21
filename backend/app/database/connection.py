@@ -67,6 +67,10 @@ def _migrate():
             with engine.begin() as conn:
                 conn.execute(text("ALTER TABLE user_notes ADD COLUMN anchor_id VARCHAR"))
             print("[OK] Added anchor_id column to user_notes table")
+        if "replied_at" not in note_cols:
+            with engine.begin() as conn:
+                conn.execute(text("ALTER TABLE user_notes ADD COLUMN replied_at DATETIME"))
+            print("[OK] Added replied_at column to user_notes table")
     # Check employees table for last_login_at column
     if insp.has_table("employees"):
         cols = {c["name"] for c in insp.get_columns("employees")}
