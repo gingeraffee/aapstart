@@ -1489,15 +1489,15 @@ export default function ModulePage() {
         explanation: "Option A is a confidentiality breach. Option C is technically correct but unhelpful — it leaves the supervisor with nowhere to go. Option D still discloses protected information. B protects the employee while keeping the supervisor supported.",
       },
       {
-        scenario: "An employee comes to you upset after a conflict with their supervisor. They say they want to \"file a complaint\" but ask you not to tell anyone — especially not their supervisor. They want it on record, just in case. What do you do?",
+        scenario: "An employee stops by and mentions they've been feeling really overwhelmed lately and asks if there's anything available to help. What do you tell them?",
         options: [
-          { id: "a", text: "Document what they told you and keep it between the two of you — they asked for confidentiality and you should honor that" },
-          { id: "b", text: "Let them know you'll keep it as private as possible, but explain that some situations require the HR Manager to be involved — then bring it to her" },
-          { id: "c", text: "Tell them that if they're not ready to move forward officially, there's nothing you can do yet" },
-          { id: "d", text: "Encourage them to go home, cool off, and come back if they still feel the same way tomorrow" },
+          { id: "a", text: "Suggest they talk to their supervisor about adjusting their workload" },
+          { id: "b", text: "Tell them about the EAP — it's free, confidential, and available from day one" },
+          { id: "c", text: "Let them know benefits become available after 60 days" },
+          { id: "d", text: "Recommend they take some PTO to recharge" },
         ],
         correctId: "b",
-        explanation: "You can't promise full confidentiality when a workplace complaint is involved — some things require action regardless of the employee's preference. But you can be honest about that while still making them feel safe. Sitting on it or dismissing it creates liability and erodes trust.",
+        explanation: "The EAP is available from day one to every employee and their household — no waiting period, no enrollment required. It covers counseling, financial guidance, legal support, and more. Everything is confidential. Pointing someone there is one of the most helpful things you can do.",
       },
     ] : [
       {
