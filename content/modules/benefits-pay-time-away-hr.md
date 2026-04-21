@@ -11,7 +11,7 @@ requiresAcknowledgement: true
 
 acknowledgements:
   - id: ack-1
-    statement: I understand the benefits eligibility timeline and can explain to employees when each benefit becomes available.
+    statement: I understand the general benefits eligibility timeline, and I know to always check an employee's offer letter first to confirm what benefits were offered and when they become available.
   - id: ack-2
     statement: I understand that benefits enrollment requires action from the employee within a limited window, and that it's my responsibility to follow up if their window is approaching.
   - id: ack-3
@@ -146,6 +146,10 @@ This is the most common source of confusion for new hires — and the most commo
 | PTO | After 60 days |
 | Paid Holidays | After 60 days of full-time service |
 | Medical, Dental, Vision, 401(k) | First of month after 60 days |
+
+:::callout important
+This timeline applies to most positions — but not all. Benefits eligibility can vary based on what was outlined in the employee's offer letter. **Always check the offer letter first** before telling an employee when their benefits begin. For example, most sales staff are eligible for medical, dental, and vision insurance the first of the month after their start date, with no 60-day wait.
+:::
 
 Know this timeline well enough to walk a new hire through it from memory. The sections below break it down by phase so you can explain it clearly when someone asks.
 
