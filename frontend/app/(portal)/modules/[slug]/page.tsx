@@ -183,7 +183,7 @@ function coachTipsForModule(moduleTitle: string, hasQuiz: boolean, hasAcknowledg
       "Your role changes depending on whether someone quits or gets let go. Read both sections carefully — the boundaries matter.",
       "System cleanup is two steps, same day, every time: BambooHR and IT notification. Build the habit now.",
       "Employees will ask about PTO payouts before, during, and after separation. Know the answer cold so you don't have to look it up.",
-      "If someone approaches you about a termination before Nicole has talked to them, redirect — don't confirm, deny, or discuss.",
+      "If someone approaches you about a termination before the HR Manager has talked to them, redirect — don't confirm, deny, or discuss.",
     ];
   }
 
@@ -269,7 +269,7 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
         {
           eyebrow: "Real Talk",
           title: "You won't always have the answer — and that's the job working correctly",
-          body: "FMLA questions, payroll disputes, gray-area situations — those go to Nicole. The fastest way to build trust in this role isn't knowing everything, it's knowing exactly when to stop and route it to the right person.",
+          body: "FMLA questions, payroll disputes, gray-area situations — those go to the HR Manager. The fastest way to build trust in this role isn't knowing everything, it's knowing exactly when to stop and route it to the right person.",
           tone: "red" as const,
         },
       ];
@@ -331,13 +331,13 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
         {
           eyebrow: "Heads Up",
           title: "Enrollment deadlines are the #1 thing employees miss",
-          body: "When someone misses their benefits enrollment window, there's almost nothing you can do to fix it. Know the timeline cold so you can remind employees early — and flag it to Nicole if someone's window is about to close.",
+          body: "When someone misses their benefits enrollment window, there's almost nothing you can do to fix it. Know the timeline cold so you can remind employees early — and flag it to the HR Manager if someone's window is about to close.",
           tone: "cyan" as const,
         },
         {
           eyebrow: "Real Talk",
           title: "You're the first person they'll ask — not the last",
-          body: "Before an employee calls Paylocity support or emails Nicole, they'll stop at your desk. Most of the time it's a simple question — PTO balance, enrollment status, where to find a form. Having quick, accurate answers builds the kind of trust that makes everything else in HR easier.",
+          body: "Before an employee calls Paylocity support or emails the HR Manager, they'll stop at your desk. Most of the time it's a simple question — PTO balance, enrollment status, where to find a form. Having quick, accurate answers builds the kind of trust that makes everything else in HR easier.",
           tone: "red" as const,
         },
       ];
@@ -394,13 +394,13 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
         {
           eyebrow: "Heads Up",
           title: "You'll hear things you can't repeat",
-          body: "Medical situations, leave reasons, accommodation details — employees will share sensitive information because they trust HR. That trust is protected by HIPAA and federal employment law. What you hear stays between you, Nicole, and the file. No exceptions.",
+          body: "Medical situations, leave reasons, accommodation details — employees will share sensitive information because they trust HR. That trust is protected by HIPAA and federal employment law. What you hear stays between you, the HR Manager, and the file. No exceptions.",
           tone: "navy" as const,
         },
         {
           eyebrow: "Non-Negotiable",
           title: "Route it — don't resolve it",
-          body: "FMLA, ADA accommodations, medical leave — these have legal requirements that go beyond paperwork. Your job is to listen, document what you can, and get it to Nicole. Do not advise, interpret eligibility, or make promises about what's covered.",
+          body: "FMLA, ADA accommodations, medical leave — these have legal requirements that go beyond paperwork. Your job is to listen, document what you can, and get it to the HR Manager. Do not advise, interpret eligibility, or make promises about what's covered.",
           tone: "cyan" as const,
         },
         {
@@ -576,7 +576,7 @@ function buildHumanMoments(moduleTitle: string, hasQuiz: boolean, hasAcknowledge
     return [
       {
         eyebrow: "Non-Negotiable",
-        title: "Terminations come from Nicole — never you",
+        title: "Terminations come from the HR Manager — never you",
         body: "Involuntary separations are communicated by the HR Manager only. You don't hint, you don't confirm, you don't prep the employee. Your role is support, documentation, and system cleanup after the conversation happens.",
         tone: "navy" as const,
       },
@@ -1324,34 +1324,34 @@ export default function ModulePage() {
         scenario: "A supervisor calls and asks you how many points one of their employees has. They say they need it for a corrective action conversation this afternoon. What do you do?",
         options: [
           { id: "a", text: "Pull the record from BambooHR and send it over right away — they need it for the meeting" },
-          { id: "b", text: "Pull the record, verify the point total with Nicole, and then provide it to the supervisor" },
+          { id: "b", text: "Pull the record, verify the point total with the HR Manager, and then provide it to the supervisor" },
           { id: "c", text: "Tell the supervisor they need to submit a formal request through email before you can share attendance records" },
           { id: "d", text: "Let them know attendance records are confidential and you can't share them without the employee present" },
         ],
         correctId: "b",
-        explanation: "You can provide attendance records to a supervisor for corrective action purposes, but verify the total with Nicole first. A wrong number in a corrective conversation creates problems for everyone.",
+        explanation: "You can provide attendance records to a supervisor for corrective action purposes, but verify the total with the HR Manager first. A wrong number in a corrective conversation creates problems for everyone.",
       },
       {
         scenario: "An employee stops by your desk and says they need to take time off next month for surgery. They start giving you details about their diagnosis. What do you do?",
         options: [
           { id: "a", text: "Listen carefully and take notes so you have everything documented for the file" },
-          { id: "b", text: "Let them share what they want to share, then let them know you'll connect them with Nicole — without writing down any medical specifics yourself" },
-          { id: "c", text: "Stop them immediately and tell them they need to speak with Nicole directly — you can't hear medical information" },
+          { id: "b", text: "Let them share what they want to share, then let them know you'll connect them with the HR Manager — without writing down any medical specifics yourself" },
+          { id: "c", text: "Stop them immediately and tell them they need to speak with the HR Manager directly — you can't hear medical information" },
           { id: "d", text: "Pull up the FMLA forms and start walking them through the initial paperwork" },
         ],
         correctId: "b",
-        explanation: "You don't shut them down, but you don't document medical details either. Let them feel heard, then route it to Nicole. Starting FMLA paperwork or recording clinical details yourself creates risk.",
+        explanation: "You don't shut them down, but you don't document medical details either. Let them feel heard, then route it to the HR Manager. Starting FMLA paperwork or recording clinical details yourself creates risk.",
       },
       {
         scenario: "You're entering last week's attendance points into the point notebook and you notice one employee's total doesn't match what you expected — they seem to have fewer points than they should. What do you do?",
         options: [
           { id: "a", text: "Adjust the total to match what you think it should be based on the call-in log" },
-          { id: "b", text: "Enter what the report shows and flag the discrepancy to Nicole for review" },
+          { id: "b", text: "Enter what the report shows and flag the discrepancy to the HR Manager for review" },
           { id: "c", text: "Skip that employee and come back to it after you've checked BambooHR yourself" },
           { id: "d", text: "Email the employee's supervisor to ask if they know about any approved absences you might be missing" },
         ],
         correctId: "b",
-        explanation: "Enter what the report says and flag the discrepancy. Don't adjust records on your own judgment, and don't go around Nicole to resolve it. She'll sort it out.",
+        explanation: "Enter what the report says and flag the discrepancy. Don't adjust records on your own judgment, and don't go around the HR Manager to resolve it. She'll sort it out.",
       },
     ] : [
       {
@@ -1397,12 +1397,12 @@ export default function ModulePage() {
         scenario: "A new hire is approaching their 60-day mark and asks you if their medical benefits will start automatically. They haven't filled out any enrollment paperwork yet. What do you do?",
         options: [
           { id: "a", text: "Let them know benefits start automatically after 60 days — they don't need to do anything" },
-          { id: "b", text: "Tell them they need to enroll, explain there's a limited window, and confirm with Nicole that their enrollment materials have been sent" },
+          { id: "b", text: "Tell them they need to enroll, explain there's a limited window, and confirm with the HR Manager that their enrollment materials have been sent" },
           { id: "c", text: "Pull up the enrollment forms and help them fill everything out right now" },
           { id: "d", text: "Tell them to wait for the enrollment email from HR — it'll have everything they need" },
         ],
         correctId: "b",
-        explanation: "Benefits don't start automatically — employees must actively enroll during their window. Waiting for an email risks them missing it. Filling out forms yourself isn't your role. The right move is to confirm they know enrollment is required and verify with Nicole that the process is on track.",
+        explanation: "Benefits don't start automatically — employees must actively enroll during their window. Waiting for an email risks them missing it. Filling out forms yourself isn't your role. The right move is to confirm they know enrollment is required and verify with the HR Manager that the process is on track.",
       },
       {
         scenario: "An employee's supervisor calls you and says they want to deny a vacation request because the team is short-staffed that week. The employee has the PTO balance and submitted the request on time. What do you do?",
@@ -1410,21 +1410,21 @@ export default function ModulePage() {
           { id: "a", text: "Let the supervisor know that if the employee followed the process and has the balance, the request should be approved" },
           { id: "b", text: "Deny the request in BambooHR on behalf of the supervisor since they called you directly" },
           { id: "c", text: "Tell the supervisor it's their call and stay out of it" },
-          { id: "d", text: "Let the supervisor know you'll flag it to Nicole so she can review the situation and advise" },
+          { id: "d", text: "Let the supervisor know you'll flag it to the HR Manager so she can review the situation and advise" },
         ],
         correctId: "d",
-        explanation: "You don't approve or deny requests, and you don't override a supervisor's decision. But you also shouldn't just stay out of it when there's a potential policy question. The right move is to route it to Nicole so she can advise the supervisor on how to handle it properly.",
+        explanation: "You don't approve or deny requests, and you don't override a supervisor's decision. But you also shouldn't just stay out of it when there's a potential policy question. The right move is to route it to the HR Manager so she can advise the supervisor on how to handle it properly.",
       },
       {
         scenario: "An employee tells you they've been clocking in on time every day but their attendance report shows 3.5 points. They're frustrated and want you to fix it. What do you do?",
         options: [
           { id: "a", text: "Pull up their attendance record in BambooHR and correct the points that look wrong" },
-          { id: "b", text: "Explain how points accumulate and roll off, then let them know you'll flag the discrepancy to Nicole for review" },
+          { id: "b", text: "Explain how points accumulate and roll off, then let them know you'll flag the discrepancy to the HR Manager for review" },
           { id: "c", text: "Tell them to take it up with their supervisor since attendance is managed at the department level" },
           { id: "d", text: "Remove the points they're disputing so they don't hit the next threshold while waiting for a review" },
         ],
         correctId: "b",
-        explanation: "You don't modify attendance records yourself, and you don't dismiss the concern. Explain the system so they understand how points work, then escalate the discrepancy to Nicole for proper review. Removing points without authorization or passing it off entirely both create problems.",
+        explanation: "You don't modify attendance records yourself, and you don't dismiss the concern. Explain the system so they understand how points work, then escalate the discrepancy to the HR Manager for proper review. Removing points without authorization or passing it off entirely both create problems.",
       },
     ] : [
       {
@@ -1580,7 +1580,7 @@ export default function ModulePage() {
         scenario: "A supervisor calls to let you know an employee slipped on a wet floor near the warehouse break room. The employee says they're fine and doesn't want to make a big deal about it. What do you do?",
         options: [
           { id: "a", text: "If the employee says they're fine, there's nothing to document" },
-          { id: "b", text: "Document the incident, file it in their medical folder in BambooHR, post it to the accident report groups, and let Nicole know" },
+          { id: "b", text: "Document the incident, file it in their medical folder in BambooHR, post it to the accident report groups, and let the HR Manager know" },
           { id: "c", text: "Tell the supervisor to keep an eye on the employee and only follow up if symptoms appear" },
         ],
         correctId: "b",
@@ -1610,11 +1610,11 @@ export default function ModulePage() {
         scenario: "An employee forwards you a joke that was sent through company email. It's not directed at anyone specific, but it's definitely inappropriate. They want to know if it's worth reporting. What do you tell them?",
         options: [
           { id: "a", text: "It's not worth the drama — just delete it and move on" },
-          { id: "b", text: "Yes — company email is for business use, and offensive content is a policy violation regardless of intent. Document it and escalate to Nicole" },
+          { id: "b", text: "Yes — company email is for business use, and offensive content is a policy violation regardless of intent. Document it and escalate to the HR Manager" },
           { id: "c", text: "Only if the person who sent it has been warned before" },
         ],
         correctId: "b",
-        explanation: "AAP's computer and email policy doesn't have a \"first offense\" loophole. Offensive content through company systems is a violation, period. Document it and let Nicole take it from there.",
+        explanation: "AAP's computer and email policy doesn't have a \"first offense\" loophole. Offensive content through company systems is a violation, period. Document it and let the HR Manager take it from there.",
       },
     ] : [
       {
@@ -1754,12 +1754,12 @@ export default function ModulePage() {
       scenario: "It's Tuesday at 3 PM. You're reviewing timecards and find a missing punch for an employee. You emailed their supervisor this morning but haven't heard back. What do you do?",
       options: [
         { id: "a", text: "Skip it and submit payroll without it — one missing punch won't matter" },
-        { id: "b", text: "Follow up with the supervisor now and escalate to Nicole if you don't hear back before 5 PM — the 6 PM deadline doesn't wait" },
+        { id: "b", text: "Follow up with the supervisor now and escalate to the HR Manager if you don't hear back before 5 PM — the 6 PM deadline doesn't wait" },
         { id: "c", text: "Enter your best guess based on the employee's usual schedule and note it for next cycle" },
         { id: "d", text: "Hold payroll submission until you get the answer, even if it means missing the deadline" },
       ],
       correctId: "b",
-      explanation: "The deadline is the deadline. Follow up immediately, and if the supervisor doesn't respond, escalate to Nicole. Don't guess, don't skip it, and don't miss the deadline.",
+      explanation: "The deadline is the deadline. Follow up immediately, and if the supervisor doesn't respond, escalate to the HR Manager. Don't guess, don't skip it, and don't miss the deadline.",
     },
     {
       scenario: "A supervisor asks you to look into whether one of their employees has enough vacation time for a trip next month. What do you do?",
@@ -1767,7 +1767,7 @@ export default function ModulePage() {
         { id: "a", text: "Check BambooHR and give the supervisor the employee's vacation balance" },
         { id: "b", text: "Tell the supervisor to check BambooHR themselves — you're not responsible for balance inquiries" },
         { id: "c", text: "Check BambooHR, tell the employee their balance, and let them work it out with their supervisor" },
-        { id: "d", text: "Route it to Nicole — PTO balances are sensitive information" },
+        { id: "d", text: "Route it to the HR Manager — PTO balances are sensitive information" },
       ],
       correctId: "a",
       explanation: "Basic PTO balance inquiries from supervisors are in your lane. Check BambooHR and give the supervisor the information they need. This isn't a pay question or a sensitive matter — it's a routine lookup.",
@@ -1777,11 +1777,11 @@ export default function ModulePage() {
       options: [
         { id: "a", text: "Send a third reminder — persistence is part of the job" },
         { id: "b", text: "Let it go — some employees just take longer" },
-        { id: "c", text: "Escalate to Nicole — you've followed up twice and the paperwork is overdue" },
+        { id: "c", text: "Escalate to the HR Manager — you've followed up twice and the paperwork is overdue" },
         { id: "d", text: "Call the employee's supervisor and ask them to handle it" },
       ],
       correctId: "c",
-      explanation: "Two follow-ups is your due diligence. After that, escalate. Onboarding paperwork that drags on too long creates compliance issues — and Nicole needs to know before it becomes a problem.",
+      explanation: "Two follow-ups is your due diligence. After that, escalate. Onboarding paperwork that drags on too long creates compliance issues — and the HR Manager needs to know before it becomes a problem.",
     },
   ] : [];
 
@@ -1883,7 +1883,7 @@ export default function ModulePage() {
       options: [
         { id: "a", text: "That's fine — tomorrow is still within the window" },
         { id: "b", text: "Let them know today is the last business day in the 3-day window and they need to go today" },
-        { id: "c", text: "Escalate to Nicole — the deadline has passed" },
+        { id: "c", text: "Escalate to the HR Manager — the deadline has passed" },
       ],
       correctId: "b",
       explanation: "Wednesday to Monday is 3 business days (Thursday, Friday, Monday). Today is the deadline — not tomorrow. Follow up firmly and make sure they understand the urgency.",
@@ -1928,7 +1928,7 @@ export default function ModulePage() {
       options: [
         { id: "a", text: "They can enroll now — 45 days is close enough to the 60-day mark" },
         { id: "b", text: "Enrollment opens on the 1st of the month after they hit 60 days of employment" },
-        { id: "c", text: "Route it to Nicole — benefits enrollment questions go to the HR Manager" },
+        { id: "c", text: "Route it to the HR Manager — benefits enrollment questions go to the HR Manager" },
       ],
       correctId: "b",
       explanation: "Health insurance enrollment opens on the 1st of the month after 60 days. You can answer this one — it's a timeline question, not a pay question. Give them the clear answer so they can plan.",
@@ -1937,11 +1937,11 @@ export default function ModulePage() {
       scenario: "A supervisor tells you that an employee hasn't shown up or called in for two days straight. They ask what happens next. What do you say?",
       options: [
         { id: "a", text: "Try calling the employee one more time before taking any action" },
-        { id: "b", text: "Two consecutive no-call/no-shows is treated as a voluntary quit — you're notifying Nicole immediately" },
+        { id: "b", text: "Two consecutive no-call/no-shows is treated as a voluntary quit — you're notifying the HR Manager immediately" },
         { id: "c", text: "Issue a written warning and give the employee a chance to explain" },
       ],
       correctId: "b",
-      explanation: "Two consecutive no-call/no-shows is a voluntary quit under policy. No warning, no investigation. Notify Nicole immediately — she handles the separation from there.",
+      explanation: "Two consecutive no-call/no-shows is a voluntary quit under policy. No warning, no investigation. Notify the HR Manager immediately — she handles the separation from there.",
     },
   ] : [];
 
@@ -1951,41 +1951,41 @@ export default function ModulePage() {
       scenario: "A supervisor stops you in the hallway and says, \"Just so you know, we're letting Marcus go on Friday. Can you get the paperwork ready?\" What do you do?",
       options: [
         { id: "a", text: "Start preparing the separation paperwork so everything is ready by Friday" },
-        { id: "b", text: "Ask the supervisor if Nicole is aware and involved — involuntary terminations require HR Manager involvement before anything moves forward" },
-        { id: "c", text: "Let Marcus know he should talk to Nicole before Friday" },
+        { id: "b", text: "Ask the supervisor if the HR Manager is aware and involved — involuntary terminations require HR Manager involvement before anything moves forward" },
+        { id: "c", text: "Let Marcus know he should talk to the HR Manager before Friday" },
       ],
       correctId: "b",
-      explanation: "Involuntary terminations require Nicole's involvement before the first step is taken. Your job isn't to prepare the paperwork on a supervisor's say-so — it's to make sure the right process is being followed. Loop Nicole in first, every time.",
+      explanation: "Involuntary terminations require the HR Manager's involvement before the first step is taken. Your job isn't to prepare the paperwork on a supervisor's say-so — it's to make sure the right process is being followed. Loop the HR Manager in first, every time.",
     },
     {
       scenario: "An employee's last day is today. You updated BambooHR this morning, but it's now 4:30 PM and you realize you forgot to send the IT notification. The employee already left the building an hour ago. What do you do?",
       options: [
         { id: "a", text: "Send the IT notification first thing tomorrow morning — the employee is already gone, so there's no rush" },
         { id: "b", text: "Send the IT notification now — access removal happens the same day, even if the employee has already left" },
-        { id: "c", text: "Check with Nicole first to see if it can wait until tomorrow since it's late in the day" },
+        { id: "c", text: "Check with the HR Manager first to see if it can wait until tomorrow since it's late in the day" },
       ],
       correctId: "b",
       explanation: "The employee being gone doesn't mean their access is gone. They can still log into email, systems, and network resources remotely until IT revokes it. Same-day means same-day — send that notification now.",
     },
     {
-      scenario: "A departing employee catches you in the break room and asks, \"I heard I'm being terminated — is that true?\" Nicole hasn't spoken to them yet. What do you say?",
+      scenario: "A departing employee catches you in the break room and asks, \"I heard I'm being terminated — is that true?\" the HR Manager hasn't spoken to them yet. What do you say?",
       options: [
         { id: "a", text: "Be honest — they deserve to know what's coming" },
         { id: "b", text: "Say \"I don't know anything about that\" even though you do" },
-        { id: "c", text: "Say \"Let me get Nicole — she'll be able to walk you through everything\" and find Nicole immediately" },
+        { id: "c", text: "Say \"Let me get the HR Manager — she'll be able to walk you through everything\" and find the HR Manager immediately" },
       ],
       correctId: "c",
-      explanation: "You don't confirm, deny, or discuss it. Redirect to Nicole — that's the script. Lying isn't great either, which is why option C works: you're not saying you don't know, you're saying Nicole is the right person to talk to. Then you go find her.",
+      explanation: "You don't confirm, deny, or discuss it. Redirect to the HR Manager — that's the script. Lying isn't great either, which is why option C works: you're not saying you don't know, you're saying the HR Manager is the right person to talk to. Then you go find her.",
     },
     {
       scenario: "An employee has missed two consecutive days without calling in. Their coworker tells you they saw the employee post on social media that they're \"done with this place.\" What do you do?",
       options: [
         { id: "a", text: "Wait one more day to see if they come back — the social media post isn't official" },
-        { id: "b", text: "Notify Nicole immediately — two consecutive no-call/no-shows is a voluntary quit under policy" },
-        { id: "c", text: "Call the employee to confirm they've quit before notifying Nicole" },
+        { id: "b", text: "Notify the HR Manager immediately — two consecutive no-call/no-shows is a voluntary quit under policy" },
+        { id: "c", text: "Call the employee to confirm they've quit before notifying the HR Manager" },
       ],
       correctId: "b",
-      explanation: "The social media post doesn't matter. What matters is the policy: two consecutive days without reporting in and without calling is a voluntary quit. You don't investigate, you don't wait, you don't call. You notify Nicole and she handles it from there.",
+      explanation: "The social media post doesn't matter. What matters is the policy: two consecutive days without reporting in and without calling is a voluntary quit. You don't investigate, you don't wait, you don't call. You notify the HR Manager and she handles it from there.",
     },
   ] : [];
 
