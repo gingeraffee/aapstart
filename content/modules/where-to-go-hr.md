@@ -102,7 +102,7 @@ If you're not sure whether something needs to go to the HR Manager, it does..
 You're going to interact with people across every location and department. This isn't a hierarchy — it's a working reference for who handles what and who to loop in when something comes up.
 
 **Your HR Chain**
-- **the HR Manager** — your direct supervisor and first call for anything policy, leave, or employee-related
+- **the HR Manager** — your first stop for anything policy, leave, or employee-related questions
 - **the VP of HR** — escalation for sensitive situations or decisions above the HR Manager's level
 
 **Warehouse Leadership**
