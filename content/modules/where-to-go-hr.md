@@ -61,16 +61,16 @@ quiz:
       correctId: b
 
     - id: q4
-      text: "You overhear two employees talking in the break room. One says their supervisor \"crossed a line\" last week but they don't want to \"make it a thing.\" No one has come to you directly. What do you do?"
+      text: "A new hire calls to ask how many PTO days they have left. What do you do?"
       options:
         - id: a
-          text: Nothing — no one filed a complaint and it's not your conversation
+          text: Tell them to check with their supervisor
         - id: b
-          text: Approach the employee privately, let them know you're available if they want to talk, and document what you overheard for the HR Manager
+          text: Look it up in BambooHR and let them know
         - id: c
-          text: Go directly to the supervisor and ask them what happened
+          text: Forward the call to the HR Manager
         - id: d
-          text: Report it to the HR Manager immediately without talking to the employee first
+          text: Tell them it resets at the start of the year and not to worry
       correctId: b
 ---
 
