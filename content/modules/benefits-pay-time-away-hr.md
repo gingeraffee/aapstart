@@ -117,16 +117,16 @@ quiz:
       correctId: b
 
     - id: q8
-      text: "A full-time employee started 45 days ago and asks you to help them submit a vacation request for next week. What's the right move?"
+      text: "An employee is having trouble navigating BambooHR and asks you to just submit their vacation request for them. What do you do?"
       options:
         - id: a
-          text: Submit the request in BambooHR on their behalf so it routes to their supervisor quickly
+          text: Submit it for them — it's a small task and keeps things moving
         - id: b
-          text: Let them know PTO isn't available until after 60 days, and direct them to submit the request themselves once they're eligible
+          text: Walk them through how to submit it themselves — requests need to come from the employee directly
         - id: c
-          text: Approve the request since they're close enough to the 60-day mark
+          text: Submit it this once but let them know going forward they'll need to do it themselves
         - id: d
-          text: Tell them to email their supervisor directly since BambooHR won't allow a request before 60 days
+          text: Tell them to email their supervisor instead since you can't access their BambooHR profile
       correctId: b
 ---
 
