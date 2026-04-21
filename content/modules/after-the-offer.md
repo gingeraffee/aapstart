@@ -99,7 +99,7 @@ This is the workflow that turns a candidate into an employee. It's 12 steps, the
 
 **1. Click Hire.** In Applicant Tracking, find the candidate and click **Hire** from the Offer Tracking section. This is the official transition from applicant to employee.
 
-**2. Uncheck "close job posting."** This is a small box that's easy to miss. If you leave it checked, the job posting closes automatically — and if you're still hiring for the same role, you just shut off your applicant pipeline. Always uncheck unless you're told the role is filled.
+**2. Check the Position Requisition Form before touching "close job posting."** This is a small box that's easy to miss. Before you decide, pull up the Position Requisition Form — it tells you how many roles were approved and whether they're all filled. If all roles are filled, close the posting. If not, uncheck it. Don't assume based on a single hire.
 
 **3. Click Add New Employee.** Select the checkbox to send a new hire packet. This triggers the onboarding paperwork that the employee will complete electronically.
 

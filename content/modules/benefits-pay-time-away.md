@@ -287,7 +287,7 @@ Here's the good news about vacation: it grows with you. Full-time employees star
 | 10th – 19th anniversary | 136 hours (17 days) |
 | 20th anniversary and beyond | 152 hours (19 days) |
 
-Vacation can be taken in 2-hour increments, and unlike personal time, **your balance rolls over** — no use-it-or-lose-it pressure here. Just make sure your requests are in **BambooHR by 5:00 PM the day before**, and know that anything over 5 consecutive days needs written approval from the Company President.
+Vacation can be taken in 2-hour increments, and unlike personal time, **your balance rolls over** — no use-it-or-lose-it pressure here. Just make sure your requests are in **BambooHR by 5:00 PM the day before**. Your supervisor can approve or deny vacation requests based on staffing and business needs — having the balance doesn't guarantee approval. Requests of 5 or more consecutive days additionally require written approval from the Company President.
 
 **Holidays**
 

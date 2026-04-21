@@ -191,7 +191,7 @@ function coachTipsForModule(moduleTitle: string, hasQuiz: boolean, hasAcknowledg
     return [
       "This page is your desk reference. Bookmark it, print it, whatever works — just keep it within reach.",
       "The SOP index tells you exactly which document to open for any task. Use it instead of guessing.",
-      "Key contacts prefer Teams for most things. Save the phone calls for urgent escalations.",
+      "Email is the preferred contact method — it keeps everything documented. Save calls for urgent escalations.",
     ];
   }
 
@@ -1908,9 +1908,10 @@ export default function ModulePage() {
         { id: "a", text: "Leave it checked — if they hired someone, the role is probably filled" },
         { id: "b", text: "Uncheck it — always uncheck unless you've been specifically told the role is filled" },
         { id: "c", text: "Message the supervisor to ask before proceeding" },
+        { id: "d", text: "Don't assume — check the Position Requisition Form first. It tells you whether the role is fully staffed and the posting should be closed." },
       ],
-      correctId: "b",
-      explanation: "Always uncheck. If the role is still open, closing the posting shuts off your applicant pipeline. It's easier to close a posting later than to reopen one you accidentally shut down.",
+      correctId: "d",
+      explanation: "The Position Requisition Form is your source of truth. It tells you how many roles were approved and whether they're all filled. Don't assume based on a single hire — check the form before closing the posting.",
     },
     {
       scenario: "A new hire's documents are coming in. Their signed W-4 is back, and you're about to file it. You're not sure if it goes in New Hire Forms or Payroll Related Documents. What do you do?",

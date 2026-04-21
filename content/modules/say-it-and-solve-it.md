@@ -79,7 +79,7 @@ quiz:
       text: An employee asks you to excuse a point from their attendance record. They say they had a flat tire and it wasn't their fault. What do you tell them?
       options:
         - id: a
-          text: Explain that the point system is no-fault and the reason doesn't matter — but offer to check if they have PTO to cover the time instead
+          text: Explain that the point system is no-fault, check whether they have PTO to cover the time, and if not, let them know they can discuss exceptions with their supervisor
         - id: b
           text: Remove the point since a flat tire is clearly outside their control
         - id: c
@@ -215,11 +215,9 @@ Harassment, discrimination, and retaliation reports are intake + documentation +
 
 ### Employee Wants a Point Excused
 
-This comes up more than you'd think. The answer is always the same.
+This comes up more than you'd think. Here's how to handle it.
 
-*"We use a no-fault point system, so the reason for the absence doesn't change whether a point is recorded. But let's check — do you have PTO you could use to cover the time instead? Vacation has to be taken in 2-hour increments, and personal time in 1-hour increments."*
-
-You're not being heartless — you're being consistent. The system works because it applies the same way to everyone.
+*"We use a no-fault point system, so the reason for the absence doesn't affect whether a point is recorded — but there are two things we can look at. First, do you have PTO you could use to cover the time? Vacation has to be taken in 2-hour increments, personal time in 1-hour increments. Second, if there are extenuating circumstances and no PTO available, your supervisor has the ability to review whether an exception is appropriate — I'd encourage you to have that conversation with them."*
 
 ## Escalation Routing (ES-01)
 

@@ -34,19 +34,6 @@ quiz:
           text: Message him on Teams — IT prefers Teams for most requests
         - id: d
           text: Send a Teams message and follow up with an email so nothing gets lost
-      correctId: c
-
-    - id: q2
-      text: A Scottsboro warehouse supervisor needs to document a corrective action for one of their employees. They ask you who to contact for the supporting documentation. Who do you point them to?
-      options:
-        - id: a
-          text: Amanda Gorham — she's the Warehouse Operations Manager and oversees all Scottsboro warehouse operations
-        - id: b
-          text: Robby Donnelly — he's the Warehouse Supervisor and would have direct documentation on his employees
-        - id: c
-          text: the HR Manager — corrective action documentation goes through HR
-        - id: d
-          text: Linda Dodson — she's the Assistant Warehouse Supervisor and handles day-to-day documentation
       correctId: b
 
     - id: q3
@@ -76,17 +63,17 @@ quiz:
       correctId: c
 
     - id: q5
-      text: You're setting up a new hire in Memphis and need to confirm who their warehouse supervisor will be for onboarding coordination. Who do you reach out to?
+      text: A supervisor calls and asks where they can find an employee's current PTO balance. Which system do you point them to?
       options:
         - id: a
-          text: Will Ward — he's the Memphis Warehouse Operations Manager
+          text: PayClock — that's where timekeeping and PTO entry happen
         - id: b
-          text: Joseph Isom — he's the Memphis Warehouse Supervisor
+          text: Paylocity — pay and time-off balances are managed there
         - id: c
-          text: Bryan Hawthorn — he's the Memphis Assistant Warehouse Supervisor and handles onboarding logistics
+          text: BambooHR — employee records and PTO balances are managed there
         - id: d
-          text: Phil Horton — he's the Memphis IT contact and coordinates new hire equipment setup
-      correctId: b
+          text: HR Drive — PTO records are stored in the shared HR folder
+      correctId: c
 ---
 
 ## How to Use This Page
@@ -165,6 +152,7 @@ You'll live in these systems. Some of them daily, some of them weekly, all of th
 | Phoenix LIS | Scottsboro drug screening results | [flcscottsboro.phoenixlis.com](https://flcscottsboro.phoenixlis.com) |
 | HR Drive | Shared file storage for HR documents | S:\Human Resources |
 | SharePoint | Company intranet, shared documents, and team resources | *(link via company portal)* |
+| Trello | HR department goal tracking and team tasks | [trello.com/b/PUlXqpqs/hr-team-task](https://trello.com/b/PUlXqpqs/hr-team-task) |
 
 ## Numbers You Should Know
 

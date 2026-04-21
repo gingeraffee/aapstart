@@ -46,11 +46,7 @@ The standard point value for a missed shift is 1.0 point per occurrence. However
 - Weekend days count toward the 3 consecutive days, even if the employee is not scheduled on those days.
 - It is the **employee's responsibility** to provide the doctor's note. Points will be assessed at the standard rate if a note is not submitted.
 
-## 4. COVID-19 Exception
-
-Employees who test positive for COVID-19 may be absent per their doctor's recommendation without any points assessed, up to a maximum of **5 days**. Employees must provide **documentation of their positive test result** to qualify for this exception.
-
-## 5. Absences That Do Not Earn Points
+## 4. Absences That Do Not Earn Points
 
 The following absences are excluded from the point system entirely:
 
@@ -61,7 +57,7 @@ The following absences are excluded from the point system entirely:
 - Court-mandated appearances
 - Time off to vote
 
-## 6. Point Roll Offs
+## 5. Point Roll Offs
 
 Points do not remain on an employee's record permanently. There are two automatic roll off rules:
 
@@ -73,13 +69,13 @@ Points do not remain on an employee's record permanently. There are two automati
 An employee's point balance will never go below 0.0. If a roll off would reduce a balance below zero, it floors at 0.0.
 :::
 
-## 7. Perfect Attendance Bonus
+## 6. Perfect Attendance Bonus
 
 Any employee who goes **three consecutive months** without earning any points will receive a **$75 bonus**, paid out on the first payroll of the following month. The bonus is earned every third month of perfect attendance — it is not tied to fixed calendar quarters, so any three-month stretch qualifies.
 
 For example, an employee with no points in January, February, and March earns the bonus on the first payroll in April. An employee with no points in February, March, and April earns the bonus on the first payroll in May.
 
-## 8. Corrective Action Thresholds
+## 7. Corrective Action Thresholds
 
 HR generates corrective action documents at the end of each month for any employee who has reached a threshold. The supervisor is responsible for delivering and discussing the document with the employee, obtaining the employee's signature, entering the conversation in the Corrective Action section of BambooHR, and returning the completed document to HR.
 
@@ -90,11 +86,11 @@ Point thresholds and corresponding actions:
 - **7.0 points:** Written warning
 - **8.0 points:** Termination
 
-## 9. Probationary Employees
+## 8. Probationary Employees
 
 Employees within their **first 60 days of employment** are considered probationary. Probationary employees may not exceed **2.0 points** during this window. Exceeding this threshold may result in disciplinary action, including extended probation or termination.
 
-## 10. Waiving a Point
+## 9. Waiving a Point
 
 Although the point system is no-fault, a supervisor may choose to waive a point for extenuating circumstances. Before agreeing to waive a point, the supervisor should consult with HR, who can provide context such as the employee's current balance, upcoming roll offs, and any conduct or performance concerns on file.
 

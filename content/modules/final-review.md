@@ -168,16 +168,16 @@ quiz:
       correctId: b
 
     - id: q12
-      text: A full-time employee was hired on January 15th. They ask when they can enroll in health insurance and when they can start using vacation time. What do you tell them?
+      text: A supervisor asks if their employee is eligible for FMLA. The employee has been with AAP for 10 months and worked 1,100 hours this year. What do you tell the supervisor?
       options:
         - id: a
-          text: Both are available starting Day 1
+          text: Let the supervisor know the employee isn't eligible yet — FMLA requires 365 days of employment AND 1,250 hours worked, and they haven't hit either threshold
         - id: b
-          text: Vacation eligibility starts at 60 days. Medical enrollment opens on the 1st of the month after 60 days
+          text: Route it to the HR Manager immediately — FMLA eligibility requires 365 days of employment AND 1,250 hours worked, and interpreting whether they qualify is the HR Manager's call
         - id: c
-          text: Both become available on the 1st of the month after 60 days
+          text: Tell the supervisor the employee is close and to start gathering documentation so they're ready when the threshold is met
         - id: d
-          text: Medical starts after 60 days. Vacation doesn't start accruing until their 1-year anniversary
+          text: Check BambooHR to verify the exact hire date and hours before giving the supervisor any information
       correctId: b
 
     - id: q13

@@ -31,7 +31,7 @@ quiz:
         - id: a
           text: PTO is available immediately — they just need to submit a request in BambooHR
         - id: b
-          text: PTO becomes available after 60 days of employment
+          text: Generally, PTO becomes available after 60 days — but if there are extenuating circumstances, route it to the HR Manager rather than just saying no
         - id: c
           text: PTO becomes available after 30 days of employment
         - id: d
@@ -91,16 +91,16 @@ quiz:
       correctId: b
 
     - id: q6
-      text: "It's the last week of the month and you're auditing the point notebook. An employee accrued 1.0 point in the same month two years ago and has had two consecutive clean months. What should you flag?"
+      text: "An employee is resigning and asks which PTO balances will be paid out in their final check. What do you tell them?"
       options:
         - id: a
-          text: Only the 2-month roll-off — the YTD roll-off won't happen until January
+          text: All PTO balances — vacation and personal leave are both paid out at separation
         - id: b
-          text: Only the YTD roll-off — the 2-month roll-off doesn't apply since the point is already rolling off by date
+          text: Neither — AAP does not pay out any PTO at separation
         - id: c
-          text: Both — the 2-month consecutive clean record removes 1.0 point, and the point from two years ago already rolled off at the one-year mark
+          text: Accrued vacation is paid out, but personal leave is forfeited at separation
         - id: d
-          text: Neither — points older than 12 months are already off the books, and the 2-month roll-off only matters if the employee is above a threshold
+          text: It depends on how much notice they give — two weeks' notice is required to receive any payout
       correctId: c
 
     - id: q7
@@ -308,7 +308,7 @@ Vacation accrual is tied to the employee's **full-time** hire date anniversary �
 | 10th – 19th anniversary | 136 hours (17 days) |
 | 20th anniversary and beyond | 152 hours (19 days) |
 
-Vacation can be taken in 2-hour increments, and unlike personal time, **balances roll over**. Requests must be in **BambooHR by 5:00 PM the day before**. Anything over 5 consecutive days needs written approval from the Company President. If an employee asks about extended time off, route it to the HR Manager.
+Vacation can be taken in 2-hour increments, and unlike personal time, **balances roll over**. Requests must be in **BambooHR by 5:00 PM the day before**. Supervisors can approve or deny vacation requests based on staffing and business needs — having the balance doesn't guarantee approval. Requests of 5 or more consecutive days additionally require written approval from the Company President. If an employee asks about extended time off, route it to the HR Manager.
 
 **Holidays**
 
