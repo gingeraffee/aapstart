@@ -1405,15 +1405,15 @@ export default function ModulePage() {
         explanation: "Benefits don't start automatically — employees must actively enroll during their window. Waiting for an email risks them missing it. Filling out forms yourself isn't your role. The right move is to confirm they know enrollment is required and verify with the HR Manager that the process is on track.",
       },
       {
-        scenario: "An employee's supervisor calls you and says they want to deny a vacation request because the team is short-staffed that week. The employee has the PTO balance and submitted the request on time. What do you do?",
+        scenario: "An employee asks how they can earn the perfect attendance bonus. What do you tell them?",
         options: [
-          { id: "a", text: "Let the supervisor know that if the employee followed the process and has the balance, the request should be approved" },
-          { id: "b", text: "Deny the request in BambooHR on behalf of the supervisor since they called you directly" },
-          { id: "c", text: "Tell the supervisor it's their call and stay out of it" },
-          { id: "d", text: "Let the supervisor know you'll flag it to the HR Manager so she can review the situation and advise" },
+          { id: "a", text: "No tardies or unexcused absences for 6 consecutive months earns a $100 bonus" },
+          { id: "b", text: "No tardies or unexcused absences for 3 consecutive months earns a $75 bonus on their first paycheck of the following month" },
+          { id: "c", text: "Perfect attendance for a full year earns an extra PTO day" },
+          { id: "d", text: "The bonus is $50 and paid out quarterly" },
         ],
-        correctId: "d",
-        explanation: "You don't approve or deny requests, and you don't override a supervisor's decision. But you also shouldn't just stay out of it when there's a potential policy question. The right move is to route it to the HR Manager so she can advise the supervisor on how to handle it properly.",
+        correctId: "b",
+        explanation: "Three consecutive months with no tardies or unexcused absences earns a $75 bonus on the employee's first paycheck of the following month. It's worth mentioning during onboarding — it reinforces the right behavior early.",
       },
       {
         scenario: "An employee tells you they've been clocking in on time every day but their attendance report shows 3.5 points. They're frustrated and want you to fix it. What do you do?",
