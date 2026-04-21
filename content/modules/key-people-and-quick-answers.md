@@ -44,7 +44,7 @@ quiz:
         - id: b
           text: Robby Donnelly — he's the Warehouse Supervisor and would have direct documentation on his employees
         - id: c
-          text: Nicole Thornton — corrective action documentation goes through HR
+          text: the HR Manager — corrective action documentation goes through HR
         - id: d
           text: Linda Dodson — she's the Assistant Warehouse Supervisor and handles day-to-day documentation
       correctId: b
@@ -106,9 +106,9 @@ These are the people you'll work with most. Know who handles what so you're neve
 | HR Manager | Nicole Thornton | 256-574-7528 ext 252 | nicole.thornton@apirx.com |
 | VP of HR | Brandy Hooper | 256-574-7526 ext 226 | brandy.hooper@rxaap.com |
 
-Nicole is your direct report and the person you'll escalate to most. Pay disputes, employee relations, medical/leave, legal concerns, policy interpretation, compensation changes, compliance issues — all of it goes to her. When in doubt, Nicole is the answer.
+The HR Manager is your direct report and the person you'll escalate to most. Pay disputes, employee relations, medical/leave, legal concerns, policy interpretation, compensation changes, compliance issues — all of it goes to her. When in doubt, the HR Manager is the answer.
 
-Brandy oversees HR at the company level. You won't interact with her daily, but you should know who she is and what her role covers.
+The VP of HR oversees HR at the company level. You won't interact with her daily, but you should know who she is and what her role covers.
 
 ### IT
 
@@ -146,7 +146,7 @@ These are the supervisors and managers you'll coordinate with on timecard except
 | Chief Operating Officer | Tracie Heyrman | 256-808-2144 | tracie.heyrman@rxaap.com |
 
 :::callout tip
-Most day-to-day questions go to Nicole. Most IT requests go through Teams. Most supervisor communication uses email with the scripts from Say It & Solve It. If you're not sure where something goes, check the escalation routing table in that module — it covers every category.
+Most day-to-day questions go to the HR Manager. Most IT requests go through Teams. Most supervisor communication uses email with the scripts from Say It & Solve It. If you're not sure where something goes, check the escalation routing table in that module — it covers every category.
 :::
 
 ## Systems at a Glance
@@ -215,7 +215,7 @@ These are the values that come up constantly — in conversations with employees
 
 - **Allowance:** 480 hours per year
 - **Paid or unpaid:** Unpaid
-- **Your role:** Escalate to Nicole immediately — do not advise or interpret eligibility
+- **Your role:** Escalate to the HR Manager immediately — do not advise or interpret eligibility
 - **Confidentiality:** FMLA status is confidential from everyone, including supervisors
 
 ### 401(k) Match

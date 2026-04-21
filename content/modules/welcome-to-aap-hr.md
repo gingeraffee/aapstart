@@ -114,14 +114,14 @@ AAP Start is your structured walkthrough of everything tied to this role — the
 You're not starting from scratch — you already know how AAP operates day to day. But HR has its own playbook, and this is where you learn it.
 
 :::callout tip
-AAP Start is exactly that — a starting point. It's not a substitute for direct guidance from Nicole or Brandy. Use it to build your foundation, then keep the conversation going as questions come up.
+AAP Start is exactly that — a starting point. It's not a substitute for direct guidance from the HR Manager or the VP of HR. Use it to build your foundation, then keep the conversation going as questions come up.
 :::
 
 ## When You Need Help
 
-You're on the HR team now, but that doesn't mean you're expected to have all the answers right away. When something comes up that you're unsure about — a process you haven't done yet, a policy question you can't find, or a situation you're not sure how to handle — come to **Nicole Thornton, HR Manager** first. That's always your first call.
+You're on the HR team now, but that doesn't mean you're expected to have all the answers right away. When something comes up that you're unsure about — a process you haven't done yet, a policy question you can't find, or a situation you're not sure how to handle — come to **the HR Manager** first. That's always your first call.
 
-For anything that needs to go higher — escalations, sensitive situations, or decisions above your level — that goes to **Brandy Hooper, VP of HR**.
+For anything that needs to go higher — escalations, sensitive situations, or decisions above your level — that goes to **the VP of HR**.
 
 :::callout tip
 There's no such thing as a dumb question in your first 90 days. Ask early, ask often. It's better to double-check than to guess.

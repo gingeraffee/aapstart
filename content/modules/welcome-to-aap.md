@@ -106,4 +106,4 @@ AAP Start is a exactly that - a starting point. It's not a substitute for your s
 
 ## When You Need Help?
 
-For anything related to onboarding, HR policies, benefits, or your employee record, reach out to **Nicole Thornton, HR Manager**. For higher-level questions or escalations, contact **Brandy Hooper, VP of HR**. And for day-to-day support, your supervisor is always a reliable first stop.
+For anything related to onboarding, HR policies, benefits, or your employee record, reach out to **the HR Manager**. For higher-level questions or escalations, contact **the VP of HR**. And for day-to-day support, your supervisor is always a reliable first stop.

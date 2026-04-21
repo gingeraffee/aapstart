@@ -310,5 +310,5 @@ Not all time away is the same. Medical leave, accommodation, and protected leave
 
 ## Need Help?
 
-For more information about benefits or time off, start with your supervisor. Your supervisor is always your trustworthy first step. You're always welcome to stop by and talk to **Nicole Thornton**, the HR Manager, for anything HR-related or sensitive. Don't forget, you can bookmark this page and come back to it anytime!
+For more information about benefits or time off, start with your supervisor. Your supervisor is always your trustworthy first step. You're always welcome to stop by and talk to **the HR Manager**, for anything HR-related or sensitive. Don't forget, you can bookmark this page and come back to it anytime!
 

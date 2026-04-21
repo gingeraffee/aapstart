@@ -19,7 +19,7 @@ acknowledgements:
   - id: ack-4
     statement: I know all four BambooHR document folder destinations and file every document in the correct one on the first try.
   - id: ack-5
-    statement: I understand the 60-day introductory period, what happens at separation, and that involuntary terminations are handled by Nicole only.
+    statement: I understand the 60-day introductory period, what happens at separation, and that involuntary terminations are handled by the HR Manager only.
 
 quiz:
   questions:
@@ -33,7 +33,7 @@ quiz:
         - id: c
           text: Use the candidate's BambooHR applicant ID as a temporary number
         - id: d
-          text: Enter PENDING and flag it for Nicole to update
+          text: Enter PENDING and flag it for the HR Manager to update
       correctId: b
 
     - id: q2
@@ -72,7 +72,7 @@ quiz:
         - id: c
           text: Points don't apply during the introductory period — they start at day 61
         - id: d
-          text: Escalate to Nicole now — 2 points in 3 weeks is already a pattern worth reviewing
+          text: Escalate to the HR Manager now — 2 points in 3 weeks is already a pattern worth reviewing
       correctId: a
 
     - id: q5
@@ -85,7 +85,7 @@ quiz:
         - id: c
           text: No — accrued vacation is paid out, but personal leave is forfeited
         - id: d
-          text: Route it to Nicole — you can't discuss pay-related questions
+          text: Route it to the HR Manager — you can't discuss pay-related questions
       correctId: c
 ---
 
@@ -140,7 +140,7 @@ Every new hire starts with a 60-day introductory period. Think of it as a probat
 
 **During the first 60 days:**
 
-- The employee is allowed a **maximum of 2 attendance points.** That's a tight margin. A third point during the introductory period can be grounds for separation — so if you see someone trending in that direction early, make sure Nicole is aware.
+- The employee is allowed a **maximum of 2 attendance points.** That's a tight margin. A third point during the introductory period can be grounds for separation — so if you see someone trending in that direction early, make sure the HR Manager is aware.
 - **No vacation accrual yet.** Personal time eligibility begins at 60 days.
 - The employee is still learning, still adjusting — but they're also being evaluated on whether they can meet the basic expectations of the role.
 
@@ -172,9 +172,9 @@ Employees will ask about this. Know the answer cold — especially the vacation 
 
 **System cleanup:** Remove the employee from all HR systems. Notify IT to revoke computer access and software licenses. If the employee had access to the Proton Pass HR vault, remove them from there too.
 
-**Involuntary terminations are Nicole's territory.** You do not communicate a termination to an employee. Ever. Your role in an involuntary separation is support and documentation — Nicole handles the conversation and the decision.
+**Involuntary terminations are the HR Manager's territory.** You do not communicate a termination to an employee. Ever. Your role in an involuntary separation is support and documentation — the HR Manager handles the conversation and the decision.
 
-**2-day no-call/no-show = voluntary quit.** If an employee misses two consecutive days without calling in, policy treats it as a voluntary resignation. This isn't a judgment call or a gray area — it's policy. Notify Nicole immediately when it happens.
+**2-day no-call/no-show = voluntary quit.** If an employee misses two consecutive days without calling in, policy treats it as a voluntary resignation. This isn't a judgment call or a gray area — it's policy. Notify the HR Manager immediately when it happens.
 
 :::callout warning
 Never communicate a termination yourself. Involuntary separations are handled by the HR Manager only. Your role is documentation and system cleanup.

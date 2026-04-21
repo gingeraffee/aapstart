@@ -15,7 +15,7 @@ acknowledgements:
   - id: ack-2
     statement: I understand that accident and injury details are confidential and should not be shared outside of HR.
   - id: ack-3
-    statement: I know to escalate to Nicole when an accident, near-miss, or injury needs further investigation or when I'm unsure how to handle it.
+    statement: I know to escalate to the HR Manager when an accident, near-miss, or injury needs further investigation or when I'm unsure how to handle it.
 
 quiz:
   questions:
@@ -27,7 +27,7 @@ quiz:
         - id: b
           text: File it in the employee's medical folder in BambooHR and post it to the API Scottsboro Accident Reports and API Safety Committee Employee Community Groups
         - id: c
-          text: Forward the report to Nicole before filing anything — she needs to review all accident reports first
+          text: Forward the report to the HR Manager before filing anything — she needs to review all accident reports first
         - id: d
           text: File it in BambooHR and send a follow-up email to the employee to confirm they're okay
       correctId: b
@@ -55,7 +55,7 @@ quiz:
         - id: c
           text: Reach out to each person responsible for the action items and get status updates before the meeting so you can report on progress
         - id: d
-          text: Let Nicole know the items are still open and ask her to follow up with the responsible parties
+          text: Let the HR Manager know the items are still open and ask her to follow up with the responsible parties
       correctId: c
 
     - id: q4
@@ -66,7 +66,7 @@ quiz:
         - id: b
           text: Share a general summary of what happened without including the employee's name or identifying details
         - id: c
-          text: Let the manager know that accident report details are confidential and offer to connect them with Nicole if they need specific information for their briefing
+          text: Let the manager know that accident report details are confidential and offer to connect them with the HR Manager if they need specific information for their briefing
         - id: d
           text: Ask the employee for permission to share their report with the manager before releasing anything
       correctId: c
@@ -77,7 +77,7 @@ quiz:
         - id: a
           text: File the report normally — repeat injuries are tracked automatically through BambooHR
         - id: b
-          text: File the report and escalate to Nicole — a pattern of repeat injuries may need further investigation or accommodation
+          text: File the report and escalate to the HR Manager — a pattern of repeat injuries may need further investigation or accommodation
         - id: c
           text: File the report and notify the employee's supervisor so they can adjust the employee's duties
         - id: d
@@ -94,7 +94,7 @@ quiz:
         - id: c
           text: Share that there were a few areas for improvement and let them know you'll have a written summary with recommendations ready for them and the Safety Committee
         - id: d
-          text: Suggest they check with Nicole for the full debrief since safety issues should go through the HR Manager first
+          text: Suggest they check with the HR Manager for the full debrief since safety issues should go through the HR Manager first
       correctId: c
 ---
 
@@ -110,7 +110,7 @@ As a member of AAP's workplace safety program, you help develop and provide trai
 - Report hazards, injuries, and incidents immediately — not later, not tomorrow
 - Follow posted procedures and complete assigned training
 - Ask questions when something doesn't feel right
-- As HR, you'll also help ensure other employees are completing their required safety training — if someone's overdue, flag it to Nicole
+- As HR, you'll also help ensure other employees are completing their required safety training — if someone's overdue, flag it to the HR Manager
 
 **Office Safety**
 - Watch for slips, trips, and fall hazards — wet floors, cords, boxes in walkways
@@ -140,7 +140,7 @@ Here's the workflow when a report comes in:
 2. **Post it** to both the **API Scottsboro Accident Reports** and **API Safety Committee** Employee Community Groups
 3. **Keep it confidential** — details of the report stay in HR. No hallway conversations, no "did you hear what happened" with coworkers
 
-Not every report is straightforward. If an accident, near-miss, or injury needs further investigation — or if something about it doesn't sit right — escalate to Nicole for guidance. You're not expected to play detective. You're expected to document, route, and protect the information.
+Not every report is straightforward. If an accident, near-miss, or injury needs further investigation — or if something about it doesn't sit right — escalate to the HR Manager for guidance. You're not expected to play detective. You're expected to document, route, and protect the information.
 
 And remember: AAP doesn't just track actual injuries. **Near-misses count too** — the slip that didn't result in a fall, the box that almost hit someone, the door that nearly caught a hand. Every report helps the safety team spot hazards and fix them before someone actually gets hurt. When in doubt, report it. There's no such thing as too small.
 
@@ -152,17 +152,17 @@ You already know these policies as an AAP employee — but from HR, you're now o
 All visitors must check in at reception and be escorted while on-site. If you see someone unfamiliar wandering unescorted, direct them to reception. As HR, you may also coordinate visitor access for new hire orientations, interviews, and vendor meetings — make sure check-in procedures are followed every time.
 
 **Computer & Email Use**
-Computers, email, and software are AAP property intended for business use. This applies to you, and it applies to the reports that may land on your desk. If a computer or email misuse complaint comes through, document it and escalate to Nicole.
+Computers, email, and software are AAP property intended for business use. This applies to you, and it applies to the reports that may land on your desk. If a computer or email misuse complaint comes through, document it and escalate to the HR Manager.
 
 **Workplace Monitoring**
 AAP may monitor phone calls, computer usage, email, and video in non-private areas. This is used for safety, security, quality control, and to prevent misconduct. You don't manage monitoring, but you should know it exists — employees may ask about it.
 
 **Workplace Violence Prevention**
-AAP has zero tolerance for workplace violence — including threats, harassment, bullying, or any behavior that makes others feel unsafe. All incidents must be reported to management within 24 hours. If a report comes to you, document it immediately and escalate to Nicole — these are never ones to sit on.
+AAP has zero tolerance for workplace violence — including threats, harassment, bullying, or any behavior that makes others feel unsafe. All incidents must be reported to management within 24 hours. If a report comes to you, document it immediately and escalate to the HR Manager — these are never ones to sit on.
 
 **Security Inspections**
-AAP prohibits drugs, alcohol, firearms, and other improper materials on company premises. Desks, lockers, and storage are company property and may be inspected at any time. HR may be involved in coordinating or documenting inspections — follow Nicole's lead on these.
+AAP prohibits drugs, alcohol, firearms, and other improper materials on company premises. Desks, lockers, and storage are company property and may be inspected at any time. HR may be involved in coordinating or documenting inspections — follow the HR Manager's lead on these.
 
 ## Need Help?
 
-Start with **Nicole** for anything safety-related that you're unsure how to handle — whether it's a report that needs further investigation, a policy question from an employee, or a situation that feels like it needs more than standard documentation. You're not expected to have every answer. You're expected to know when to ask.
+Start with **the HR Manager** for anything safety-related that you're unsure how to handle — whether it's a report that needs further investigation, a policy question from an employee, or a situation that feels like it needs more than standard documentation. You're not expected to have every answer. You're expected to know when to ask.

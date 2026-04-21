@@ -147,7 +147,7 @@ Scottsboro doesn't have an approved LabCorp facility within 25 miles, so candida
 3. The candidate goes to **The Family Life Center** — 211 S. Market Street, Scottsboro, AL 35768 (Mon–Fri 8am–5pm, closed 12–1pm for lunch). They must bring a **photo ID**
 4. In Employvio: **Order → Order → Standard → Next** → enter candidate info → select **Standard Screening – 1 County** → Submit
 
-**Where results show up:** Memphis results come through Employvio as a PDF. Scottsboro results come through Phoenix LIS (log in via Proton Pass or ask Nicole for access).
+**Where results show up:** Memphis results come through Employvio as a PDF. Scottsboro results come through Phoenix LIS (log in via Proton Pass or ask the HR Manager for access).
 
 :::callout warning
 Escalate immediately if: the candidate can't complete the test within 3 days, the testing site is inaccessible, results are delayed, results come back potentially positive or failed, there's an identity mismatch, or anything feels off.

@@ -45,7 +45,7 @@ quiz:
         - id: b
           text: Check BambooHR to see if the employee meets FMLA eligibility requirements before advising
         - id: c
-          text: Document the call and escalate to Nicole immediately — anything that sounds like medical leave is hers
+          text: Document the call and escalate to the HR Manager immediately — anything that sounds like medical leave is hers
         - id: d
           text: Ask the supervisor to have the employee contact you directly so you can gather the details firsthand
       correctId: c
@@ -97,7 +97,7 @@ quiz:
         - id: b
           text: Suggest they check their pay stub in Paylocity to see if PTO was applied differently than expected
         - id: c
-          text: Document what they told you — date, time, details — and route it to Nicole. Pay questions always go to the HR Manager
+          text: Document what they told you — date, time, details — and route it to the HR Manager. Pay questions always go to the HR Manager
         - id: d
           text: Check BambooHR for any PTO adjustments, then explain what you find so they understand the gap
       correctId: c
@@ -121,7 +121,7 @@ quiz:
         - id: a
           text: Ask them to describe the comments so you can help them decide whether it's worth escalating
         - id: b
-          text: Document their report, get their statement in their own words, and hand everything off to Nicole immediately
+          text: Document their report, get their statement in their own words, and hand everything off to the HR Manager immediately
         - id: c
           text: Encourage them to talk to the coworker directly first and come back if it doesn't stop
         - id: d
@@ -164,7 +164,7 @@ quiz:
         - id: c
           text: The threat is Immediate, the safety hazard is Same Day, and the PTO question is Next Business Day
         - id: d
-          text: All three need immediate attention — escalate everything to Nicole at once
+          text: All three need immediate attention — escalate everything to the HR Manager at once
       correctId: b
 
     - id: q12
@@ -225,7 +225,7 @@ quiz:
         - id: a
           text: Issue a written warning and attempt to contact the employee before taking further action
         - id: b
-          text: Two consecutive no-call/no-shows is treated as a voluntary quit — notify Nicole immediately
+          text: Two consecutive no-call/no-shows is treated as a voluntary quit — notify the HR Manager immediately
         - id: c
           text: Wait three business days before taking any action — they may have a valid reason
         - id: d
@@ -268,7 +268,7 @@ quiz:
         - id: c
           text: Let them know you can't speculate on outcomes, but walk them through the corrective action thresholds so they understand where they stand
         - id: d
-          text: Route it to Nicole — you're not authorized to discuss corrective action outcomes
+          text: Route it to the HR Manager — you're not authorized to discuss corrective action outcomes
       correctId: c
 
     - id: q20

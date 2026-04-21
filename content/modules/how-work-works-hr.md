@@ -13,7 +13,7 @@ acknowledgements:
   - id: ack-1
     statement: I can explain the attendance point system, corrective action thresholds, and how points roll off.
   - id: ack-2
-    statement: I understand that anything that sounds like it could involve FMLA must be escalated to Nicole immediately — no medical questions, no eligibility analysis, no paperwork.
+    statement: I understand that anything that sounds like it could involve FMLA must be escalated to the HR Manager immediately — no medical questions, no eligibility analysis, no paperwork.
   - id: ack-3
     statement: I know my role in corrective action documentation — receive, scan, upload, verify, label — and I understand when to escalate automatically.
   - id: ack-4
@@ -55,7 +55,7 @@ quiz:
         - id: b
           text: Let them know about the EAP since it covers medical guidance and leave it at that
         - id: c
-          text: Recognize this could involve FMLA, avoid discussing medical specifics, and escalate to Nicole immediately
+          text: Recognize this could involve FMLA, avoid discussing medical specifics, and escalate to the HR Manager immediately
         - id: d
           text: Ask them how long the surgery recovery would be so you can check whether FMLA would apply
       correctId: c
@@ -79,18 +79,18 @@ quiz:
         - id: a
           text: "Tell the manager the corrective action can't be filed without the employee's signature"
         - id: b
-          text: "File the documentation as normal and let Nicole handle the signature issue — the employee's refusal to sign doesn't stop the process"
+          text: "File the documentation as normal and let the HR Manager handle the signature issue — the employee's refusal to sign doesn't stop the process"
         - id: c
           text: Send the form back to the manager and ask them to try again with a witness present
         - id: d
-          text: "Note 'employee refused to sign' on the form and file it yourself without involving Nicole"
+          text: "Note 'employee refused to sign' on the form and file it yourself without involving the HR Manager"
       correctId: b
 
     - id: q6
-      text: "You're reviewing an employee's file and notice they've received three written warnings for tardiness in the last six months. No one has flagged it to Nicole. What do you do?"
+      text: "You're reviewing an employee's file and notice they've received three written warnings for tardiness in the last six months. No one has flagged it to the HR Manager. What do you do?"
       options:
         - id: a
-          text: "Document the pattern and bring it to Nicole immediately — three corrective actions for the same reason is an automatic escalation"
+          text: "Document the pattern and bring it to the HR Manager immediately — three corrective actions for the same reason is an automatic escalation"
         - id: b
           text: Let the employee's supervisor know so they can address it in their next one-on-one
         - id: c
@@ -124,7 +124,7 @@ Points accumulate on a **12-month rolling basis.** As employees hit certain thre
 | 7.0 | Written warning |
 | 8.0 | Termination (supervisor discretion) |
 
-If you notice an employee approaching a threshold, flag it to Nicole before it gets there — don't wait for a supervisor to ask.
+If you notice an employee approaching a threshold, flag it to the HR Manager before it gets there — don't wait for a supervisor to ask.
 
 **Earning Points Back**
 
@@ -132,11 +132,11 @@ Employees can work points off their record. Two consecutive months without a tar
 
 **What's Excluded**
 
-Not everything counts against an employee. The following are excluded from the point system: FMLA, pre-approved leave, bereavement, jury duty, pre-approved vacation, holidays, short-term disability, and unsafe travel conditions. If an employee disputes a point because they believe it falls under one of these categories, document the claim and bring it to Nicole.
+Not everything counts against an employee. The following are excluded from the point system: FMLA, pre-approved leave, bereavement, jury duty, pre-approved vacation, holidays, short-term disability, and unsafe travel conditions. If an employee disputes a point because they believe it falls under one of these categories, document the claim and bring it to the HR Manager.
 
 **No-Call / No-Show**
 
-Two consecutive no-call/no-shows is treated as a **voluntary quit** — no corrective action process, no warning. This one moves fast, so if you become aware of it, notify Nicole immediately. Also, any illness lasting more than one day requires a **doctor's note** upon return.
+Two consecutive no-call/no-shows is treated as a **voluntary quit** — no corrective action process, no warning. This one moves fast, so if you become aware of it, notify the HR Manager immediately. Also, any illness lasting more than one day requires a **doctor's note** upon return.
 
 **Points Verification (CS-02)**
 
@@ -144,11 +144,11 @@ When an employee or supervisor asks for a point total, you can pull it from **Ba
 
 ## FMLA (FMLA-01)
 
-The Family and Medical Leave Act gives eligible employees the right to take unpaid, job-protected leave for qualifying medical and family reasons. You won't be processing FMLA paperwork — that's Nicole's responsibility — but you need to understand the basics well enough to recognize when FMLA might apply and respond appropriately when it comes up.
+The Family and Medical Leave Act gives eligible employees the right to take unpaid, job-protected leave for qualifying medical and family reasons. You won't be processing FMLA paperwork — that's the HR Manager's responsibility — but you need to understand the basics well enough to recognize when FMLA might apply and respond appropriately when it comes up.
 
 **Eligibility**
 
-To qualify, an employee must have worked at least **366 days** AND logged at least **1,250 hours** in the last 12 months. Both conditions must be met. If an employee asks whether they're eligible, you can share these two requirements — but do not confirm or deny their eligibility yourself. That determination is Nicole's to make.
+To qualify, an employee must have worked at least **366 days** AND logged at least **1,250 hours** in the last 12 months. Both conditions must be met. If an employee asks whether they're eligible, you can share these two requirements — but do not confirm or deny their eligibility yourself. That determination is the HR Manager's to make.
 
 **What FMLA Provides**
 
@@ -162,14 +162,14 @@ When an employee asks about FMLA, you can share general information: the eligibi
 
 **What You Should Not Do**
 
-- Do not request or accept medical documentation — that goes directly to Nicole
+- Do not request or accept medical documentation — that goes directly to the HR Manager
 - Do not promise approval or tell an employee they "probably qualify"
 - Do not share any FMLA-related information with the employee's supervisor or anyone else — FMLA status is strictly confidential
 - Do not attempt to process FMLA paperwork or make entries in BambooHR related to FMLA leave
 
 **Your Role**
 
-Your job is recognition and routing. If an employee mentions needing medical leave, surgery, a family medical situation, or anything that sounds like it could involve FMLA — escalate to Nicole immediately. You don't need to diagnose whether it's FMLA. Just get it to her. If an employee's absence approaches or exceeds **30 consecutive work days**, notify Nicole regardless of whether FMLA has been discussed.
+Your job is recognition and routing. If an employee mentions needing medical leave, surgery, a family medical situation, or anything that sounds like it could involve FMLA — escalate to the HR Manager immediately. You don't need to diagnose whether it's FMLA. Just get it to her. If an employee's absence approaches or exceeds **30 consecutive work days**, notify the HR Manager regardless of whether FMLA has been discussed.
 
 :::callout warning
 FMLA information is strictly confidential — it cannot be shared with anyone, including the employee's supervisor.
@@ -221,11 +221,11 @@ When a manager hands you a completed corrective action form, your job is clean, 
 3. **Upload** to the employee's **Corrective Action folder in BambooHR**
 4. **Verify** the file is readable and labeled consistently: **date + type + reason**
 
-One thing that trips people up: an employee's signature on a corrective action form means they received it — not that they agree with it. If an employee pushes back on signing, that's not your problem to solve. Let Nicole handle it.
+One thing that trips people up: an employee's signature on a corrective action form means they received it — not that they agree with it. If an employee pushes back on signing, that's not your problem to solve. Let the HR Manager handle it.
 
 **When to Escalate — No Hesitation**
 
-Some situations skip the normal process entirely. If any of the following come up, stop what you're doing and bring it to Nicole immediately:
+Some situations skip the normal process entirely. If any of the following come up, stop what you're doing and bring it to the HR Manager immediately:
 
 - Harassment, discrimination, or retaliation
 - Threats or violence
@@ -238,6 +238,6 @@ Some situations skip the normal process entirely. If any of the following come u
 These aren't judgment calls — they're automatic escalations. If you're wondering whether something qualifies, it probably does. Flag it.
 
 :::callout warning
-When in doubt, escalate. It's always better to bring something to Nicole that didn't need escalating than to sit on something that did.
+When in doubt, escalate. It's always better to bring something to the HR Manager that didn't need escalating than to sit on something that did.
 :::
 

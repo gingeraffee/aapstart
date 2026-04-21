@@ -297,7 +297,7 @@ Before you close out, here are the key points that come up most often in that fi
 
 **Your supervisor is your first stop.** For most questions — about your schedule, your role, a process you're unsure about — start there.
 
-**HR is here for you.** For questions about pay, benefits, leave, or anything sensitive, contact Nicole Thornton, HR Manager.
+**HR is here for you.** For questions about pay, benefits, leave, or anything sensitive, contact the HR Manager.
 
 **The Employee Handbook is your reference.** When you have a policy question, that's where to look first.
 

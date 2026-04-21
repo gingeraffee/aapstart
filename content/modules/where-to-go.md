@@ -48,14 +48,14 @@ quiz:
       correctId: a
 
     - id: q4
-      text: Who is the escalation contact for HR issues that go beyond Nicole Thornton?
+      text: Who is the escalation contact for HR issues that go beyond the HR Manager?
       options:
         - id: a
           text: Your direct supervisor
         - id: b
           text: A co-worker in HR
         - id: c
-          text: Brandy Hooper, VP of HR
+          text: the VP of HR
         - id: d
           text: LinkedIn Learning support
       correctId: c
@@ -84,8 +84,8 @@ AAP has an open-door policy. You are always welcome to raise a question or conce
 - **Your Supervisor** — your first point of contact for day-to-day questions, scheduling, and routine support needs
 - **HR Administrative Assistant** — can help with paperwork, benefits enrollment questions, and pointing you in the right direction
 - **IT Technicians** — your go-to for equipment issues, system access, password resets, and anything technology-related
-- **Nicole Thornton, HR Manager** — handles leave, accommodations, workplace concerns, and anything that needs HR involvement
-- **Brandy Hooper, VP of HR** — escalation path when a situation requires senior leadership or when you are not comfortable going through the usual channels
+- **the HR Manager** — handles leave, accommodations, workplace concerns, and anything that needs HR involvement
+- **the VP of HR** — escalation path when a situation requires senior leadership or when you are not comfortable going through the usual channels
 
 :::callout tip
 You do not need to follow this list in order. If something feels urgent, sensitive, or you are just not sure where to start — go directly to whoever you feel most comfortable reaching out to. That is what open-door means.

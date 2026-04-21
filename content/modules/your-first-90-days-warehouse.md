@@ -163,7 +163,7 @@ Questions are part of onboarding. Silence is where expensive mistakes like to gr
 
 Here is a quick guide to who handles what:
 
-- **Need help with benefits, leave, policies, or HR-related questions?** Call, email, or find Nicole Thornton. She is always happy to help.
+- **Need help with benefits, leave, policies, or HR-related questions?** Call, email, or find the HR Manager. She is always happy to help.
 - **Need to take the day off?** Enter your request in BambooHR to notify your supervisor and HR at the same time. It is just a few taps and you are done — you even get an email confirmation when your request is approved or denied.
 - **Questions about processes on the job or detailed step-by-step guidance?** Find your trainer and they will be more than happy to give you a refresher.
 - **Questions about performance, day-to-day direction, or warehouse-related concerns?** Your supervisor is your go-to contact for these questions.

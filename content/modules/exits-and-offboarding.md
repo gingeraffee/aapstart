@@ -15,11 +15,11 @@ acknowledgements:
   - id: ack-2
     statement: I know which PTO types are paid out at separation and which are forfeited — and I can answer that question without looking it up.
   - id: ack-3
-    statement: I understand that involuntary terminations are communicated by Nicole only — I never deliver or hint at a termination, even if I know it's coming.
+    statement: I understand that involuntary terminations are communicated by the HR Manager only — I never deliver or hint at a termination, even if I know it's coming.
   - id: ack-4
     statement: I know the full system cleanup checklist — BambooHR and IT notification — and I complete it the same day as separation.
   - id: ack-5
-    statement: I know the 2-day no-call/no-show rule, that it's treated as a voluntary quit under policy, and that I notify Nicole immediately when it happens.
+    statement: I know the 2-day no-call/no-show rule, that it's treated as a voluntary quit under policy, and that I notify the HR Manager immediately when it happens.
 
 quiz:
   questions:
@@ -31,7 +31,7 @@ quiz:
         - id: b
           text: The vacation is paid out but the personal leave is forfeited — they don't pay out the same way
         - id: c
-          text: Route it to Nicole — anything that involves dollar amounts at separation goes through the HR Manager
+          text: Route it to the HR Manager — anything that involves dollar amounts at separation goes through the HR Manager
         - id: d
           text: Let them know you'll check with payroll and get back to them before their last day
       correctId: b
@@ -42,9 +42,9 @@ quiz:
         - id: a
           text: Schedule the meeting — the supervisor has the documentation and is ready to move forward
         - id: b
-          text: Let the supervisor know Nicole needs to be involved before anything is communicated or scheduled
+          text: Let the supervisor know the HR Manager needs to be involved before anything is communicated or scheduled
         - id: c
-          text: Schedule the meeting and loop Nicole in so she can attend and support the conversation
+          text: Schedule the meeting and loop the HR Manager in so she can attend and support the conversation
         - id: d
           text: Ask the supervisor to send you the documentation so you can prepare the separation paperwork ahead of the meeting
       correctId: b
@@ -70,7 +70,7 @@ quiz:
         - id: b
           text: Document what they told you and let them come back while you sort out the attendance points
         - id: c
-          text: Document the call and what they told you, then notify Nicole immediately — a medical situation may involve leave options that need to be reviewed before any separation decision is made
+          text: Document the call and what they told you, then notify the HR Manager immediately — a medical situation may involve leave options that need to be reviewed before any separation decision is made
         - id: d
           text: Ask them to bring medical documentation when they come in so you can determine whether the absences should be excused
       correctId: c
@@ -85,7 +85,7 @@ quiz:
         - id: c
           text: Review the files first to confirm nothing is confidential, then forward them
         - id: d
-          text: Route it to Nicole — any request involving company systems during separation should go through the HR Manager
+          text: Route it to the HR Manager — any request involving company systems during separation should go through the HR Manager
       correctId: b
 ---
 
@@ -115,14 +115,14 @@ Voluntary separations are usually straightforward. The most important thing is t
 This is where the boundaries matter most.
 
 :::callout warning
-Involuntary terminations are handled by Nicole only. You do not communicate a termination to an employee — ever. Not a hint, not a heads-up, not a "just so you know." If you know it's coming, you act like you don't until Nicole has had the conversation.
+Involuntary terminations are handled by the HR Manager only. You do not communicate a termination to an employee — ever. Not a hint, not a heads-up, not a "just so you know." If you know it's coming, you act like you don't until the HR Manager has had the conversation.
 :::
 
 **Your role in an involuntary separation is support and documentation:**
 
-- Nicole leads the conversation and makes the decision
+- the HR Manager leads the conversation and makes the decision
 - You handle system cleanup and filing after the fact
-- If a supervisor comes to you wanting to fire someone, your response is always the same: *"Let's loop Nicole in before anything happens."* Involuntary terminations require HR Manager involvement before the first word is said to the employee
+- If a supervisor comes to you wanting to fire someone, your response is always the same: *"Let's loop the HR Manager in before anything happens."* Involuntary terminations require HR Manager involvement before the first word is said to the employee
 
 **Why this matters:** Terminations have legal implications — unemployment claims, potential disputes, compliance requirements. The HR Manager ensures the decision is documented, consistent, and defensible. When you stay in your lane on this, you're protecting the employee, the company, and yourself.
 
@@ -132,11 +132,11 @@ This one is policy — but it's not always as simple as it looks.
 
 **Two consecutive days without reporting in and without calling = voluntary quit without notice.**
 
-When it happens, you notify Nicole immediately. Don't wait a third day to "see if they show up." Don't try to reach the employee yourself. Document what you know — dates missed, no contact received — and hand it off.
+When it happens, you notify the HR Manager immediately. Don't wait a third day to "see if they show up." Don't try to reach the employee yourself. Document what you know — dates missed, no contact received — and hand it off.
 
-**But here's the nuance:** sometimes the employee calls back with a reason — a hospitalization, a family crisis, something medical. That doesn't automatically override the policy, but it does mean Nicole needs to evaluate whether leave options like FMLA apply before a separation decision is finalized. Your job isn't to make that call. Your job is to document what the employee tells you and get it to Nicole fast so she can determine the right path forward.
+**But here's the nuance:** sometimes the employee calls back with a reason — a hospitalization, a family crisis, something medical. That doesn't automatically override the policy, but it does mean the HR Manager needs to evaluate whether leave options like FMLA apply before a separation decision is finalized. Your job isn't to make that call. Your job is to document what the employee tells you and get it to the HR Manager fast so she can determine the right path forward.
 
-The rule of thumb: no-call/no-show triggers an immediate notification to Nicole every time. What happens after that — separation or leave review — is her decision, not yours.
+The rule of thumb: no-call/no-show triggers an immediate notification to the HR Manager every time. What happens after that — separation or leave review — is her decision, not yours.
 
 ## Final Pay & PTO Payout
 
@@ -148,9 +148,9 @@ Employees will ask about this — sometimes before they've even turned in their 
 | Personal leave | **Forfeited** — does not carry over or pay out |
 | Long-term sick leave | **Relinquished** |
 
-The vacation payout is the one people care about most. Personal leave forfeiture is the one that catches people off guard. If someone asks, give them a clear, direct answer — don't hedge, don't say "I think," and don't route a straightforward PTO question to Nicole unless there's something unusual about the situation.
+The vacation payout is the one people care about most. Personal leave forfeiture is the one that catches people off guard. If someone asks, give them a clear, direct answer — don't hedge, don't say "I think," and don't route a straightforward PTO question to the HR Manager unless there's something unusual about the situation.
 
-**What counts as unusual:** A dispute about the balance, a question about whether time was accrued correctly, or anything that touches actual dollar amounts beyond the PTO type rules. Those go to Nicole.
+**What counts as unusual:** A dispute about the balance, a question about whether time was accrued correctly, or anything that touches actual dollar amounts beyond the PTO type rules. Those go to the HR Manager.
 
 ## System Cleanup — Same Day, Every Time
 
@@ -176,12 +176,12 @@ Separations generate questions — from the departing employee, from their cowor
 
 **"What about my personal leave?"** Forfeited. It doesn't carry over and it doesn't pay out. Be clear and kind, but don't leave room for ambiguity.
 
-**"When will I get my final paycheck?"** Route to Nicole. Final pay timing depends on the circumstances of the separation and state requirements. Don't guess.
+**"When will I get my final paycheck?"** Route to the HR Manager. Final pay timing depends on the circumstances of the separation and state requirements. Don't guess.
 
-**"Can I stay on health insurance?"** Route to Nicole. COBRA and benefits continuation questions go to the HR Manager.
+**"Can I stay on health insurance?"** Route to the HR Manager. COBRA and benefits continuation questions go to the HR Manager.
 
-**"Why am I being let go?"** You should never be in a position to answer this — because you should never be the one communicating a termination. If an employee asks you this, something went wrong in the process. Get Nicole involved immediately.
+**"Why am I being let go?"** You should never be in a position to answer this — because you should never be the one communicating a termination. If an employee asks you this, something went wrong in the process. Get the HR Manager involved immediately.
 
 :::callout warning
-If an employee approaches you about a termination before Nicole has spoken to them, do not confirm, deny, or discuss it. Say: *"Let me get Nicole — she'll be able to walk you through everything."* Then find Nicole immediately.
+If an employee approaches you about a termination before the HR Manager has spoken to them, do not confirm, deny, or discuss it. Say: *"Let me get the HR Manager — she'll be able to walk you through everything."* Then find the HR Manager immediately.
 :::

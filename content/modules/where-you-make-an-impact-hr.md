@@ -29,7 +29,7 @@ quiz:
         - id: a
           text: Call the supervisor directly — email wasn't urgent enough and you need an answer before 6 PM
         - id: b
-          text: Escalate to Nicole now — the deadline is close and she needs to know before you submit
+          text: Escalate to the HR Manager now — the deadline is close and she needs to know before you submit
         - id: c
           text: Enter the employee's normal schedule as a placeholder and flag it for correction next cycle
         - id: d
@@ -42,7 +42,7 @@ quiz:
         - id: a
           text: Let them know you see the missing day and enter the PTO now so it's fixed on the next check
         - id: b
-          text: Document the call, confirm you'll look into it, and route it to Nicole — pay questions go to the HR Manager
+          text: Document the call, confirm you'll look into it, and route it to the HR Manager — pay questions go to the HR Manager
         - id: c
           text: Walk them through what you see in PayClock so they understand why the check was lower
         - id: d
@@ -53,11 +53,11 @@ quiz:
       text: A supervisor stops you and says one of their employees mentioned needing time off for a family medical situation. The supervisor asks if you can start the paperwork. What do you do?
       options:
         - id: a
-          text: Gather the details from the supervisor and escalate to Nicole immediately — anything that sounds like FMLA is hers
+          text: Gather the details from the supervisor and escalate to the HR Manager immediately — anything that sounds like FMLA is hers
         - id: b
-          text: Send the employee the FMLA request form so the process can get started while you loop Nicole in
+          text: Send the employee the FMLA request form so the process can get started while you loop the HR Manager in
         - id: c
-          text: Let the supervisor know you'll pull the employee's file and set up a meeting with Nicole for all three of you
+          text: Let the supervisor know you'll pull the employee's file and set up a meeting with the HR Manager for all three of you
         - id: d
           text: Ask the supervisor to have the employee come to HR directly so you can document the request properly
       correctId: a
@@ -70,7 +70,7 @@ quiz:
         - id: b
           text: Pull the employee's attendance record so the supervisor has the data they need to make a decision
         - id: c
-          text: Document the request and route it to Nicole — corrective action guidance is the HR Manager's territory
+          text: Document the request and route it to the HR Manager — corrective action guidance is the HR Manager's territory
         - id: d
           text: Send the supervisor the attendance policy document and let them know you're available if they have follow-up questions
       correctId: c
@@ -114,7 +114,7 @@ Here's the flow:
 3. **Enter PTO in PayClock** — match the type (vacation, personal, sick) and double-check the dates
 4. **Follow up on exceptions** — late arrivals, early departures, missing punches. Reach out to supervisors for clarification (CS-01)
 5. **Run the Payroll Change Report** (BH-02) — review every line for pay rate changes, new hires, terminations, and anything unexpected
-6. **Report findings to Nicole** — flag anything that doesn't look right before submission
+6. **Report findings to the HR Manager** — flag anything that doesn't look right before submission
 7. **Submit by Tuesday 6:00 PM CST** — this is the hard deadline, no exceptions
 
 **Monthly tasks** include updating the perfect attendance report and summary, running a digital filing audit to make sure nothing's been misfiled, and confirming that templates and SOPs are still current. These aren't urgent in the way payroll is, but they're the kind of things that create problems down the road if you skip them.
@@ -125,7 +125,7 @@ Nobody expects you to have this job mastered in a week. The ramp-up is intention
 
 **Days 1–30** are about learning. You're setting up system access, learning the folder structure and file naming conventions, shadowing the PayClock audit process, getting comfortable with BambooHR onboarding templates, and walking through the Employvio workflows. Ask every question that comes to mind. There's no such thing as a dumb question in your first month — there are only things you'll wish you'd asked sooner.
 
-**Days 31–60** are about doing. By now you should be independently running the weekly PayClock audit (PC-05) and maintaining recruiting coordination and filing without reminders. You've seen the rhythm enough times to start owning it. Nicole is still there for guidance, but the training wheels are coming off.
+**Days 31–60** are about doing. By now you should be independently running the weekly PayClock audit (PC-05) and maintaining recruiting coordination and filing without reminders. You've seen the rhythm enough times to start owning it. The HR Manager is still there for guidance, but the training wheels are coming off.
 
 **Days 61–90** are about improving. You've been doing the work long enough to see what's working and what isn't. This is when you start identifying recurring issues and proposing fixes. If an SOP doesn't match reality, flag it. If a process has a gap, say something. The goal isn't just to do the job — it's to make the job better.
 
@@ -141,10 +141,10 @@ One of the fastest ways to get in trouble in HR is doing something that isn't yo
 
 **IT owns** new hire computer privileges and software licenses. If a new employee's computer isn't ready on Day 1, that's IT's problem to solve — not yours. Flag it, document it, and move on.
 
-**Nicole (HR Manager) owns** the high-stakes items: pay decisions, involuntary separations, discipline, investigations, screening results, FMLA/leave/medical, benefits exceptions, legal language, safety incidents, harassment/discrimination, corrective action guidance, and anything that feels high-risk. If a situation makes you pause and think *"should I be handling this?"* — the answer is almost always no. Escalate it.
+**The HR Manager owns** the high-stakes items: pay decisions, involuntary separations, discipline, investigations, screening results, FMLA/leave/medical, benefits exceptions, legal language, safety incidents, harassment/discrimination, corrective action guidance, and anything that feels high-risk. If a situation makes you pause and think *"should I be handling this?"* — the answer is almost always no. Escalate it.
 
 :::callout warning
-When in doubt, escalate. It's always better to bring something to Nicole that didn't need escalating than to sit on something that did.
+When in doubt, escalate. It's always better to bring something to the HR Manager that didn't need escalating than to sit on something that did.
 :::
 
 ## Document Everything
@@ -181,6 +181,6 @@ You won't get a scorecard taped to your desk, but there's a clear picture of wha
 
 **Timeliness.** The Tuesday deadline doesn't move. Follow-ups don't improve with age. Filing has a 48-hour window. The rhythm of this job is built on things happening when they're supposed to happen. Consistently hitting your marks — not just when it's convenient, but every time — is what builds trust.
 
-**Documentation habits.** This is the one that separates good from great. Anyone can document when they remember to. The standard here is documenting every time, without exception, without reminders. If Nicole can pull up any employee interaction and find a complete record with date, time, method, and follow-up — you're doing it right.
+**Documentation habits.** This is the one that separates good from great. Anyone can document when they remember to. The standard here is documenting every time, without exception, without reminders. If the HR Manager can pull up any employee interaction and find a complete record with date, time, method, and follow-up — you're doing it right.
 
-**Escalation judgment.** Knowing when something is yours and when it isn't. Not sitting on things that need attention. Not overstepping into decisions that belong to Nicole. The goal isn't to handle everything — it's to handle your part well and route the rest quickly. Over-escalating is forgivable. Under-escalating is not.
+**Escalation judgment.** Knowing when something is yours and when it isn't. Not sitting on things that need attention. Not overstepping into decisions that belong to the HR Manager. The goal isn't to handle everything — it's to handle your part well and route the rest quickly. Over-escalating is forgivable. Under-escalating is not.

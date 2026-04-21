@@ -40,7 +40,7 @@ quiz:
         - id: a
           text: Verify the rate matches PayClock and move on — raises are routine
         - id: b
-          text: Flag it to Nicole before payroll is submitted — unexpected changes always get flagged
+          text: Flag it to the HR Manager before payroll is submitted — unexpected changes always get flagged
         - id: c
           text: Update PayClock to match the new rate and continue reconciliation
         - id: d
@@ -70,7 +70,7 @@ quiz:
         - id: c
           text: Ask the supervisor to submit a correction form or signed note before you make the change
         - id: d
-          text: Forward the email to Nicole for approval before editing
+          text: Forward the email to the HR Manager for approval before editing
       correctId: a
 
     - id: q5
@@ -92,7 +92,7 @@ quiz:
         - id: a
           text: Get them into PayClock (PC-04) before their start date so they can clock in on Day 1
         - id: b
-          text: Flag it to Nicole — new hire setup isn't your responsibility until you're trained
+          text: Flag it to the HR Manager — new hire setup isn't your responsibility until you're trained
         - id: c
           text: Wait until Monday and set them up when they arrive for orientation
         - id: d
@@ -151,7 +151,7 @@ The report will show a list of changes organized by employee. Each row tells you
 
 **What counts as an abnormality:**
 
-Not everything on the report is a problem — but some things should make you pause. Flag it to Nicole **before payroll is submitted** if you see:
+Not everything on the report is a problem — but some things should make you pause. Flag it to the HR Manager **before payroll is submitted** if you see:
 
 - A pay rate change you weren't expecting or that doesn't have a corresponding approval
 - A retroactive adjustment — anything backdated to a previous pay period
@@ -160,7 +160,7 @@ Not everything on the report is a problem — but some things should make you pa
 - Any change that doesn't match what you've been told is happening
 
 :::callout tip
-When in doubt, flag it. It's always better to ask a question before payroll goes out than to fix a paycheck after it does. Nicole would rather you over-flag than under-flag while you're learning.
+When in doubt, flag it. It's always better to ask a question before payroll goes out than to fix a paycheck after it does. The HR Manager would rather you over-flag than under-flag while you're learning.
 :::
 
 ## PayClock — PC-03 Poll Timeclocks

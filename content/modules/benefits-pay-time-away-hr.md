@@ -17,7 +17,7 @@ acknowledgements:
   - id: ack-3
     statement: I understand the attendance point system well enough to explain how points accumulate, roll off, and trigger corrective action conversations.
   - id: ack-4
-    statement: I understand that payroll discrepancies and attendance disputes are not mine to resolve — they must be documented and escalated to Nicole.
+    statement: I understand that payroll discrepancies and attendance disputes are not mine to resolve — they must be documented and escalated to the HR Manager.
   - id: ack-5
     statement: I understand the difference between personal leave, vacation, and holiday pay — including that personal leave does not roll over and does not pay out at termination.
   - id: ack-6
@@ -44,7 +44,7 @@ quiz:
         - id: a
           text: Go ahead and submit their enrollment since they're still within their first 90 days
         - id: b
-          text: Let them know they'll need to wait until the next open enrollment period unless they have a qualifying life event, and flag it to Nicole
+          text: Let them know they'll need to wait until the next open enrollment period unless they have a qualifying life event, and flag it to the HR Manager
         - id: c
           text: Tell them there's nothing that can be done and they're out of luck until next year
         - id: d
@@ -104,12 +104,12 @@ quiz:
       correctId: c
 
     - id: q7
-      text: "It's Monday morning and Nicole sends you last week's attendance point report. What are you responsible for doing with it?"
+      text: "It's Monday morning and the HR Manager sends you last week's attendance point report. What are you responsible for doing with it?"
       options:
         - id: a
           text: Review it for accuracy, email a copy to each supervisor, and file the original
         - id: b
-          text: Enter the points into the point notebook and flag any discrepancies to Nicole
+          text: Enter the points into the point notebook and flag any discrepancies to the HR Manager
         - id: c
           text: Upload the report directly into BambooHR under each employee's attendance record
         - id: d
@@ -165,15 +165,15 @@ Medical, dental, vision, and 401(k) become available the first of the month afte
 
 - **Review** — Confirm the employee received their benefits packet during onboarding
 - **Decide** — Remind them to choose their medical/dental/vision plan and coverage level before their window closes
-- **Enroll** — Verify they've completed enrollment during their window — flag to Nicole if they haven't
+- **Enroll** — Verify they've completed enrollment during their window — flag to the HR Manager if they haven't
 - **Designate** — Prompt them to set their 401(k) contribution percentage and beneficiaries
-- **Escalate** — If anything about their eligibility, classification, or start dates looks off, bring it to Nicole
+- **Escalate** — If anything about their eligibility, classification, or start dates looks off, bring it to the HR Manager
 
 ### Questions Employees Will Ask You
 
 - *"Can I add my spouse or dependents?"* — Yes, during their enrollment window or during open enrollment.
-- *"What if I miss my enrollment window?"* — They'll need to wait until the next open enrollment unless they have a qualifying life event (marriage, birth, etc.). Flag it to Nicole if someone's window is about to close.
-- *"When does the 401(k) match start?"* — Eligibility for the company match begins after 60 days, same as the plan itself. Direct them to Nicole for match details.
+- *"What if I miss my enrollment window?"* — They'll need to wait until the next open enrollment unless they have a qualifying life event (marriage, birth, etc.). Flag it to the HR Manager if someone's window is about to close.
+- *"When does the 401(k) match start?"* — Eligibility for the company match begins after 60 days, same as the plan itself. Direct them to the HR Manager for match details.
 - *"What's the EAP?"* — Free, confidential resource for counseling, financial guidance, and legal support. Available to them and their household from day one. You should be able to explain this in one sentence.
 
 ## Know Your Benefits
@@ -198,7 +198,7 @@ Dental coverage comes in two plan options through **Guardian**: the **Core Plan*
 
 ### Vision
 
-AAP offers a **Guardian** vision plan that covers annual eye exams and includes an allowance for frames. For current copay amounts and coverage details, check with Nicole or refer to the benefits packet.
+AAP offers a **Guardian** vision plan that covers annual eye exams and includes an allowance for frames. For current copay amounts and coverage details, check with the HR Manager or refer to the benefits packet.
 
 ### Supplemental Coverages
 
@@ -218,7 +218,7 @@ Payroll is one of the most sensitive topics you'll deal with — employees notic
 
 Pay stubs, tax forms, deductions, and direct deposit info live in **Paylocity**. Pay rates and benefits details can be reviewed in **BambooHR**. Payday is every other **Thursday**, and any changes need to be submitted **by end of day the Monday before payday** — anything after that won't hit until the next cycle.
 
-When an employee comes to you with a payroll question, help them navigate to the right system if it's straightforward — a pay stub lookup, a direct deposit update. If they're reporting a discrepancy or something doesn't add up, don't try to fix it. Bring it to Nicole with the details and let her handle the resolution.
+When an employee comes to you with a payroll question, help them navigate to the right system if it's straightforward — a pay stub lookup, a direct deposit update. If they're reporting a discrepancy or something doesn't add up, don't try to fix it. Bring it to the HR Manager with the details and let her handle the resolution.
 
 :::link
 url: https://paylocity.com
@@ -242,7 +242,7 @@ You'll be involved in tracking, documenting, and answering questions about atten
 
 **Thresholds**
 
-New employees may not exceed **2.0 points** during their first 60 days. After that, corrective action conversations happen at **5.0, 6.0, and 7.0 points** — these are handled by the employee's supervisor, but you may be asked to pull records or confirm point totals. Reaching **8.0 points within a 12-month period** results in disciplinary action, up to and including termination. If an employee is approaching a threshold, flag it to Nicole before it gets there.
+New employees may not exceed **2.0 points** during their first 60 days. After that, corrective action conversations happen at **5.0, 6.0, and 7.0 points** — these are handled by the employee's supervisor, but you may be asked to pull records or confirm point totals. Reaching **8.0 points within a 12-month period** results in disciplinary action, up to and including termination. If an employee is approaching a threshold, flag it to the HR Manager before it gets there.
 
 **Point Rolloff**
 
@@ -259,7 +259,7 @@ Three consecutive months with no tardies or unexcused absences earns a **$75 bon
 
 **Reporting**
 
-Employees must report absences or tardiness within **15 minutes** of their scheduled shift start. They should log it in **BambooHR**, or contact their supervisor or HR directly if they don't have access. When an employee calls in to you, document it accurately and make sure it's reflected in the system. If there's a pattern forming, bring it to Nicole's attention.
+Employees must report absences or tardiness within **15 minutes** of their scheduled shift start. They should log it in **BambooHR**, or contact their supervisor or HR directly if they don't have access. When an employee calls in to you, document it accurately and make sure it's reflected in the system. If there's a pattern forming, bring it to the HR Manager's attention.
 
 **Tracking Points**
 
@@ -308,7 +308,7 @@ Vacation accrual is tied to the employee's **full-time** hire date anniversary �
 | 10th – 19th anniversary | 136 hours (17 days) |
 | 20th anniversary and beyond | 152 hours (19 days) |
 
-Vacation can be taken in 2-hour increments, and unlike personal time, **balances roll over**. Requests must be in **BambooHR by 5:00 PM the day before**. Anything over 5 consecutive days needs written approval from the Company President. If an employee asks about extended time off, route it to Nicole.
+Vacation can be taken in 2-hour increments, and unlike personal time, **balances roll over**. Requests must be in **BambooHR by 5:00 PM the day before**. Anything over 5 consecutive days needs written approval from the Company President. If an employee asks about extended time off, route it to the HR Manager.
 
 **Holidays**
 
@@ -328,9 +328,9 @@ Vacation requests go through BambooHR by 5:00 PM the day before. Last-minute vac
 Vacation time that is not requested in advance is called **Same-Day Vacation**. It may or may not be approved at the supervisor's discretion — but even if it is approved, the employee still receives a point for the absence. The vacation time simply allows them to be paid for the day. Make sure employees understand this distinction — approving same-day vacation does not erase the attendance point.
 
 :::callout tip
-Not all time away follows the same rules. Medical leave, accommodations, and protected leave have separate processes and legal requirements. If an employee's time-off question starts sounding like it might involve any of these, stop and route it to Nicole.
+Not all time away follows the same rules. Medical leave, accommodations, and protected leave have separate processes and legal requirements. If an employee's time-off question starts sounding like it might involve any of these, stop and route it to the HR Manager.
 :::
 
 ## Need Help?
 
-This module is one you'll come back to regularly — bookmark it. When an employee asks a benefits, pay, or PTO question, check here first. If the answer isn't straightforward or involves something outside your scope, bring it to **Nicole Thornton, HR Manager**. For anything that needs to go higher, that goes to **Brandy Hooper, VP of HR**.
+This module is one you'll come back to regularly — bookmark it. When an employee asks a benefits, pay, or PTO question, check here first. If the answer isn't straightforward or involves something outside your scope, bring it to **the HR Manager**. For anything that needs to go higher, that goes to **the VP of HR**.

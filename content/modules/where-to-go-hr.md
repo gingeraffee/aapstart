@@ -15,9 +15,9 @@ acknowledgements:
   - id: ack-2
     statement: I understand that employee information shared with HR is protected by HIPAA and federal employment law, and that confidentiality is a legal obligation — not a preference.
   - id: ack-3
-    statement: I understand the difference between what I can handle independently and what must be escalated, and that when in doubt, I escalate to Nicole.
+    statement: I understand the difference between what I can handle independently and what must be escalated, and that when in doubt, I escalate to the HR Manager.
   - id: ack-4
-    statement: I understand that workplace complaints — even informal ones — may require action regardless of whether the employee wants to move forward, and must be brought to Nicole.
+    statement: I understand that workplace complaints — even informal ones — may require action regardless of whether the employee wants to move forward, and must be brought to the HR Manager.
 
 quiz:
   questions:
@@ -27,11 +27,11 @@ quiz:
         - id: a
           text: Reply and let them know they likely qualify based on what you've learned
         - id: b
-          text: Forward the email to Nicole and let the employee know she'll follow up with them directly
+          text: Forward the email to the HR Manager and let the employee know she'll follow up with them directly
         - id: c
-          text: Ask the employee for more details about their situation so you can give Nicole a complete picture
+          text: Ask the employee for more details about their situation so you can give the HR Manager a complete picture
         - id: d
-          text: Send them the FMLA forms and let them get started while you loop in Nicole
+          text: Send them the FMLA forms and let them get started while you loop in the HR Manager
       correctId: b
 
     - id: q2
@@ -40,7 +40,7 @@ quiz:
         - id: a
           text: Confirm they've had some absences but don't go into detail
         - id: b
-          text: Tell the supervisor you can't discuss it and suggest they talk to Nicole if they have staffing concerns
+          text: Tell the supervisor you can't discuss it and suggest they talk to the HR Manager if they have staffing concerns
         - id: c
           text: Say you're not sure and offer to check BambooHR for them
         - id: d
@@ -53,11 +53,11 @@ quiz:
         - id: a
           text: Pull up the FMLA and leave request forms so they can get started right away
         - id: b
-          text: Let them know Nicole handles leave requests and walk them to her office or send an introduction email
+          text: Let them know the HR Manager handles leave requests and walk them to her office or send an introduction email
         - id: c
           text: Tell them to take the day and come back tomorrow when they're calmer to sort out the paperwork
         - id: d
-          text: Ask for details about the family member's condition so you can flag the right forms for Nicole
+          text: Ask for details about the family member's condition so you can flag the right forms for the HR Manager
       correctId: b
 
     - id: q4
@@ -66,17 +66,17 @@ quiz:
         - id: a
           text: Nothing — no one filed a complaint and it's not your conversation
         - id: b
-          text: Approach the employee privately, let them know you're available if they want to talk, and document what you overheard for Nicole
+          text: Approach the employee privately, let them know you're available if they want to talk, and document what you overheard for the HR Manager
         - id: c
           text: Go directly to the supervisor and ask them what happened
         - id: d
-          text: Report it to Nicole immediately without talking to the employee first
+          text: Report it to the HR Manager immediately without talking to the employee first
       correctId: b
 ---
 
 ## When It's More Than Just a Day Off
 
-Some of the most sensitive conversations at AAP will start at your desk. An employee dealing with a medical situation, a leave request they don't fully understand, an accommodation they're nervous to ask about. You're not expected to have the answers — but you are expected to handle it correctly. That means knowing the basics, protecting the information, and getting it to Nicole. Everything in this module falls under HIPAA and federal employment law, and mishandling it isn't just a mistake — it's a liability.
+Some of the most sensitive conversations at AAP will start at your desk. An employee dealing with a medical situation, a leave request they don't fully understand, an accommodation they're nervous to ask about. You're not expected to have the answers — but you are expected to handle it correctly. That means knowing the basics, protecting the information, and getting it to the HR Manager. Everything in this module falls under HIPAA and federal employment law, and mishandling it isn't just a mistake — it's a liability.
 
 ## Where to Start
 
@@ -86,24 +86,24 @@ Employees will come to you before they go to anyone else — that's the nature o
 - Paperwork, enrollment questions, system access
 - Routine PTO or scheduling questions
 - Pointing people to the right resource
-- Escalate to Nicole:
+- Escalate to the HR Manager:
 
-**Escalate to Nicole:**
+**Escalate to the HR Manager:**
 - Leave or accommodation requests
 - Workplace concerns or conflicts
 - Harassment, bullying, or anything that feels unsafe
 - Injury follow-up that needs HR involvement
 - Anything you're not comfortable answering on your own
 
-If you're not sure whether something needs to go to Nicole, it does..
+If you're not sure whether something needs to go to the HR Manager, it does..
 
 ## Who to Know
 
 You're going to interact with people across every location and department. This isn't a hierarchy — it's a working reference for who handles what and who to loop in when something comes up.
 
 **Your HR Chain**
-- **Nicole Thornton, HR Manager** — your direct supervisor and first call for anything policy, leave, or employee-related
-- **Brandy Hooper, VP of HR** — escalation for sensitive situations or decisions above Nicole's level
+- **the HR Manager** — your direct supervisor and first call for anything policy, leave, or employee-related
+- **the VP of HR** — escalation for sensitive situations or decisions above the HR Manager's level
 
 **Warehouse Leadership**
 - **Robby Donnelly** — Scottsboro Warehouse Supervisor
@@ -149,15 +149,15 @@ Not everything that lands on your desk is yours to resolve. Part of this role is
 - Pointing employees to the right form or resource
 - Scheduling or logistical coordination
 
-**Bring to Nicole:**
+**Bring to the HR Manager:**
 - Any leave request beyond standard PTO — medical, FMLA, personal
 - Accommodation requests under ADA
 - Workplace complaints, conflicts, or concerns about a supervisor
 - Anything involving harassment, bullying, or retaliation — even if it's just a rumor
 - Any situation where you're unsure of the right answer
 
-**Escalate to Brandy:**
-- Situations Nicole flags for senior leadership
-- Anything you're not comfortable bringing to Nicole directly
+**Escalate to the VP of HR:**
+- Situations the HR Manager flags for senior leadership
+- Anything you're not comfortable bringing to the HR Manager directly
 
-Speed matters more than certainty. Route it fast, explain what you know, and let Nicole take it from there. A five-minute delay is fine. A five-day delay is a problem.
+Speed matters more than certainty. Route it fast, explain what you know, and let the HR Manager take it from there. A five-minute delay is fine. A five-day delay is a problem.

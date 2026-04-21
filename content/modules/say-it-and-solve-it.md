@@ -15,7 +15,7 @@ acknowledgements:
   - id: ack-2
     statement: I can identify timecard exception types and know which script to use, including when to attach a screenshot.
   - id: ack-3
-    statement: I know that pay questions are always routed to Nicole — I never provide pay information, even if I think I know the answer.
+    statement: I know that pay questions are always routed to the HR Manager — I never provide pay information, even if I think I know the answer.
   - id: ack-4
     statement: I understand that harassment, discrimination, and retaliation reports are intake, documentation, and immediate handoff only — I do not investigate, advise, or interpret.
   - id: ack-5
@@ -29,7 +29,7 @@ quiz:
         - id: a
           text: Walk them through what you see in PayClock so they understand the discrepancy
         - id: b
-          text: Document the call with the details they gave you and route it to Nicole — pay questions always go to the HR Manager
+          text: Document the call with the details they gave you and route it to the HR Manager — pay questions always go to the HR Manager
         - id: c
           text: Check BambooHR to see if they have PTO available and suggest they submit a request to cover the missing day
         - id: d
@@ -46,7 +46,7 @@ quiz:
         - id: c
           text: Email the employee directly to ask what happened
         - id: d
-          text: Flag it for Nicole since it could be a falsification issue
+          text: Flag it for the HR Manager since it could be a falsification issue
       correctId: b
 
     - id: q3
@@ -55,7 +55,7 @@ quiz:
         - id: a
           text: Ask them to describe the comments so you can help them decide if it's worth reporting
         - id: b
-          text: Let them know you take this seriously, document what they're telling you, and hand it off to Nicole immediately
+          text: Let them know you take this seriously, document what they're telling you, and hand it off to the HR Manager immediately
         - id: c
           text: Encourage them to talk to the coworker directly first and come back if it doesn't stop
         - id: d
@@ -70,7 +70,7 @@ quiz:
         - id: b
           text: Enter the employee's scheduled time as a placeholder and fix it next cycle
         - id: c
-          text: Send the payroll cutoff follow-up script and escalate to Nicole if you still don't hear back before the deadline
+          text: Send the payroll cutoff follow-up script and escalate to the HR Manager if you still don't hear back before the deadline
         - id: d
           text: Submit payroll without it and document the missing response
       correctId: c
@@ -85,7 +85,7 @@ quiz:
         - id: c
           text: Tell them to bring documentation of the flat tire and you'll see what you can do
         - id: d
-          text: Route it to Nicole since point exceptions are the HR Manager's decision
+          text: Route it to the HR Manager since point exceptions are the HR Manager's decision
       correctId: a
 ---
 
@@ -160,7 +160,7 @@ After a correction is made, let the supervisor know it's done. This keeps everyo
 > Hey [Supervisor Name]! Thanks for confirming — I updated [Employee Name]'s timecard for [Date]. In: [Time], Out: [Time]. Let me know if anything else needs adjusting. Thanks!
 
 :::callout warning
-Escalate to Nicole if you see: a dispute about the timecard, suspected falsification, a repeated pattern with the same employee, anything that looks like off-the-clock work, a missed meal break that could have legal implications, changes needed to a closed pay period, or a supervisor who doesn't respond before the payroll cutoff.
+Escalate to the HR Manager if you see: a dispute about the timecard, suspected falsification, a repeated pattern with the same employee, anything that looks like off-the-clock work, a missed meal break that could have legal implications, changes needed to a closed pay period, or a supervisor who doesn't respond before the payroll cutoff.
 :::
 
 ## Employee Concern & Complaint Scripts (CS-02)
@@ -189,23 +189,23 @@ Don't rush to fix. Don't interrupt. Let them finish, then respond. Most people j
 
 This is different from a general concern. A complaint means paperwork.
 
-*"Thank you for bringing this forward. I'm going to document what you're telling me so it can be reviewed. I'll need: what happened, when and where, who was involved, and whether there were witnesses. I'll also need your statement in your own words for the complaint form. Once that's done, I'll hand it over to Nicole with a summary so it can be reviewed."*
+*"Thank you for bringing this forward. I'm going to document what you're telling me so it can be reviewed. I'll need: what happened, when and where, who was involved, and whether there were witnesses. I'll also need your statement in your own words for the complaint form. Once that's done, I'll hand it over to the HR Manager with a summary so it can be reviewed."*
 
 Your job here is intake and documentation. You are not investigating. You are not deciding if it's valid. You are collecting information and handing it off.
 
 ### Pay Questions — Always Route
 
-This one is simple: pay questions go to Nicole. Every time. Even if you're 99% sure you know the answer.
+This one is simple: pay questions go to the HR Manager. Every time. Even if you're 99% sure you know the answer.
 
 > Subject: Re: Pay Question
 >
-> Hey [First Name]! Pay questions need to go through Nicole directly so we make sure everything is accurate. I'm forwarding your question to her now. It'll help if you can include the pay period and whether this is about hours, overtime, a bonus, or a deduction. Thanks!
+> Hey [First Name]! Pay questions need to go through the HR Manager directly so we make sure everything is accurate. I'm forwarding your question to her now. It'll help if you can include the pay period and whether this is about hours, overtime, a bonus, or a deduction. Thanks!
 
 ### Harassment, Discrimination, or Retaliation
 
 This is the most serious category. Your role is intake, documentation, and immediate handoff. That's it.
 
-*"Thank you for telling me. I'm going to document what you've shared and get this to Nicole right away."*
+*"Thank you for telling me. I'm going to document what you've shared and get this to the HR Manager right away."*
 
 Do **not** investigate. Do **not** interview the other party. Do **not** advise on what they should do. Do **not** tell them whether you think it's serious enough to act on. Document what they told you and hand it off. Advise the employee to preserve any evidence — texts, emails, screenshots.
 
@@ -227,24 +227,24 @@ Not everything is yours to handle. The routing table below tells you who owns wh
 
 | Issue Type | Owner | Urgency |
 |------------|-------|---------|
-| Pay discrepancy | Nicole | Immediate |
-| Safety hazard / injury | Nicole + Safety Lead | Immediate |
-| Harassment / discrimination / retaliation | Nicole | Immediate |
-| Threats / violence | Nicole + Site Leadership | Immediate |
-| General complaint / workplace conflict | Nicole | Same Day |
-| FMLA / medical / leave | Nicole | Immediate |
-| Attendance point exception | Nicole (if exception) | Same Day |
-| PTO balance discrepancy | Nicole | Next Business Day |
-| Performance dispute | Nicole | Next Business Day |
-| Policy exception request | Nicole | Next Business Day |
+| Pay discrepancy | the HR Manager | Immediate |
+| Safety hazard / injury | the HR Manager + Safety Lead | Immediate |
+| Harassment / discrimination / retaliation | the HR Manager | Immediate |
+| Threats / violence | the HR Manager + Site Leadership | Immediate |
+| General complaint / workplace conflict | the HR Manager | Same Day |
+| FMLA / medical / leave | the HR Manager | Immediate |
+| Attendance point exception | the HR Manager (if exception) | Same Day |
+| PTO balance discrepancy | the HR Manager | Next Business Day |
+| Performance dispute | the HR Manager | Next Business Day |
+| Policy exception request | the HR Manager | Next Business Day |
 
 ### What Every Escalation Message Must Include
 
-When you route something to Nicole, don't make her ask follow-up questions. Include everything she needs upfront:
+When you route something to the HR Manager, don't make her ask follow-up questions. Include everything she needs upfront:
 
 - **Employee name, ID, location, and department**
 - **Category and urgency level** (from the table above)
 - **1–2 sentence summary** of what's going on
 - **Key facts** — dates, times, locations, who was involved
 - **Attachments** — complaint form, employee statements, screenshots
-- **What you've done so far** and what you need Nicole to do next
+- **What you've done so far** and what you need the HR Manager to do next
