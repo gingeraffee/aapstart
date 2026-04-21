@@ -78,16 +78,16 @@ quiz:
       correctId: b
 
     - id: q5
-      text: "An employee was absent on Tuesday and didn't request vacation in advance. Their supervisor approved same-day vacation so the employee could get paid. The employee assumes this means no point was added. What do you tell them?"
+      text: "An employee asks if they can carry their unused personal leave into next year. What do you tell them?"
       options:
         - id: a
-          text: They're correct — approved vacation covers the absence completely, no point is added
+          text: Yes — personal leave rolls over just like vacation does
         - id: b
-          text: Same-day vacation allows them to be paid for the absence, but the attendance point still applies
+          text: No — personal leave doesn't roll over and doesn't pay out at separation
         - id: c
-          text: It depends on whether the supervisor submitted the approval before or after the shift started
+          text: It depends on how long they've been with the company
         - id: d
-          text: The point will be added temporarily but will be removed once the vacation is processed in BambooHR
+          text: They need to submit a request before their anniversary date to carry it over
       correctId: b
 
     - id: q6
