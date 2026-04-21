@@ -104,7 +104,7 @@ Most of what you do in this role comes down to communication — answering quest
 **Follow up by every date you commit to.** If the timeline changes, tell the employee before they have to ask. Nothing erodes trust faster than silence after a promise.
 
 :::callout tip
-Email format standard: Open with **"Hey [First Name]!"** and close with **"Thanks!"** and your signature. Keep it warm but professional — you're a person, not a form letter.
+Email format standard: Open with a warm greeting — **"Hey [First Name]!"**, **"Hello [First Name],"**, or **"Hi [First Name],"** all work. Close with **"Thanks!"**, **"Thank you,"**, or another professional sign-off. Keep it warm but professional — you're a person, not a form letter.
 :::
 
 ## Timecard Exception Scripts (CS-01)

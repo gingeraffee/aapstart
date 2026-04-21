@@ -107,7 +107,7 @@ Here's how the workflow plays out from first contact to Day 1:
 
 **6. Complete reference checks (RM-01).** These can run in parallel with the screening. Don't wait for results to start making calls — use the time wisely.
 
-**7. Screening results received and clear → schedule the start date.** Tuesdays are preferred for new hire start dates. Never confirm a start date until you have clear screening results in hand. Telling someone to show up Monday when you're still waiting on a drug test result is a problem you don't want.
+**7. Screening results received and clear → schedule the start date.** Tuesdays are generally preferred for new hire start dates, though exceptions exist — discuss with the hiring manager if there's a reason to do otherwise. Never confirm a start date until you have clear screening results in hand. Telling someone to show up Monday when you're still waiting on a drug test result is a problem you don't want.
 
 **8. Send the New Hire Packet.** Use the correct BambooHR template and include any state-specific tax forms if the employee isn't in Tennessee or Alabama.
 
@@ -119,9 +119,9 @@ Escalate immediately if: a candidate declines after verbally accepting, offer te
 
 ## Background & Drug Screening (HRA-03)
 
-This is one of those processes where timing matters more than almost anything else. The screening gets triggered the moment an offer letter is signed — and the drug test has to be completed within **3 business days**. Not 3 days whenever you get around to it. Three business days from signature.
+This is one of those processes where timing matters more than almost anything else. The screening gets triggered the moment an offer letter is signed — and for warehouse candidates, the drug test must be completed within **3 business days**. Not 3 days whenever you get around to it. Three business days from signature. For non-warehouse roles (office, sales, etc.), the timeline may vary — check with the hiring manager, as candidates who are currently employed may need more flexibility.
 
-**The rules are the same for every candidate:**
+**Standard rules for all candidates:**
 
 - Drug tests are **free** — the candidate doesn't pay anything
 - They must bring a **photo ID** to the testing site
@@ -157,7 +157,7 @@ Escalate immediately if: the candidate can't complete the test within 3 days, th
 
 Reference checks are one of those tasks that seem simple until you're on the phone and someone says something you weren't expecting. The rules are straightforward — but the conversations aren't always.
 
-**The minimum:** You need **3 successful contacts** — at least 1 employer reference and at least 1 personal reference. Candidates typically provide around 6 references, so you're selecting 3 to call. If your first picks don't answer, keep going down the list until you hit 3.
+**The minimum:** You need **3 successful contacts** — at least 1 employer reference and at least 1 personal reference. Candidates typically provide around 6 references, so you're selecting 3 to call. If your first picks don't answer, keep going down the list until you hit 3. Phone calls are the primary method — if a contact doesn't answer, try again before falling back to email, since not everyone checks email reliably. If a candidate has no prior employment history, discuss the employer reference requirement with the HR Manager before proceeding.
 
 **Before you call, have ready:** Your full name, your callback number, and the position the candidate applied for. You'll introduce yourself and explain why you're calling — keep it professional but conversational. Nobody likes being interrogated.
 

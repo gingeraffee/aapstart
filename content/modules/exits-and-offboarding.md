@@ -158,7 +158,7 @@ When someone leaves, their access to company systems gets cut the same day. Not 
 
 Here's the checklist:
 
-**1. BambooHR.** Update the employee's status to reflect the separation. Record the effective date, separation type (voluntary/involuntary), and any relevant notes.
+**1. BambooHR.** Update the employee's status to reflect the separation. Record the effective date, separation type (voluntary/involuntary), and any relevant notes. For voluntary separations, this can be entered in BambooHR before the employee's last day — the workflows are already set up to handle it. Complete the Offboarding Request in BambooHR to trigger IT and all related internal workflows.
 
 **2. Notify IT.** IT handles computer access, email accounts, network credentials, and software licenses. Send the notification as soon as the separation is confirmed — don't wait for the employee to physically leave the building.
 

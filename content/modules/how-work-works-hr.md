@@ -148,7 +148,7 @@ The Family and Medical Leave Act gives eligible employees the right to take unpa
 
 **Eligibility**
 
-To qualify, an employee must have worked at least **366 days** AND logged at least **1,250 hours** in the last 12 months. Both conditions must be met. If an employee asks whether they're eligible, you can share these two requirements — but do not confirm or deny their eligibility yourself. That determination is the HR Manager's to make.
+To qualify, an employee must have worked at least **365 days** AND logged at least **1,250 hours** in the last 12 months. Both conditions must be met. If an employee asks whether they're eligible, you can share these two requirements — but do not confirm or deny their eligibility yourself. That determination is the HR Manager's to make.
 
 **What FMLA Provides**
 
@@ -158,7 +158,7 @@ To qualify, an employee must have worked at least **366 days** AND logged at lea
 
 **What You Can Say**
 
-When an employee asks about FMLA, you can share general information: the eligibility requirements (366 days + 1,250 hours), that it's unpaid, and that it provides up to 12 weeks of job-protected leave. That's it. Do not discuss their specific situation, ask about their medical condition, or give any indication of whether their request will be approved.
+When an employee asks about FMLA, you can share general information: the eligibility requirements (365 days + 1,250 hours), that it's unpaid, and that it provides up to 12 weeks of job-protected leave. That's it. Do not discuss their specific situation, ask about their medical condition, or give any indication of whether their request will be approved.
 
 **What You Should Not Do**
 

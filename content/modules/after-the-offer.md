@@ -170,7 +170,7 @@ Separation happens — voluntary and involuntary. Your role depends on which kin
 
 Employees will ask about this. Know the answer cold — especially the vacation payout, because that's the one people care about most.
 
-**System cleanup:** Remove the employee from all HR systems. Notify IT to revoke computer access and software licenses. If the employee had access to the Proton Pass HR vault, remove them from there too.
+**System cleanup:** Deactivate the employee in all HR systems. Notify IT to revoke computer access and software licenses. If the employee had access to the Proton Pass HR vault, deactivate them from there too. The Offboarding Request in BambooHR should be completed to ensure IT and all relevant workflows are triggered.
 
 **Involuntary terminations are the HR Manager's territory.** You do not communicate a termination to an employee. Ever. Your role in an involuntary separation is support and documentation — the HR Manager handles the conversation and the decision.
 

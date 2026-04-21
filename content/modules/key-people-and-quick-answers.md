@@ -57,7 +57,7 @@ quiz:
         - id: b
           text: Saturday through the following Friday — it aligns with the warehouse shift schedule
         - id: c
-          text: Saturday through the following Sunday — biweekly pay periods
+          text: Sunday through the following Saturday — biweekly pay periods
         - id: d
           text: The 1st through the 15th and the 16th through end of month — semi-monthly
       correctId: c
@@ -147,6 +147,8 @@ These are the supervisors and managers you'll coordinate with on timecard except
 
 :::callout tip
 Most day-to-day questions go to the HR Manager. Most IT requests go through Teams. Most supervisor communication uses email with the scripts from Say It & Solve It. If you're not sure where something goes, check the escalation routing table in that module — it covers every category.
+
+Contact the COO only if both the HR Manager and VP of HR have already been involved, or if your concern involves both of them directly.
 :::
 
 ## Systems at a Glance
@@ -162,6 +164,7 @@ You'll live in these systems. Some of them daily, some of them weekly, all of th
 | Proton Pass | Shared credential vault (HR systems) | [app.proton.me/pass](https://app.proton.me/pass) |
 | Phoenix LIS | Scottsboro drug screening results | [flcscottsboro.phoenixlis.com](https://flcscottsboro.phoenixlis.com) |
 | HR Drive | Shared file storage for HR documents | S:\Human Resources |
+| SharePoint | Company intranet, shared documents, and team resources | *(link via company portal)* |
 
 ## Numbers You Should Know
 
@@ -169,7 +172,7 @@ These are the values that come up constantly — in conversations with employees
 
 ### Pay Period & Payroll
 
-- **Pay period:** Biweekly (Saturday through the following Sunday)
+- **Pay period:** Biweekly (Sunday through the following Saturday)
 - **Payroll deadline:** Tuesday at 6:00 PM CST — no exceptions
 - **File naming standard:** `YYYY-MM-DD DOC NAME - FIRST NAME LAST NAME`
 
@@ -209,7 +212,7 @@ These are the values that come up constantly — in conversations with employees
 |-----------|----------------------|
 | 60 days of employment | PTO eligible (personal time, vacation accrual) |
 | 1st of the month after 60 days | Medical, dental, vision, 401(k) enrollment |
-| 366 days + 1,250 hours worked | FMLA eligible |
+| 365 days + 1,250 hours worked | FMLA eligible |
 
 ### FMLA
 
