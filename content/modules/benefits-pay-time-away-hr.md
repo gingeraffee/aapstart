@@ -31,7 +31,7 @@ quiz:
         - id: a
           text: PTO is available immediately — they just need to submit a request in BambooHR
         - id: b
-          text: Generally, PTO becomes available after 60 days — but if there are extenuating circumstances, route it to the HR Manager rather than just saying no
+          text: Generally, PTO becomes available after 60 days — but always check their offer letter first, as eligibility can vary by position
         - id: c
           text: PTO becomes available after 30 days of employment
         - id: d
