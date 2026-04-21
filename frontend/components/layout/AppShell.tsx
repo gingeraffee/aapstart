@@ -123,11 +123,7 @@ export function AppShell({ children }: AppShellProps) {
   const showManagementTab = isEffectiveHR && !isManagement;
   const isRoadmapActive = pathname === "/roadmap";
 
-  const isJourneyModuleUnlocked = (index: number) => {
-    if (isEffectiveHR) return true;
-    if (index === 0) return true;
-    return isSlugCompleted(journeyModules[index - 1].slug);
-  };
+  const isJourneyModuleUnlocked = (_index: number) => true;
 
   // Collapsibility: HR users can collapse, previewed tracks behave like their real track
   const canCollapse = isRealHR && isEffectiveHR;

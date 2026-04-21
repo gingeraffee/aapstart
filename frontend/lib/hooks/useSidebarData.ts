@@ -36,11 +36,7 @@ export function useSidebarData() {
 
   const completedCount = journeyModules.filter((m) => isSlugCompleted(m.slug)).length;
 
-  const isJourneyModuleUnlocked = (index: number) => {
-    if (isEffectiveHR) return true;
-    if (index === 0) return true;
-    return isSlugCompleted(journeyModules[index - 1].slug);
-  };
+  const isJourneyModuleUnlocked = (_index: number) => true;
 
   const canCollapse = isRealHR && isEffectiveHR;
 

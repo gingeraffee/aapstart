@@ -8,7 +8,7 @@ import { usePreview } from "@/lib/context/PreviewContext";
 import { ChecklistItem } from "@/components/ui/ChecklistItem";
 import { ModuleFooter, ModulePanel, ModuleShell, buildModuleSteps } from "@/components/features/modules/ModuleShell";
 import { Spinner } from "@/components/ui/Spinner";
-import type { ModuleDetail } from "@/lib/types";
+import type { ModuleDetail, ModuleSummary, ProgressRecord } from "@/lib/types";
 
 export default function AcknowledgePage() {
   const { slug } = useParams<{ slug: string }>();
@@ -17,6 +17,8 @@ export default function AcknowledgePage() {
   const { isPreviewing, effectiveTrack } = usePreview();
 
   const { data: module, isLoading } = useSWR(`module:${slug}:${effectiveTrack}`, () => modulesApi.get(slug, effectiveTrack) as Promise<ModuleDetail>);
+  const { data: allModules } = useSWR(`modules:${effectiveTrack}`, () => modulesApi.list(effectiveTrack) as Promise<ModuleSummary[]>);
+  const { data: progress } = useSWR("progress", () => progressApi.getAll() as Promise<ProgressRecord[]>);
 
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -76,6 +78,82 @@ export default function AcknowledgePage() {
 
   if (!hasAcknowledgement) {
     return null;
+  }
+
+  const progressEntry = (progress ?? []).find((p) => p.module_slug === slug);
+  const acksAlreadyDone = progressEntry?.acknowledgements_completed ?? false;
+  const moduleCompleted = progressEntry?.module_completed ?? false;
+
+  if (acksAlreadyDone) {
+    const liveModules = (allModules ?? [])
+      .filter((m) => m.status === "published")
+      .filter((m) => !m.tracks?.includes("management"))
+      .sort((a, b) => a.order - b.order);
+    const currentIndex = liveModules.findIndex((m) => m.slug === slug);
+    const nextModule = currentIndex >= 0 ? liveModules[currentIndex + 1] ?? null : null;
+
+    const alreadySteps = buildModuleSteps({ requiresAcknowledgement: true, requiresQuiz: hasQuiz, current: "confirm" });
+
+    const handleContinue = () => {
+      if (moduleCompleted) {
+        router.push(nextModule ? `/modules/${nextModule.slug}` : "/overview");
+      } else {
+        router.push(hasQuiz ? `/modules/${slug}/quiz` : `/modules/${slug}/complete`);
+      }
+    };
+
+    const ctaLabel = moduleCompleted
+      ? nextModule ? "Next Module" : "View My Journey"
+      : hasQuiz ? "Go to Quiz" : "View Completion";
+
+    return (
+      <ModuleShell
+        breadcrumbs={[
+          { label: "My Path", href: "/overview" },
+          { label: module.title, href: `/modules/${slug}` },
+          { label: "Confirmation" },
+        ]}
+        moduleOrder={module.order}
+        stageLabel="Confirmation"
+        headline="Confirmations already saved."
+        description="You already marked all statements for this module. Your progress is saved."
+        contextNote={module.title}
+        estimatedMinutes={0}
+        steps={alreadySteps}
+      >
+        <ModulePanel className="bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)]">
+          <div className="flex items-center gap-3 rounded-[10px] border border-emerald-200 bg-emerald-50 px-4 py-3">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M4 12.5 9.5 18 20 6" />
+              </svg>
+            </span>
+            <p className="text-[0.85rem] font-semibold text-emerald-800">All statements confirmed and saved.</p>
+          </div>
+        </ModulePanel>
+        <ModulePanel>
+          <div className="space-y-3">
+            {module.acknowledgements.map((ack) => (
+              <ChecklistItem
+                key={ack.id}
+                label={ack.statement}
+                checked={true}
+                onChange={() => undefined}
+                className="bg-white opacity-70"
+              />
+            ))}
+          </div>
+          <div className="mt-5 flex justify-end">
+            <button
+              onClick={handleContinue}
+              className="rounded-[12px] border border-[#6eaeea] bg-[linear-gradient(135deg,#184371_0%,#13629a_100%)] px-6 py-2.5 text-[0.9rem] font-bold text-white transition-all duration-200 hover:-translate-y-px hover:shadow-[0_10px_18px_rgba(15,127,179,0.24)]"
+            >
+              {ctaLabel}
+            </button>
+          </div>
+        </ModulePanel>
+      </ModuleShell>
+    );
   }
 
   const currentModule = module;

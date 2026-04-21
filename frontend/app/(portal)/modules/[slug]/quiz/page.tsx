@@ -168,6 +168,48 @@ export default function QuizPage() {
     (item) => item.slug === slug || progressMap.get(item.slug)?.module_completed
   );
 
+  const quizAlreadyPassed = progressMap.get(slug)?.quiz_passed ?? false;
+
+  if (quizAlreadyPassed) {
+    const alreadySteps = buildModuleSteps({ requiresAcknowledgement: hasAcknowledgement, requiresQuiz: hasQuiz, current: "quiz" });
+    return (
+      <ModuleShell
+        breadcrumbs={[
+          { label: "My Path", href: "/overview" },
+          { label: module.title, href: `/modules/${slug}` },
+          { label: "Quiz" },
+        ]}
+        moduleOrder={module.order}
+        stageLabel="Quiz"
+        headline="Quiz already complete."
+        description="Your results are saved. You can move on whenever you're ready."
+        contextNote={module.title}
+        estimatedMinutes={0}
+        steps={alreadySteps}
+      >
+        <ModulePanel>
+          <div className="flex flex-col items-center gap-4 py-6 text-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-500">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M4 12.5 9.5 18 20 6" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-[1.05rem] font-extrabold text-[#0f1d3c]">Quiz complete</p>
+              <p className="mt-1 text-[0.85rem] text-[#445b78]">You already passed this quiz. Your progress has been saved.</p>
+            </div>
+            <button
+              onClick={() => willBeAllDone || !nextModule ? router.push("/overview") : router.push(`/modules/${nextModule.slug}`)}
+              className="rounded-[12px] border border-[#6eaeea] bg-[linear-gradient(135deg,#184371_0%,#13629a_100%)] px-6 py-2.5 text-[0.9rem] font-bold text-white transition-all duration-200 hover:-translate-y-px hover:shadow-[0_10px_18px_rgba(15,127,179,0.24)]"
+            >
+              {willBeAllDone || !nextModule ? "View My Journey" : "Next Module"}
+            </button>
+          </div>
+        </ModulePanel>
+      </ModuleShell>
+    );
+  }
+
   const steps = buildModuleSteps({
     requiresAcknowledgement: hasAcknowledgement,
     requiresQuiz: hasQuiz,
