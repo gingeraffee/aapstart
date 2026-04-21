@@ -14,7 +14,7 @@ router = APIRouter(prefix="/api/admin", tags=["admin"])
 VALID_TRACKS = {"hr", "warehouse", "administrative", "management"}
 
 
-# ── Schemas ───────────────────────────────────────────────────────────────────
+# -- Schemas --
 
 class EmployeeCreate(BaseModel):
     employee_id: str
@@ -45,7 +45,12 @@ class EmployeeImportRequest(BaseModel):
     employees: list[EmployeeImportRow]
 
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
+class AdminNoteUpdate(BaseModel):
+    status: str | None = None  # "open" | "answered"
+    admin_reply: str | None = None
+
+
+# -- Helpers --
 
 def _progress_summary(employee_id: str, db: Session) -> dict:
     rows = db.query(UserProgress).filter_by(employee_id=employee_id).all()
@@ -93,7 +98,7 @@ def _resolve_names(row: EmployeeImportRow) -> tuple[str | None, str | None]:
     return parts[0], " ".join(parts[1:])
 
 
-# ── Routes ────────────────────────────────────────────────────────────────────
+# -- Routes --
 
 @router.get("/employees")
 def list_employees(
@@ -333,15 +338,81 @@ def get_employee_notes(
     )
     return [
         {
+            "id": n.id,
             "module_slug": n.module_slug,
+            "module_title": n.module_title,
             "note_text": n.note_text,
+            "selected_text": n.selected_text,
+            "anchor_id": n.anchor_id,
+            "status": n.status,
+            "admin_reply": n.admin_reply,
+            "replied_by": n.replied_by,
+            "replied_at": n.replied_at.isoformat() if n.replied_at else None,
+            "created_at": n.created_at.isoformat() if n.created_at else None,
             "updated_at": n.updated_at.isoformat() if n.updated_at else None,
         }
         for n in notes
     ]
 
 
-# ── Dashboard ────────────────────────────────────────────────────────────────
+@router.patch("/employees/{employee_id}/notes/{note_id}")
+def update_employee_note(
+    employee_id: str,
+    note_id: int,
+    payload: AdminNoteUpdate,
+    admin: dict = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Allow admins to respond to or update status on an employee note."""
+    emp = db.query(Employee).filter_by(employee_id=employee_id).first()
+    if not emp:
+        raise HTTPException(status_code=404, detail="Employee not found.")
+
+    note = (
+        db.query(UserNote)
+        .filter(UserNote.id == note_id, UserNote.employee_id == employee_id)
+        .first()
+    )
+    if not note:
+        raise HTTPException(status_code=404, detail="Note not found.")
+
+    if payload.status is not None:
+        if payload.status not in {"open", "answered"}:
+            raise HTTPException(status_code=422, detail="Status must be 'open' or 'answered'.")
+        note.status = payload.status
+
+    if payload.admin_reply is not None:
+        cleaned_reply = payload.admin_reply.strip()
+        note.admin_reply = cleaned_reply or None
+        if note.admin_reply:
+            note.replied_by = admin.get("sub")
+            note.replied_at = datetime.now(timezone.utc)
+            if payload.status is None:
+                note.status = "answered"
+        else:
+            note.replied_by = None
+            note.replied_at = None
+
+    db.commit()
+    db.refresh(note)
+
+    return {
+        "id": note.id,
+        "module_slug": note.module_slug,
+        "module_title": note.module_title,
+        "note_text": note.note_text,
+        "selected_text": note.selected_text,
+        "anchor_id": note.anchor_id,
+        "status": note.status,
+        "admin_reply": note.admin_reply,
+        "replied_by": note.replied_by,
+        "replied_at": note.replied_at.isoformat() if note.replied_at else None,
+        "created_at": note.created_at.isoformat() if note.created_at else None,
+        "updated_at": note.updated_at.isoformat() if note.updated_at else None,
+    }
+
+
+# -- Dashboard --
 
 @router.get("/dashboard")
 def get_dashboard(
@@ -352,7 +423,7 @@ def get_dashboard(
     employees = db.query(Employee).all()
     total = len(employees)
 
-    # Count by track — employees with multiple tracks are counted once per track
+    # Count by track - employees with multiple tracks are counted once per track
     by_track: dict[str, int] = {}
     for emp in employees:
         for t in normalize_tracks(emp.track):

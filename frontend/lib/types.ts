@@ -202,19 +202,34 @@ export interface ResourceCategory {
   label: string;
 }
 
+
 export interface UserNote {
   id: number;
   employee_id: string;
   module_slug: string;
   module_title: string | null;
   note_text: string;
+  selected_text: string | null;
+  anchor_id: string | null;
   status: "open" | "answered";
+  admin_reply: string | null;
+  replied_by: string | null;
+  replied_at: string | null;
   created_at: string;
   updated_at: string;
 }
 
 export interface NoteRecord {
+  id: number;
   module_slug: string;
+  module_title: string | null;
   note_text: string;
+  selected_text: string | null;
+  anchor_id: string | null;
+  status: "open" | "answered";
+  admin_reply: string | null;
+  replied_by: string | null;
+  replied_at: string | null;
+  created_at: string | null;
   updated_at: string | null;
 }

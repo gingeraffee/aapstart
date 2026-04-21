@@ -46,7 +46,7 @@ class UserProgress(Base):
 
     # Overall completion
     # A module is only complete when all required steps are done.
-    # This is computed and stored by the backend — never set directly by the frontend.
+    # This is computed and stored by the backend - never set directly by the frontend.
     module_completed = Column(Boolean, default=False)
     completed_at = Column(DateTime, nullable=True)
 
@@ -62,6 +62,11 @@ class UserNote(Base):
     module_slug = Column(String, nullable=False, index=True)
     module_title = Column(String, nullable=True)
     note_text = Column(Text, nullable=False)
+    selected_text = Column(Text, nullable=True)
+    anchor_id = Column(String, nullable=True)
     status = Column(String, nullable=False, default="open")  # "open" | "answered"
+    admin_reply = Column(Text, nullable=True)
+    replied_by = Column(String, nullable=True)
+    replied_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())

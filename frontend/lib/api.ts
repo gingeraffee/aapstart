@@ -24,7 +24,7 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   } catch (err: unknown) {
     clearTimeout(timeout);
     if (err instanceof Error && err.name === "AbortError") {
-      throw new ApiError("Request timed out — is the backend running?", 0);
+      throw new ApiError("Request timed out - is the backend running?", 0);
     }
     throw new ApiError("Cannot reach the server", 0);
   }
@@ -91,15 +91,17 @@ export const adminApi = {
     request(`/admin/employees/${employee_id}/progress`),
   employeeNotes: (employee_id: string) =>
     request(`/admin/employees/${employee_id}/notes`),
+  updateEmployeeNote: (employee_id: string, note_id: number, data: { status?: "open" | "answered"; admin_reply?: string }) =>
+    request(`/admin/employees/${employee_id}/notes/${note_id}`, { method: "PATCH", body: JSON.stringify(data) }),
 };
 
 export const notesApi = {
   getAll: () => request<import("./types").UserNote[]>("/notes"),
   getForModule: (slug: string) => request<import("./types").UserNote[]>(`/notes/${slug}`),
-  create: (slug: string, note_text: string, module_title?: string) =>
+  create: (slug: string, payload: { note_text: string; module_title?: string; selected_text?: string; anchor_id?: string }) =>
     request<import("./types").UserNote>(`/notes/${slug}`, {
       method: "POST",
-      body: JSON.stringify({ note_text, module_title }),
+      body: JSON.stringify(payload),
     }),
   updateStatus: (note_id: number, status: "open" | "answered") =>
     request<import("./types").UserNote>(`/notes/${note_id}/status`, {

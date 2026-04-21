@@ -34,7 +34,7 @@ def get_db():
 
 def init_db():
     """Create all tables, run lightweight migrations, and seed the bootstrap admin."""
-    from app.database import models  # noqa: F401 — import to register models
+    from app.database import models  # noqa: F401 - import to register models
     Base.metadata.create_all(bind=engine)
     _migrate()
     _seed_admin()
@@ -44,14 +44,29 @@ def _migrate():
     """Add any missing columns to existing tables (lightweight auto-migration)."""
     insp = inspect(engine)
 
-    # user_notes table — created by create_all, but add any missing columns for upgrades
+    # user_notes table - created by create_all, but add any missing columns for upgrades
     if insp.has_table("user_notes"):
         note_cols = {c["name"] for c in insp.get_columns("user_notes")}
         if "module_title" not in note_cols:
             with engine.begin() as conn:
                 conn.execute(text("ALTER TABLE user_notes ADD COLUMN module_title VARCHAR"))
             print("[OK] Added module_title column to user_notes table")
-
+        if "admin_reply" not in note_cols:
+            with engine.begin() as conn:
+                conn.execute(text("ALTER TABLE user_notes ADD COLUMN admin_reply TEXT"))
+            print("[OK] Added admin_reply column to user_notes table")
+        if "replied_by" not in note_cols:
+            with engine.begin() as conn:
+                conn.execute(text("ALTER TABLE user_notes ADD COLUMN replied_by VARCHAR"))
+            print("[OK] Added replied_by column to user_notes table")
+        if "selected_text" not in note_cols:
+            with engine.begin() as conn:
+                conn.execute(text("ALTER TABLE user_notes ADD COLUMN selected_text TEXT"))
+            print("[OK] Added selected_text column to user_notes table")
+        if "anchor_id" not in note_cols:
+            with engine.begin() as conn:
+                conn.execute(text("ALTER TABLE user_notes ADD COLUMN anchor_id VARCHAR"))
+            print("[OK] Added anchor_id column to user_notes table")
     # Check employees table for last_login_at column
     if insp.has_table("employees"):
         cols = {c["name"] for c in insp.get_columns("employees")}
@@ -88,13 +103,13 @@ def _migrate_track_to_array():
                     parsed = json.loads(track_val) if isinstance(track_val, str) else track_val
                     if isinstance(parsed, list):
                         continue  # Already migrated
-                    # It's a JSON scalar — wrap it
+                    # It's a JSON scalar - wrap it
                     conn.execute(
                         text("UPDATE employees SET track = :v WHERE id = :id"),
                         {"v": json.dumps([str(parsed)]), "id": row_id},
                     )
                 except (ValueError, TypeError):
-                    # Plain string like "hr" — wrap it
+                    # Plain string like "hr" - wrap it
                     conn.execute(
                         text("UPDATE employees SET track = :v WHERE id = :id"),
                         {"v": json.dumps([str(track_val)]), "id": row_id},

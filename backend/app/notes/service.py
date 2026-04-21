@@ -28,11 +28,16 @@ def create_note(db: Session, employee_id: str, module_slug: str, payload: NoteCr
     if not note_text:
         raise HTTPException(status_code=422, detail="Note text cannot be empty.")
 
+    selected_text = payload.selected_text.strip() if payload.selected_text else None
+    anchor_id = payload.anchor_id.strip() if payload.anchor_id else None
+
     note = UserNote(
         employee_id=employee_id,
         module_slug=module_slug,
         module_title=payload.module_title,
         note_text=note_text,
+        selected_text=selected_text or None,
+        anchor_id=anchor_id or None,
         status="open",
     )
     db.add(note)

@@ -10,9 +10,41 @@ interface NoteWidgetProps {
   moduleTitle: string;
 }
 
+interface SelectionDraft {
+  selectedText: string;
+  anchorId: string | null;
+}
+
 function formatDate(iso: string): string {
   const d = new Date(iso);
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
+function findAnchorId(node: Node | null): string | null {
+  if (!node) return null;
+  let current: HTMLElement | null = node instanceof HTMLElement ? node : node.parentElement;
+  while (current) {
+    if (current.id) return current.id;
+    current = current.parentElement;
+  }
+  return null;
+}
+
+function readSelectionDraft(): SelectionDraft | null {
+  if (typeof window === "undefined") return null;
+  const selection = window.getSelection();
+  if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return null;
+
+  const selectedText = selection.toString().replace(/\s+/g, " ").trim();
+  if (!selectedText) return null;
+
+  const limitedText = selectedText.length > 600 ? `${selectedText.slice(0, 597)}...` : selectedText;
+  const anchorId = findAnchorId(selection.getRangeAt(0).commonAncestorContainer);
+
+  return {
+    selectedText: limitedText,
+    anchorId,
+  };
 }
 
 export function NoteWidget({ moduleSlug, moduleTitle }: NoteWidgetProps) {
@@ -20,6 +52,7 @@ export function NoteWidget({ moduleSlug, moduleTitle }: NoteWidgetProps) {
   const [text, setText] = useState("");
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [selectionDraft, setSelectionDraft] = useState<SelectionDraft | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { mutate } = useSWRConfig();
 
@@ -29,7 +62,6 @@ export function NoteWidget({ moduleSlug, moduleTitle }: NoteWidgetProps) {
     { revalidateOnFocus: false }
   );
 
-  // Focus the textarea when panel opens
   useEffect(() => {
     if (open && textareaRef.current) {
       textareaRef.current.focus();
@@ -43,10 +75,15 @@ export function NoteWidget({ moduleSlug, moduleTitle }: NoteWidgetProps) {
     setSaving(true);
     setSaveError(null);
     try {
-      const created = await notesApi.create(moduleSlug, trimmed, moduleTitle);
+      const created = await notesApi.create(moduleSlug, {
+        note_text: trimmed,
+        module_title: moduleTitle,
+        selected_text: selectionDraft?.selectedText,
+        anchor_id: selectionDraft?.anchorId ?? undefined,
+      });
       setText("");
+      setSelectionDraft(null);
       mutateLocal((prev = []) => [created, ...prev], false);
-      // Invalidate the master notes list so the /notes page stays fresh
       mutate("notes:all");
     } catch {
       setSaveError("Couldn't save. Try again.");
@@ -62,7 +99,7 @@ export function NoteWidget({ moduleSlug, moduleTitle }: NoteWidgetProps) {
       mutateLocal((prev = []) => prev.map((n) => (n.id === note.id ? updated : n)), false);
       mutate("notes:all");
     } catch {
-      // Silent — the toggle just won't flip visually if it failed
+      // Silent - no visual flip on failed update.
     }
   }
 
@@ -74,6 +111,14 @@ export function NoteWidget({ moduleSlug, moduleTitle }: NoteWidgetProps) {
     } catch {
       // Silent
     }
+  }
+
+  function handleOpenToggle() {
+    if (!open) {
+      const draft = readSelectionDraft();
+      setSelectionDraft(draft);
+    }
+    setOpen((v) => !v);
   }
 
   const openCount = notes.filter((n) => n.status === "open").length;
@@ -90,15 +135,18 @@ export function NoteWidget({ moduleSlug, moduleTitle }: NoteWidgetProps) {
         transition: "background 200ms ease",
       }}
     >
-      {/* Header / Toggle */}
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onMouseDown={() => {
+          if (!open) {
+            setSelectionDraft(readSelectionDraft());
+          }
+        }}
+        onClick={handleOpenToggle}
         className="flex w-full items-center justify-between rounded-[16px] px-5 py-4 text-left transition-opacity hover:opacity-80"
         aria-expanded={open}
       >
         <div className="flex items-center gap-3">
-          {/* Pencil icon */}
           <span
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
             style={{ background: "rgba(15,127,179,0.10)" }}
@@ -113,10 +161,10 @@ export function NoteWidget({ moduleSlug, moduleTitle }: NoteWidgetProps) {
             </p>
             <p className="text-[0.68rem] leading-tight" style={{ color: "#5b7fa6" }}>
               {notes.length === 0
-                ? "Jot something down while it\u2019s fresh"
+                ? "Jot something down while it's fresh"
                 : openCount > 0
-                  ? `${notes.length} note${notes.length !== 1 ? "s" : ""} \u2014 ${openCount} open`
-                  : `${notes.length} note${notes.length !== 1 ? "s" : ""} \u2014 all answered`}
+                  ? `${notes.length} note${notes.length !== 1 ? "s" : ""} - ${openCount} open`
+                  : `${notes.length} note${notes.length !== 1 ? "s" : ""} - all answered`}
             </p>
           </div>
         </div>
@@ -133,10 +181,48 @@ export function NoteWidget({ moduleSlug, moduleTitle }: NoteWidgetProps) {
         </span>
       </button>
 
-      {/* Expanded panel */}
       {open && (
         <div className="px-5 pb-5 pt-1">
-          {/* Input area */}
+          <div className="mb-2 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => setSelectionDraft(readSelectionDraft())}
+              className="rounded-[8px] px-2.5 py-1 text-[0.68rem] font-semibold"
+              style={{ background: "rgba(15,127,179,0.08)", color: "#0f7fb3" }}
+            >
+              Use current highlight
+            </button>
+            {selectionDraft && (
+              <button
+                type="button"
+                onClick={() => setSelectionDraft(null)}
+                className="text-[0.68rem] font-semibold"
+                style={{ color: "#7b9ab8" }}
+              >
+                Clear quote
+              </button>
+            )}
+          </div>
+
+          {selectionDraft && (
+            <div
+              className="mb-2 rounded-[10px] px-3 py-2"
+              style={{ border: "1px solid rgba(15,127,179,0.16)", background: "rgba(15,127,179,0.05)" }}
+            >
+              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "#0f7fb3" }}>
+                Linked Highlight
+              </p>
+              <p className="mt-1 text-[0.76rem] leading-[1.45] italic" style={{ color: "#1a3152" }}>
+                "{selectionDraft.selectedText}"
+              </p>
+              {selectionDraft.anchorId && (
+                <p className="mt-1 text-[0.65rem]" style={{ color: "#5b7fa6" }}>
+                  Section anchor: {selectionDraft.anchorId}
+                </p>
+              )}
+            </div>
+          )}
+
           <div
             className="overflow-hidden rounded-[12px]"
             style={{ border: "1px solid rgba(15,127,179,0.22)", background: "#fff" }}
@@ -146,13 +232,12 @@ export function NoteWidget({ moduleSlug, moduleTitle }: NoteWidgetProps) {
               value={text}
               onChange={(e) => { setText(e.target.value); setSaveError(null); }}
               onKeyDown={(e) => {
-                // Ctrl/Cmd+Enter to save
                 if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
                   e.preventDefault();
-                  handleSave();
+                  void handleSave();
                 }
               }}
-              placeholder="Type a note or question about this module…"
+              placeholder="Type a note or question about this module..."
               rows={3}
               className="w-full resize-none px-4 py-3 text-[0.88rem] leading-[1.6] outline-none placeholder:text-[#93aec7]"
               style={{ color: "#0d1f3a", background: "transparent" }}
@@ -162,16 +247,16 @@ export function NoteWidget({ moduleSlug, moduleTitle }: NoteWidgetProps) {
               style={{ borderTop: "1px solid rgba(15,127,179,0.12)", background: "rgba(240,248,255,0.5)" }}
             >
               <span className="text-[0.68rem]" style={{ color: "#93aec7" }}>
-                {text.length > 0 ? `${text.trim().length} chars · ⌘↵ to save` : "⌘↵ to save"}
+                {text.length > 0 ? `${text.trim().length} chars - Ctrl/Cmd+Enter to save` : "Ctrl/Cmd+Enter to save"}
               </span>
               <button
                 type="button"
-                onClick={handleSave}
+                onClick={() => void handleSave()}
                 disabled={saving || !text.trim()}
                 className="rounded-[8px] px-3.5 py-1.5 text-[0.78rem] font-semibold text-white transition-all duration-150 hover:brightness-110 disabled:cursor-default disabled:opacity-40"
                 style={{ background: "linear-gradient(135deg, #17365d 0%, #0f7fb3 100%)" }}
               >
-                {saving ? "Saving…" : "Add Note"}
+                {saving ? "Saving..." : "Add Note"}
               </button>
             </div>
           </div>
@@ -179,7 +264,6 @@ export function NoteWidget({ moduleSlug, moduleTitle }: NoteWidgetProps) {
             <p className="mt-1.5 text-[0.73rem]" style={{ color: "#df0030" }}>{saveError}</p>
           )}
 
-          {/* Existing notes list */}
           {notes.length > 0 && (
             <div className="mt-4 space-y-2.5">
               {notes.map((note) => (
@@ -195,9 +279,44 @@ export function NoteWidget({ moduleSlug, moduleTitle }: NoteWidgetProps) {
                       : "1px solid rgba(15,127,179,0.14)",
                   }}
                 >
+                  {note.selected_text && (
+                    <div
+                      className="mb-2 rounded-[8px] px-2.5 py-2"
+                      style={{ border: "1px solid rgba(15,127,179,0.14)", background: "rgba(15,127,179,0.05)" }}
+                    >
+                      <p className="text-[0.72rem] italic leading-[1.45]" style={{ color: "#335174" }}>
+                        "{note.selected_text}"
+                      </p>
+                      {note.anchor_id && (
+                        <a
+                          href={`/modules/${note.module_slug}#${encodeURIComponent(note.anchor_id)}`}
+                          className="mt-1 inline-block text-[0.66rem] font-semibold"
+                          style={{ color: "#0f7fb3" }}
+                        >
+                          Jump to section
+                        </a>
+                      )}
+                    </div>
+                  )}
+
                   <p className="text-[0.84rem] leading-[1.58]" style={{ color: "#1a3152" }}>
                     {note.note_text}
                   </p>
+
+                  {note.admin_reply && (
+                    <div
+                      className="mt-2 rounded-[8px] px-2.5 py-2"
+                      style={{ border: "1px solid rgba(34,197,94,0.2)", background: "rgba(34,197,94,0.07)" }}
+                    >
+                      <p className="text-[0.64rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "#15803d" }}>
+                        Admin Reply
+                      </p>
+                      <p className="mt-1 text-[0.76rem] leading-[1.5]" style={{ color: "#1f5135" }}>
+                        {note.admin_reply}
+                      </p>
+                    </div>
+                  )}
+
                   <div className="mt-2 flex items-center justify-between gap-3">
                     <span className="text-[0.66rem]" style={{ color: "#7b9ab8" }}>
                       {formatDate(note.created_at)}
@@ -205,7 +324,7 @@ export function NoteWidget({ moduleSlug, moduleTitle }: NoteWidgetProps) {
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        onClick={() => handleToggleStatus(note)}
+                        onClick={() => void handleToggleStatus(note)}
                         className="flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[0.66rem] font-semibold transition-all hover:opacity-80"
                         style={{
                           background: note.status === "answered"
@@ -214,23 +333,11 @@ export function NoteWidget({ moduleSlug, moduleTitle }: NoteWidgetProps) {
                           color: note.status === "answered" ? "#16a34a" : "#0f7fb3",
                         }}
                       >
-                        {note.status === "answered" ? (
-                          <>
-                            <svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M1.5 5.5l2.5 2.5 4.5-5" />
-                            </svg>
-                            Answered
-                          </>
-                        ) : (
-                          <>
-                            <span className="h-1.5 w-1.5 rounded-full bg-current" />
-                            Open
-                          </>
-                        )}
+                        {note.status === "answered" ? "Answered" : "Open"}
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleDelete(note.id)}
+                        onClick={() => void handleDelete(note.id)}
                         className="flex h-5 w-5 items-center justify-center rounded-full transition-all hover:opacity-80"
                         style={{ background: "rgba(0,0,0,0.04)", color: "#93aec7" }}
                         aria-label="Delete note"

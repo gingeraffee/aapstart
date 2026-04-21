@@ -234,9 +234,35 @@ export default function NotesPage() {
                     }}
                   >
                     {/* Note text */}
+                    {note.selected_text && (
+                      <div className="mb-2 rounded-[8px] px-3 py-2" style={{ background: "rgba(15,127,179,0.06)", border: "1px solid rgba(15,127,179,0.15)" }}>
+                        <p className="text-[0.76rem] italic leading-[1.45]" style={{ color: "#335174" }}>
+                          "{note.selected_text}"
+                        </p>
+                        {note.anchor_id && (
+                          <Link
+                            href={`/modules/${note.module_slug}#${encodeURIComponent(note.anchor_id)}`}
+                            className="mt-1 inline-block text-[0.68rem] font-semibold"
+                            style={{ color: "#0f7fb3" }}
+                          >
+                            Jump to section
+                          </Link>
+                        )}
+                      </div>
+                    )}
                     <p className="text-[0.88rem] leading-[1.65]" style={{ color: "#1a3152" }}>
                       {note.note_text}
                     </p>
+                    {note.admin_reply && (
+                      <div className="mt-2 rounded-[8px] px-3 py-2" style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)" }}>
+                        <p className="text-[0.64rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "#15803d" }}>
+                          Admin Reply
+                        </p>
+                        <p className="mt-1 text-[0.76rem] leading-[1.5]" style={{ color: "#1f5135" }}>
+                          {note.admin_reply}
+                        </p>
+                      </div>
+                    )}
 
                     {/* Meta row */}
                     <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
@@ -266,7 +292,7 @@ export default function NotesPage() {
                           ) : (
                             <>
                               <span className="h-1.5 w-1.5 rounded-full bg-current" />
-                              Open — mark answered
+                              Open - mark answered
                             </>
                           )}
                         </button>

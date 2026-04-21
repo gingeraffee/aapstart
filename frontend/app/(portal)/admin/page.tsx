@@ -332,7 +332,7 @@ function EmployeeRow({ emp, currentUserId, modules, onDeleted }: { emp: Employee
       await adminApi.updateEmployee(emp.employee_id, { tracks: editTracks, is_admin: editAdmin });
       setEditing(false);
       const trackLabel = editTracks.map((t) => TRACK_LABELS[t] ?? t).join(", ");
-      onDeleted(`Updated ${emp.full_name} — track: ${trackLabel}${editAdmin ? " (Admin)" : ""}.`);
+      onDeleted(`Updated ${emp.full_name} - track: ${trackLabel}${editAdmin ? " (Admin)" : ""}.`);
     } catch (err) {
       onDeleted(err instanceof Error ? err.message : "Failed to update.", "error");
     } finally {
@@ -637,7 +637,7 @@ function EmployeeRow({ emp, currentUserId, modules, onDeleted }: { emp: Employee
             )}
           </div>
 
-          {/* Notes panel — only shown when there are notes */}
+          {/* Notes panel - only shown when there are notes */}
           {!loadingProgress && employeeNotes && employeeNotes.length > 0 && (
             <div
               className="rounded-[14px] p-4"
@@ -648,13 +648,13 @@ function EmployeeRow({ emp, currentUserId, modules, onDeleted }: { emp: Employee
               </p>
               <div className="space-y-2">
                 {employeeNotes.map((note) => {
-                  const moduleTitle = modules.find((m) => m.slug === note.module_slug)?.title ?? note.module_slug;
+                  const moduleTitle = modules.find((m) => m.slug === note.module_slug)?.title ?? note.module_title ?? note.module_slug;
                   const updatedDate = note.updated_at
                     ? new Date(note.updated_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })
                     : null;
                   return (
                     <div
-                      key={note.module_slug}
+                      key={note.id}
                       className="rounded-[10px] px-3 py-2.5"
                       style={{ background: "rgba(14,118,189,0.05)", border: "1px solid rgba(14,118,189,0.12)" }}
                     >
@@ -668,12 +668,38 @@ function EmployeeRow({ emp, currentUserId, modules, onDeleted }: { emp: Employee
                           </span>
                         )}
                       </div>
+                      {note.selected_text && (
+                        <div className="mb-1.5 rounded-[8px] px-2.5 py-2" style={{ background: "rgba(14,118,189,0.08)", border: "1px solid rgba(14,118,189,0.18)" }}>
+                          <p className="text-[0.68rem] italic leading-[1.45]" style={{ color: "#335174" }}>
+                            "{note.selected_text}"
+                          </p>
+                          {note.anchor_id && (
+                            <a
+                              href={`/modules/${note.module_slug}#${encodeURIComponent(note.anchor_id)}`}
+                              className="mt-1 inline-block text-[0.66rem] font-semibold"
+                              style={{ color: "#0f7fb3" }}
+                            >
+                              Jump to section
+                            </a>
+                          )}
+                        </div>
+                      )}
                       <p
                         className="text-[0.76rem] leading-[1.55] whitespace-pre-wrap"
                         style={{ color: "var(--card-desc)" }}
                       >
                         {note.note_text}
                       </p>
+                      {note.admin_reply && (
+                        <div className="mt-1.5 rounded-[8px] px-2.5 py-2" style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)" }}>
+                          <p className="text-[0.62rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "#15803d" }}>
+                            Admin Reply
+                          </p>
+                          <p className="mt-1 text-[0.72rem] leading-[1.45]" style={{ color: "#1f5135" }}>
+                            {note.admin_reply}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -808,8 +834,8 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
                         <span className="text-[0.68rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--module-context)" }}>Row {row.row}</span>
                       </div>
                       <p className="mt-1 text-[0.74rem]" style={{ color: "var(--card-desc)" }}>
-                        {row.employee_id || "Missing employee number"} • {row.track.split(/[|,]/).map((t) => TRACK_LABELS[t.trim()] ?? t.trim()).join(", ")}
-                        {row.is_admin ? " • Admin" : ""}
+                        {row.employee_id || "Missing employee number"} - {row.track.split(/[|,]/).map((t) => TRACK_LABELS[t.trim()] ?? t.trim()).join(", ")}
+                        {row.is_admin ? " - Admin" : ""}
                       </p>
                       {row.error && <p className="mt-1.5 text-[0.74rem] font-medium" style={{ color: "#9f1239" }}>{row.error}</p>}
                     </div>

@@ -11,14 +11,44 @@ interface ModuleNotesSidebarProps {
   moduleTitle: string;
 }
 
+interface SelectionDraft {
+  selectedText: string;
+  anchorId: string | null;
+}
+
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+function findAnchorId(node: Node | null): string | null {
+  if (!node) return null;
+  let current: HTMLElement | null = node instanceof HTMLElement ? node : node.parentElement;
+  while (current) {
+    if (current.id) return current.id;
+    current = current.parentElement;
+  }
+  return null;
+}
+
+function readSelectionDraft(): SelectionDraft | null {
+  if (typeof window === "undefined") return null;
+  const selection = window.getSelection();
+  if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return null;
+
+  const selectedText = selection.toString().replace(/\s+/g, " ").trim();
+  if (!selectedText) return null;
+
+  return {
+    selectedText: selectedText.length > 600 ? `${selectedText.slice(0, 597)}...` : selectedText,
+    anchorId: findAnchorId(selection.getRangeAt(0).commonAncestorContainer),
+  };
 }
 
 export function ModuleNotesSidebar({ moduleSlug, moduleTitle }: ModuleNotesSidebarProps) {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
   const [saving, setSaving] = useState(false);
+  const [selectionDraft, setSelectionDraft] = useState<SelectionDraft | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { mutate: mutateGlobal } = useSWRConfig();
 
@@ -33,8 +63,14 @@ export function ModuleNotesSidebar({ moduleSlug, moduleTitle }: ModuleNotesSideb
     if (!trimmed) return;
     setSaving(true);
     try {
-      const created = await notesApi.create(moduleSlug, trimmed, moduleTitle);
+      const created = await notesApi.create(moduleSlug, {
+        note_text: trimmed,
+        module_title: moduleTitle,
+        selected_text: selectionDraft?.selectedText,
+        anchor_id: selectionDraft?.anchorId ?? undefined,
+      });
       setText("");
+      setSelectionDraft(null);
       mutate((prev = []) => [created, ...prev], false);
       mutateGlobal("notes:all");
     } finally {
@@ -63,9 +99,14 @@ export function ModuleNotesSidebar({ moduleSlug, moduleTitle }: ModuleNotesSideb
 
   return (
     <>
-      {/* Floating toggle button */}
       <button
-        onClick={() => setOpen((o) => !o)}
+        onMouseDown={() => {
+          if (!open) setSelectionDraft(readSelectionDraft());
+        }}
+        onClick={() => {
+          if (!open) setSelectionDraft(readSelectionDraft());
+          setOpen((o) => !o);
+        }}
         aria-label={open ? "Close notes" : "Open notes"}
         className={cn(
           "fixed bottom-8 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full shadow-[0_8px_24px_rgba(12,24,47,0.18)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(12,24,47,0.22)]",
@@ -90,7 +131,6 @@ export function ModuleNotesSidebar({ moduleSlug, moduleTitle }: ModuleNotesSideb
         )}
       </button>
 
-      {/* Backdrop */}
       {open && (
         <div
           className="fixed inset-0 z-30 bg-black/10 backdrop-blur-[1px] transition-opacity duration-200"
@@ -98,7 +138,6 @@ export function ModuleNotesSidebar({ moduleSlug, moduleTitle }: ModuleNotesSideb
         />
       )}
 
-      {/* Slide-in panel */}
       <aside
         className={cn(
           "fixed bottom-0 right-0 top-0 z-40 flex w-[320px] flex-col transition-transform duration-300 ease-in-out",
@@ -110,7 +149,6 @@ export function ModuleNotesSidebar({ moduleSlug, moduleTitle }: ModuleNotesSideb
           boxShadow: "-10px 0 32px rgba(12,24,47,0.14)",
         }}
       >
-        {/* Header */}
         <div
           className="flex shrink-0 items-center justify-between px-5 py-4"
           style={{ borderBottom: "1px solid rgba(159,188,221,0.5)" }}
@@ -142,14 +180,42 @@ export function ModuleNotesSidebar({ moduleSlug, moduleTitle }: ModuleNotesSideb
           </button>
         </div>
 
-        {/* New note input */}
         <div className="shrink-0 px-5 pt-4 pb-3" style={{ borderBottom: "1px solid rgba(159,188,221,0.35)" }}>
+          <div className="mb-2 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => setSelectionDraft(readSelectionDraft())}
+              className="rounded-[8px] px-2.5 py-1 text-[0.65rem] font-semibold"
+              style={{ background: "rgba(14,118,189,0.09)", color: "#0f7fb3" }}
+            >
+              Use current highlight
+            </button>
+            {selectionDraft && (
+              <button
+                type="button"
+                onClick={() => setSelectionDraft(null)}
+                className="text-[0.65rem] font-semibold"
+                style={{ color: "#607895" }}
+              >
+                Clear quote
+              </button>
+            )}
+          </div>
+
+          {selectionDraft && (
+            <div className="mb-2 rounded-[10px] px-3 py-2" style={{ background: "rgba(14,118,189,0.06)", border: "1px solid rgba(14,118,189,0.18)" }}>
+              <p className="text-[0.72rem] leading-[1.45] italic" style={{ color: "#1b2c56" }}>
+                "{selectionDraft.selectedText}"
+              </p>
+            </div>
+          )}
+
           <textarea
             ref={textareaRef}
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Jot down a question or reminder…"
+            placeholder="Jot down a question or reminder..."
             rows={3}
             className="w-full resize-none rounded-[12px] p-3 text-[0.82rem] leading-[1.65] outline-none transition-shadow duration-150 focus:ring-2"
             style={{
@@ -160,20 +226,19 @@ export function ModuleNotesSidebar({ moduleSlug, moduleTitle }: ModuleNotesSideb
             }}
           />
           <button
-            onClick={handleSave}
+            onClick={() => void handleSave()}
             disabled={saving || !text.trim()}
             className="mt-2 w-full rounded-[10px] py-2 text-[0.76rem] font-semibold text-white transition-all hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
             style={{ background: "linear-gradient(135deg, #11264a 0%, #0f7fb3 82%)" }}
           >
-            {saving ? "Saving…" : "Save note"}
+            {saving ? "Saving..." : "Save note"}
           </button>
           <p className="mt-1.5 text-center text-[0.62rem]" style={{ color: "#99aabb" }}>
-            ⌘ Enter to save
+            Ctrl/Cmd + Enter to save
           </p>
         </div>
 
-        {/* Saved notes list */}
-        <div className="flex-1 overflow-y-auto px-5 py-3 space-y-2" style={{ scrollbarWidth: "thin" }}>
+        <div className="flex-1 space-y-2 overflow-y-auto px-5 py-3" style={{ scrollbarWidth: "thin" }}>
           {notes.length === 0 ? (
             <p className="mt-4 text-center text-[0.78rem] leading-[1.6]" style={{ color: "#99aabb" }}>
               No notes yet for this module.
@@ -185,13 +250,18 @@ export function ModuleNotesSidebar({ moduleSlug, moduleTitle }: ModuleNotesSideb
                 className="group rounded-[10px] px-3 py-2.5"
                 style={{ background: "rgba(18,45,78,0.04)", border: "1px solid rgba(159,188,221,0.55)" }}
               >
-                <p className="text-[0.8rem] leading-[1.6] whitespace-pre-wrap" style={{ color: "#1b2c56" }}>
+                {note.selected_text && (
+                  <p className="mb-1 text-[0.68rem] italic leading-[1.4]" style={{ color: "#4d6788" }}>
+                    "{note.selected_text}"
+                  </p>
+                )}
+                <p className="whitespace-pre-wrap text-[0.8rem] leading-[1.6]" style={{ color: "#1b2c56" }}>
                   {note.note_text}
                 </p>
                 <div className="mt-1.5 flex items-center justify-between">
                   <span className="text-[0.62rem]" style={{ color: "#99aabb" }}>{formatDate(note.created_at)}</span>
                   <button
-                    onClick={() => handleDelete(note.id)}
+                    onClick={() => void handleDelete(note.id)}
                     className="text-[0.62rem] font-medium opacity-0 transition-opacity group-hover:opacity-100"
                     style={{ color: "#be123c" }}
                   >
