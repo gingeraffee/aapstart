@@ -1469,19 +1469,19 @@ export default function ModulePage() {
       {
         scenario: "An employee stops by your desk and says they need surgery next month. They start sharing medical details — diagnosis, procedure, recovery time. They seem relieved to finally tell someone. What do you do?",
         options: [
-          { id: "a", text: "Listen carefully, take notes on everything they share so you have a complete record for Nicole" },
-          { id: "b", text: "Let them talk, then gently let them know you'll connect them with Nicole — without writing down any medical specifics yourself" },
-          { id: "c", text: "Stop them and explain that you're not the right person to hear medical details — they need to go directly to Nicole" },
-          { id: "d", text: "Listen, pull up the FMLA forms, and walk them through the initial paperwork so Nicole has a head start" },
+          { id: "a", text: "Listen carefully, take notes on everything they share so you have a complete record for the HR Manager" },
+          { id: "b", text: "Let them talk, then gently let them know you'll connect them with the HR Manager — without writing down any medical specifics yourself" },
+          { id: "c", text: "Stop them and explain that you're not the right person to hear medical details — they need to go directly to the HR Manager" },
+          { id: "d", text: "Listen, pull up the FMLA forms, and walk them through the initial paperwork so the HR Manager has a head start" },
         ],
         correctId: "b",
-        explanation: "You don't shut them down, but you don't document medical details either. HIPAA applies here. Let them feel heard, then route it properly. Taking clinical notes or starting FMLA paperwork yourself creates risk — that's Nicole's lane.",
+        explanation: "You don't shut them down, but you don't document medical details either. HIPAA applies here. Let them feel heard, then route it properly. Taking clinical notes or starting FMLA paperwork yourself creates risk — that's the HR Manager's lane.",
       },
       {
         scenario: "A warehouse supervisor calls and says one of their employees has been missing shifts and acting erratic. They ask if HR has \"anything on file\" that might explain what's going on. What do you say?",
         options: [
           { id: "a", text: "Check BambooHR and share any relevant notes — the supervisor needs to manage their team effectively" },
-          { id: "b", text: "Let them know you can't share personnel information, but offer to have Nicole follow up if there's a concern worth escalating" },
+          { id: "b", text: "Let them know you can't share personnel information, but offer to have the HR Manager follow up if there's a concern worth escalating" },
           { id: "c", text: "Tell them you're not allowed to say anything, and leave it at that" },
           { id: "d", text: "Confirm whether or not the employee has any active leave requests without going into detail" },
         ],
@@ -1492,7 +1492,7 @@ export default function ModulePage() {
         scenario: "An employee comes to you upset after a conflict with their supervisor. They say they want to \"file a complaint\" but ask you not to tell anyone — especially not their supervisor. They want it on record, just in case. What do you do?",
         options: [
           { id: "a", text: "Document what they told you and keep it between the two of you — they asked for confidentiality and you should honor that" },
-          { id: "b", text: "Let them know you'll keep it as private as possible, but explain that some situations require Nicole to be involved — then bring it to her" },
+          { id: "b", text: "Let them know you'll keep it as private as possible, but explain that some situations require the HR Manager to be involved — then bring it to her" },
           { id: "c", text: "Tell them that if they're not ready to move forward officially, there's nothing you can do yet" },
           { id: "d", text: "Encourage them to go home, cool off, and come back if they still feel the same way tomorrow" },
         ],
