@@ -179,7 +179,7 @@ Every **5 years** starting at the **5th anniversary**, employees receive a Servi
 **Insurance Details Worth Knowing**
 
 - **Medical:** AAP offers a **PPO** and a **High Deductible Health Plan (HDHP)** with HSA options through BlueCross BlueShield
-- **Dental/Vision:** Coverage is through **Guardian** — no physical insurance cards are issued. Employees access coverage through the **Guardian Anytime app**. This is one of the most common questions you'll get after enrollment, so know it before they ask
+- **Dental/Vision:** Coverage is through **Guardian** — no physical insurance cards are issued. To access their benefits card, employees register at **www.guardiananytime.com** or through the **Guardian Anytime mobile app** using their personal information and the AAP group number **00044071**. This is one of the most common questions you'll get after enrollment, so know it before they ask
 
 For the full breakdown of plan options, costs, and coverage details, refer to the 2026 AAP Employee Benefits Guide below.
 
