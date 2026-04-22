@@ -1332,15 +1332,15 @@ export default function ModulePage() {
         explanation: "Pulling and sharing attendance records with a supervisor for corrective action purposes is squarely in your lane. The value you add is making sure the information is complete — current point total, upcoming roll-offs, any thresholds they're approaching. That gives the supervisor everything they need to walk into that conversation prepared.",
       },
       {
-        scenario: "An employee stops by your desk and says they need to take time off next month for surgery. They start giving you details about their diagnosis. What do you do?",
+        scenario: "An employee asks if they qualify for FMLA. They've been with the company for 14 months and worked about 1,300 hours in the last 12 months. What do you tell them?",
         options: [
-          { id: "a", text: "Listen carefully and take notes so you have everything documented for the file" },
-          { id: "b", text: "Let them share what they want to share, then let them know you'll connect them with the HR Manager — without writing down any medical specifics yourself" },
-          { id: "c", text: "Stop them immediately and tell them they need to speak with the HR Manager directly — you can't hear medical information" },
-          { id: "d", text: "Pull up the FMLA forms and start walking them through the initial paperwork" },
+          { id: "a", text: "Let them know only the HR Manager can determine FMLA eligibility — route them there without sharing anything else" },
+          { id: "b", text: "Confirm they meet both criteria — at least 365 days of service and 1,250 hours in the last 12 months — then let them know you'll connect them with the HR Manager to get the paperwork started" },
+          { id: "c", text: "Tell them they're eligible and hand them the FMLA forms to start filling out themselves" },
+          { id: "d", text: "Let them know you'll need to look into it and follow up after checking with their supervisor" },
         ],
         correctId: "b",
-        explanation: "You don't shut them down, but you don't document medical details either. Let them feel heard, then route it to the HR Manager. Starting FMLA paperwork or recording clinical details yourself creates risk.",
+        explanation: "Confirming FMLA eligibility is a straightforward check of two criteria — and that's yours to do. But once you've confirmed it, the paperwork and process belong to the HR Manager. Give the employee a clear answer, then hand it off cleanly.",
       },
       {
         scenario: "You're entering last week's attendance points into the point notebook and you notice one employee's total doesn't match what you expected — they seem to have fewer points than they should. What do you do?",
