@@ -1416,15 +1416,15 @@ export default function ModulePage() {
         explanation: "Three consecutive months with no tardies or unexcused absences earns a $75 bonus on the employee's first paycheck of the following month. It's worth mentioning during onboarding — it reinforces the right behavior early.",
       },
       {
-        scenario: "An employee tells you they've been clocking in on time every day but their attendance report shows 3.5 points. They're frustrated and want you to fix it. What do you do?",
+        scenario: "An employee tells you they've been clocking in on time every day but their attendance report shows 3.5 points. They're frustrated and want to understand why. What do you do?",
         options: [
-          { id: "a", text: "Pull up their attendance record in BambooHR and correct the points that look wrong" },
-          { id: "b", text: "Explain how points accumulate and roll off, then let them know you'll flag the discrepancy to the HR Manager for review" },
-          { id: "c", text: "Tell them to take it up with their supervisor since attendance is managed at the department level" },
-          { id: "d", text: "Remove the points they're disputing so they don't hit the next threshold while waiting for a review" },
+          { id: "a", text: "Reassure them that 3.5 points is nothing to worry about — they'll roll off over time and they can check back in a few months" },
+          { id: "b", text: "Walk them through how the point system works — how points accumulate and roll off — then offer to sit down and review their point history together in BambooHR so they can see exactly where each one came from" },
+          { id: "c", text: "Tell them to bring it to their supervisor, since day-to-day attendance tracking is a management responsibility" },
+          { id: "d", text: "Let them know you'll flag it to the HR Manager for a formal review before discussing any specifics with them" },
         ],
         correctId: "b",
-        explanation: "You don't modify attendance records yourself, and you don't dismiss the concern. Explain the system so they understand how points work, then escalate the discrepancy to the HR Manager for proper review. Removing points without authorization or passing it off entirely both create problems.",
+        explanation: "This is something you can — and should — handle directly. Walk them through the system so they understand how points work, then pull up their history together in BambooHR. Most of the time, employees don't realize a late arrival or a partial-shift absence counted. Seeing it laid out clearly usually resolves the confusion on the spot.",
       },
     ] : [
       {
