@@ -62,14 +62,14 @@ quiz:
       text: "A manager calls and asks you for details about an employee's accident report from last week. They say they need it for a team safety briefing. What do you do?"
       options:
         - id: a
-          text: Pull the report and share the relevant details — safety briefings help prevent future incidents
+          text: Pull the report and share the details — and remind the manager not to identify the employee by name when discussing it with the team
         - id: b
-          text: Share a general summary of what happened without including the employee's name or identifying details
+          text: Share only a general summary without specifics — safety briefings don't require detailed incident information
         - id: c
-          text: Let the manager know that accident report details are confidential and offer to connect them with the HR Manager if they need specific information for their briefing
+          text: Let the manager know accident report details are confidential and offer to connect them with the HR Manager
         - id: d
-          text: Ask the employee for permission to share their report with the manager before releasing anything
-      correctId: c
+          text: Ask the employee for permission before sharing anything with the manager
+      correctId: a
 
     - id: q5
       text: "You receive an accident report where an employee strained their shoulder lifting a heavy box. The report is complete, but the employee mentions they've had the same injury twice in the last six months. What do you do?"
