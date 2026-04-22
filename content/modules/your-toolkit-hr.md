@@ -35,17 +35,17 @@ quiz:
       correctId: b
 
     - id: q2
-      text: You run the Payroll Change Report and see a pay rate change for an employee. You weren't told about it, but it looks like a normal raise. What do you do?
+      text: You're doing your daily timecard review and notice an employee's BambooHR Time Off Used report shows 4 hours of vacation approved for yesterday, but PayClock has no PTO entered for that day. What do you do?
       options:
         - id: a
-          text: Verify the rate matches PayClock and move on — raises are routine
+          text: Wait until the end of the pay period to enter all PTO at once to save time
         - id: b
-          text: Flag it to the HR Manager before payroll is submitted — unexpected changes always get flagged
+          text: Enter the 4 hours of vacation in PayClock for the correct date right away
         - id: c
-          text: Update PayClock to match the new rate and continue reconciliation
+          text: Flag it to the HR Manager — PTO discrepancies need her sign-off before entry
         - id: d
-          text: Check with the employee's supervisor to confirm the raise was approved
-      correctId: b
+          text: Check with the employee's supervisor to confirm the time off actually happened
+      correctId: d
 
     - id: q3
       text: A Scottsboro applicant needs a drug screening. Why don't they use LabCorp like Memphis applicants?
