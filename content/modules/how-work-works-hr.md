@@ -102,18 +102,7 @@ quiz:
 
 ## Attendance Policy (Section 704)
 
-Attendance is one of the most common reasons employees end up in corrective action — and one of the most common things they'll ask you about. AAP uses a **no-fault point-based system** for hourly team members. The system doesn't care about the reason for the absence — it tracks patterns. Your job is to understand the policy well enough to answer questions accurately, track points consistently, and know when to escalate.
-
-**How Points Work**
-
-| Situation | Points |
-|-----------|--------|
-| Tardy 5 minutes or less (grace period) | 0.0 |
-| Tardy or early leave less than half of shift | 0.5 |
-| Full shift absence / tardy / early leave half of shift or more | 1.0 |
-| No report or call 15+ min after shift start | 1.5 |
-
-Points accumulate on a **12-month rolling basis.** As employees hit certain thresholds, corrective action is triggered — and the supervisor is the one who delivers it. But you'll often be the one pulling the records, confirming the totals, and preparing the documentation.
+You covered how the point system works — the values, rolloff rules, and perfect attendance bonus — in Benefits, Pay & Time Away. This section picks up where that left off: what those points actually trigger, what's excluded from the system, and what situations need to go straight to the HR Manager.
 
 **Corrective Action Thresholds**
 
@@ -124,11 +113,7 @@ Points accumulate on a **12-month rolling basis.** As employees hit certain thre
 | 7.0 | Written warning |
 | 8.0 | Termination (supervisor discretion) |
 
-If you notice an employee approaching a threshold, flag it to the HR Manager before it gets there — don't wait for a supervisor to ask.
-
-**Earning Points Back**
-
-Employees can work points off their record. Two consecutive months without a tardy or unexcused absence removes **1.0 point automatically**. Three consecutive perfect months earns a **$75 bonus** on the employee's first paycheck of the following month. These are good things to mention when an employee asks about their points — it shows them a clear path forward.
+Corrective action is initiated by HR and delivered by the employee's direct supervisor — but you'll often be the one pulling the records and confirming the point totals that make those conversations happen. If you notice an employee approaching a threshold, flag it to the HR Manager before it gets there.
 
 **What's Excluded**
 
@@ -177,7 +162,7 @@ FMLA information is strictly confidential — it cannot be shared with anyone, i
 
 ## Benefits Eligibility (BEN-01)
 
-The Benefits, Pay & Time Away module covers the core eligibility timeline and individual benefit details. This section focuses on the milestones and edge cases that come up less often — but that employees will still expect you to know.
+**You already know the core eligibility timeline from Benefits, Pay & Time Away.** This section focuses on the milestones and edge cases that come up less often — but that employees will still expect you to know.
 
 **Part-Time 401(k) Eligibility**
 
