@@ -11,11 +11,11 @@ requiresAcknowledgement: true
 
 acknowledgements:
   - id: ack-1
-    statement: I can explain the attendance point system, corrective action thresholds, and how points roll off.
+    statement: I can explain the attendance point system, corrective action thresholds, and how points roll off — and I know how to cross-reference the point notebook, electronic database, and BambooHR when totals don't match.
   - id: ack-2
-    statement: I understand that anything that sounds like it could involve FMLA must be escalated to the HR Manager immediately — no medical questions, no eligibility analysis, no paperwork.
+    statement: I can confirm FMLA eligibility using the two criteria — 365 days of service and 1,250 hours in the last 12 months — and I know to connect the employee with the HR Manager to get the paperwork started.
   - id: ack-3
-    statement: I know my role in corrective action documentation — receive, scan, upload, verify, label — and I understand when to escalate automatically.
+    statement: I know my role in corrective action documentation — receive, scan, upload, verify, and document in the Corrective Action tab — and I know how to handle an employee who refuses to sign.
   - id: ack-4
     statement: I understand the benefits eligibility milestones that go beyond the basics, including part-time 401(k) criteria, Long Term Sick Leave, and Service Awards.
 
