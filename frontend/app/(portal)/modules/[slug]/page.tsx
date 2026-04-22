@@ -1674,14 +1674,14 @@ export default function ModulePage() {
         explanation: "The PTO type matters. Wrong column means wrong label on the employee's pay stub — and that leads to questions and corrections you could have avoided. Fix it before you save.",
       },
       {
-        scenario: "A supervisor sends you a text asking you to edit an employee's time punch from last Tuesday. No email, no correction form — just the text. What do you do?",
+        scenario: "A supervisor sends you a text asking you to edit an employee's time punch from last Tuesday. No email — just the text. What do you do?",
         options: [
           { id: "a", text: "Make the edit — a text from a supervisor counts as documentation" },
-          { id: "b", text: "Ask the supervisor to send the request via email or correction form before you make any changes" },
+          { id: "b", text: "Ask the supervisor to send the request via email before you make any changes" },
           { id: "c", text: "Make the edit and screenshot the text as backup documentation" },
         ],
         correctId: "b",
-        explanation: "Punch edits require documentation — supervisor note, email, or correction form. A text isn't it. Get it in writing before you touch anything.",
+        explanation: "Punch edits require written documentation — a supervisor email, at minimum. A text isn't enough. Get it in writing before you touch anything.",
       },
       {
         scenario: "You're setting up a new Scottsboro hire in Employvio and accidentally select the Memphis drug screening workflow. You haven't submitted yet. What do you do?",
