@@ -137,13 +137,13 @@ To qualify, an employee must have worked at least **365 days** AND logged at lea
 
 **What FMLA Provides**
 
-- Up to **480 hours** (12 weeks) of unpaid, job-protected leave per 12-month period
+- Up to **480 hours** (12 work weeks) of unpaid, job-protected leave per 12-month period
 - FMLA is **unpaid** — employees are not required to exhaust PTO before taking it
 - Leave may be taken in **1-hour increments**, which means it can cover intermittent absences — not just extended time off
 
 **What You Can Say**
 
-When an employee asks about FMLA, you can share general information: the eligibility requirements (365 days + 1,250 hours), that it's unpaid, and that it provides up to 12 weeks of job-protected leave. That's it. Do not discuss their specific situation, ask about their medical condition, or give any indication of whether their request will be approved.
+When an employee asks about FMLA, you can share general information: the eligibility requirements (365 days + 1,250 hours), that it's unpaid, and that it provides up to 12 work weeks of job-protected leave. That's it. Do not discuss their specific situation, ask about their medical condition, or give any indication of whether their request will be approved.
 
 **What You Should Not Do**
 
