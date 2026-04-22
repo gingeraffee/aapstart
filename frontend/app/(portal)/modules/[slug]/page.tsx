@@ -1343,15 +1343,15 @@ export default function ModulePage() {
         explanation: "Confirming FMLA eligibility is a straightforward check of two criteria — and that's yours to do. But once you've confirmed it, the paperwork and process belong to the HR Manager. Give the employee a clear answer, then hand it off cleanly.",
       },
       {
-        scenario: "You're entering last week's attendance points into the point notebook and you notice one employee's total doesn't match what you expected — they seem to have fewer points than they should. What do you do?",
+        scenario: "You're entering last week's attendance points into the point notebook and notice one employee's total looks off — they seem to have fewer points than you expected. What do you do?",
         options: [
-          { id: "a", text: "Adjust the total to match what you think it should be based on the call-in log" },
-          { id: "b", text: "Enter what the report shows and flag the discrepancy to the HR Manager for review" },
-          { id: "c", text: "Skip that employee and come back to it after you've checked BambooHR yourself" },
-          { id: "d", text: "Email the employee's supervisor to ask if they know about any approved absences you might be missing" },
+          { id: "a", text: "Enter what the report shows and flag it to the HR Manager right away — it's not your job to investigate discrepancies" },
+          { id: "b", text: "Cross-reference the point notebook against BambooHR to identify where the totals differ, document what you find, and bring the discrepancy to the HR Manager with the details" },
+          { id: "c", text: "Adjust the total in the notebook to match what the call-in log shows so the records are consistent" },
+          { id: "d", text: "Email the employee's supervisor to ask if there are any approved absences you might be missing" },
         ],
         correctId: "b",
-        explanation: "Enter what the report says and flag the discrepancy. Don't adjust records on your own judgment, and don't go around the HR Manager to resolve it. She'll sort it out.",
+        explanation: "Points are tracked in three places — the point notebook, the electronic database, and BambooHR — specifically so discrepancies can be caught and traced. When something doesn't add up, your job is to do the comparison work, document what you find, and bring it to the HR Manager with the details. She maintains her own tracking separately and will need your findings to reconcile the records.",
       },
     ] : [
       {
