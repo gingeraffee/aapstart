@@ -207,7 +207,7 @@ When a manager hands you a completed corrective action form, your job is clean, 
 4. **Verify** the file is readable and labeled consistently: **date + type + reason**
 5. **Document** the corrective action in the **Corrective Action tab in BambooHR**
 
-One thing that trips people up: an employee's signature on a corrective action form means they received it — not that they agree with it. If an employee pushes back on signing, that's not your problem to solve. Let the HR Manager handle it.
+One thing that trips people up: an employee's signature on a corrective action form means they received it — not that they agree with it. If an employee pushes back on signing, explain that distinction clearly. If they still won't sign, note "employee refused to sign" on the form and let the HR Manager know.
 
 **When to Escalate — No Hesitation**
 
