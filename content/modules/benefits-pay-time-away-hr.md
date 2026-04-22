@@ -163,7 +163,7 @@ This is the waiting period for most benefits, and it's when employees start aski
 
 ### After 60 Days
 
-Medical, dental, vision, and 401(k) become available the first of the month after 60 days. **Employees have a limited enrollment window — if they miss it, they'll have to wait until the next open enrollment period.** You'll be involved in sending enrollment reminders, but don't assume someone saw the email. Follow up directly if their window is approaching and they haven't acted.
+Medical, dental, vision, and 401(k) become available the first of the month after 60 days. Remeber, not all positions follow the same eligibility timeline. Always check the offer letter to confirm benefit eligibility windows. **Employees have a limited enrollment window — if they miss it, they'll have to wait until the next open enrollment period.** You'll be involved in sending enrollment reminders, but don't assume someone saw the email. Follow up directly if their window is approaching and they haven't acted.
 
 ### What You Need to Make Sure Employees Do
 
@@ -246,7 +246,7 @@ You'll be involved in tracking, documenting, and answering questions about atten
 
 **Thresholds**
 
-New employees may not exceed **2.0 points** during their first 60 days. After that, corrective action conversations happen at **5.0, 6.0, and 7.0 points** — these are handled by the employee's supervisor, but you may be asked to pull records or confirm point totals. Reaching **8.0 points within a 12-month period** results in disciplinary action, up to and including termination. If an employee is approaching a threshold, flag it to the HR Manager before it gets there.
+New employees may not exceed **2.0 points** during their first 60 days. After that, corrective action conversations happen at **5.0, 6.0, and 7.0 points** — HR generates the warnings and the employee's supervisor goes over it with the employee, but you may be asked to pull records or confirm point totals. Reaching **8.0 points within a 12-month period** results in disciplinary action, up to and including termination. If an employee is approaching a threshold, flag it to the HR Manager before it gets there.
 
 **Point Rolloff**
 
@@ -285,7 +285,7 @@ PTO and time away questions will be some of the most frequent things you handle.
 
 **Personal Leave**
 
-Personal time is available to full-time employees after 60 days — a lump sum is added to **BambooHR** at that point. Each year on the employee's hire anniversary, they get a fresh balance. The key thing to remember: **whatever they didn't use is gone.** It doesn't roll over, and it doesn't pay out at termination. Employees will ask about this — especially near their anniversary date.
+Personal time is available to most full-time employees after 60 days (remember to check the offer letter for different personal or vacation time allowances!) — a lump sum is added to **BambooHR** at that point. Each year on the employee's hire anniversary, they get a fresh balance. The key thing to remember: **whatever they didn't use is gone.** It doesn't roll over, and it doesn't pay out at termination. Employees will ask about this — especially near their anniversary date.
 
 For part-time employees, personal time is earned at a rate of 1 hour for every 30 hours worked per week. Same rules apply — use it or lose it.
 
@@ -329,7 +329,7 @@ Two things to flag for employees:
 
 Vacation requests go through BambooHR by 5:00 PM the day before. Last-minute vacation requests may not be approved. For unexpected absences, employees should notify their supervisor before their scheduled start time and log it in BambooHR. If employees come to you with time-off questions, make sure they understand the process and are submitting requests themselves — don't submit on their behalf.
 
-Vacation time that is not requested in advance is called **Same-Day Vacation**. It may or may not be approved at the supervisor's discretion — but even if it is approved, the employee still receives a point for the absence. The vacation time simply allows them to be paid for the day. Make sure employees understand this distinction — approving same-day vacation does not erase the attendance point.
+Vacation time that is not requested in advance is called **Same-Day Vacation**. It may or may not be approved at the supervisor's discretion — but even if it is approved, an hourly employee still receives a point for the absence. The vacation time simply allows them to be paid for the day. Make sure employees understand this distinction — approving same-day vacation does not always erase the attendance point.
 
 :::callout tip
 Not all time away follows the same rules. Medical leave, accommodations, and protected leave have separate processes and legal requirements. If an employee's time-off question starts sounding like it might involve any of these, stop and route it to the HR Manager.
