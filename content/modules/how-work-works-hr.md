@@ -48,16 +48,16 @@ quiz:
       correctId: b
 
     - id: q3
-      text: "An employee mentions they've been having back problems and asks if there's any kind of leave they can take for surgery. They haven't said the word 'FMLA.' What do you do?"
+      text: "An employee mentions they've been having back problems and will need surgery. They ask if there's any kind of job-protected leave they can take. What do you do?"
       options:
         - id: a
-          text: Explain the FMLA eligibility requirements and help them figure out if they qualify
+          text: Let them know you'll look into their options and follow up after checking with their supervisor
         - id: b
-          text: Let them know about the EAP since it covers medical guidance and leave it at that
+          text: Tell them about the EAP since it covers medical guidance and suggest they speak with a counselor
         - id: c
-          text: Recognize this could involve FMLA, avoid discussing medical specifics, and escalate to the HR Manager immediately
+          text: Recognize this sounds like it could involve FMLA, check whether they meet the eligibility criteria — 365 days of service and 1,250 hours in the last 12 months — and connect them with the HR Manager to get the process started
         - id: d
-          text: Ask them how long the surgery recovery would be so you can check whether FMLA would apply
+          text: Ask them how long the recovery will be so you can determine which type of leave applies
       correctId: c
 
     - id: q4
@@ -79,12 +79,12 @@ quiz:
         - id: a
           text: "Tell the manager the corrective action can't be filed without the employee's signature"
         - id: b
-          text: "File the documentation as normal and let the HR Manager handle the signature issue — the employee's refusal to sign doesn't stop the process"
+          text: "Ask the manager to go back and explain to the employee that signing only confirms receipt, not agreement — and try again"
         - id: c
-          text: Send the form back to the manager and ask them to try again with a witness present
+          text: "Note 'employee refused to sign' on the form, file it, and let the HR Manager know"
         - id: d
-          text: "Note 'employee refused to sign' on the form and file it yourself without involving the HR Manager"
-      correctId: b
+          text: "Send the form back to the manager and ask them to try again with a witness present"
+      correctId: c
 
     - id: q6
       text: "You're reviewing an employee's file and notice they've received three written warnings for tardiness in the last six months. No one has flagged it to the HR Manager. What do you do?"
