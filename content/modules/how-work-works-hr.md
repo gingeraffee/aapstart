@@ -35,16 +35,16 @@ quiz:
       correctId: c
 
     - id: q2
-      text: "An employee at 4.5 points has been clean for the last six weeks. They ask you if any points have dropped off yet. What do you tell them?"
+      text: "An employee asks how they can get a point removed before the one-year mark. What do you tell them?"
       options:
         - id: a
-          text: "Yes — one point should have rolled off after 30 clean days"
+          text: "Points can't be removed early — they stay on the record until the one-year anniversary"
         - id: b
-          text: "Not yet — the 2-month roll-off requires two full consecutive months with no tardies or unexcused absences"
+          text: "Two consecutive months with no tardies or unexcused absences removes one point automatically"
         - id: c
-          text: "You'd need to check with their supervisor since attendance adjustments are handled at the department level"
+          text: "They can submit a written request to the HR Manager to have a point reviewed and removed"
         - id: d
-          text: "Points only roll off at the one-year mark — there's no early removal"
+          text: "After 30 clean days, one point drops off on its own"
       correctId: b
 
     - id: q3
