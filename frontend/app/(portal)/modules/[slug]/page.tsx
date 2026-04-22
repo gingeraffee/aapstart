@@ -1323,13 +1323,13 @@ export default function ModulePage() {
       {
         scenario: "A supervisor calls and asks you how many points one of their employees has. They say they need it for a corrective action conversation this afternoon. What do you do?",
         options: [
-          { id: "a", text: "Pull the record from BambooHR and send it over right away — they need it for the meeting" },
-          { id: "b", text: "Pull the record, verify the point total with the HR Manager, and then provide it to the supervisor" },
-          { id: "c", text: "Tell the supervisor they need to submit a formal request through email before you can share attendance records" },
-          { id: "d", text: "Let them know attendance records are confidential and you can't share them without the employee present" },
+          { id: "a", text: "Pull the current point total from BambooHR, note any upcoming roll-off dates or thresholds, and send it to the supervisor so they're fully prepared" },
+          { id: "b", text: "Let the supervisor know they need to submit the request in writing — verbal requests for attendance records aren't sufficient" },
+          { id: "c", text: "Tell them attendance records are confidential and can only be shared with the employee directly" },
+          { id: "d", text: "Pull the record but let the supervisor know it still needs to go through the HR Manager before they can use it in the meeting" },
         ],
-        correctId: "b",
-        explanation: "You can provide attendance records to a supervisor for corrective action purposes, but verify the total with the HR Manager first. A wrong number in a corrective conversation creates problems for everyone.",
+        correctId: "a",
+        explanation: "Pulling and sharing attendance records with a supervisor for corrective action purposes is squarely in your lane. The value you add is making sure the information is complete — current point total, upcoming roll-offs, any thresholds they're approaching. That gives the supervisor everything they need to walk into that conversation prepared.",
       },
       {
         scenario: "An employee stops by your desk and says they need to take time off next month for surgery. They start giving you details about their diagnosis. What do you do?",
