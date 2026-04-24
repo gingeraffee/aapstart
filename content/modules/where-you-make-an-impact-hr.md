@@ -97,7 +97,7 @@ Your day has a shape to it — and once you learn the rhythm, the rest of the jo
 
 **Midday** is for follow-ups. This is when you chase down overdue onboarding tasks, follow up on missed punches or timecard exceptions, and prepare anything the HR Manager needs. If something from the morning is still hanging, this is when you close the loop. Don't let items sit — the longer a follow-up waits, the harder it is to resolve.
 
-**End of day** is about setting tomorrow up for success. File any documents that came in (you have a 48-hour window, but today is always better than tomorrow). Update your trackers — onboarding, attendance, recruiting. Confirm that any interviews scheduled for tomorrow are ready to go. Then log off knowing nothing is quietly falling behind.
+**End of day** is about setting tomorrow up for success. File any documents that came in (you have a 48-hour window, but today is always better than tomorrow). Update Trello — onboarding, attendance, recruiting. Confirm that any interviews scheduled for tomorrow are ready to go. Then log off knowing nothing is quietly falling behind.
 
 :::callout tip
 The daily routine is your anchor. On the days when everything feels chaotic, fall back on the rhythm: morning = get current, midday = follow up, end of day = close the loop.
@@ -117,7 +117,7 @@ Here's the flow:
 6. **Report findings to the HR Manager** — flag anything that doesn't look right before submission
 7. **Submit by Tuesday 6:00 PM CST** — this is the hard deadline, no exceptions
 
-**Monthly tasks** include updating the perfect attendance report and summary, running a digital filing audit to make sure nothing's been misfiled, and confirming that templates and SOPs are still current. These aren't urgent in the way payroll is, but they're the kind of things that create problems down the road if you skip them.
+**Monthly tasks** include updating the perfect attendance report and summary, running a digital filing audit to make sure nothing's been misfiled, generating reports for different departments and confirming that templates and SOPs are still current. These aren't urgent in the way payroll is, but they're the kind of things that create problems down the road if you skip them.
 
 ## Your 30/60/90 Plan
 
