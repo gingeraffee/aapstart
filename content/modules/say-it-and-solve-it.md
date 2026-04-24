@@ -73,7 +73,7 @@ quiz:
           text: Send the payroll cutoff follow-up script and escalate to the HR Manager if you still don't hear back before the deadline
         - id: d
           text: Submit payroll without it and document the missing response
-      correctId: c
+      correctId: a
 
     - id: q5
       text: An employee asks you to excuse a point from their attendance record. They say they had a flat tire and it wasn't their fault. What do you tell them?
@@ -226,14 +226,14 @@ Not everything is yours to handle. The routing table below tells you who owns wh
 | Issue Type | Owner | Urgency |
 |------------|-------|---------|
 | Pay discrepancy | the HR Manager | Immediate |
-| Safety hazard / injury | the HR Manager + Safety Lead | Immediate |
+| Safety hazard / injury | HR Administrative Assistant | Immediate |
 | Harassment / discrimination / retaliation | the HR Manager | Immediate |
 | Threats / violence | the HR Manager + Site Leadership | Immediate |
-| General complaint / workplace conflict | the HR Manager | Same Day |
+| General complaint / workplace conflict | HR Administrative Assistant | Same Day |
 | FMLA / medical / leave | the HR Manager | Immediate |
-| Attendance point exception | the HR Manager (if exception) | Same Day |
-| PTO balance discrepancy | the HR Manager | Next Business Day |
-| Performance dispute | the HR Manager | Next Business Day |
+| Attendance point exception | Employee's Supervisor | Same Day |
+| PTO balance discrepancy | HR Administrative Assistant | Next Business Day |
+| Performance dispute | HR Administrative Assistant | Next Business Day |
 | Policy exception request | the HR Manager | Next Business Day |
 
 ### What Every Escalation Message Must Include
