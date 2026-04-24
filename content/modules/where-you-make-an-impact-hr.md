@@ -137,11 +137,11 @@ Your 30/60/90 plan is a guide, not a test. Use it to check your own progress, no
 
 One of the fastest ways to get in trouble in HR is doing something that isn't yours to do. Knowing your boundaries isn't a limitation — it's what keeps you effective and keeps the department running clean.
 
-**You own** the day-to-day engine: timekeeping audits, PTO entry, onboarding task follow-up, recruiting scheduling, background screen initiation, digital filing, basic policy questions, first-point-of-contact employee inquiries (HRA-01), and corrective action filing (CA-01). These are your lanes. Get comfortable in them.
+**You own** the day-to-day engine: timekeeping audits, PTO entry, onboarding task follow-up, recruiting scheduling, background screen initiation, digital filing, basic policy questions, safety incidents, first-point-of-contact employee inquiries (HRA-01), and corrective action filing (CA-01). These are your lanes. Get comfortable in them.
 
 **IT owns** new hire computer privileges and software licenses. If a new employee's computer isn't ready on Day 1, that's IT's problem to solve — not yours. Flag it, document it, and move on.
 
-**The HR Manager owns** the high-stakes items: pay decisions, involuntary separations, discipline, investigations, screening results, FMLA/leave/medical, benefits exceptions, legal language, safety incidents, harassment/discrimination, corrective action guidance, and anything that feels high-risk. If a situation makes you pause and think *"should I be handling this?"* — the answer is almost always no. Escalate it.
+**The HR Manager owns** the high-stakes items: pay decisions, involuntary separations, discipline, investigations, screening results, FMLA/leave/medical, benefits exceptions, legal language, harassment/discrimination, corrective action guidance, and anything that feels high-risk. If a situation makes you pause and think *"should I be handling this?"* — the answer is almost always no. Escalate it.
 
 :::callout warning
 When in doubt, escalate. It's always better to bring something to the HR Manager that didn't need escalating than to sit on something that did.
