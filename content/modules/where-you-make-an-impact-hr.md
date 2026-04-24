@@ -34,7 +34,7 @@ quiz:
           text: Enter the employee's normal schedule as a placeholder and flag it for correction next cycle
         - id: d
           text: Submit what you have and document the missing punch — one exception shouldn't hold up payroll for everyone
-      correctId: b
+      correctId: a
 
     - id: q2
       text: An employee calls and says their last paycheck seems short. You can see in PayClock that they were out one day without PTO entered. What do you do?
@@ -73,7 +73,7 @@ quiz:
           text: Document the request and route it to the HR Manager — corrective action guidance is the HR Manager's territory
         - id: d
           text: Send the supervisor the attendance policy document and let them know you're available if they have follow-up questions
-      correctId: c
+      correctId: a
 
     - id: q5
       text: You've been filing documents at the end of each week in batches to save time. Nothing has been late — everything is filed within 48 hours. Is there a problem with this approach?
