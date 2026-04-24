@@ -1754,12 +1754,12 @@ export default function ModulePage() {
       scenario: "It's Tuesday at 3 PM. You're reviewing timecards and find a missing punch for an employee. You emailed their supervisor this morning but haven't heard back. What do you do?",
       options: [
         { id: "a", text: "Skip it and submit payroll without it — one missing punch won't matter" },
-        { id: "b", text: "Follow up with the supervisor now and escalate to the HR Manager if you don't hear back before 5 PM — the 6 PM deadline doesn't wait" },
+        { id: "b", text: "Call the supervisor now to get verification of the time punch — the 6 PM deadline doesn't wait and a phone call gets an answer faster than email" },
         { id: "c", text: "Enter your best guess based on the employee's usual schedule and note it for next cycle" },
         { id: "d", text: "Hold payroll submission until you get the answer, even if it means missing the deadline" },
       ],
       correctId: "b",
-      explanation: "The deadline is the deadline. Follow up immediately, and if the supervisor doesn't respond, escalate to the HR Manager. Don't guess, don't skip it, and don't miss the deadline.",
+      explanation: "The deadline is the deadline. Email didn't get a response — pick up the phone. A call gets verification faster and keeps payroll on track. Don't guess, don't skip it, and don't miss the deadline.",
     },
     {
       scenario: "A supervisor asks you to look into whether one of their employees has enough vacation time for a trip next month. What do you do?",
