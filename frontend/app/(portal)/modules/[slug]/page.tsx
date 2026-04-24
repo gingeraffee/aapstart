@@ -1773,15 +1773,15 @@ export default function ModulePage() {
       explanation: "Basic PTO balance inquiries from supervisors are in your lane. Check BambooHR and give the supervisor the information they need. This isn't a pay question or a sensitive matter — it's a routine lookup.",
     },
     {
-      scenario: "You're in week 3 and a new hire's onboarding paperwork hasn't been completed. You've sent two reminders. What's your next step?",
+      scenario: "A candidate is scheduled for an interview tomorrow at 9 AM. You emailed a confirmation this morning and a reminder this afternoon but haven't heard back. It's 4:30 PM. What do you do?",
       options: [
-        { id: "a", text: "Send a third reminder — persistence is part of the job" },
-        { id: "b", text: "Let it go — some employees just take longer" },
-        { id: "c", text: "Escalate to the HR Manager — you've followed up twice and the paperwork is overdue" },
-        { id: "d", text: "Call the employee's supervisor and ask them to handle it" },
+        { id: "a", text: "Assume they're coming — candidates usually show up even without confirming" },
+        { id: "b", text: "Call them directly to confirm — a no-show wastes everyone's time and a quick call closes the loop" },
+        { id: "c", text: "Send one more email and flag it for the HR Manager to follow up" },
+        { id: "d", text: "Cancel the interview and reschedule — if they can't confirm, they're not ready" },
       ],
-      correctId: "c",
-      explanation: "Two follow-ups is your due diligence. After that, escalate. Onboarding paperwork that drags on too long creates compliance issues — and the HR Manager needs to know before it becomes a problem.",
+      correctId: "b",
+      explanation: "Email got you this far — now pick up the phone. A quick call confirms attendance, gives the candidate a chance to ask last-minute questions, and saves everyone from a wasted morning if something came up. This is your job to close, not the HR Manager's.",
     },
   ] : [];
 
