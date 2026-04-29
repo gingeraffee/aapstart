@@ -103,6 +103,33 @@ resources:
     tracks: [hr, management]
     module_slug: point-system-overview
 
+  - id: accident-incident-report
+    title: Accident / Incident / Near-Miss Report
+    description: Form for documenting workplace accidents, injuries, and near-miss events.
+    type: download
+    filename: Accident-Incident-Near-Miss-Report.pdf
+    category: policies
+    tracks: [hr, management]
+    module_slug: say-it-and-solve-it
+
+  - id: hr-complaint-form
+    title: HR Complaint Form
+    description: Official form for documenting employee complaints, harassment, and workplace concerns.
+    type: download
+    filename: HR Complaint Form.pdf
+    category: policies
+    tracks: [hr, management]
+    module_slug: say-it-and-solve-it
+
+  - id: hr-complaint-witness-statement
+    title: HR Complaint Form — Witness Statement
+    description: Companion witness statement form to accompany the HR Complaint Form.
+    type: download
+    filename: HR Complaint Form - Witness Statement.pdf
+    category: policies
+    tracks: [hr, management]
+    module_slug: say-it-and-solve-it
+
   - id: employee-warning-notice
     title: Employee Warning Notice
     description: Standard warning notice form for documenting violations, previous warnings, and employee acknowledgment.

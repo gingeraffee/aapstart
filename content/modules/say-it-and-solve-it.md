@@ -213,6 +213,18 @@ Do **not** investigate. Do **not** interview the other party. Do **not** advise 
 Harassment, discrimination, and retaliation reports are yours to intake and document. No delays, no judgment calls, no advising. Complete the complaint form and retain it. Pay-related concerns within these reports still route to the HR Manager.
 :::
 
+:::download
+url: /downloads/HR Complaint Form.pdf
+label: HR Complaint Form
+description: Official form for documenting employee complaints, harassment, and workplace concerns.
+:::
+
+:::download
+url: /downloads/HR Complaint Form - Witness Statement.pdf
+label: HR Complaint Form — Witness Statement
+description: Companion witness statement form for documenting witness accounts related to a complaint.
+:::
+
 ### Employee Wants a Point Excused
 
 This comes up more than you'd think. Here's how to handle it.
@@ -235,6 +247,12 @@ Most issues are yours to own and resolve directly. The routing table below tells
 | PTO balance discrepancy | HR Administrative Assistant | Next Business Day |
 | Performance dispute | Employee's Supervisor | Next Business Day |
 | Policy exception request | Employee's Supervisor | Next Business Day |
+
+:::download
+url: /downloads/Accident-Incident-Near-Miss-Report.pdf
+label: Accident / Incident / Near-Miss Report
+description: Form for documenting workplace accidents, injuries, and near-miss events.
+:::
 
 ### What Every Escalation Message Must Include
 
