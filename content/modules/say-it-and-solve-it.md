@@ -225,6 +225,27 @@ label: HR Complaint Form — Witness Statement
 description: Companion witness statement form for documenting witness accounts related to a complaint.
 :::
 
+### Safety Reporting
+
+When an employee reports a safety concern, accident, or near-miss, documentation isn't optional — it protects the company from liability and protects the employee if their injury creates complications down the road.
+
+**Download the Accident / Incident / Near-Miss Report and document:** the date, time, and location; the nature of the injury or hazard; and any witness information. Once the form is complete, review the incident and note whether it could have been prevented and how. **Mark the case open or closed** — if the employee needs or may need medical attention, it stays open.
+
+Once documented, **share the report in two places in BambooHR Employee Community:**
+
+1. **API Scottsboro Incidents & Accidents** — include the completed accident report form with your post
+2. **API Scottsboro Safety Committee** — post without any identifying employee information
+
+:::download
+url: /downloads/Accident-Incident-Near-Miss-Report.pdf
+label: Accident / Incident / Near-Miss Report
+description: Form for documenting workplace accidents, injuries, and near-miss events.
+:::
+
+:::callout warning
+Do not close a case while the employee is still seeking or may seek medical attention.
+:::
+
 ### Employee Wants a Point Excused
 
 This comes up more than you'd think. Here's how to handle it.
@@ -247,12 +268,6 @@ Most issues are yours to own and resolve directly. The routing table below tells
 | PTO balance discrepancy | HR Administrative Assistant | Next Business Day |
 | Performance dispute | Employee's Supervisor | Next Business Day |
 | Policy exception request | Employee's Supervisor | Next Business Day |
-
-:::download
-url: /downloads/Accident-Incident-Near-Miss-Report.pdf
-label: Accident / Incident / Near-Miss Report
-description: Form for documenting workplace accidents, injuries, and near-miss events.
-:::
 
 ### What Every Escalation Message Must Include
 
