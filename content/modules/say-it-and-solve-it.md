@@ -17,7 +17,7 @@ acknowledgements:
   - id: ack-3
     statement: I know that pay questions are always routed to the HR Manager — I never provide pay information, even if I think I know the answer.
   - id: ack-4
-    statement: I understand that harassment, discrimination, and retaliation reports are intake, documentation, and immediate handoff only — I do not investigate, advise, or interpret.
+    statement: I understand that harassment, discrimination, and retaliation reports are mine to own — I handle intake and documentation, I do not investigate, advise, or interpret, but I do not route these to the HR Manager unless pay is involved.
   - id: ack-5
     statement: I know the escalation routing table, urgency levels, and what every internal escalation message must include.
 
@@ -55,7 +55,7 @@ quiz:
         - id: a
           text: Ask them to describe the comments so you can help them decide if it's worth reporting
         - id: b
-          text: Let them know you take this seriously, document what they're telling you, and hand it off to the HR Manager immediately
+          text: Let them know you take this seriously, document what they're telling you, and begin the complaint intake process — this is yours to own
         - id: c
           text: Encourage them to talk to the coworker directly first and come back if it doesn't stop
         - id: d
@@ -203,14 +203,14 @@ This one is simple: pay questions go to the HR Manager. Every time. Even if you'
 
 ### Harassment, Discrimination, or Retaliation
 
-This is the most serious category. Your role is intake, documentation, and immediate handoff. That's it.
+This is the most serious category. Your role is intake and documentation — and you own this process.
 
-*"Thank you for telling me. I'm going to document what you've shared and get this to the HR Manager right away."*
+*"Thank you for telling me. I'm going to document everything you've shared and make sure this is handled properly."*
 
-Do **not** investigate. Do **not** interview the other party. Do **not** advise on what they should do. Do **not** tell them whether you think it's serious enough to act on. Document what they told you and hand it off. Advise the employee to preserve any evidence — texts, emails, screenshots.
+Do **not** investigate. Do **not** interview the other party. Do **not** advise on what they should do. Do **not** tell them whether you think it's serious enough to act on. Complete the HR Incident/Complaint Report Form with their statement in their own words, document all key facts, and advise the employee to preserve any evidence — texts, emails, screenshots.
 
 :::callout warning
-Harassment, discrimination, and retaliation reports are intake + documentation + immediate handoff. No exceptions. No judgment calls. No delays.
+Harassment, discrimination, and retaliation reports are yours to intake and document. No delays, no judgment calls, no advising. Complete the complaint form and retain it. Pay-related concerns within these reports still route to the HR Manager.
 :::
 
 ### Employee Wants a Point Excused
@@ -221,20 +221,20 @@ This comes up more than you'd think. Here's how to handle it.
 
 ## Escalation Routing (ES-01)
 
-Not everything is yours to handle. The routing table below tells you who owns what and how fast it needs to get there.
+Most issues are yours to own and resolve directly. The routing table below tells you who handles what and how fast it needs to happen — escalate only when necessary.
 
 | Issue Type | Owner | Urgency |
 |------------|-------|---------|
 | Pay discrepancy | the HR Manager | Immediate |
 | Safety hazard / injury | HR Administrative Assistant | Immediate |
-| Harassment / discrimination / retaliation | the HR Manager | Immediate |
-| Threats / violence | the HR Manager + Site Leadership | Immediate |
+| Harassment / discrimination / retaliation | HR Administrative Assistant | Immediate |
+| Threats / violence | HR Administrative Assistant | Immediate |
 | General complaint / workplace conflict | HR Administrative Assistant | Same Day |
-| FMLA / medical / leave | the HR Manager | Immediate |
+| FMLA / medical / leave (starting the process) | HR Administrative Assistant | Immediate |
 | Attendance point exception | Employee's Supervisor | Same Day |
 | PTO balance discrepancy | HR Administrative Assistant | Next Business Day |
-| Performance dispute | HR Administrative Assistant | Next Business Day |
-| Policy exception request | the HR Manager | Next Business Day |
+| Performance dispute | Employee's Supervisor | Next Business Day |
+| Policy exception request | Employee's Supervisor | Next Business Day |
 
 ### What Every Escalation Message Must Include
 
