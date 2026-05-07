@@ -455,3 +455,21 @@ resources:
     category: training
     tracks: [hr, management]
     module_slug: recruitment-process
+
+  - id: fmla-manager-guide
+    title: FMLA — What Managers Need to Know
+    description: A practical guide to the Family and Medical Leave Act — what it covers, how to handle requests, and what managers must and must not do when an employee takes protected leave.
+    type: download
+    filename: fmla-manager-guide.pdf
+    category: training
+    tracks: [hr, management]
+    module_slug: fmla-manager-guide
+
+  - id: fmla-what-to-say
+    title: FMLA — What to Say and What Not to Say
+    description: A manager quick reference covering the right and wrong ways to respond when an employee mentions a medical situation or requests leave.
+    type: download
+    filename: FMLA_What_to_Say_Guide.docx
+    category: training
+    tracks: [hr, management]
+    module_slug: fmla-manager-guide
