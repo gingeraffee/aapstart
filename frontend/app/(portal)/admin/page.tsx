@@ -927,7 +927,7 @@ export default function AdminPage() {
   const [lastImportResult, setLastImportResult] = useState<EmployeeImportResult | null>(null);
   const [toast, setToast] = useState<ToastState | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [collapsedTracks, setCollapsedTracks] = useState<Set<string>>(new Set());
+  const [collapsedTracks, setCollapsedTracks] = useState<Set<string>>(new Set(TRACKS));
 
   const { data: employees, isLoading, mutate } = useSWR("admin-employees", () => adminApi.listEmployees() as Promise<EmployeeRecord[]>);
   const { data: allModules } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
