@@ -874,13 +874,60 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
   );
 }
 
+const TRACK_COLORS: Record<string, { dot: string; badgeBg: string; badgeText: string }> = {
+  hr: { dot: "#3b82f6", badgeBg: "rgba(59,130,246,0.08)", badgeText: "#1d4ed8" },
+  warehouse: { dot: "#d97706", badgeBg: "rgba(245,158,11,0.08)", badgeText: "#92400e" },
+  administrative: { dot: "#a855f7", badgeBg: "rgba(168,85,247,0.08)", badgeText: "#7e22ce" },
+  management: { dot: "#16a34a", badgeBg: "rgba(22,163,74,0.08)", badgeText: "#15803d" },
+};
+
+function RosterTable({
+  rows,
+  currentUserId,
+  modules,
+  onAction,
+}: {
+  rows: EmployeeRecord[];
+  currentUserId: string;
+  modules: ModuleSummary[];
+  onAction: (message: string, tone?: "success" | "error") => void;
+}) {
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[780px]">
+        <thead>
+          <tr className="border-b" style={{ borderColor: "var(--card-border)" }}>
+            {["Employee", "Track", "Progress", "Last Login", ""].map((header) => (
+              <th key={header} className="px-6 py-3 text-left text-[0.66rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>
+                {header}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((employee) => (
+            <EmployeeRow
+              key={employee.employee_id}
+              emp={employee}
+              currentUserId={currentUserId}
+              modules={modules}
+              onDeleted={(message, tone = "success") => onAction(message, tone)}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export default function AdminPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [lastImportResult, setLastImportResult] = useState<EmployeeImportResult | null>(null);
   const [toast, setToast] = useState<ToastState | null>(null);
-  const [trackFilter, setTrackFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [collapsedTracks, setCollapsedTracks] = useState<Set<string>>(new Set());
 
   const { data: employees, isLoading, mutate } = useSWR("admin-employees", () => adminApi.listEmployees() as Promise<EmployeeRecord[]>);
   const { data: allModules } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
@@ -912,6 +959,23 @@ export default function AdminPage() {
   const loggedIn = employees?.filter((employee) => employee.first_login_at).length ?? 0;
   const started = employees?.filter((employee) => employee.progress.total_modules_seen > 0).length ?? 0;
   const adminCount = employees?.filter((employee) => employee.is_admin).length ?? 0;
+
+  const allEmployees = employees ?? [];
+  const searchLower = searchQuery.trim().toLowerCase();
+  const searchResults = searchLower
+    ? [...allEmployees]
+        .filter((e) => e.full_name.toLowerCase().includes(searchLower) || e.employee_id.toLowerCase().includes(searchLower))
+        .sort((a, b) => a.last_name.localeCompare(b.last_name))
+    : null;
+  const groupedByTrack = TRACKS.map((track) => ({
+    track,
+    employees: [...allEmployees].filter((e) => e.tracks?.includes(track)).sort((a, b) => a.last_name.localeCompare(b.last_name)),
+  })).filter((g) => g.employees.length > 0);
+
+  function handleRosterAction(message: string, tone?: "success" | "error") {
+    setToast({ message, tone: tone ?? "success" });
+    void mutate();
+  }
 
   return (
     <div className="mx-auto max-w-[1220px] px-6 py-6 lg:px-8 lg:py-8">
@@ -1037,77 +1101,92 @@ export default function AdminPage() {
         </div>
       </div>
 
-      <div className="mt-6 overflow-hidden rounded-[24px]" style={cardStyle()}>
-        <div className="flex flex-col gap-3 border-b px-6 py-4 sm:flex-row sm:items-center sm:justify-between" style={{ borderColor: "var(--card-border)" }}>
+      <div className="mt-6 space-y-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-[0.64rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>Employee Roster</p>
-            <h2 className="mt-1 text-[1rem] font-bold" style={{ color: "var(--heading-color)" }}>Current employees</h2>
+            <h2 className="mt-1 text-[1rem] font-bold" style={{ color: "var(--heading-color)" }}>
+              Current employees{total > 0 && <span className="ml-1.5 font-normal text-[0.9rem]" style={{ color: "var(--card-desc)" }}>({total})</span>}
+            </h2>
           </div>
-          <div className="flex items-center gap-1.5">
-            {[
-              { value: "all", label: "All" },
-              { value: "hr", label: "HR" },
-              { value: "warehouse", label: "Warehouse" },
-              { value: "administrative", label: "Administrative" },
-            ].map((opt) => {
-              const isActive = trackFilter === opt.value;
-              const count = opt.value === "all"
-                ? (employees?.length ?? 0)
-                : (employees?.filter((e) => e.tracks?.includes(opt.value)).length ?? 0);
-              return (
-                <button
-                  key={opt.value}
-                  onClick={() => setTrackFilter(opt.value)}
-                  className="rounded-full px-3 py-1.5 text-[0.72rem] font-semibold transition-all duration-150"
-                  style={isActive
-                    ? { background: "var(--heading-color, #11264a)", color: "#fff" }
-                    : { background: "transparent", color: "var(--card-desc)", border: "1px solid var(--card-border)" }
-                  }
-                >
-                  {opt.label} <span style={{ opacity: 0.7 }}>({count})</span>
-                </button>
-              );
-            })}
+          <div className="relative">
+            <svg className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--card-desc)" }}>
+              <circle cx="6.5" cy="6.5" r="4.5" />
+              <path d="M10.5 10.5L14 14" />
+            </svg>
+            <input
+              type="search"
+              placeholder="Search by name or ID…"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="rounded-[14px] py-2 pl-9 pr-4 text-[0.82rem] outline-none transition-all"
+              style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)", width: "220px" }}
+            />
           </div>
         </div>
 
         {isLoading ? (
           <div className="flex justify-center py-12"><Spinner /></div>
         ) : !employees || employees.length === 0 ? (
-          <p className="px-6 py-10 text-center text-[0.84rem]" style={{ color: "var(--card-desc)" }}>
-            No employees yet. Start with the add form or bulk import above.
-          </p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[780px]">
-              <thead>
-                <tr className="border-b" style={{ borderColor: "var(--card-border)" }}>
-                  {["Employee", "Track", "Progress", "Last Login", ""].map((header) => (
-                    <th key={header} className="px-6 py-3 text-left text-[0.66rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>
-                      {header}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[...employees]
-                  .filter((e) => trackFilter === "all" || e.tracks?.includes(trackFilter))
-                  .sort((a, b) => a.last_name.localeCompare(b.last_name))
-                  .map((employee) => (
-                  <EmployeeRow
-                    key={employee.employee_id}
-                    emp={employee}
-                    currentUserId={user.employee_id}
-                    modules={publishedModules}
-                    onDeleted={(message, tone = "success") => {
-                      setToast({ message, tone });
-                      void mutate();
-                    }}
-                  />
-                ))}
-              </tbody>
-            </table>
+          <div className="overflow-hidden rounded-[24px]" style={cardStyle()}>
+            <p className="px-6 py-10 text-center text-[0.84rem]" style={{ color: "var(--card-desc)" }}>
+              No employees yet. Start with the add form or bulk import above.
+            </p>
           </div>
+        ) : searchResults ? (
+          <div className="overflow-hidden rounded-[24px]" style={cardStyle()}>
+            <div className="border-b px-6 py-3" style={{ borderColor: "var(--card-border)" }}>
+              <p className="text-[0.76rem]" style={{ color: "var(--card-desc)" }}>
+                {searchResults.length === 0 ? "No results" : `${searchResults.length} result${searchResults.length !== 1 ? "s" : ""}`} for{" "}
+                <span className="font-semibold" style={{ color: "var(--heading-color)" }}>"{searchQuery.trim()}"</span>
+              </p>
+            </div>
+            {searchResults.length > 0 ? (
+              <RosterTable rows={searchResults} currentUserId={user.employee_id} modules={publishedModules} onAction={handleRosterAction} />
+            ) : (
+              <p className="px-6 py-10 text-center text-[0.84rem]" style={{ color: "var(--card-desc)" }}>
+                Try a different name or employee number.
+              </p>
+            )}
+          </div>
+        ) : (
+          groupedByTrack.map(({ track, employees: trackEmployees }) => {
+            const isCollapsed = collapsedTracks.has(track);
+            const colors = TRACK_COLORS[track];
+            return (
+              <div key={track} className="overflow-hidden rounded-[24px]" style={cardStyle()}>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setCollapsedTracks((prev) => {
+                      const next = new Set(prev);
+                      if (next.has(track)) next.delete(track); else next.add(track);
+                      return next;
+                    })
+                  }
+                  className="flex w-full items-center justify-between gap-4 border-b px-6 py-4 text-left transition-colors hover:bg-black/[0.02]"
+                  style={{ borderColor: isCollapsed ? "transparent" : "var(--card-border)" }}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: colors.dot }} />
+                    <span className="text-[0.84rem] font-bold" style={{ color: "var(--heading-color)" }}>{TRACK_LABELS[track]}</span>
+                    <span className="rounded-full px-2.5 py-0.5 text-[0.68rem] font-semibold" style={{ background: colors.badgeBg, color: colors.badgeText }}>
+                      {trackEmployees.length}
+                    </span>
+                  </div>
+                  <svg
+                    width="10" height="10" viewBox="0 0 10 10" fill="none"
+                    stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+                    className={cn("shrink-0 transition-transform duration-200", !isCollapsed && "rotate-90")}
+                    style={{ color: "var(--card-desc)" }}
+                  >
+                    <path d="M3 1.5L7 5L3 8.5" />
+                  </svg>
+                </button>
+                {!isCollapsed && <RosterTable rows={trackEmployees} currentUserId={user.employee_id} modules={publishedModules} onAction={handleRosterAction} />}
+              </div>
+            );
+          })
         )}
       </div>
     </div>
