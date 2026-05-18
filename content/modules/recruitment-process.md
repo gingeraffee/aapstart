@@ -246,6 +246,8 @@ If prefer to not include deatils in BambooHR comments, Hiring Manager may email 
 
 </details>
 
+---
+
 **HR Prepares the Written Offer**
 
 HR reviews all details provided by the Hiring Manager and confirms:
