@@ -217,7 +217,7 @@ If the candidate verbally accepts immediately:
 
 The Hiring Manager must send all required offer details to HR using ONE of the two methods below:
 
-<details open>
+<details>
 <summary><strong>BambooHR Comment</strong></summary>
 
 - Update the candidate status to Proceed to Written Offer
@@ -226,7 +226,7 @@ The Hiring Manager must send all required offer details to HR using ONE of the t
 
 </details>
 
-<details open>
+<details>
 <summary><strong>Email HR Directly</strong></summary>
 
 If prefer to not include deatils in BambooHR comments, Hiring Manager may email HR the offer details.
