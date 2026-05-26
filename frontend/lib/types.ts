@@ -160,6 +160,8 @@ export interface EmployeeImportRowInput {
   first_name?: string;
   last_name?: string;
   is_admin?: boolean;
+  department?: string;
+  manager_employee_id?: string;
 }
 
 export interface EmployeeImportError {

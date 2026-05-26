@@ -23,6 +23,8 @@ type ParsedImportRow = {
   employee_id: string;
   track: string;
   is_admin: boolean;
+  department: string;
+  manager_employee_id: string;
   error?: string;
 };
 
@@ -31,11 +33,11 @@ type ToastState = {
   tone?: "success" | "error";
 };
 
-const IMPORT_TEMPLATE = `name,employee_id,track,is_admin
-Jane Doe,EMP-100,hr,false
-Marcus Lane,EMP-101,warehouse,false
-Olivia Grant,EMP-102,administrative,true
-Alex Kim,EMP-103,hr|warehouse,false
+const IMPORT_TEMPLATE = `name,employee_id,track,is_admin,department,manager_employee_id
+Jane Doe,EMP-100,hr,false,Inside Sales,EMP-050
+Marcus Lane,EMP-101,warehouse,false,,
+Olivia Grant,EMP-102,administrative,true,Compliance,
+Alex Kim,EMP-103,hr|warehouse,false,,
 `;
 
 function normalizeHeader(value: string) {
@@ -104,6 +106,8 @@ function parseImportFile(text: string): { rows: ParsedImportRow[]; fileError?: s
   const employeeIdIndex = headers.indexOf("employee_id");
   const trackIndex = headers.indexOf("track");
   const isAdminIndex = headers.indexOf("is_admin");
+  const deptIndex = headers.findIndex((h) => h === "department" || h === "dept");
+  const managerIndex = headers.findIndex((h) => h === "manager_employee_id" || h === "manager_id" || h === "reports_to");
 
   if (nameIndex === -1 || employeeIdIndex === -1 || trackIndex === -1) {
     return { rows: [], fileError: "Template columns must include name, employee_id, and track." };
@@ -115,6 +119,8 @@ function parseImportFile(text: string): { rows: ParsedImportRow[]; fileError?: s
       const employee_id = row[employeeIdIndex]?.trim() ?? "";
       const track = row[trackIndex]?.trim().toLowerCase() ?? "";
       const is_admin = coerceBoolean(row[isAdminIndex]);
+      const department = deptIndex >= 0 ? (row[deptIndex]?.trim() ?? "") : "";
+      const manager_employee_id = managerIndex >= 0 ? (row[managerIndex]?.trim() ?? "") : "";
 
       let error: string | undefined;
       if (!name) error = "Name is required.";
@@ -123,7 +129,7 @@ function parseImportFile(text: string): { rows: ParsedImportRow[]; fileError?: s
       else if (!track.split(/[|,]/).map((t) => t.trim()).some((t) => TRACKS.includes(t as (typeof TRACKS)[number]))) error = `Track must include at least one of: ${TRACKS.join(", ")}.`;
       else if (name.trim().split(/\s+/).length < 2) error = "Name must include first and last name.";
 
-      return { row: index + 2, name, employee_id, track, is_admin, error };
+      return { row: index + 2, name, employee_id, track, is_admin, department, manager_employee_id, error };
     }),
   };
 }
@@ -146,7 +152,7 @@ function cardStyle() {
   } as const;
 }
 
-function AddEmployeeForm({ onAdded, departments }: { onAdded: (message: string) => void; departments: string[] }) {
+function AddEmployeeForm({ onAdded, departments, allEmployees }: { onAdded: (message: string) => void; departments: string[]; allEmployees: EmployeeRecord[] }) {
   const [form, setForm] = useState({
     employee_id: "",
     first_name: "",
@@ -154,6 +160,7 @@ function AddEmployeeForm({ onAdded, departments }: { onAdded: (message: string) 
     tracks: ["hr"] as string[],
     is_admin: false,
     department: "",
+    manager_employee_id: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -168,8 +175,8 @@ function AddEmployeeForm({ onAdded, departments }: { onAdded: (message: string) 
     setError(null);
 
     try {
-      await adminApi.createEmployee({ ...form, department: form.department.trim() || null });
-      setForm({ employee_id: "", first_name: "", last_name: "", tracks: ["hr"], is_admin: false, department: "" });
+      await adminApi.createEmployee({ ...form, department: form.department.trim() || null, manager_employee_id: form.manager_employee_id || null });
+      setForm({ employee_id: "", first_name: "", last_name: "", tracks: ["hr"], is_admin: false, department: "", manager_employee_id: "" });
       onAdded("Changes saved. Employee added.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to add employee.");
@@ -257,6 +264,26 @@ function AddEmployeeForm({ onAdded, departments }: { onAdded: (message: string) 
         <datalist id="dept-list-add">
           {departments.map((d) => <option key={d} value={d} />)}
         </datalist>
+      </div>
+
+      <div className="mt-3">
+        <label className="mb-1.5 block text-[0.64rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>
+          Reports To <span className="font-normal normal-case tracking-normal" style={{ color: "var(--card-desc)" }}>(optional)</span>
+        </label>
+        <select
+          value={form.manager_employee_id}
+          onChange={(e) => update("manager_employee_id", e.target.value)}
+          className="w-full rounded-[14px] px-3.5 py-2.5 text-[0.84rem] font-medium outline-none transition-all"
+          style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)" }}
+        >
+          <option value="">No manager assigned</option>
+          {allEmployees
+            .filter((e) => e.is_manager)
+            .sort((a, b) => a.last_name.localeCompare(b.last_name))
+            .map((m) => (
+              <option key={m.employee_id} value={m.employee_id}>{m.full_name}</option>
+            ))}
+        </select>
       </div>
 
       <label className="mt-4 flex items-center gap-2.5 text-[0.8rem] font-medium" style={{ color: "var(--welcome-label-text)" }}>
@@ -829,8 +856,10 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
       const payload: EmployeeImportRowInput[] = readyRows.map((row) => ({
         name: row.name,
         employee_id: row.employee_id,
-        track: row.track, // backend splits on "|" or "," for multi-track
+        track: row.track,
         is_admin: row.is_admin,
+        department: row.department || undefined,
+        manager_employee_id: row.manager_employee_id || undefined,
       }));
       const importResult = (await adminApi.importEmployees(payload)) as EmployeeImportResult;
       setResult(importResult);
@@ -878,7 +907,7 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
                   Download Template
                 </button>
                 <div className="rounded-[12px] px-4 py-2 text-[0.74rem] font-medium" style={{ background: "rgba(27,44,86,0.06)", color: "var(--welcome-label-text)" }}>
-                  Required: name, employee_id, track
+                  Required: name, employee_id, track · Optional: department, manager_employee_id
                 </div>
               </div>
 
@@ -913,8 +942,10 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
                         <span className="text-[0.68rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--module-context)" }}>Row {row.row}</span>
                       </div>
                       <p className="mt-1 text-[0.74rem]" style={{ color: "var(--card-desc)" }}>
-                        {row.employee_id || "Missing employee number"} - {row.track.split(/[|,]/).map((t) => TRACK_LABELS[t.trim()] ?? t.trim()).join(", ")}
-                        {row.is_admin ? " - Admin" : ""}
+                        {row.employee_id || "Missing employee number"} · {row.track.split(/[|,]/).map((t) => TRACK_LABELS[t.trim()] ?? t.trim()).join(", ")}
+                        {row.is_admin ? " · Admin" : ""}
+                        {row.department ? ` · ${row.department}` : ""}
+                        {row.manager_employee_id ? ` · Reports to ${row.manager_employee_id}` : ""}
                       </p>
                       {row.error && <p className="mt-1.5 text-[0.74rem] font-medium" style={{ color: "#9f1239" }}>{row.error}</p>}
                     </div>
@@ -1124,7 +1155,7 @@ export default function AdminPage() {
       </div>
 
       <div className="mt-5 grid gap-5 xl:grid-cols-[1.15fr,0.85fr]">
-        <AddEmployeeForm departments={departments} onAdded={(message) => {
+        <AddEmployeeForm departments={departments} allEmployees={allEmployees} onAdded={(message) => {
           setToast({ message, tone: "success" });
           void mutate();
         }} />
@@ -1153,7 +1184,7 @@ export default function AdminPage() {
             <div className="mt-5 rounded-[18px] px-4 py-4" style={{ background: "rgba(17,41,74,0.04)", border: "1px solid rgba(17,41,74,0.08)" }}>
               <p className="text-[0.72rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>What to include</p>
               <p className="mt-2 text-[0.8rem] leading-[1.6]" style={{ color: "var(--welcome-label-text)" }}>
-                Required columns: <span className="font-semibold">name</span>, <span className="font-semibold">employee_id</span>, and <span className="font-semibold">track</span>. Optional: <span className="font-semibold">is_admin</span>.
+                Required: <span className="font-semibold">name</span>, <span className="font-semibold">employee_id</span>, <span className="font-semibold">track</span>. Optional: <span className="font-semibold">is_admin</span>, <span className="font-semibold">department</span>, <span className="font-semibold">manager_employee_id</span>.
               </p>
             </div>
 

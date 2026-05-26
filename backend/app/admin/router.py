@@ -43,6 +43,8 @@ class EmployeeImportRow(BaseModel):
     first_name: str | None = None
     last_name: str | None = None
     is_admin: bool = False
+    department: str | None = None
+    manager_employee_id: str | None = None
 
 
 class EmployeeImportRequest(BaseModel):
@@ -212,6 +214,8 @@ def import_employees(
             last_name=last_name,
             track=tracks,
             is_admin=row.is_admin,
+            department=row.department.strip() if row.department else None,
+            manager_employee_id=row.manager_employee_id.strip() if row.manager_employee_id else None,
             created_at=datetime.now(timezone.utc),
         )
         db.add(employee)

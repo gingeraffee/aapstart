@@ -74,7 +74,7 @@ export const progressApi = {
 
 export const adminApi = {
   listEmployees: () => request("/admin/employees"),
-  createEmployee: (data: { employee_id: string; first_name: string; last_name: string; tracks: string[]; is_admin: boolean; department?: string | null }) =>
+  createEmployee: (data: { employee_id: string; first_name: string; last_name: string; tracks: string[]; is_admin: boolean; department?: string | null; manager_employee_id?: string | null }) =>
     request("/admin/employees", { method: "POST", body: JSON.stringify(data) }),
   importEmployees: (employees: Array<{ employee_id: string; track: string; name?: string; full_name?: string; first_name?: string; last_name?: string; is_admin?: boolean }>) =>
     request("/admin/employees/import", { method: "POST", body: JSON.stringify({ employees }) }),
