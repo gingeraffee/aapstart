@@ -234,6 +234,7 @@ export default function ManagerDashboardPage() {
   const [activeTab, setActiveTab] = useState<"metrics" | "team">("metrics");
   const [searchQuery, setSearchQuery] = useState("");
   const [deptFilter, setDeptFilter] = useState("all");
+  const [weeks, setWeeks] = useState(4); // 0 = all time
 
   useEffect(() => {
     if (!authLoading && !canAccess) {
@@ -241,9 +242,9 @@ export default function ManagerDashboardPage() {
     }
   }, [authLoading, canAccess, router]);
 
-  const { data, error, isLoading, mutate } = useSWR(
-    canAccess ? "manager-dashboard" : null,
-    () => managerApi.dashboard(),
+  const { data, error, isLoading } = useSWR(
+    canAccess ? ["manager-dashboard", weeks] : null,
+    () => managerApi.dashboard(weeks),
     { revalidateOnFocus: false }
   );
 
@@ -373,6 +374,22 @@ export default function ManagerDashboardPage() {
               {departments.map((d) => (
                 <option key={d} value={d}>{d}</option>
               ))}
+            </select>
+          )}
+          {/* Period picker — only relevant on the Metrics tab */}
+          {activeTab === "metrics" && (
+            <select
+              value={weeks}
+              onChange={(e) => setWeeks(Number(e.target.value))}
+              className="rounded-[12px] px-3 py-2 text-[0.82rem] font-medium outline-none"
+              style={{ background: "rgba(255,255,255,0.72)", border: "1px solid rgba(153,182,218,0.4)", color: "var(--sidebar-text)" }}
+            >
+              <option value={4}>Last 4 weeks</option>
+              <option value={8}>Last 8 weeks</option>
+              <option value={13}>Last 3 months</option>
+              <option value={26}>Last 6 months</option>
+              <option value={52}>Last year</option>
+              <option value={0}>All time</option>
             </select>
           )}
           {isFiltered && (

@@ -110,7 +110,10 @@ async function uploadFile<T>(path: string, file: File): Promise<T> {
 }
 
 export const managerApi = {
-  dashboard: () => request<import("./types").ManagerDashboardData>("/manager/dashboard"),
+  dashboard: (weeks?: number) =>
+    request<import("./types").ManagerDashboardData>(
+      `/manager/dashboard${weeks !== undefined ? `?weeks=${weeks}` : ""}`
+    ),
   importTime: (file: File) => uploadFile<import("./types").ImportResult>("/manager/import/time", file),
   importReviews: (file: File) => uploadFile<import("./types").ImportResult>("/manager/import/reviews", file),
 };

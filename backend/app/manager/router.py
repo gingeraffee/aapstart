@@ -2,7 +2,7 @@ import csv
 import io
 from datetime import date, datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, status
 from sqlalchemy.orm import Session
 
 from app.auth.service import require_manager, normalize_tracks
@@ -293,6 +293,7 @@ async def import_reviews(
 def get_manager_dashboard(
     manager: dict = Depends(require_manager),
     db: Session = Depends(get_db),
+    weeks: int = Query(default=4, ge=0, le=520, description="Number of weeks to look back. 0 = all time."),
 ):
     """Aggregated manager dashboard: hours, PTO, and performance reviews for assigned team."""
     manager_id = manager["sub"]
@@ -311,13 +312,18 @@ def get_manager_dashboard(
             "past_due_reviews": [],
         }
 
-    # ── Hours: sum over last 30 days ──────────────────────────────────────────
-    cutoff = (date.today() - timedelta(days=30)).isoformat()
-
-    time_records = db.query(TimeRecord).filter(
-        TimeRecord.employee_id.in_(team_ids),
-        TimeRecord.week_start >= cutoff,
-    ).all()
+    # ── Hours: sum over requested window ─────────────────────────────────────
+    if weeks == 0:
+        # All time — no cutoff
+        time_records = db.query(TimeRecord).filter(
+            TimeRecord.employee_id.in_(team_ids),
+        ).all()
+    else:
+        cutoff = (date.today() - timedelta(weeks=weeks)).isoformat()
+        time_records = db.query(TimeRecord).filter(
+            TimeRecord.employee_id.in_(team_ids),
+            TimeRecord.week_start >= cutoff,
+        ).all()
 
     hours_by_emp: dict[str, dict] = {
         eid: {
