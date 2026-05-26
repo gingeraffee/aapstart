@@ -92,6 +92,7 @@ export interface ManagerHoursSummary {
   regular_hours: number;
   ot_hours: number;
   pto_hours: number;
+  weeks_included: number;
 }
 
 export interface ManagerTeamMember {
@@ -119,6 +120,8 @@ export interface ManagerDashboardData {
   last_updated_time: string | null;
   last_updated_reviews: string | null;
   hours_summary: ManagerHoursSummary[];
+  hours_date_range: string | null;
+  hours_week_count: number;
   upcoming_reviews: ManagerReview[];
   past_due_reviews: ManagerReview[];
   team: ManagerTeamMember[];

@@ -327,21 +327,43 @@ def get_manager_dashboard(
             "regular_hours": 0.0,
             "ot_hours": 0.0,
             "pto_hours": 0.0,
+            "weeks_included": 0,
         }
         for eid in team_ids
     }
+
+    # Track distinct week_starts across all records
+    all_week_starts: set[str] = set()
 
     for r in time_records:
         if r.employee_id in hours_by_emp:
             hours_by_emp[r.employee_id]["regular_hours"] += r.regular_hours
             hours_by_emp[r.employee_id]["ot_hours"] += r.ot_hours
             hours_by_emp[r.employee_id]["pto_hours"] += r.pto_hours
+            hours_by_emp[r.employee_id]["weeks_included"] += 1
+            all_week_starts.add(r.week_start)
 
     # Round to 1 decimal place
     for emp_data in hours_by_emp.values():
         emp_data["regular_hours"] = round(emp_data["regular_hours"], 1)
         emp_data["ot_hours"] = round(emp_data["ot_hours"], 1)
         emp_data["pto_hours"] = round(emp_data["pto_hours"], 1)
+
+    # Date range string for UI: "May 5 – May 26 (4 weeks)"
+    def _fmt_iso_date(iso: str) -> str:
+        """Format ISO date as "Mon D" (no zero-padding) cross-platform."""
+        d = date.fromisoformat(iso)
+        return d.strftime("%b") + " " + str(d.day)  # e.g. "May 5"
+
+    sorted_weeks = sorted(all_week_starts)
+    hours_date_range: str | None = None
+    if sorted_weeks:
+        earliest = _fmt_iso_date(sorted_weeks[0])
+        latest = _fmt_iso_date(sorted_weeks[-1])
+        hours_date_range = f"{earliest} – {latest}" if earliest != latest else earliest
+        hours_week_count = len(sorted_weeks)
+    else:
+        hours_week_count = 0
 
     # Last import date for time records
     all_time = db.query(TimeRecord).filter(TimeRecord.employee_id.in_(team_ids)).all()
@@ -417,6 +439,8 @@ def get_manager_dashboard(
         "last_updated_time": last_updated_time.isoformat() if last_updated_time else None,
         "last_updated_reviews": last_updated_reviews.isoformat() if last_updated_reviews else None,
         "hours_summary": sorted(hours_by_emp.values(), key=lambda x: x["full_name"]),
+        "hours_date_range": hours_date_range,
+        "hours_week_count": hours_week_count,
         "upcoming_reviews": upcoming,
         "past_due_reviews": past_due,
         "team": team_list,

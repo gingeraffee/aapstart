@@ -413,7 +413,13 @@ export default function ManagerDashboardPage() {
         </div>
 
         {/* ── Hours & PTO Table ── */}
-        <SectionCard title="Hours & PTO — Last 30 Days">
+        <SectionCard
+          title={
+            dashboard?.hours_week_count
+              ? `Hours & PTO${dashboard.hours_date_range ? ` — ${dashboard.hours_date_range}` : ""}${dashboard.hours_week_count > 1 ? ` (${dashboard.hours_week_count} weeks summed)` : ""}`
+              : "Hours & PTO — Last 30 Days"
+          }
+        >
           {!dashboard || dashboard.hours_summary.length === 0 ? (
             <div className="px-5 py-8 text-center">
               <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>
@@ -426,10 +432,17 @@ export default function ManagerDashboardPage() {
             </div>
           ) : (
             <div className="overflow-x-auto">
+              {(dashboard?.hours_week_count ?? 0) > 1 && (
+                <div className="px-5 pt-3 pb-1">
+                  <p className="text-[0.72rem] rounded-[8px] px-3 py-1.5 inline-block" style={{ background: "rgba(217,119,6,0.08)", color: "#92400e", border: "1px solid rgba(217,119,6,0.18)" }}>
+                    Hours shown are totals across {dashboard?.hours_week_count} weeks. Use the "Weeks" column to spot employees with fewer uploads.
+                  </p>
+                </div>
+              )}
               <table className="w-full text-[0.8rem]">
                 <thead>
                   <tr style={{ borderBottom: "1px solid rgba(153,182,218,0.2)" }}>
-                    {["Employee", "Regular Hours", "OT Hours", "PTO Hours"].map((h) => (
+                    {["Employee", "Regular Hours", "OT Hours", "PTO Hours", "Weeks"].map((h) => (
                       <th
                         key={h}
                         className={cn(
@@ -469,6 +482,16 @@ export default function ManagerDashboardPage() {
                       <td className="px-5 py-3.5 text-right tabular-nums" style={{ color: "var(--sidebar-text)" }}>
                         {emp.pto_hours.toFixed(1)}
                       </td>
+                      <td
+                        className="px-5 py-3.5 text-right tabular-nums text-[0.72rem]"
+                        style={{
+                          color: emp.weeks_included < (dashboard?.hours_week_count ?? 1)
+                            ? "#d97706"
+                            : "var(--sidebar-label)",
+                        }}
+                      >
+                        {emp.weeks_included}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -478,6 +501,7 @@ export default function ManagerDashboardPage() {
                     <td className="px-5 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalHours.toFixed(1)}</td>
                     <td className="px-5 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: totalOt > 0 ? "#d97706" : "var(--sidebar-text)" }}>{totalOt.toFixed(1)}</td>
                     <td className="px-5 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalPto.toFixed(1)}</td>
+                    <td />
                   </tr>
                 </tfoot>
               </table>
