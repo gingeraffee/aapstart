@@ -270,12 +270,14 @@ interface ModuleProgress {
   completed_at: string | null;
 }
 
-function EmployeeRow({ emp, currentUserId, modules, onDeleted }: { emp: EmployeeRecord; currentUserId: string; modules: ModuleSummary[]; onDeleted: (message: string, tone?: "success" | "error") => void }) {
+function EmployeeRow({ emp, currentUserId, modules, allEmployees, onDeleted }: { emp: EmployeeRecord; currentUserId: string; modules: ModuleSummary[]; allEmployees: EmployeeRecord[]; onDeleted: (message: string, tone?: "success" | "error") => void }) {
   const [deleting, setDeleting] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editTracks, setEditTracks] = useState<string[]>(emp.tracks ?? ["hr"]);
   const [editAdmin, setEditAdmin] = useState(emp.is_admin);
+  const [editIsManager, setEditIsManager] = useState(emp.is_manager ?? false);
+  const [editManagerEmployeeId, setEditManagerEmployeeId] = useState(emp.manager_employee_id ?? "");
   const [saving, setSaving] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [confirmingReset, setConfirmingReset] = useState(false);
@@ -329,10 +331,15 @@ function EmployeeRow({ emp, currentUserId, modules, onDeleted }: { emp: Employee
   async function handleSaveEdit() {
     setSaving(true);
     try {
-      await adminApi.updateEmployee(emp.employee_id, { tracks: editTracks, is_admin: editAdmin });
+      await adminApi.updateEmployee(emp.employee_id, {
+        tracks: editTracks,
+        is_admin: editAdmin,
+        is_manager: editIsManager,
+        manager_employee_id: editManagerEmployeeId || null,
+      });
       setEditing(false);
       const trackLabel = editTracks.map((t) => TRACK_LABELS[t] ?? t).join(", ");
-      onDeleted(`Updated ${emp.full_name} - track: ${trackLabel}${editAdmin ? " (Admin)" : ""}.`);
+      onDeleted(`Updated ${emp.full_name} - track: ${trackLabel}${editAdmin ? " (Admin)" : ""}${editIsManager ? " (Manager)" : ""}.`);
     } catch (err) {
       onDeleted(err instanceof Error ? err.message : "Failed to update.", "error");
     } finally {
@@ -427,6 +434,32 @@ function EmployeeRow({ emp, currentUserId, modules, onDeleted }: { emp: Employee
               />
               Admin
             </label>
+            <label className="flex items-center gap-1.5 text-[0.72rem] font-medium" style={{ color: "var(--card-desc)" }}>
+              <input
+                type="checkbox"
+                checked={editIsManager}
+                onChange={(e) => setEditIsManager(e.target.checked)}
+                className="rounded"
+              />
+              Manager
+            </label>
+            <div className="mt-1.5">
+              <p className="mb-1 text-[0.64rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>Reports To</p>
+              <select
+                value={editManagerEmployeeId}
+                onChange={(e) => setEditManagerEmployeeId(e.target.value)}
+                className="w-full rounded-[10px] px-2.5 py-1.5 text-[0.74rem]"
+                style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)" }}
+              >
+                <option value="">No manager assigned</option>
+                {allEmployees
+                  .filter((e) => e.is_manager && e.employee_id !== emp.employee_id)
+                  .sort((a, b) => a.last_name.localeCompare(b.last_name))
+                  .map((m) => (
+                    <option key={m.employee_id} value={m.employee_id}>{m.full_name}</option>
+                  ))}
+              </select>
+            </div>
           </div>
         ) : (
           <>
@@ -450,7 +483,13 @@ function EmployeeRow({ emp, currentUserId, modules, onDeleted }: { emp: Employee
               ))}
             </div>
             {emp.is_admin && <span className="mt-1 inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-[0.68rem] font-semibold text-slate-600">Admin</span>}
+            {emp.is_manager && <span className="mt-1 ml-1 inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-[0.68rem] font-semibold text-emerald-700">Manager</span>}
             {emp.totp_enabled && <span className="mt-1 ml-1 inline-flex rounded-full bg-purple-50 px-2.5 py-1 text-[0.68rem] font-semibold text-purple-700">2FA</span>}
+            {emp.manager_employee_id && (
+              <p className="mt-1 text-[0.67rem]" style={{ color: "var(--module-context)" }}>
+                Reports to: {allEmployees.find((e) => e.employee_id === emp.manager_employee_id)?.full_name ?? emp.manager_employee_id}
+              </p>
+            )}
           </>
         )}
       </td>
@@ -463,7 +502,7 @@ function EmployeeRow({ emp, currentUserId, modules, onDeleted }: { emp: Employee
         {editing ? (
           <div className="flex items-center justify-end gap-2">
             <button
-              onClick={() => { setEditing(false); setEditTracks(emp.tracks ?? ["hr"]); setEditAdmin(emp.is_admin); }}
+              onClick={() => { setEditing(false); setEditTracks(emp.tracks ?? ["hr"]); setEditAdmin(emp.is_admin); setEditIsManager(emp.is_manager ?? false); setEditManagerEmployeeId(emp.manager_employee_id ?? ""); }}
               disabled={saving}
               className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold transition-all hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-50"
               style={{ color: "var(--card-desc)" }}
@@ -885,11 +924,13 @@ function RosterTable({
   rows,
   currentUserId,
   modules,
+  allEmployees,
   onAction,
 }: {
   rows: EmployeeRecord[];
   currentUserId: string;
   modules: ModuleSummary[];
+  allEmployees: EmployeeRecord[];
   onAction: (message: string, tone?: "success" | "error") => void;
 }) {
   return (
@@ -911,6 +952,7 @@ function RosterTable({
               emp={employee}
               currentUserId={currentUserId}
               modules={modules}
+              allEmployees={allEmployees}
               onDeleted={(message, tone = "success") => onAction(message, tone)}
             />
           ))}
@@ -1142,7 +1184,7 @@ export default function AdminPage() {
               </p>
             </div>
             {searchResults.length > 0 ? (
-              <RosterTable rows={searchResults} currentUserId={user.employee_id} modules={publishedModules} onAction={handleRosterAction} />
+              <RosterTable rows={searchResults} currentUserId={user.employee_id} modules={publishedModules} allEmployees={allEmployees} onAction={handleRosterAction} />
             ) : (
               <p className="px-6 py-10 text-center text-[0.84rem]" style={{ color: "var(--card-desc)" }}>
                 Try a different name or employee number.
@@ -1183,7 +1225,7 @@ export default function AdminPage() {
                     <path d="M3 1.5L7 5L3 8.5" />
                   </svg>
                 </button>
-                {!isCollapsed && <RosterTable rows={trackEmployees} currentUserId={user.employee_id} modules={publishedModules} onAction={handleRosterAction} />}
+                {!isCollapsed && <RosterTable rows={trackEmployees} currentUserId={user.employee_id} modules={publishedModules} allEmployees={allEmployees} onAction={handleRosterAction} />}
               </div>
             );
           })

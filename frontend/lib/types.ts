@@ -126,6 +126,8 @@ export interface EmployeeRecord {
   full_name: string;
   tracks: string[];
   is_admin: boolean;
+  is_manager: boolean;
+  manager_employee_id: string | null;
   totp_enabled: boolean;
   created_at: string | null;
   first_login_at: string | null;
