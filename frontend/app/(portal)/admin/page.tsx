@@ -156,10 +156,11 @@ function getMostRecentMonday(): string {
 function downloadHoursTemplate() {
   const monday = getMostRecentMonday();
   const csv = [
-    "employee_id,week_start,regular_hours,ot_hours,pto_hours",
-    `EMP-100,${monday},40,2.5,0`,
-    `EMP-101,${monday},35,0,8`,
-    `EMP-102,${monday},40,5,0`,
+    // week_start is optional — use a specific date for historical imports, omit for "upload date"
+    "employee_name,employee_id,week_start,regular_hours,ot_hours,vacation_hours,personal_hours,other_hours",
+    `Jane Doe,EMP-100,${monday},40,2.5,8,0,0`,
+    `Marcus Lane,EMP-101,${monday},35,0,0,4,0`,
+    `Olivia Grant,EMP-102,${monday},40,5,0,0,2`,
     "",
   ].join("\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
@@ -1222,8 +1223,8 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
 
       <div className="mt-5 grid gap-5 lg:grid-cols-2">
         <UploadPanel
-          title="Hours & PTO"
-          columns="employee_id · week_start · regular_hours · ot_hours · pto_hours"
+          title="Hours & Time Off"
+          columns="employee_name · employee_id · week_start (optional) · regular_hours · ot_hours · vacation_hours · personal_hours · other_hours"
           onDownload={downloadHoursTemplate}
           file={hoursFile}
           onFileChange={setHoursFile}

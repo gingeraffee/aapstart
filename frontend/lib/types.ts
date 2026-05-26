@@ -91,7 +91,9 @@ export interface ManagerHoursSummary {
   department: string | null;
   regular_hours: number;
   ot_hours: number;
-  pto_hours: number;
+  vacation_hours: number;
+  personal_hours: number;
+  other_hours: number;
   weeks_included: number;
 }
 

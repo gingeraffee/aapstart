@@ -303,7 +303,9 @@ export default function ManagerDashboardPage() {
 
   const totalHours = filteredHours.reduce((s, e) => s + e.regular_hours, 0);
   const totalOt = filteredHours.reduce((s, e) => s + e.ot_hours, 0);
-  const totalPto = filteredHours.reduce((s, e) => s + e.pto_hours, 0);
+  const totalVacation = filteredHours.reduce((s, e) => s + e.vacation_hours, 0);
+  const totalPersonal = filteredHours.reduce((s, e) => s + e.personal_hours, 0);
+  const totalOther = filteredHours.reduce((s, e) => s + e.other_hours, 0);
 
   return (
       <div className="mx-auto max-w-5xl space-y-6 px-4 py-8 md:px-8">
@@ -414,9 +416,9 @@ export default function ManagerDashboardPage() {
             value={isFiltered ? filteredTeam.length : (dashboard?.team_size ?? 0)}
             sub={isFiltered ? `of ${dashboard?.team_size ?? 0} total` : undefined}
           />
-          <KpiCard label="Hours (30 days)" value={totalHours.toFixed(1)} />
+          <KpiCard label="Regular Hours" value={totalHours.toFixed(1)} />
           <KpiCard label="OT Hours" value={totalOt.toFixed(1)} accent={totalOt > 0 ? "#d97706" : undefined} />
-          <KpiCard label="PTO Hours" value={totalPto.toFixed(1)} />
+          <KpiCard label="Time Off" value={(totalVacation + totalPersonal + totalOther).toFixed(1)} />
           <KpiCard
             label="Upcoming Reviews"
             value={filteredUpcoming.length}
@@ -433,8 +435,8 @@ export default function ManagerDashboardPage() {
         <SectionCard
           title={
             dashboard?.hours_week_count
-              ? `Hours & PTO${dashboard.hours_date_range ? ` — ${dashboard.hours_date_range}` : ""}${dashboard.hours_week_count > 1 ? ` (${dashboard.hours_week_count} weeks summed)` : ""}`
-              : "Hours & PTO — Last 30 Days"
+              ? `Hours & Time Off${dashboard.hours_date_range ? ` — ${dashboard.hours_date_range}` : ""}${dashboard.hours_week_count > 1 ? ` (${dashboard.hours_week_count} uploads)` : ""}`
+              : "Hours & Time Off"
           }
         >
           {!dashboard || dashboard.hours_summary.length === 0 ? (
@@ -459,7 +461,7 @@ export default function ManagerDashboardPage() {
               <table className="w-full text-[0.8rem]">
                 <thead>
                   <tr style={{ borderBottom: "1px solid rgba(153,182,218,0.2)" }}>
-                    {["Employee", "Regular Hours", "OT Hours", "PTO Hours", "Weeks"].map((h) => (
+                    {["Employee", "Regular", "OT", "Vacation", "Personal", "Other", "Uploads"].map((h) => (
                       <th
                         key={h}
                         className={cn(
@@ -496,8 +498,14 @@ export default function ManagerDashboardPage() {
                       >
                         {emp.ot_hours.toFixed(1)}
                       </td>
-                      <td className="px-5 py-3.5 text-right tabular-nums" style={{ color: "var(--sidebar-text)" }}>
-                        {emp.pto_hours.toFixed(1)}
+                      <td className="px-5 py-3.5 text-right tabular-nums" style={{ color: emp.vacation_hours > 0 ? "var(--sidebar-text)" : "var(--sidebar-label)" }}>
+                        {emp.vacation_hours.toFixed(1)}
+                      </td>
+                      <td className="px-5 py-3.5 text-right tabular-nums" style={{ color: emp.personal_hours > 0 ? "var(--sidebar-text)" : "var(--sidebar-label)" }}>
+                        {emp.personal_hours.toFixed(1)}
+                      </td>
+                      <td className="px-5 py-3.5 text-right tabular-nums" style={{ color: emp.other_hours > 0 ? "var(--sidebar-text)" : "var(--sidebar-label)" }}>
+                        {emp.other_hours.toFixed(1)}
                       </td>
                       <td
                         className="px-5 py-3.5 text-right tabular-nums text-[0.72rem]"
@@ -517,7 +525,9 @@ export default function ManagerDashboardPage() {
                     <td className="px-5 py-3 text-[0.72rem] font-bold" style={{ color: "var(--sidebar-label)" }}>Team Total</td>
                     <td className="px-5 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalHours.toFixed(1)}</td>
                     <td className="px-5 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: totalOt > 0 ? "#d97706" : "var(--sidebar-text)" }}>{totalOt.toFixed(1)}</td>
-                    <td className="px-5 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalPto.toFixed(1)}</td>
+                    <td className="px-5 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalVacation.toFixed(1)}</td>
+                    <td className="px-5 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalPersonal.toFixed(1)}</td>
+                    <td className="px-5 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalOther.toFixed(1)}</td>
                     <td />
                   </tr>
                 </tfoot>

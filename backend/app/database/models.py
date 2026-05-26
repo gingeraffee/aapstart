@@ -57,15 +57,18 @@ class UserProgress(Base):
 
 
 class TimeRecord(Base):
-    """Weekly hours data imported from HRIS CSV. One row per employee per week."""
+    """Hours data imported from HRIS CSV. One row per employee per period."""
     __tablename__ = "time_records"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     employee_id = Column(String, nullable=False, index=True)
-    week_start = Column(String, nullable=False)  # ISO date "YYYY-MM-DD"
+    week_start = Column(String, nullable=False)  # ISO date "YYYY-MM-DD" — period start key
     regular_hours = Column(Float, nullable=False, default=0.0)
     ot_hours = Column(Float, nullable=False, default=0.0)
-    pto_hours = Column(Float, nullable=False, default=0.0)
+    pto_hours = Column(Float, nullable=False, default=0.0)   # legacy catch-all
+    vacation_hours = Column(Float, nullable=False, default=0.0)
+    personal_hours = Column(Float, nullable=False, default=0.0)
+    other_hours = Column(Float, nullable=False, default=0.0)
     imported_at = Column(DateTime, default=func.now())
 
 

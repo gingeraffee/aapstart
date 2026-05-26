@@ -14,39 +14,72 @@ router = APIRouter(prefix="/api/manager", tags=["manager"])
 # ── Column name aliases accepted from HRIS CSV exports ────────────────────────
 
 _TIME_COL_MAP = {
+    # Employee identifier
     "employee_id": "employee_id",
     "employeeid": "employee_id",
     "emp_id": "employee_id",
     "employee_number": "employee_id",
     "employeenumber": "employee_id",
     "employee #": "employee_id",
+    "employee number": "employee_id",
     "id": "employee_id",
+    # Employee name — accepted but ignored (looked up from DB)
+    "employee_name": "_ignore",
+    "name": "_ignore",
+    "full_name": "_ignore",
+    "employee name": "_ignore",
+    # Period start date (optional — defaults to upload date)
     "week_start": "week_start",
     "weekstart": "week_start",
     "week_beginning": "week_start",
     "period_start": "week_start",
     "period start": "week_start",
+    "start_date": "week_start",
+    "start date": "week_start",
     "week": "week_start",
     "date": "week_start",
     "pay_period_start": "week_start",
+    # Regular hours
     "regular_hours": "regular_hours",
     "regular hours": "regular_hours",
     "reg_hours": "regular_hours",
     "reg hours": "regular_hours",
+    "reg": "regular_hours",
     "hours": "regular_hours",
     "hours_worked": "regular_hours",
     "regular": "regular_hours",
+    # Overtime
     "ot_hours": "ot_hours",
     "ot hours": "ot_hours",
     "overtime_hours": "ot_hours",
     "overtime hours": "ot_hours",
     "overtime": "ot_hours",
     "ot": "ot_hours",
+    # Vacation
+    "vacation_hours": "vacation_hours",
+    "vacation hours": "vacation_hours",
+    "vacation": "vacation_hours",
+    "vac_hours": "vacation_hours",
+    "vac hours": "vacation_hours",
+    "vac": "vacation_hours",
+    # Personal
+    "personal_hours": "personal_hours",
+    "personal hours": "personal_hours",
+    "personal": "personal_hours",
+    "pers_hours": "personal_hours",
+    "pers hours": "personal_hours",
+    "pers": "personal_hours",
+    # Other / misc
+    "other_hours": "other_hours",
+    "other hours": "other_hours",
+    "other": "other_hours",
+    "misc_hours": "other_hours",
+    "misc hours": "other_hours",
+    "misc": "other_hours",
+    # Legacy PTO catch-all (still accepted from old files)
     "pto_hours": "pto_hours",
     "pto hours": "pto_hours",
     "pto": "pto_hours",
-    "vacation_hours": "pto_hours",
-    "vacation": "pto_hours",
     "leave_hours": "pto_hours",
     "leave": "pto_hours",
 }
@@ -179,13 +212,17 @@ async def import_time(
             skipped += 1
             continue
 
-        week_start = _parse_date(week_start_raw)
-        if not week_start:
-            errors.append({"row": i, "employee_id": employee_id, "detail": f"Cannot parse week_start: '{week_start_raw}'."})
-            skipped += 1
-            continue
+        # week_start is optional — defaults to today when absent
+        if week_start_raw:
+            week_start = _parse_date(week_start_raw)
+            if not week_start:
+                errors.append({"row": i, "employee_id": employee_id, "detail": f"Cannot parse date: '{week_start_raw}'. Use YYYY-MM-DD or M/D/YYYY."})
+                skipped += 1
+                continue
+        else:
+            week_start = date.today().isoformat()
 
-        # Delete existing record for this employee + week, then insert fresh
+        # Delete existing record for this employee + period, then insert fresh
         db.query(TimeRecord).filter_by(
             employee_id=employee_id, week_start=week_start
         ).delete()
@@ -195,6 +232,10 @@ async def import_time(
             week_start=week_start,
             regular_hours=_parse_float(row.get("regular_hours", "0")),
             ot_hours=_parse_float(row.get("ot_hours", "0")),
+            vacation_hours=_parse_float(row.get("vacation_hours", "0")),
+            personal_hours=_parse_float(row.get("personal_hours", "0")),
+            other_hours=_parse_float(row.get("other_hours", "0")),
+            # Legacy pto_hours: carry forward from old files, otherwise 0
             pto_hours=_parse_float(row.get("pto_hours", "0")),
             imported_at=imported_at,
         ))
@@ -332,7 +373,9 @@ def get_manager_dashboard(
             "department": team_by_id[eid].department,
             "regular_hours": 0.0,
             "ot_hours": 0.0,
-            "pto_hours": 0.0,
+            "vacation_hours": 0.0,
+            "personal_hours": 0.0,
+            "other_hours": 0.0,
             "weeks_included": 0,
         }
         for eid in team_ids
@@ -345,7 +388,17 @@ def get_manager_dashboard(
         if r.employee_id in hours_by_emp:
             hours_by_emp[r.employee_id]["regular_hours"] += r.regular_hours
             hours_by_emp[r.employee_id]["ot_hours"] += r.ot_hours
-            hours_by_emp[r.employee_id]["pto_hours"] += r.pto_hours
+            # vacation/personal/other — new columns; fall back to legacy pto_hours split
+            vac = getattr(r, "vacation_hours", 0.0) or 0.0
+            pers = getattr(r, "personal_hours", 0.0) or 0.0
+            other = getattr(r, "other_hours", 0.0) or 0.0
+            pto = getattr(r, "pto_hours", 0.0) or 0.0
+            # If new columns are all zero but legacy pto exists, put it under vacation
+            if vac == 0.0 and pers == 0.0 and other == 0.0 and pto > 0.0:
+                vac = pto
+            hours_by_emp[r.employee_id]["vacation_hours"] += vac
+            hours_by_emp[r.employee_id]["personal_hours"] += pers
+            hours_by_emp[r.employee_id]["other_hours"] += other
             hours_by_emp[r.employee_id]["weeks_included"] += 1
             all_week_starts.add(r.week_start)
 
@@ -353,7 +406,9 @@ def get_manager_dashboard(
     for emp_data in hours_by_emp.values():
         emp_data["regular_hours"] = round(emp_data["regular_hours"], 1)
         emp_data["ot_hours"] = round(emp_data["ot_hours"], 1)
-        emp_data["pto_hours"] = round(emp_data["pto_hours"], 1)
+        emp_data["vacation_hours"] = round(emp_data["vacation_hours"], 1)
+        emp_data["personal_hours"] = round(emp_data["personal_hours"], 1)
+        emp_data["other_hours"] = round(emp_data["other_hours"], 1)
 
     # Date range string for UI: "May 5 – May 26 (4 weeks)"
     def _fmt_iso_date(iso: str) -> str:

@@ -102,6 +102,19 @@ def _migrate():
         # Migrate track column from string to JSON array
         _migrate_track_to_array()
 
+    # time_records — add granular hours columns
+    if insp.has_table("time_records"):
+        tr_cols = {c["name"] for c in insp.get_columns("time_records")}
+        for col, ddl in [
+            ("vacation_hours", "REAL DEFAULT 0.0"),
+            ("personal_hours", "REAL DEFAULT 0.0"),
+            ("other_hours",    "REAL DEFAULT 0.0"),
+        ]:
+            if col not in tr_cols:
+                with engine.begin() as conn:
+                    conn.execute(text(f"ALTER TABLE time_records ADD COLUMN {col} {ddl}"))
+                print(f"[OK] Added {col} column to time_records table")
+
 
 def _migrate_track_to_array():
     """Convert any string track values to JSON arrays in-place."""
