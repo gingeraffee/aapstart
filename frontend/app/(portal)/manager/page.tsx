@@ -320,6 +320,11 @@ export default function ManagerDashboardPage() {
               No data uploaded yet — ask HR to upload the weekly file.
             </p>
           )}
+          {dashboard && dashboard.team_size === 0 && (
+            <div className="mt-3 rounded-[12px] px-4 py-3 text-[0.78rem]" style={{ background: "rgba(217,119,6,0.08)", border: "1px solid rgba(217,119,6,0.22)", color: "#92400e" }}>
+              No employees are assigned to you yet. Ask an admin to set your employees' "Reports To" field to your account.
+            </div>
+          )}
         </div>
 
         {/* ── Tab switcher ── */}

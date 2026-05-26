@@ -1100,14 +1100,29 @@ function UploadPanel({
       )}
 
       {result && (
-        <div className="rounded-[14px] px-4 py-3" style={{ background: "rgba(14,165,233,0.06)", border: "1px solid rgba(14,165,233,0.14)" }}>
+        <div
+          className="rounded-[14px] px-4 py-3"
+          style={{
+            background: result.skipped > 0 ? "rgba(223,0,48,0.05)" : "rgba(14,165,233,0.06)",
+            border: `1px solid ${result.skipped > 0 ? "rgba(223,0,48,0.18)" : "rgba(14,165,233,0.14)"}`,
+          }}
+        >
           <p className="text-[0.8rem] font-semibold" style={{ color: "var(--heading-color)" }}>
             {result.inserted} updated{result.skipped > 0 ? `, ${result.skipped} skipped` : ""}
           </p>
           {result.errors.length > 0 && (
-            <p className="mt-0.5 text-[0.72rem]" style={{ color: "var(--card-desc)" }}>
-              First issue — Row {result.errors[0].row}: {result.errors[0].detail}
-            </p>
+            <ul className="mt-1.5 space-y-0.5">
+              {result.errors.slice(0, 5).map((e, idx) => (
+                <li key={idx} className="text-[0.71rem] leading-snug" style={{ color: "#9f1239" }}>
+                  Row {e.row}{e.employee_id ? ` (${e.employee_id})` : ""}: {e.detail}
+                </li>
+              ))}
+              {result.errors.length > 5 && (
+                <li className="text-[0.71rem]" style={{ color: "var(--card-desc)" }}>
+                  …and {result.errors.length - 5} more
+                </li>
+              )}
+            </ul>
           )}
         </div>
       )}

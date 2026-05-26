@@ -172,6 +172,13 @@ async def import_time(
             skipped += 1
             continue
 
+        # Validate employee exists in the system
+        emp = db.query(Employee).filter_by(employee_id=employee_id).first()
+        if not emp:
+            errors.append({"row": i, "employee_id": employee_id, "detail": f"Employee '{employee_id}' not found — check the ID matches exactly what's in the system."})
+            skipped += 1
+            continue
+
         week_start = _parse_date(week_start_raw)
         if not week_start:
             errors.append({"row": i, "employee_id": employee_id, "detail": f"Cannot parse week_start: '{week_start_raw}'."})
@@ -235,6 +242,13 @@ async def import_reviews(
 
         if not employee_id:
             errors.append({"row": i, "detail": "Missing employee_id."})
+            skipped += 1
+            continue
+
+        # Validate employee exists in the system
+        emp = db.query(Employee).filter_by(employee_id=employee_id).first()
+        if not emp:
+            errors.append({"row": i, "employee_id": employee_id, "detail": f"Employee '{employee_id}' not found — check the ID matches exactly what's in the system."})
             skipped += 1
             continue
 
