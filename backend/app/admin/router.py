@@ -29,6 +29,8 @@ class EmployeeUpdate(BaseModel):
     last_name: str | None = None
     tracks: list[str] | None = None
     is_admin: bool | None = None
+    is_manager: bool | None = None
+    manager_employee_id: str | None = None
 
 
 class EmployeeImportRow(BaseModel):
@@ -72,6 +74,8 @@ def _serialize(emp: Employee, db: Session) -> dict:
         "full_name": f"{emp.first_name} {emp.last_name}",
         "tracks": normalize_tracks(emp.track),
         "is_admin": emp.is_admin,
+        "is_manager": bool(emp.is_manager),
+        "manager_employee_id": emp.manager_employee_id,
         "totp_enabled": bool(emp.totp_enabled),
         "created_at": emp.created_at.isoformat() if emp.created_at else None,
         "first_login_at": emp.first_login_at.isoformat() if emp.first_login_at else None,
@@ -241,6 +245,10 @@ def update_employee(
         emp.track = tracks
     if payload.is_admin is not None:
         emp.is_admin = payload.is_admin
+    if payload.is_manager is not None:
+        emp.is_manager = payload.is_manager
+    if payload.manager_employee_id is not None:
+        emp.manager_employee_id = payload.manager_employee_id if payload.manager_employee_id != "" else None
     db.commit()
     db.refresh(emp)
     return _serialize(emp, db)

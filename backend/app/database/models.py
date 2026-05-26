@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Boolean, Integer, DateTime, Text, func, JSON
+from sqlalchemy import Column, String, Boolean, Integer, DateTime, Text, Float, func, JSON
 from app.database.connection import Base
 
 
@@ -12,6 +12,8 @@ class Employee(Base):
     last_name = Column(String, nullable=False)
     track = Column(JSON, nullable=False, default=lambda: ["hr"])
     is_admin = Column(Boolean, default=False)
+    is_manager = Column(Boolean, default=False)
+    manager_employee_id = Column(String, nullable=True)  # who this employee reports to
     totp_secret = Column(String, nullable=True)
     totp_enabled = Column(Boolean, default=False)
     created_at = Column(DateTime, default=func.now())
@@ -51,6 +53,32 @@ class UserProgress(Base):
     completed_at = Column(DateTime, nullable=True)
 
     last_updated = Column(DateTime, default=func.now(), onupdate=func.now())
+
+
+class TimeRecord(Base):
+    """Weekly hours data imported from HRIS CSV. One row per employee per week."""
+    __tablename__ = "time_records"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    employee_id = Column(String, nullable=False, index=True)
+    week_start = Column(String, nullable=False)  # ISO date "YYYY-MM-DD"
+    regular_hours = Column(Float, nullable=False, default=0.0)
+    ot_hours = Column(Float, nullable=False, default=0.0)
+    pto_hours = Column(Float, nullable=False, default=0.0)
+    imported_at = Column(DateTime, default=func.now())
+
+
+class PerformanceReview(Base):
+    """Performance review records imported from HRIS CSV."""
+    __tablename__ = "performance_reviews"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    employee_id = Column(String, nullable=False, index=True)
+    review_type = Column(String, nullable=False)  # "30-day", "90-day", "annual", etc.
+    due_date = Column(String, nullable=False)  # ISO date "YYYY-MM-DD"
+    completed = Column(Boolean, default=False)
+    completed_date = Column(String, nullable=True)  # ISO date, optional
+    imported_at = Column(DateTime, default=func.now())
 
 
 class UserNote(Base):

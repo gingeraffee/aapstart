@@ -41,6 +41,7 @@ def login(payload: LoginRequest, response: Response):
             full_name=user["full_name"],
             tracks=user["tracks"],
             is_admin=user.get("is_admin", False),
+            is_manager=user.get("is_manager", False),
             requires_totp=True,
             totp_enabled=True,
             totp_required=totp_policy,
@@ -52,6 +53,7 @@ def login(payload: LoginRequest, response: Response):
         full_name=user["full_name"],
         tracks=user["tracks"],
         is_admin=user.get("is_admin", False),
+        is_manager=user.get("is_manager", False),
     )
     _set_session_cookie(response, token)
     return LoginResponse(
@@ -59,6 +61,7 @@ def login(payload: LoginRequest, response: Response):
         full_name=user["full_name"],
         tracks=user["tracks"],
         is_admin=user.get("is_admin", False),
+        is_manager=user.get("is_manager", False),
         requires_totp=False,
         totp_enabled=False,
         totp_required=totp_policy,
@@ -93,6 +96,7 @@ def totp_validate(payload: TotpVerifyRequest, response: Response):
             full_name=full_name,
             tracks=tracks,
             is_admin=employee.is_admin,
+            is_manager=bool(employee.is_manager),
         )
         _set_session_cookie(response, token)
         return UserResponse(
@@ -100,6 +104,7 @@ def totp_validate(payload: TotpVerifyRequest, response: Response):
             full_name=full_name,
             tracks=tracks,
             is_admin=employee.is_admin,
+            is_manager=bool(employee.is_manager),
         )
     finally:
         db.close()
@@ -188,6 +193,7 @@ def me(current_user: dict = Depends(service.get_current_user)):
         full_name=current_user["full_name"],
         tracks=current_user["tracks"],
         is_admin=current_user.get("is_admin", False),
+        is_manager=current_user.get("is_manager", False),
     )
 
 

@@ -615,7 +615,7 @@ export function AppShell({ children }: AppShellProps) {
           className="flex items-center gap-2 px-3.5 py-3"
           style={{ borderTop: "1px solid var(--sidebar-divider)" }}
         >
-          {/* Admin button (left) — only for admins */}
+          {/* Admin button — only for admins */}
           {user?.is_admin && (
             <Link
               href="/admin"
@@ -647,6 +647,44 @@ export function AppShell({ children }: AppShellProps) {
               >
                 <path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7z" />
                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+              </svg>
+            </Link>
+          )}
+
+          {/* Manager Dashboard button — for managers (and admins who aren't already seeing the admin button) */}
+          {(user?.is_manager || user?.is_admin) && (
+            <Link
+              href="/manager"
+              title="Manager Dashboard"
+              className={cn(
+                "flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] transition-all duration-200",
+                pathname === "/manager"
+                  ? "shadow-[0_4px_10px_rgba(16,35,60,0.18)]"
+                  : "hover:opacity-80"
+              )}
+              style={{
+                background: pathname === "/manager"
+                  ? "linear-gradient(135deg, #134e26 0%, #16a34a 82%)"
+                  : "var(--sidebar-icon-bg)",
+              }}
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{
+                  color: pathname === "/manager" ? "#ffffff" : "var(--sidebar-icon-text)",
+                }}
+              >
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
               </svg>
             </Link>
           )}

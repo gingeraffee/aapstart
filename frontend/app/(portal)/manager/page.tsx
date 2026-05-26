@@ -1,0 +1,495 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import useSWR from "swr";
+import { useAuth } from "@/lib/context/AuthContext";
+import { managerApi } from "@/lib/api";
+import { Spinner } from "@/components/ui/Spinner";
+import { cn } from "@/lib/utils";
+import type { ImportResult, ManagerDashboardData } from "@/lib/types";
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function formatDateTime(iso: string): string {
+  return new Date(iso).toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+function daysUntilColor(days: number): string {
+  if (days <= 7) return "#dc2626";   // red — due very soon
+  if (days <= 14) return "#d97706";  // amber — within 2 weeks
+  return "#16a34a";                  // green — plenty of time
+}
+
+function reviewTypeBadge(type: string): string {
+  const t = type.toLowerCase();
+  if (t.includes("30")) return "30-Day";
+  if (t.includes("60")) return "60-Day";
+  if (t.includes("90")) return "90-Day";
+  if (t.includes("annual")) return "Annual";
+  if (t.includes("mid")) return "Mid-Year";
+  return type;
+}
+
+// ── Sub-components ────────────────────────────────────────────────────────────
+
+function KpiCard({ label, value, sub, accent }: { label: string; value: string | number; sub?: string; accent?: string }) {
+  return (
+    <div
+      className="rounded-[14px] p-4"
+      style={{
+        background: "rgba(255,255,255,0.72)",
+        border: "1px solid rgba(153,182,218,0.28)",
+        boxShadow: "0 2px 8px rgba(12,24,47,0.06)",
+      }}
+    >
+      <p className="mb-1 text-[0.64rem] font-bold uppercase tracking-[0.13em]" style={{ color: "var(--sidebar-label)" }}>
+        {label}
+      </p>
+      <p className="text-[1.55rem] font-bold leading-none" style={{ color: accent ?? "var(--sidebar-text)" }}>
+        {value}
+      </p>
+      {sub && (
+        <p className="mt-1 text-[0.68rem]" style={{ color: "var(--sidebar-label)" }}>
+          {sub}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function SectionCard({ title, children, accent }: { title: string; children: React.ReactNode; accent?: string }) {
+  return (
+    <div
+      className="rounded-[16px] overflow-hidden"
+      style={{
+        background: "rgba(255,255,255,0.72)",
+        border: "1px solid rgba(153,182,218,0.28)",
+        boxShadow: "0 2px 8px rgba(12,24,47,0.06)",
+      }}
+    >
+      <div
+        className="px-5 py-3.5"
+        style={{
+          borderBottom: "1px solid rgba(153,182,218,0.22)",
+          background: accent ? `${accent}08` : "rgba(255,255,255,0.5)",
+        }}
+      >
+        <h2 className="text-[0.82rem] font-bold" style={{ color: accent ?? "var(--sidebar-text)" }}>
+          {title}
+        </h2>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+// ── Import modal ──────────────────────────────────────────────────────────────
+
+type ImportType = "time" | "reviews";
+
+function ImportModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => void }) {
+  const [activeTab, setActiveTab] = useState<ImportType>("time");
+  const [file, setFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<ImportResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setFile(e.target.files?.[0] ?? null);
+    setResult(null);
+    setError(null);
+  }
+
+  async function handleUpload() {
+    if (!file) return;
+    setLoading(true);
+    setError(null);
+    setResult(null);
+    try {
+      const res = activeTab === "time"
+        ? await managerApi.importTime(file)
+        : await managerApi.importReviews(file);
+      setResult(res);
+      if (res.inserted > 0) onSuccess();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Upload failed.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const timeFormat = `employee_id,week_start,regular_hours,ot_hours,pto_hours\nEMP-001,2026-05-19,40,3.5,0\nEMP-002,2026-05-19,32,0,8`;
+  const reviewFormat = `employee_id,review_type,due_date,completed,completed_date\nEMP-001,90-day,2026-06-15,false,\nEMP-002,annual,2026-05-10,true,2026-05-09`;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(12,24,47,0.45)", backdropFilter: "blur(4px)" }}>
+      <div
+        className="w-full max-w-lg rounded-[18px] shadow-2xl"
+        style={{ background: "#f8fafc", border: "1px solid rgba(153,182,218,0.4)" }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: "1px solid rgba(153,182,218,0.25)" }}>
+          <h3 className="text-[0.9rem] font-bold" style={{ color: "var(--sidebar-text)" }}>Import Data</h3>
+          <button onClick={onClose} className="rounded-lg p-1.5 transition-colors hover:bg-slate-100">
+            <svg width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+              <path d="M1 1l10 10M11 1L1 11" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex gap-1 p-3" style={{ borderBottom: "1px solid rgba(153,182,218,0.2)" }}>
+          {(["time", "reviews"] as ImportType[]).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => { setActiveTab(tab); setFile(null); setResult(null); setError(null); if (fileRef.current) fileRef.current.value = ""; }}
+              className="rounded-[9px] px-4 py-2 text-[0.78rem] font-semibold transition-all"
+              style={{
+                background: activeTab === tab ? "linear-gradient(135deg,#11264a,#0f7fb3)" : "transparent",
+                color: activeTab === tab ? "#fff" : "var(--sidebar-label)",
+              }}
+            >
+              {tab === "time" ? "Hours & PTO" : "Performance Reviews"}
+            </button>
+          ))}
+        </div>
+
+        <div className="space-y-4 p-6">
+          {/* Format hint */}
+          <div className="rounded-[10px] p-3" style={{ background: "rgba(15,109,163,0.06)", border: "1px solid rgba(15,109,163,0.15)" }}>
+            <p className="mb-1.5 text-[0.68rem] font-bold uppercase tracking-[0.1em]" style={{ color: "#0f6da3" }}>
+              Expected CSV format
+            </p>
+            <pre className="overflow-x-auto text-[0.66rem] leading-relaxed" style={{ color: "#0c1830" }}>
+              {activeTab === "time" ? timeFormat : reviewFormat}
+            </pre>
+          </div>
+
+          {/* File picker */}
+          <div>
+            <label className="mb-2 block text-[0.74rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>
+              Select CSV file
+            </label>
+            <input
+              ref={fileRef}
+              type="file"
+              accept=".csv"
+              onChange={handleFileChange}
+              className="w-full rounded-[10px] border px-3 py-2 text-[0.8rem] file:mr-3 file:rounded-[7px] file:border-0 file:bg-slate-100 file:px-3 file:py-1 file:text-[0.74rem] file:font-semibold"
+              style={{ borderColor: "rgba(153,182,218,0.4)", color: "var(--sidebar-text)" }}
+            />
+          </div>
+
+          {/* Result */}
+          {result && (
+            <div
+              className="rounded-[10px] p-3 text-[0.76rem]"
+              style={{
+                background: result.errors.length > 0 ? "rgba(245,158,11,0.08)" : "rgba(22,163,74,0.08)",
+                border: `1px solid ${result.errors.length > 0 ? "rgba(245,158,11,0.3)" : "rgba(22,163,74,0.3)"}`,
+                color: result.errors.length > 0 ? "#92400e" : "#14532d",
+              }}
+            >
+              <p className="font-semibold">{result.inserted} record{result.inserted !== 1 ? "s" : ""} imported{result.skipped > 0 ? `, ${result.skipped} skipped` : ""}.</p>
+              {result.errors.map((e, i) => (
+                <p key={i} className="mt-1 text-[0.68rem]">Row {e.row}: {e.detail}</p>
+              ))}
+            </div>
+          )}
+
+          {error && (
+            <p className="rounded-[10px] p-3 text-[0.76rem] font-medium" style={{ background: "rgba(220,38,38,0.08)", border: "1px solid rgba(220,38,38,0.25)", color: "#991b1b" }}>
+              {error}
+            </p>
+          )}
+
+          {/* Actions */}
+          <div className="flex justify-end gap-2.5 pt-1">
+            <button
+              onClick={onClose}
+              className="rounded-[10px] px-4 py-2 text-[0.8rem] font-semibold transition-colors hover:bg-slate-100"
+              style={{ color: "var(--sidebar-label)" }}
+            >
+              {result ? "Done" : "Cancel"}
+            </button>
+            <button
+              onClick={handleUpload}
+              disabled={!file || loading}
+              className="flex items-center gap-2 rounded-[10px] px-5 py-2 text-[0.8rem] font-semibold text-white transition-opacity disabled:opacity-50"
+              style={{ background: "linear-gradient(135deg,#11264a,#0f7fb3)" }}
+            >
+              {loading && <Spinner className="h-3.5 w-3.5 border-white/40 border-t-white" />}
+              {loading ? "Uploading…" : "Upload"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────────
+
+export default function ManagerDashboardPage() {
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
+  const [showImport, setShowImport] = useState(false);
+
+  const canAccess = user?.is_manager || user?.is_admin;
+
+  useEffect(() => {
+    if (!authLoading && !canAccess) {
+      router.replace("/overview");
+    }
+  }, [authLoading, canAccess, router]);
+
+  const { data, error, isLoading, mutate } = useSWR(
+    canAccess ? "manager-dashboard" : null,
+    () => managerApi.dashboard(),
+    { revalidateOnFocus: false }
+  );
+
+  if (authLoading || (!data && isLoading)) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Spinner className="h-8 w-8" />
+      </div>
+    );
+  }
+
+  if (!canAccess) return null;
+
+  if (error) {
+    return (
+      <div className="px-6 py-12 text-center">
+        <p className="text-[0.85rem] font-medium" style={{ color: "#dc2626" }}>
+          Could not load dashboard. Make sure the backend is running.
+        </p>
+      </div>
+    );
+  }
+
+  const dashboard = data as ManagerDashboardData | undefined;
+
+  const totalHours = dashboard?.hours_summary.reduce((s, e) => s + e.regular_hours, 0) ?? 0;
+  const totalOt = dashboard?.hours_summary.reduce((s, e) => s + e.ot_hours, 0) ?? 0;
+  const totalPto = dashboard?.hours_summary.reduce((s, e) => s + e.pto_hours, 0) ?? 0;
+
+  return (
+    <>
+      {showImport && (
+        <ImportModal
+          onClose={() => setShowImport(false)}
+          onSuccess={() => mutate()}
+        />
+      )}
+
+      <div className="mx-auto max-w-5xl space-y-6 px-4 py-8 md:px-8">
+        {/* ── Page header ── */}
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h1 className="text-[1.35rem] font-bold" style={{ color: "var(--sidebar-text)" }}>
+              Manager Dashboard
+            </h1>
+            {dashboard?.last_updated ? (
+              <p className="mt-1 text-[0.72rem]" style={{ color: "var(--sidebar-label)" }}>
+                Last updated: {formatDateTime(dashboard.last_updated)}
+              </p>
+            ) : (
+              <p className="mt-1 text-[0.72rem]" style={{ color: "var(--sidebar-label)" }}>
+                No data imported yet
+              </p>
+            )}
+          </div>
+          <button
+            onClick={() => setShowImport(true)}
+            className="flex items-center gap-2 rounded-[11px] px-4 py-2.5 text-[0.8rem] font-semibold text-white transition-opacity hover:opacity-90"
+            style={{ background: "linear-gradient(135deg,#11264a 0%,#0f7fb3 82%)" }}
+          >
+            <svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 1v7M3 5l3 3 3-3" />
+              <path d="M1 9v1a1 1 0 001 1h8a1 1 0 001-1V9" />
+            </svg>
+            Import Data
+          </button>
+        </div>
+
+        {/* ── KPI Cards ── */}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          <KpiCard label="Team Members" value={dashboard?.team_size ?? 0} />
+          <KpiCard label="Hours (30 days)" value={totalHours.toFixed(1)} />
+          <KpiCard label="OT Hours" value={totalOt.toFixed(1)} accent={totalOt > 0 ? "#d97706" : undefined} />
+          <KpiCard label="PTO Hours" value={totalPto.toFixed(1)} />
+          <KpiCard
+            label="Upcoming Reviews"
+            value={dashboard?.upcoming_reviews.length ?? 0}
+            accent={(dashboard?.upcoming_reviews.length ?? 0) > 0 ? "#0f6da3" : undefined}
+          />
+          <KpiCard
+            label="Past Due"
+            value={dashboard?.past_due_reviews.length ?? 0}
+            accent={(dashboard?.past_due_reviews.length ?? 0) > 0 ? "#dc2626" : undefined}
+          />
+        </div>
+
+        {/* ── Hours & PTO Table ── */}
+        <SectionCard title="Hours & PTO — Last 30 Days">
+          {!dashboard || dashboard.hours_summary.length === 0 ? (
+            <div className="px-5 py-8 text-center">
+              <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>
+                No time data yet. Import a weekly hours CSV to get started.
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-[0.8rem]">
+                <thead>
+                  <tr style={{ borderBottom: "1px solid rgba(153,182,218,0.2)" }}>
+                    {["Employee", "Regular Hours", "OT Hours", "PTO Hours"].map((h) => (
+                      <th
+                        key={h}
+                        className={cn(
+                          "px-5 py-3 text-[0.64rem] font-bold uppercase tracking-[0.1em]",
+                          h !== "Employee" ? "text-right" : "text-left"
+                        )}
+                        style={{ color: "var(--sidebar-label)" }}
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {dashboard.hours_summary.map((emp, i) => (
+                    <tr
+                      key={emp.employee_id}
+                      style={{
+                        borderBottom: i < dashboard.hours_summary.length - 1 ? "1px solid rgba(153,182,218,0.12)" : "none",
+                      }}
+                    >
+                      <td className="px-5 py-3.5 font-semibold" style={{ color: "var(--sidebar-text)" }}>
+                        {emp.full_name}
+                        <span className="ml-2 text-[0.65rem] font-normal" style={{ color: "var(--sidebar-label)" }}>
+                          {emp.employee_id}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3.5 text-right tabular-nums" style={{ color: "var(--sidebar-text)" }}>
+                        {emp.regular_hours.toFixed(1)}
+                      </td>
+                      <td
+                        className="px-5 py-3.5 text-right tabular-nums font-semibold"
+                        style={{ color: emp.ot_hours > 0 ? "#d97706" : "var(--sidebar-label)" }}
+                      >
+                        {emp.ot_hours.toFixed(1)}
+                      </td>
+                      <td className="px-5 py-3.5 text-right tabular-nums" style={{ color: "var(--sidebar-text)" }}>
+                        {emp.pto_hours.toFixed(1)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr style={{ borderTop: "1px solid rgba(153,182,218,0.25)", background: "rgba(153,182,218,0.06)" }}>
+                    <td className="px-5 py-3 text-[0.72rem] font-bold" style={{ color: "var(--sidebar-label)" }}>Team Total</td>
+                    <td className="px-5 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalHours.toFixed(1)}</td>
+                    <td className="px-5 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: totalOt > 0 ? "#d97706" : "var(--sidebar-text)" }}>{totalOt.toFixed(1)}</td>
+                    <td className="px-5 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalPto.toFixed(1)}</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          )}
+        </SectionCard>
+
+        {/* ── Reviews grid (upcoming + past due side by side) ── */}
+        <div className="grid gap-4 lg:grid-cols-2">
+          {/* Upcoming */}
+          <SectionCard title={`Upcoming Performance Reviews (${dashboard?.upcoming_reviews.length ?? 0})`}>
+            {!dashboard || dashboard.upcoming_reviews.length === 0 ? (
+              <div className="px-5 py-8 text-center">
+                <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>
+                  No upcoming reviews.
+                </p>
+              </div>
+            ) : (
+              <ul className="divide-y" style={{ "--tw-divide-opacity": 1, borderColor: "rgba(153,182,218,0.15)" } as React.CSSProperties}>
+                {dashboard.upcoming_reviews.map((r, i) => (
+                  <li key={i} className="flex items-center justify-between gap-3 px-5 py-3.5">
+                    <div className="min-w-0">
+                      <p className="truncate text-[0.82rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>
+                        {r.full_name}
+                      </p>
+                      <p className="text-[0.68rem]" style={{ color: "var(--sidebar-label)" }}>
+                        {reviewTypeBadge(r.review_type)} · Due {formatDate(r.due_date)}
+                      </p>
+                    </div>
+                    <span
+                      className="shrink-0 rounded-full px-2.5 py-1 text-[0.66rem] font-bold"
+                      style={{
+                        background: `${daysUntilColor(r.days_until ?? 0)}18`,
+                        color: daysUntilColor(r.days_until ?? 0),
+                      }}
+                    >
+                      {r.days_until === 0 ? "Today" : `${r.days_until}d`}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </SectionCard>
+
+          {/* Past Due */}
+          <SectionCard
+            title={`Past Due Reviews (${dashboard?.past_due_reviews.length ?? 0})`}
+            accent={dashboard && dashboard.past_due_reviews.length > 0 ? "#dc2626" : undefined}
+          >
+            {!dashboard || dashboard.past_due_reviews.length === 0 ? (
+              <div className="px-5 py-8 text-center">
+                <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>
+                  No past due reviews.
+                </p>
+              </div>
+            ) : (
+              <ul className="divide-y" style={{ "--tw-divide-opacity": 1, borderColor: "rgba(153,182,218,0.15)" } as React.CSSProperties}>
+                {dashboard.past_due_reviews.map((r, i) => (
+                  <li key={i} className="flex items-center justify-between gap-3 px-5 py-3.5">
+                    <div className="min-w-0">
+                      <p className="truncate text-[0.82rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>
+                        {r.full_name}
+                      </p>
+                      <p className="text-[0.68rem]" style={{ color: "var(--sidebar-label)" }}>
+                        {reviewTypeBadge(r.review_type)} · Was due {formatDate(r.due_date)}
+                      </p>
+                    </div>
+                    <span
+                      className="shrink-0 rounded-full px-2.5 py-1 text-[0.66rem] font-bold"
+                      style={{ background: "rgba(220,38,38,0.1)", color: "#dc2626" }}
+                    >
+                      {r.days_overdue}d overdue
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </SectionCard>
+        </div>
+      </div>
+    </>
+  );
+}

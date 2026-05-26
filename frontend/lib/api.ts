@@ -95,6 +95,24 @@ export const adminApi = {
     request(`/admin/employees/${employee_id}/notes/${note_id}`, { method: "PATCH", body: JSON.stringify(data) }),
 };
 
+async function uploadFile<T>(path: string, file: File): Promise<T> {
+  const url = `${API_BASE}${path}`;
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(url, { method: "POST", credentials: "include", body: formData });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new ApiError(body.detail ?? res.statusText, res.status);
+  }
+  return res.json();
+}
+
+export const managerApi = {
+  dashboard: () => request<import("./types").ManagerDashboardData>("/manager/dashboard"),
+  importTime: (file: File) => uploadFile<import("./types").ImportResult>("/manager/import/time", file),
+  importReviews: (file: File) => uploadFile<import("./types").ImportResult>("/manager/import/reviews", file),
+};
+
 export const notesApi = {
   getAll: () => request<import("./types").UserNote[]>("/notes"),
   getForModule: (slug: string) => request<import("./types").UserNote[]>(`/notes/${slug}`),

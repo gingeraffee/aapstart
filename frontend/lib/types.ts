@@ -82,6 +82,40 @@ export interface User {
   full_name: string;
   tracks: Track[];
   is_admin: boolean;
+  is_manager: boolean;
+}
+
+export interface ManagerHoursSummary {
+  employee_id: string;
+  full_name: string;
+  regular_hours: number;
+  ot_hours: number;
+  pto_hours: number;
+}
+
+export interface ManagerReview {
+  employee_id: string;
+  full_name: string;
+  review_type: string;
+  due_date: string;
+  days_until?: number;
+  days_overdue?: number;
+}
+
+export interface ManagerDashboardData {
+  team_size: number;
+  last_updated: string | null;
+  last_updated_time: string | null;
+  last_updated_reviews: string | null;
+  hours_summary: ManagerHoursSummary[];
+  upcoming_reviews: ManagerReview[];
+  past_due_reviews: ManagerReview[];
+}
+
+export interface ImportResult {
+  inserted: number;
+  skipped: number;
+  errors: { row: number; employee_id?: string; detail: string }[];
 }
 
 export interface EmployeeRecord {

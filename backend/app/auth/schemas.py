@@ -13,6 +13,7 @@ class UserResponse(BaseModel):
     full_name: str
     tracks: list[str]
     is_admin: bool = False
+    is_manager: bool = False
 
 
 class LoginResponse(BaseModel):
@@ -21,6 +22,7 @@ class LoginResponse(BaseModel):
     full_name: str
     tracks: list[str]
     is_admin: bool = False
+    is_manager: bool = False
     requires_totp: bool = False
     totp_enabled: bool = False
     totp_required: bool = False  # org-wide policy: is TOTP mandatory?

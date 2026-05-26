@@ -57,6 +57,7 @@ def _get_dev_user(*, for_token: bool = False) -> dict:
         "full_name": settings.dev_auth_full_name.strip(),
         "tracks": [_normalize_track(settings.dev_auth_track)],
         "is_admin": True,
+        "is_manager": True,
     }
     # Token/cookie payloads use "sub"; login response uses "employee_id"
     if for_token:
@@ -104,19 +105,21 @@ def validate_login(employee_id: str, first_name: str, last_name: str) -> dict:
             "full_name": f"{employee.first_name} {employee.last_name}",
             "tracks": normalize_tracks(employee.track),
             "is_admin": employee.is_admin,
+            "is_manager": bool(employee.is_manager),
             "totp_enabled": bool(employee.totp_enabled),
         }
     finally:
         db.close()
 
 
-def create_token(employee_id: str, full_name: str, tracks: list[str], is_admin: bool = False) -> str:
+def create_token(employee_id: str, full_name: str, tracks: list[str], is_admin: bool = False, is_manager: bool = False) -> str:
     expiry = datetime.now(timezone.utc) + timedelta(hours=settings.jwt_expiration_hours)
     payload = {
         "sub": employee_id,
         "full_name": full_name,
         "tracks": tracks,
         "is_admin": is_admin,
+        "is_manager": is_manager,
         "exp": expiry,
     }
     return jwt.encode(payload, settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
@@ -159,6 +162,17 @@ def require_admin(request: Request) -> dict:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required.",
+        )
+    return user
+
+
+def require_manager(request: Request) -> dict:
+    """FastAPI dependency — requires is_manager=True or is_admin=True."""
+    user = get_current_user(request)
+    if not user.get("is_manager") and not user.get("is_admin"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Manager access required.",
         )
     return user
 
