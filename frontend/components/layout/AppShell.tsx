@@ -87,6 +87,10 @@ export function AppShell({ children }: AppShellProps) {
   const isEffectiveHR = effectiveTrack === "hr";
 
   const { data: modules } = useSWR(`modules:${effectiveTrack}`, () => modulesApi.list(effectiveTrack) as Promise<ModuleSummary[]>);
+  const { data: managerModulesData } = useSWR(
+    user?.is_manager && effectiveTrack !== "management" ? "modules:management" : null,
+    () => modulesApi.list("management") as Promise<ModuleSummary[]>
+  );
   const { data: progress } = useSWR("progress", () => progressApi.getAll() as Promise<ProgressRecord[]>);
   const { data: dashboardData } = useSWR(
     user?.is_admin ? "admin-dashboard" : null,
@@ -104,11 +108,13 @@ export function AppShell({ children }: AppShellProps) {
   const journeyModules = liveModules
     .filter((m) => !m.tracks?.includes("management"))
     .filter((m) => !isPreviewing || m.tracks?.includes("all") || m.tracks?.includes(effectiveTrack) || isHRReplacement(m.slug));
-  const managementModules = liveModules.filter((m) => m.tracks?.includes("management"));
+  const managementModules = (user?.is_manager && effectiveTrack !== "management")
+    ? (managerModulesData ?? []).filter((m) => m.status === "published").sort((a, b) => a.order - b.order)
+    : liveModules.filter((m) => m.tracks?.includes("management"));
 
   // Show journey section for non-management tracks
   const showJourney = !isManagement;
-  const showManagementSection = isManagement;
+  const showManagementSection = isManagement || (user?.is_manager ?? false);
 
   const isSlugCompleted = (slug: string) =>
     (isPreviewing && previewCompletedSlugs.has(slug)) ||

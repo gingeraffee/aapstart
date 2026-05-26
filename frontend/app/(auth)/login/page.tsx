@@ -17,7 +17,11 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!loading && user && !mustSetupTotp) {
-      router.replace("/overview");
+      if (user.is_manager && !user.is_admin) {
+        router.replace("/manager");
+      } else {
+        router.replace("/overview");
+      }
     }
   }, [user, loading, router, mustSetupTotp]);
 

@@ -1038,6 +1038,7 @@ function UploadPanel({
   loading,
   result,
   error,
+  onClear,
 }: {
   title: string;
   columns: string;
@@ -1048,7 +1049,10 @@ function UploadPanel({
   loading: boolean;
   result: ImportResult | null;
   error: string | null;
+  onClear?: () => Promise<void>;
 }) {
+  const [confirming, setConfirming] = useState(false);
+  const [clearing, setClearing] = useState(false);
   return (
     <div className="flex flex-col gap-4 rounded-[20px] border p-5" style={{ background: "var(--welcome-stat-bg)", borderColor: "var(--welcome-stat-border)" }}>
       <div>
@@ -1112,6 +1116,27 @@ function UploadPanel({
         <div className="rounded-[14px] px-4 py-3 text-[0.78rem]" style={{ background: "rgba(223,0,48,0.06)", border: "1px solid rgba(223,0,48,0.14)", color: "#9f1239" }}>
           {error}
         </div>
+      )}
+
+      {onClear && (
+        confirming ? (
+          <div className="flex items-center gap-2 pt-1">
+            <span className="flex-1 text-[0.72rem]" style={{ color: "var(--card-desc)" }}>Remove all uploaded records?</span>
+            <button onClick={() => setConfirming(false)} disabled={clearing} className="rounded-[8px] px-2.5 py-1 text-[0.7rem] font-semibold transition-all hover:bg-black/5" style={{ color: "var(--card-desc)" }}>Cancel</button>
+            <button
+              onClick={async () => { setClearing(true); await onClear(); setConfirming(false); setClearing(false); }}
+              disabled={clearing}
+              className="rounded-[8px] px-2.5 py-1 text-[0.7rem] font-semibold"
+              style={{ background: "rgba(223,0,48,0.08)", color: "#9f1239" }}
+            >
+              {clearing ? "Clearing…" : "Yes, clear all"}
+            </button>
+          </div>
+        ) : (
+          <button onClick={() => setConfirming(true)} className="self-start text-[0.7rem] font-medium transition-all hover:opacity-60" style={{ color: "var(--card-desc)" }}>
+            Clear all records
+          </button>
+        )
       )}
     </div>
   );
@@ -1191,6 +1216,11 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
           loading={hoursLoading}
           result={hoursResult}
           error={hoursError}
+          onClear={async () => {
+            await adminApi.clearTime();
+            setHoursResult(null);
+            onToast("Hours data cleared from all dashboards.");
+          }}
         />
         <UploadPanel
           title="Performance Reviews"
@@ -1202,18 +1232,16 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
           loading={reviewsLoading}
           result={reviewsResult}
           error={reviewsError}
+          onClear={async () => {
+            await adminApi.clearReviews();
+            setReviewsResult(null);
+            onToast("Reviews data cleared from all dashboards.");
+          }}
         />
       </div>
     </div>
   );
 }
-
-const TRACK_COLORS: Record<string, { dot: string; badgeBg: string; badgeText: string }> = {
-  hr: { dot: "#3b82f6", badgeBg: "rgba(59,130,246,0.08)", badgeText: "#1d4ed8" },
-  warehouse: { dot: "#d97706", badgeBg: "rgba(245,158,11,0.08)", badgeText: "#92400e" },
-  administrative: { dot: "#a855f7", badgeBg: "rgba(168,85,247,0.08)", badgeText: "#7e22ce" },
-  management: { dot: "#16a34a", badgeBg: "rgba(22,163,74,0.08)", badgeText: "#15803d" },
-};
 
 function RosterTable({
   rows,
@@ -1264,7 +1292,6 @@ export default function AdminPage() {
   const [lastImportResult, setLastImportResult] = useState<EmployeeImportResult | null>(null);
   const [toast, setToast] = useState<ToastState | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [collapsedTracks, setCollapsedTracks] = useState<Set<string>>(new Set(TRACKS));
 
   const { data: employees, isLoading, mutate } = useSWR("admin-employees", () => adminApi.listEmployees() as Promise<EmployeeRecord[]>);
   const { data: allModules } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
@@ -1305,10 +1332,7 @@ export default function AdminPage() {
         .filter((e) => e.full_name.toLowerCase().includes(searchLower) || e.employee_id.toLowerCase().includes(searchLower))
         .sort((a, b) => a.last_name.localeCompare(b.last_name))
     : null;
-  const groupedByTrack = TRACKS.map((track) => ({
-    track,
-    employees: [...allEmployees].filter((e) => e.tracks?.includes(track)).sort((a, b) => a.last_name.localeCompare(b.last_name)),
-  })).filter((g) => g.employees.length > 0);
+  const allEmployeesSorted = [...allEmployees].sort((a, b) => a.last_name.localeCompare(b.last_name) || a.first_name.localeCompare(b.first_name));
 
   function handleRosterAction(message: string, tone?: "success" | "error") {
     setToast({ message, tone: tone ?? "success" });
@@ -1492,43 +1516,9 @@ export default function AdminPage() {
             )}
           </div>
         ) : (
-          groupedByTrack.map(({ track, employees: trackEmployees }) => {
-            const isCollapsed = collapsedTracks.has(track);
-            const colors = TRACK_COLORS[track];
-            return (
-              <div key={track} className="overflow-hidden rounded-[24px]" style={cardStyle()}>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setCollapsedTracks((prev) => {
-                      const next = new Set(prev);
-                      if (next.has(track)) next.delete(track); else next.add(track);
-                      return next;
-                    })
-                  }
-                  className="flex w-full items-center justify-between gap-4 border-b px-6 py-4 text-left transition-colors hover:bg-black/[0.02]"
-                  style={{ borderColor: isCollapsed ? "transparent" : "var(--card-border)" }}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: colors.dot }} />
-                    <span className="text-[0.84rem] font-bold" style={{ color: "var(--heading-color)" }}>{TRACK_LABELS[track]}</span>
-                    <span className="rounded-full px-2.5 py-0.5 text-[0.68rem] font-semibold" style={{ background: colors.badgeBg, color: colors.badgeText }}>
-                      {trackEmployees.length}
-                    </span>
-                  </div>
-                  <svg
-                    width="10" height="10" viewBox="0 0 10 10" fill="none"
-                    stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
-                    className={cn("shrink-0 transition-transform duration-200", !isCollapsed && "rotate-90")}
-                    style={{ color: "var(--card-desc)" }}
-                  >
-                    <path d="M3 1.5L7 5L3 8.5" />
-                  </svg>
-                </button>
-                {!isCollapsed && <RosterTable rows={trackEmployees} currentUserId={user.employee_id} modules={publishedModules} allEmployees={allEmployees} onAction={handleRosterAction} />}
-              </div>
-            );
-          })
+          <div className="overflow-hidden rounded-[24px]" style={cardStyle()}>
+            <RosterTable rows={allEmployeesSorted} currentUserId={user.employee_id} modules={publishedModules} allEmployees={allEmployees} onAction={handleRosterAction} />
+          </div>
         )}
       </div>
     </div>

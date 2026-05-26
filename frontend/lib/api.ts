@@ -93,6 +93,8 @@ export const adminApi = {
     request(`/admin/employees/${employee_id}/notes`),
   updateEmployeeNote: (employee_id: string, note_id: number, data: { status?: "open" | "answered"; admin_reply?: string }) =>
     request(`/admin/employees/${employee_id}/notes/${note_id}`, { method: "PATCH", body: JSON.stringify(data) }),
+  clearTime: () => request<{ deleted: number }>("/admin/import/time", { method: "DELETE" }),
+  clearReviews: () => request<{ deleted: number }>("/admin/import/reviews", { method: "DELETE" }),
 };
 
 async function uploadFile<T>(path: string, file: File): Promise<T> {
