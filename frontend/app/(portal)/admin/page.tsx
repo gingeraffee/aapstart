@@ -4,10 +4,10 @@ import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { useAuth } from "@/lib/context/AuthContext";
-import { adminApi, modulesApi } from "@/lib/api";
+import { adminApi, managerApi, modulesApi } from "@/lib/api";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
-import type { EmployeeImportResult, EmployeeImportRowInput, EmployeeRecord, ModuleSummary, NoteRecord } from "@/lib/types";
+import type { EmployeeImportResult, EmployeeImportRowInput, EmployeeRecord, ImportResult, ModuleSummary, NoteRecord } from "@/lib/types";
 
 const TRACKS = ["hr", "warehouse", "administrative", "management"] as const;
 const TRACK_LABELS: Record<string, string> = {
@@ -141,6 +141,50 @@ function downloadImportTemplate() {
   link.href = url;
   link.download = "aap-start-employee-import-template.csv";
   link.click();
+  URL.revokeObjectURL(url);
+}
+
+function getMostRecentMonday(): string {
+  const today = new Date();
+  const day = today.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  const mon = new Date(today);
+  mon.setDate(today.getDate() + diff);
+  return mon.toISOString().split("T")[0];
+}
+
+function downloadHoursTemplate() {
+  const monday = getMostRecentMonday();
+  const csv = [
+    "employee_id,week_start,regular_hours,ot_hours,pto_hours",
+    `EMP-100,${monday},40,2.5,0`,
+    `EMP-101,${monday},35,0,8`,
+    `EMP-102,${monday},40,5,0`,
+    "",
+  ].join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `hours-upload-${monday}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function downloadReviewsTemplate() {
+  const csv = [
+    "employee_id,review_type,due_date,completed,completed_date",
+    "EMP-100,Annual Review,2026-06-15,false,",
+    "EMP-101,90-Day Review,2026-05-30,true,2026-05-28",
+    "EMP-102,6-Month Review,2026-07-01,false,",
+    "",
+  ].join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "reviews-upload-template.csv";
+  a.click();
   URL.revokeObjectURL(url);
 }
 
@@ -984,6 +1028,186 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
   );
 }
 
+function UploadPanel({
+  title,
+  columns,
+  onDownload,
+  file,
+  onFileChange,
+  onUpload,
+  loading,
+  result,
+  error,
+}: {
+  title: string;
+  columns: string;
+  onDownload: () => void;
+  file: File | null;
+  onFileChange: (f: File | null) => void;
+  onUpload: () => void;
+  loading: boolean;
+  result: ImportResult | null;
+  error: string | null;
+}) {
+  return (
+    <div className="flex flex-col gap-4 rounded-[20px] border p-5" style={{ background: "var(--welcome-stat-bg)", borderColor: "var(--welcome-stat-border)" }}>
+      <div>
+        <p className="text-[0.8rem] font-bold" style={{ color: "var(--heading-color)" }}>{title}</p>
+        <p className="mt-0.5 font-mono text-[0.66rem]" style={{ color: "var(--module-context)" }}>{columns}</p>
+      </div>
+
+      <button
+        type="button"
+        onClick={onDownload}
+        className="self-start rounded-[12px] px-3.5 py-2 text-[0.75rem] font-semibold transition-all hover:-translate-y-px"
+        style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", color: "var(--heading-color)" }}
+      >
+        Download Template
+      </button>
+
+      <label
+        className="flex cursor-pointer flex-col items-center justify-center rounded-[16px] border border-dashed px-4 py-6 text-center transition-all hover:-translate-y-px"
+        style={{ borderColor: "rgba(14,165,233,0.35)", background: "rgba(14,165,233,0.04)" }}
+      >
+        <span className="text-[0.82rem] font-semibold" style={{ color: "var(--heading-color)" }}>
+          {file ? file.name : "Choose a CSV file"}
+        </span>
+        <span className="mt-0.5 text-[0.72rem]" style={{ color: "var(--card-desc)" }}>
+          {file ? `${(file.size / 1024).toFixed(1)} KB` : "Click to browse"}
+        </span>
+        <input
+          type="file"
+          accept=".csv,text/csv"
+          className="hidden"
+          onChange={(e) => onFileChange(e.target.files?.[0] ?? null)}
+        />
+      </label>
+
+      {file && (
+        <button
+          type="button"
+          onClick={onUpload}
+          disabled={loading}
+          className="rounded-[12px] px-4 py-2.5 text-[0.78rem] font-semibold text-white transition-all hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
+          style={{ background: "linear-gradient(135deg, #11264a 0%, #0f7fb3 82%)" }}
+        >
+          {loading ? "Uploading…" : "Upload"}
+        </button>
+      )}
+
+      {result && (
+        <div className="rounded-[14px] px-4 py-3" style={{ background: "rgba(14,165,233,0.06)", border: "1px solid rgba(14,165,233,0.14)" }}>
+          <p className="text-[0.8rem] font-semibold" style={{ color: "var(--heading-color)" }}>
+            {result.inserted} updated{result.skipped > 0 ? `, ${result.skipped} skipped` : ""}
+          </p>
+          {result.errors.length > 0 && (
+            <p className="mt-0.5 text-[0.72rem]" style={{ color: "var(--card-desc)" }}>
+              First issue — Row {result.errors[0].row}: {result.errors[0].detail}
+            </p>
+          )}
+        </div>
+      )}
+
+      {error && (
+        <div className="rounded-[14px] px-4 py-3 text-[0.78rem]" style={{ background: "rgba(223,0,48,0.06)", border: "1px solid rgba(223,0,48,0.14)", color: "#9f1239" }}>
+          {error}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success" | "error") => void }) {
+  const [hoursFile, setHoursFile] = useState<File | null>(null);
+  const [reviewsFile, setReviewsFile] = useState<File | null>(null);
+  const [hoursResult, setHoursResult] = useState<ImportResult | null>(null);
+  const [reviewsResult, setReviewsResult] = useState<ImportResult | null>(null);
+  const [hoursLoading, setHoursLoading] = useState(false);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [hoursError, setHoursError] = useState<string | null>(null);
+  const [reviewsError, setReviewsError] = useState<string | null>(null);
+
+  async function uploadHours() {
+    if (!hoursFile) return;
+    setHoursLoading(true);
+    setHoursError(null);
+    setHoursResult(null);
+    try {
+      const result = await managerApi.importTime(hoursFile);
+      setHoursResult(result);
+      onToast(`Hours uploaded — ${result.inserted} records updated.`);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Upload failed.";
+      setHoursError(msg);
+      onToast(msg, "error");
+    } finally {
+      setHoursLoading(false);
+    }
+  }
+
+  async function uploadReviews() {
+    if (!reviewsFile) return;
+    setReviewsLoading(true);
+    setReviewsError(null);
+    setReviewsResult(null);
+    try {
+      const result = await managerApi.importReviews(reviewsFile);
+      setReviewsResult(result);
+      onToast(`Reviews uploaded — ${result.inserted} records updated.`);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Upload failed.";
+      setReviewsError(msg);
+      onToast(msg, "error");
+    } finally {
+      setReviewsLoading(false);
+    }
+  }
+
+  return (
+    <div className="relative overflow-hidden rounded-[24px] p-6 lg:p-7" style={cardStyle()}>
+      <div className="absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,#0ea5d9_0%,#22d3ee_62%,#df0030_100%)]" />
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="inline-flex rounded-full px-2.5 py-1 text-[0.64rem] font-bold uppercase tracking-[0.16em]" style={{ background: "rgba(14,165,233,0.08)", color: "#0d6b9d" }}>
+            Weekly HR Upload
+          </p>
+          <h2 className="mt-3 text-[1.12rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>
+            Push hours and reviews to all manager dashboards
+          </h2>
+          <p className="mt-1 text-[0.82rem] leading-[1.6]" style={{ color: "var(--card-desc)" }}>
+            Upload one file for each type at the start of each week. Data routes automatically to each manager based on their assigned team — no manual sorting needed.
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-5 lg:grid-cols-2">
+        <UploadPanel
+          title="Hours & PTO"
+          columns="employee_id · week_start · regular_hours · ot_hours · pto_hours"
+          onDownload={downloadHoursTemplate}
+          file={hoursFile}
+          onFileChange={setHoursFile}
+          onUpload={uploadHours}
+          loading={hoursLoading}
+          result={hoursResult}
+          error={hoursError}
+        />
+        <UploadPanel
+          title="Performance Reviews"
+          columns="employee_id · review_type · due_date · completed · completed_date"
+          onDownload={downloadReviewsTemplate}
+          file={reviewsFile}
+          onFileChange={setReviewsFile}
+          onUpload={uploadReviews}
+          loading={reviewsLoading}
+          result={reviewsResult}
+          error={reviewsError}
+        />
+      </div>
+    </div>
+  );
+}
+
 const TRACK_COLORS: Record<string, { dot: string; badgeBg: string; badgeText: string }> = {
   hr: { dot: "#3b82f6", badgeBg: "rgba(59,130,246,0.08)", badgeText: "#1d4ed8" },
   warehouse: { dot: "#d97706", badgeBg: "rgba(245,158,11,0.08)", badgeText: "#92400e" },
@@ -1213,6 +1437,10 @@ export default function AdminPage() {
             </ul>
           </div>
         </div>
+      </div>
+
+      <div className="mt-5">
+        <WeeklyUploadCard onToast={(msg, tone) => setToast({ message: msg, tone: tone ?? "success" })} />
       </div>
 
       <div className="mt-6 space-y-4">
