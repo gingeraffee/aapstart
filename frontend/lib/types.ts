@@ -147,6 +147,7 @@ export interface ImportResult {
   inserted: number;
   skipped: number;
   errors: { row: number; employee_id?: string; detail: string }[];
+  hours_upserted?: number;
 }
 
 export interface EmployeeRecord {

@@ -490,7 +490,7 @@ async def import_absences(
             "is_planned": is_planned,
         })
 
-    # Delete all existing records for employees in this upload, then insert fresh
+    # Replace absence records for seen employees
     if seen_employee_ids:
         db.query(AbsenceRecord).filter(
             AbsenceRecord.employee_id.in_(seen_employee_ids)
@@ -510,8 +510,58 @@ async def import_absences(
         ))
         inserted += 1
 
+    # ── Aggregate hours into TimeRecord ──────────────────────────────────────
+    # Zero out vacation/personal/other for seen employees — will be rebuilt below
+    if seen_employee_ids:
+        db.query(TimeRecord).filter(
+            TimeRecord.employee_id.in_(seen_employee_ids)
+        ).update(
+            {"vacation_hours": 0.0, "personal_hours": 0.0, "other_hours": 0.0},
+            synchronize_session=False,
+        )
+
+    # Aggregate per (employee_id, week_start), categorising by absence type
+    from collections import defaultdict
+    week_buckets: dict[tuple[str, str], dict[str, float]] = defaultdict(
+        lambda: {"vacation": 0.0, "personal": 0.0, "other": 0.0}
+    )
+    for pr in parsed_rows:
+        from_date_obj = date.fromisoformat(pr["from_date"])
+        # Monday of the week containing from_date
+        week_start_obj = from_date_obj - timedelta(days=from_date_obj.weekday())
+        week_start = week_start_obj.isoformat()
+        cat = (pr["category"] or "").lower()
+        if "vacation" in cat:
+            week_buckets[(pr["employee_id"], week_start)]["vacation"] += pr["time_off_hours"]
+        elif "personal" in cat:
+            week_buckets[(pr["employee_id"], week_start)]["personal"] += pr["time_off_hours"]
+        else:
+            week_buckets[(pr["employee_id"], week_start)]["other"] += pr["time_off_hours"]
+
+    hours_upserted = 0
+    for (employee_id, week_start), hrs in week_buckets.items():
+        existing = db.query(TimeRecord).filter_by(
+            employee_id=employee_id, week_start=week_start
+        ).first()
+        if existing:
+            existing.vacation_hours = round(hrs["vacation"], 2)
+            existing.personal_hours = round(hrs["personal"], 2)
+            existing.other_hours = round(hrs["other"], 2)
+        else:
+            db.add(TimeRecord(
+                employee_id=employee_id,
+                week_start=week_start,
+                regular_hours=0.0,
+                ot_hours=0.0,
+                vacation_hours=round(hrs["vacation"], 2),
+                personal_hours=round(hrs["personal"], 2),
+                other_hours=round(hrs["other"], 2),
+                imported_at=imported_at,
+            ))
+        hours_upserted += 1
+
     db.commit()
-    return {"inserted": inserted, "skipped": skipped, "errors": errors}
+    return {"inserted": inserted, "skipped": skipped, "errors": errors, "hours_upserted": hours_upserted}
 
 
 # ── Dashboard ─────────────────────────────────────────────────────────────────

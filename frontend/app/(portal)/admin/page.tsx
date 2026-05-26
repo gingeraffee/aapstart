@@ -157,10 +157,11 @@ function downloadHoursTemplate() {
   const monday = getMostRecentMonday();
   const csv = [
     // week_start is optional — use a specific date for historical imports, omit for "upload date"
-    "employee_name,employee_id,week_start,regular_hours,ot_hours,vacation_hours,personal_hours,other_hours",
-    `Jane Doe,EMP-100,${monday},40,2.5,8,0,0`,
-    `Marcus Lane,EMP-101,${monday},35,0,0,4,0`,
-    `Olivia Grant,EMP-102,${monday},40,5,0,0,2`,
+    // vacation/personal/other hours come from the Absences upload, not this file
+    "employee_name,employee_id,week_start,regular_hours,ot_hours",
+    `Jane Doe,EMP-100,${monday},40,2.5`,
+    `Marcus Lane,EMP-101,${monday},35,0`,
+    `Olivia Grant,EMP-102,${monday},40,5`,
     "",
   ].join("\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
@@ -1237,7 +1238,7 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
     try {
       const result = await managerApi.importAbsences(absencesFile);
       setAbsencesResult(result);
-      onToast(`Absences uploaded — ${result.inserted} records imported.`);
+      onToast(`Absences uploaded — ${result.inserted} records imported, ${result.hours_upserted ?? 0} weeks updated.`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Upload failed.";
       setAbsencesError(msg);
@@ -1259,7 +1260,7 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
             Push hours, reviews, and attendance to all manager dashboards
           </h2>
           <p className="mt-1 text-[0.82rem] leading-[1.6]" style={{ color: "var(--card-desc)" }}>
-            Upload one file for each type at the start of each week. Data routes automatically to each manager based on their assigned team — no manual sorting needed.
+            Upload one file for each type. Hours &amp; Time Off handles regular and OT hours. The Absences report covers vacation, personal, and other time off — it also logs planned vs. unplanned automatically. Data routes to each manager based on their assigned team.
           </p>
         </div>
       </div>
@@ -1267,7 +1268,7 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
       <div className="mt-5 grid gap-5 lg:grid-cols-3">
         <UploadPanel
           title="Hours & Time Off"
-          columns="employee_name · employee_id · week_start (optional) · regular_hours · ot_hours · vacation_hours · personal_hours · other_hours"
+          columns="employee_name · employee_id · week_start (optional) · regular_hours · ot_hours"
           onDownload={downloadHoursTemplate}
           file={hoursFile}
           onFileChange={setHoursFile}
@@ -1298,8 +1299,8 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
           }}
         />
         <UploadPanel
-          title="Planned vs. Unplanned Absences"
-          columns="Employee Number · Name · Category · From · To · Requested · Time Off"
+          title="Absences (Time Off Used)"
+          columns="Employee Number · Name · Category · From · To · Requested · Time Off — auto-fills vacation / personal / other hours"
           onDownload={downloadAbsencesTemplate}
           file={absencesFile}
           onFileChange={setAbsencesFile}
