@@ -5,9 +5,9 @@ from datetime import date, datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
 from sqlalchemy.orm import Session
 
-from app.auth.service import require_manager
+from app.auth.service import require_manager, normalize_tracks
 from app.database.connection import get_db
-from app.database.models import Employee, TimeRecord, PerformanceReview
+from app.database.models import Employee, TimeRecord, PerformanceReview, UserProgress
 
 router = APIRouter(prefix="/api/manager", tags=["manager"])
 
@@ -309,6 +309,7 @@ def get_manager_dashboard(
         eid: {
             "employee_id": eid,
             "full_name": f"{team_by_id[eid].first_name} {team_by_id[eid].last_name}",
+            "department": team_by_id[eid].department,
             "regular_hours": 0.0,
             "ot_hours": 0.0,
             "pto_hours": 0.0,
@@ -374,6 +375,28 @@ def get_manager_dashboard(
     if candidates:
         last_updated = max(candidates)
 
+    # ── Team roster ───────────────────────────────────────────────────────────
+    progress_rows = db.query(UserProgress).filter(
+        UserProgress.employee_id.in_(team_ids)
+    ).all()
+    emp_modules_completed: dict[str, int] = {}
+    for row in progress_rows:
+        if row.module_completed:
+            emp_modules_completed[row.employee_id] = emp_modules_completed.get(row.employee_id, 0) + 1
+
+    team_list = [
+        {
+            "employee_id": e.employee_id,
+            "full_name": f"{e.first_name} {e.last_name}",
+            "tracks": normalize_tracks(e.track),
+            "department": e.department,
+            "last_login_at": e.last_login_at.isoformat() if e.last_login_at else None,
+            "modules_completed": emp_modules_completed.get(e.employee_id, 0),
+            "first_login_at": e.first_login_at.isoformat() if e.first_login_at else None,
+        }
+        for e in sorted(team, key=lambda x: (x.last_name, x.first_name))
+    ]
+
     return {
         "team_size": len(team),
         "last_updated": last_updated.isoformat() if last_updated else None,
@@ -382,4 +405,5 @@ def get_manager_dashboard(
         "hours_summary": sorted(hours_by_emp.values(), key=lambda x: x["full_name"]),
         "upcoming_reviews": upcoming,
         "past_due_reviews": past_due,
+        "team": team_list,
     }

@@ -146,13 +146,14 @@ function cardStyle() {
   } as const;
 }
 
-function AddEmployeeForm({ onAdded }: { onAdded: (message: string) => void }) {
+function AddEmployeeForm({ onAdded, departments }: { onAdded: (message: string) => void; departments: string[] }) {
   const [form, setForm] = useState({
     employee_id: "",
     first_name: "",
     last_name: "",
     tracks: ["hr"] as string[],
     is_admin: false,
+    department: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -167,8 +168,8 @@ function AddEmployeeForm({ onAdded }: { onAdded: (message: string) => void }) {
     setError(null);
 
     try {
-      await adminApi.createEmployee(form);
-      setForm({ employee_id: "", first_name: "", last_name: "", tracks: ["hr"], is_admin: false });
+      await adminApi.createEmployee({ ...form, department: form.department.trim() || null });
+      setForm({ employee_id: "", first_name: "", last_name: "", tracks: ["hr"], is_admin: false, department: "" });
       onAdded("Changes saved. Employee added.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to add employee.");
@@ -241,6 +242,23 @@ function AddEmployeeForm({ onAdded }: { onAdded: (message: string) => void }) {
         </div>
       </div>
 
+      <div className="mt-3">
+        <label className="mb-1.5 block text-[0.64rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>
+          Department <span className="font-normal normal-case tracking-normal" style={{ color: "var(--card-desc)" }}>(optional)</span>
+        </label>
+        <input
+          list="dept-list-add"
+          value={form.department}
+          onChange={(e) => update("department", e.target.value)}
+          placeholder="e.g. Inside Sales, Compliance…"
+          className="w-full rounded-[14px] px-3.5 py-2.5 text-[0.84rem] font-medium outline-none transition-all"
+          style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)" }}
+        />
+        <datalist id="dept-list-add">
+          {departments.map((d) => <option key={d} value={d} />)}
+        </datalist>
+      </div>
+
       <label className="mt-4 flex items-center gap-2.5 text-[0.8rem] font-medium" style={{ color: "var(--welcome-label-text)" }}>
         <input type="checkbox" checked={form.is_admin} onChange={(event) => update("is_admin", event.target.checked)} className="h-4 w-4 rounded border" />
         Give this employee admin access
@@ -278,6 +296,8 @@ function EmployeeRow({ emp, currentUserId, modules, allEmployees, onDeleted }: {
   const [editAdmin, setEditAdmin] = useState(emp.is_admin);
   const [editIsManager, setEditIsManager] = useState(emp.is_manager ?? false);
   const [editManagerEmployeeId, setEditManagerEmployeeId] = useState(emp.manager_employee_id ?? "");
+  const [editDepartment, setEditDepartment] = useState(emp.department ?? "");
+  const existingDepartments = [...new Set(allEmployees.map((e) => e.department).filter(Boolean) as string[])].sort();
   const [saving, setSaving] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [confirmingReset, setConfirmingReset] = useState(false);
@@ -336,6 +356,7 @@ function EmployeeRow({ emp, currentUserId, modules, allEmployees, onDeleted }: {
         is_admin: editAdmin,
         is_manager: editIsManager,
         manager_employee_id: editManagerEmployeeId || null,
+        department: editDepartment.trim() || null,
       });
       setEditing(false);
       const trackLabel = editTracks.map((t) => TRACK_LABELS[t] ?? t).join(", ");
@@ -444,6 +465,20 @@ function EmployeeRow({ emp, currentUserId, modules, allEmployees, onDeleted }: {
               Manager
             </label>
             <div className="mt-1.5">
+              <p className="mb-1 text-[0.64rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>Department</p>
+              <input
+                list={`dept-list-${emp.employee_id}`}
+                value={editDepartment}
+                onChange={(e) => setEditDepartment(e.target.value)}
+                placeholder="e.g. Inside Sales…"
+                className="w-full rounded-[10px] px-2.5 py-1.5 text-[0.74rem]"
+                style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)" }}
+              />
+              <datalist id={`dept-list-${emp.employee_id}`}>
+                {existingDepartments.map((d) => <option key={d} value={d} />)}
+              </datalist>
+            </div>
+            <div className="mt-1.5">
               <p className="mb-1 text-[0.64rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>Reports To</p>
               <select
                 value={editManagerEmployeeId}
@@ -485,8 +520,13 @@ function EmployeeRow({ emp, currentUserId, modules, allEmployees, onDeleted }: {
             {emp.is_admin && <span className="mt-1 inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-[0.68rem] font-semibold text-slate-600">Admin</span>}
             {emp.is_manager && <span className="mt-1 ml-1 inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-[0.68rem] font-semibold text-emerald-700">Manager</span>}
             {emp.totp_enabled && <span className="mt-1 ml-1 inline-flex rounded-full bg-purple-50 px-2.5 py-1 text-[0.68rem] font-semibold text-purple-700">2FA</span>}
+            {emp.department && (
+              <p className="mt-1 text-[0.67rem] font-medium" style={{ color: "var(--module-context)" }}>
+                {emp.department}
+              </p>
+            )}
             {emp.manager_employee_id && (
-              <p className="mt-1 text-[0.67rem]" style={{ color: "var(--module-context)" }}>
+              <p className="mt-0.5 text-[0.67rem]" style={{ color: "var(--module-context)" }}>
                 Reports to: {allEmployees.find((e) => e.employee_id === emp.manager_employee_id)?.full_name ?? emp.manager_employee_id}
               </p>
             )}
@@ -502,7 +542,7 @@ function EmployeeRow({ emp, currentUserId, modules, allEmployees, onDeleted }: {
         {editing ? (
           <div className="flex items-center justify-end gap-2">
             <button
-              onClick={() => { setEditing(false); setEditTracks(emp.tracks ?? ["hr"]); setEditAdmin(emp.is_admin); setEditIsManager(emp.is_manager ?? false); setEditManagerEmployeeId(emp.manager_employee_id ?? ""); }}
+              onClick={() => { setEditing(false); setEditTracks(emp.tracks ?? ["hr"]); setEditAdmin(emp.is_admin); setEditIsManager(emp.is_manager ?? false); setEditManagerEmployeeId(emp.manager_employee_id ?? ""); setEditDepartment(emp.department ?? ""); }}
               disabled={saving}
               className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold transition-all hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-50"
               style={{ color: "var(--card-desc)" }}
@@ -1003,6 +1043,7 @@ export default function AdminPage() {
   const adminCount = employees?.filter((employee) => employee.is_admin).length ?? 0;
 
   const allEmployees = employees ?? [];
+  const departments = [...new Set(allEmployees.map((e) => e.department).filter(Boolean) as string[])].sort();
   const searchLower = searchQuery.trim().toLowerCase();
   const searchResults = searchLower
     ? [...allEmployees]
@@ -1083,7 +1124,7 @@ export default function AdminPage() {
       </div>
 
       <div className="mt-5 grid gap-5 xl:grid-cols-[1.15fr,0.85fr]">
-        <AddEmployeeForm onAdded={(message) => {
+        <AddEmployeeForm departments={departments} onAdded={(message) => {
           setToast({ message, tone: "success" });
           void mutate();
         }} />

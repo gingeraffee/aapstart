@@ -22,6 +22,7 @@ class EmployeeCreate(BaseModel):
     last_name: str
     tracks: list[str]
     is_admin: bool = False
+    department: str | None = None
 
 
 class EmployeeUpdate(BaseModel):
@@ -31,6 +32,7 @@ class EmployeeUpdate(BaseModel):
     is_admin: bool | None = None
     is_manager: bool | None = None
     manager_employee_id: str | None = None
+    department: str | None = None
 
 
 class EmployeeImportRow(BaseModel):
@@ -76,6 +78,7 @@ def _serialize(emp: Employee, db: Session) -> dict:
         "is_admin": emp.is_admin,
         "is_manager": bool(emp.is_manager),
         "manager_employee_id": emp.manager_employee_id,
+        "department": emp.department,
         "totp_enabled": bool(emp.totp_enabled),
         "created_at": emp.created_at.isoformat() if emp.created_at else None,
         "first_login_at": emp.first_login_at.isoformat() if emp.first_login_at else None,
@@ -137,6 +140,7 @@ def create_employee(
         last_name=payload.last_name.strip(),
         track=tracks,
         is_admin=payload.is_admin,
+        department=payload.department.strip() if payload.department else None,
         created_at=datetime.now(timezone.utc),
     )
     db.add(emp)
@@ -249,6 +253,8 @@ def update_employee(
         emp.is_manager = payload.is_manager
     if payload.manager_employee_id is not None:
         emp.manager_employee_id = payload.manager_employee_id if payload.manager_employee_id != "" else None
+    if payload.department is not None:
+        emp.department = payload.department.strip() if payload.department.strip() else None
     db.commit()
     db.refresh(emp)
     return _serialize(emp, db)

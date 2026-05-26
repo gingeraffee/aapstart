@@ -88,9 +88,20 @@ export interface User {
 export interface ManagerHoursSummary {
   employee_id: string;
   full_name: string;
+  department: string | null;
   regular_hours: number;
   ot_hours: number;
   pto_hours: number;
+}
+
+export interface ManagerTeamMember {
+  employee_id: string;
+  full_name: string;
+  tracks: string[];
+  department: string | null;
+  last_login_at: string | null;
+  first_login_at: string | null;
+  modules_completed: number;
 }
 
 export interface ManagerReview {
@@ -110,6 +121,7 @@ export interface ManagerDashboardData {
   hours_summary: ManagerHoursSummary[];
   upcoming_reviews: ManagerReview[];
   past_due_reviews: ManagerReview[];
+  team: ManagerTeamMember[];
 }
 
 export interface ImportResult {
@@ -128,6 +140,7 @@ export interface EmployeeRecord {
   is_admin: boolean;
   is_manager: boolean;
   manager_employee_id: string | null;
+  department: string | null;
   totp_enabled: boolean;
   created_at: string | null;
   first_login_at: string | null;

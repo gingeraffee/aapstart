@@ -7,7 +7,21 @@ import { useAuth } from "@/lib/context/AuthContext";
 import { managerApi } from "@/lib/api";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
-import type { ImportResult, ManagerDashboardData } from "@/lib/types";
+import type { ImportResult, ManagerDashboardData, ManagerTeamMember } from "@/lib/types";
+
+const TRACK_LABELS: Record<string, string> = {
+  hr: "HR",
+  warehouse: "Warehouse",
+  administrative: "Administrative",
+  management: "Management",
+};
+
+const TRACK_COLORS: Record<string, { bg: string; text: string }> = {
+  hr: { bg: "rgba(59,130,246,0.1)", text: "#1d4ed8" },
+  warehouse: { bg: "rgba(245,158,11,0.1)", text: "#92400e" },
+  administrative: { bg: "rgba(168,85,247,0.1)", text: "#7e22ce" },
+  management: { bg: "rgba(22,163,74,0.1)", text: "#15803d" },
+};
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -94,6 +108,119 @@ function SectionCard({ title, children, accent }: { title: string; children: Rea
         </h2>
       </div>
       {children}
+    </div>
+  );
+}
+
+// ── Team Roster ───────────────────────────────────────────────────────────────
+
+function EmployeeCard({ member }: { member: ManagerTeamMember }) {
+  const lastLogin = member.last_login_at
+    ? formatDate(member.last_login_at)
+    : member.first_login_at
+      ? "Never logged in"
+      : "Not yet enrolled";
+
+  return (
+    <div
+      className="rounded-[14px] p-4 transition-all duration-150"
+      style={{
+        background: "rgba(255,255,255,0.82)",
+        border: "1px solid rgba(153,182,218,0.28)",
+        boxShadow: "0 2px 6px rgba(12,24,47,0.05)",
+      }}
+    >
+      {/* Name + ID */}
+      <p className="text-[0.88rem] font-bold leading-tight" style={{ color: "var(--sidebar-text)" }}>
+        {member.full_name}
+      </p>
+      <p className="mt-0.5 text-[0.68rem]" style={{ color: "var(--sidebar-label)" }}>
+        {member.employee_id}
+      </p>
+
+      {/* Department */}
+      {member.department && (
+        <p className="mt-2 text-[0.74rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>
+          {member.department}
+        </p>
+      )}
+
+      {/* Track badges */}
+      <div className="mt-2 flex flex-wrap gap-1">
+        {member.tracks.map((t) => {
+          const color = TRACK_COLORS[t] ?? { bg: "rgba(100,116,139,0.1)", text: "#475569" };
+          return (
+            <span
+              key={t}
+              className="rounded-full px-2 py-0.5 text-[0.64rem] font-semibold"
+              style={{ background: color.bg, color: color.text }}
+            >
+              {TRACK_LABELS[t] ?? t}
+            </span>
+          );
+        })}
+      </div>
+
+      {/* Stats row */}
+      <div className="mt-3 flex items-center justify-between border-t pt-3" style={{ borderColor: "rgba(153,182,218,0.2)" }}>
+        <div>
+          <p className="text-[0.64rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>Last Login</p>
+          <p className="mt-0.5 text-[0.72rem] font-medium" style={{ color: "var(--sidebar-text)" }}>{lastLogin}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-[0.64rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>Modules</p>
+          <p className="mt-0.5 text-[0.72rem] font-medium" style={{ color: "var(--sidebar-text)" }}>{member.modules_completed} done</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TeamRosterView({ team }: { team: ManagerTeamMember[] }) {
+  if (team.length === 0) {
+    return (
+      <div className="py-16 text-center">
+        <p className="text-[0.85rem]" style={{ color: "var(--sidebar-label)" }}>
+          No team members assigned yet. Ask an admin to assign employees to you.
+        </p>
+      </div>
+    );
+  }
+
+  // Group by department; employees with no department go under "Unassigned"
+  const groups = new Map<string, ManagerTeamMember[]>();
+  for (const member of team) {
+    const key = member.department ?? "No Department";
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key)!.push(member);
+  }
+
+  // Sort: named departments alphabetically, "No Department" last
+  const sorted = [...groups.entries()].sort(([a], [b]) => {
+    if (a === "No Department") return 1;
+    if (b === "No Department") return -1;
+    return a.localeCompare(b);
+  });
+
+  return (
+    <div className="space-y-6">
+      {sorted.map(([dept, members]) => (
+        <div key={dept}>
+          <div className="mb-3 flex items-center gap-3">
+            <h2 className="text-[0.82rem] font-bold" style={{ color: "var(--sidebar-text)" }}>{dept}</h2>
+            <span
+              className="rounded-full px-2 py-0.5 text-[0.64rem] font-semibold"
+              style={{ background: "rgba(153,182,218,0.18)", color: "var(--sidebar-label)" }}
+            >
+              {members.length}
+            </span>
+            <div className="h-px flex-1" style={{ background: "rgba(153,182,218,0.25)" }} />
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {members.map((m) => <EmployeeCard key={m.employee_id} member={m} />)}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
@@ -252,6 +379,7 @@ export default function ManagerDashboardPage() {
   const [showImport, setShowImport] = useState(false);
 
   const canAccess = user?.is_manager || user?.is_admin;
+  const [activeTab, setActiveTab] = useState<"metrics" | "team">("metrics");
 
   useEffect(() => {
     if (!authLoading && !canAccess) {
@@ -329,6 +457,30 @@ export default function ManagerDashboardPage() {
             Import Data
           </button>
         </div>
+
+        {/* ── Tab switcher ── */}
+        <div
+          className="flex gap-1 self-start rounded-[12px] p-1"
+          style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", boxShadow: "var(--tab-group-shadow)" }}
+        >
+          {(["metrics", "team"] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className="rounded-[9px] px-5 py-1.5 text-[0.8rem] font-semibold capitalize transition-all duration-200"
+              style={{
+                color: activeTab === tab ? "var(--tab-text-active)" : "var(--tab-text)",
+                ...(activeTab === tab ? { background: "var(--tab-active-bg)", boxShadow: "var(--tab-active-shadow)" } : {}),
+              }}
+            >
+              {tab === "metrics" ? "Metrics" : "Team Roster"}
+            </button>
+          ))}
+        </div>
+
+        {activeTab === "team" ? (
+          <TeamRosterView team={dashboard?.team ?? []} />
+        ) : (<>
 
         {/* ── KPI Cards ── */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
@@ -489,6 +641,7 @@ export default function ManagerDashboardPage() {
             )}
           </SectionCard>
         </div>
+        </>)}
       </div>
     </>
   );
