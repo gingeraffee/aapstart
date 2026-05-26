@@ -6,7 +6,7 @@ from sqlalchemy import func as sa_func
 
 from app.auth.service import require_admin, normalize_tracks
 from app.database.connection import get_db
-from app.database.models import Employee, UserProgress, UserNote, TimeRecord, PerformanceReview
+from app.database.models import Employee, UserProgress, UserNote, TimeRecord, PerformanceReview, AbsenceRecord
 from app.content.loader import get_modules_for_tracks
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
@@ -450,6 +450,17 @@ def clear_performance_reviews(
 ):
     """Delete all uploaded performance review records so HR can re-upload a corrected file."""
     deleted = db.query(PerformanceReview).delete()
+    db.commit()
+    return {"deleted": deleted}
+
+
+@router.delete("/import/absences", status_code=status.HTTP_200_OK)
+def clear_absence_records(
+    admin: dict = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Delete all uploaded absence records so HR can re-upload a corrected file."""
+    deleted = db.query(AbsenceRecord).delete()
     db.commit()
     return {"deleted": deleted}
 

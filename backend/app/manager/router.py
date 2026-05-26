@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.auth.service import require_manager, normalize_tracks
 from app.database.connection import get_db
-from app.database.models import Employee, TimeRecord, PerformanceReview, UserProgress
+from app.database.models import Employee, TimeRecord, PerformanceReview, UserProgress, AbsenceRecord
 
 router = APIRouter(prefix="/api/manager", tags=["manager"])
 
@@ -156,10 +156,89 @@ def _map_row(raw_row: dict, col_map: dict) -> dict:
     return mapped
 
 
+_ABSENCE_COL_MAP = {
+    # Employee identifier
+    "employee_id": "employee_id",
+    "employeeid": "employee_id",
+    "employee_number": "employee_id",
+    "employeenumber": "employee_id",
+    "employee #": "employee_id",
+    "employee number": "employee_id",
+    "emp_id": "employee_id",
+    "id": "employee_id",
+    # Employee name (stored for reference)
+    "name": "employee_name",
+    "employee_name": "employee_name",
+    "full_name": "employee_name",
+    "employee name": "employee_name",
+    # Absence category
+    "category": "category",
+    "type": "category",
+    "absence_type": "category",
+    "leave_type": "category",
+    # First day of absence
+    "from": "from_date",
+    "from_date": "from_date",
+    "start_date": "from_date",
+    "start date": "from_date",
+    "absence_start": "from_date",
+    # Last day of absence
+    "to": "to_date",
+    "to_date": "to_date",
+    "end_date": "to_date",
+    "end date": "to_date",
+    "absence_end": "to_date",
+    # Date the request was submitted
+    "requested": "requested_date",
+    "requested_date": "requested_date",
+    "request_date": "requested_date",
+    "submitted": "requested_date",
+    "submitted_date": "requested_date",
+    "date_requested": "requested_date",
+    # Hours taken
+    "time_off": "time_off_hours",
+    "time off": "time_off_hours",
+    "hours": "time_off_hours",
+    "hours_taken": "time_off_hours",
+    "absence_hours": "time_off_hours",
+    "duration": "time_off_hours",
+}
+
+
 def _read_csv(contents: bytes) -> list[dict]:
     text = contents.decode("utf-8-sig")  # strip BOM if present
     reader = csv.DictReader(io.StringIO(text))
     return list(reader)
+
+
+def _read_xlsx(contents: bytes) -> list[dict]:
+    import openpyxl
+    wb = openpyxl.load_workbook(filename=io.BytesIO(contents), read_only=True, data_only=True)
+    sheet_name = "Time Off Used" if "Time Off Used" in wb.sheetnames else wb.sheetnames[0]
+    ws = wb[sheet_name]
+    rows_data = list(ws.iter_rows(values_only=True))
+    if not rows_data:
+        return []
+    headers = [str(h).strip() if h is not None else "" for h in rows_data[0]]
+    result = []
+    for row in rows_data[1:]:
+        if all(v is None for v in row):
+            continue
+        d: dict = {}
+        for i, val in enumerate(row):
+            if i >= len(headers):
+                break
+            # openpyxl returns datetime/date objects for date cells — convert to ISO strings
+            if hasattr(val, "date") and callable(val.date):
+                d[headers[i]] = val.date().isoformat()
+            elif hasattr(val, "isoformat"):
+                d[headers[i]] = val.isoformat()
+            elif val is None:
+                d[headers[i]] = ""
+            else:
+                d[headers[i]] = str(val).strip()
+        result.append(d)
+    return result
 
 
 # ── Import endpoints ──────────────────────────────────────────────────────────
@@ -328,6 +407,113 @@ async def import_reviews(
     return {"inserted": inserted, "skipped": skipped, "errors": errors}
 
 
+@router.post("/import/absences")
+async def import_absences(
+    file: UploadFile = File(...),
+    manager: dict = Depends(require_manager),
+    db: Session = Depends(get_db),
+):
+    """
+    Upload a time-off/absence report (XLSX or CSV).
+    Replaces all existing absence records for every employee present in the file.
+
+    Expected columns (flexible — see _ABSENCE_COL_MAP for accepted aliases):
+      Employee Number, Name, Category, From, To, Requested, Time Off
+    """
+    name = file.filename or ""
+    is_xlsx = name.lower().endswith(".xlsx")
+    is_csv = name.lower().endswith(".csv")
+    if not is_xlsx and not is_csv:
+        raise HTTPException(status_code=400, detail="File must be a .xlsx or .csv file.")
+
+    contents = await file.read()
+    try:
+        rows = _read_xlsx(contents) if is_xlsx else _read_csv(contents)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Could not parse file.")
+
+    if not rows:
+        raise HTTPException(status_code=400, detail="File is empty.")
+
+    imported_at = datetime.now(timezone.utc)
+    inserted = 0
+    skipped = 0
+    errors: list[dict] = []
+
+    # Collect valid employee IDs first so we can do a bulk delete before insert
+    seen_employee_ids: set[str] = set()
+    parsed_rows: list[dict] = []
+
+    for i, raw_row in enumerate(rows, start=2):
+        row = _map_row(raw_row, _ABSENCE_COL_MAP)
+
+        employee_id = str(row.get("employee_id", "")).strip()
+        if not employee_id:
+            errors.append({"row": i, "detail": "Missing employee number / ID."})
+            skipped += 1
+            continue
+
+        emp = db.query(Employee).filter_by(employee_id=employee_id).first()
+        if not emp:
+            errors.append({"row": i, "employee_id": employee_id, "detail": f"Employee '{employee_id}' not found — check the ID matches exactly."})
+            skipped += 1
+            continue
+
+        from_raw = str(row.get("from_date", "")).strip()
+        requested_raw = str(row.get("requested_date", "")).strip()
+
+        from_date = _parse_date(from_raw)
+        if not from_date:
+            errors.append({"row": i, "employee_id": employee_id, "detail": f"Cannot parse From date: '{from_raw}'."})
+            skipped += 1
+            continue
+
+        requested_date = _parse_date(requested_raw)
+        if not requested_date:
+            errors.append({"row": i, "employee_id": employee_id, "detail": f"Cannot parse Requested date: '{requested_raw}'."})
+            skipped += 1
+            continue
+
+        to_date = _parse_date(str(row.get("to_date", "")).strip())
+        time_off_hours = _parse_float(str(row.get("time_off_hours", "0")))
+        is_planned = requested_date < from_date
+
+        seen_employee_ids.add(employee_id)
+        parsed_rows.append({
+            "employee_id": employee_id,
+            "employee_name": str(row.get("employee_name", "")).strip() or None,
+            "category": str(row.get("category", "")).strip() or None,
+            "from_date": from_date,
+            "to_date": to_date,
+            "requested_date": requested_date,
+            "time_off_hours": time_off_hours,
+            "is_planned": is_planned,
+        })
+
+    # Delete all existing records for employees in this upload, then insert fresh
+    if seen_employee_ids:
+        db.query(AbsenceRecord).filter(
+            AbsenceRecord.employee_id.in_(seen_employee_ids)
+        ).delete(synchronize_session=False)
+
+    for pr in parsed_rows:
+        db.add(AbsenceRecord(
+            employee_id=pr["employee_id"],
+            employee_name=pr["employee_name"],
+            category=pr["category"],
+            from_date=pr["from_date"],
+            to_date=pr["to_date"],
+            requested_date=pr["requested_date"],
+            time_off_hours=pr["time_off_hours"],
+            is_planned=pr["is_planned"],
+            imported_at=imported_at,
+        ))
+        inserted += 1
+
+    db.commit()
+    return {"inserted": inserted, "skipped": skipped, "errors": errors}
+
+
 # ── Dashboard ─────────────────────────────────────────────────────────────────
 
 @router.get("/dashboard")
@@ -466,9 +652,59 @@ def get_manager_dashboard(
 
     last_updated_reviews = max((r.imported_at for r in reviews if r.imported_at), default=None)
 
-    # Single "last updated" = most recent import across either source
+    # ── Absences ──────────────────────────────────────────────────────────────
+    if weeks == 0:
+        absence_records = db.query(AbsenceRecord).filter(
+            AbsenceRecord.employee_id.in_(team_ids),
+        ).all()
+    else:
+        absence_records = db.query(AbsenceRecord).filter(
+            AbsenceRecord.employee_id.in_(team_ids),
+            AbsenceRecord.from_date >= cutoff,
+        ).all()
+
+    absence_by_emp: dict[str, dict] = {}
+    all_absence_dates: list[str] = []
+
+    for r in absence_records:
+        emp = team_by_id.get(r.employee_id)
+        if not emp:
+            continue
+        if r.employee_id not in absence_by_emp:
+            absence_by_emp[r.employee_id] = {
+                "employee_id": r.employee_id,
+                "full_name": f"{emp.first_name} {emp.last_name}",
+                "planned_count": 0,
+                "unplanned_count": 0,
+                "planned_hours": 0.0,
+                "unplanned_hours": 0.0,
+            }
+        if r.is_planned:
+            absence_by_emp[r.employee_id]["planned_count"] += 1
+            absence_by_emp[r.employee_id]["planned_hours"] += r.time_off_hours
+        else:
+            absence_by_emp[r.employee_id]["unplanned_count"] += 1
+            absence_by_emp[r.employee_id]["unplanned_hours"] += r.time_off_hours
+        all_absence_dates.append(r.from_date)
+
+    for d in absence_by_emp.values():
+        d["planned_hours"] = round(d["planned_hours"], 1)
+        d["unplanned_hours"] = round(d["unplanned_hours"], 1)
+
+    sorted_absence_dates = sorted(all_absence_dates)
+    absence_date_range: str | None = None
+    if sorted_absence_dates:
+        earliest = _fmt_iso_date(sorted_absence_dates[0])
+        latest = _fmt_iso_date(sorted_absence_dates[-1])
+        absence_date_range = f"{earliest} – {latest}" if earliest != latest else earliest
+
+    last_updated_absences = max(
+        (r.imported_at for r in absence_records if r.imported_at), default=None
+    )
+
+    # Single "last updated" = most recent import across any source
     last_updated = None
-    candidates = [t for t in [last_updated_time, last_updated_reviews] if t is not None]
+    candidates = [t for t in [last_updated_time, last_updated_reviews, last_updated_absences] if t is not None]
     if candidates:
         last_updated = max(candidates)
 
@@ -494,6 +730,9 @@ def get_manager_dashboard(
         for e in sorted(team, key=lambda x: (x.last_name, x.first_name))
     ]
 
+    total_planned = sum(v["planned_count"] for v in absence_by_emp.values())
+    total_unplanned = sum(v["unplanned_count"] for v in absence_by_emp.values())
+
     return {
         "team_size": len(team),
         "last_updated": last_updated.isoformat() if last_updated else None,
@@ -505,4 +744,9 @@ def get_manager_dashboard(
         "upcoming_reviews": upcoming,
         "past_due_reviews": past_due,
         "team": team_list,
+        "absence_summary": sorted(absence_by_emp.values(), key=lambda x: x["full_name"]),
+        "total_planned_absences": total_planned,
+        "total_unplanned_absences": total_unplanned,
+        "absence_date_range": absence_date_range,
+        "last_updated_absences": last_updated_absences.isoformat() if last_updated_absences else None,
     }

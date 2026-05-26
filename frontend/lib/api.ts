@@ -94,6 +94,7 @@ export const adminApi = {
   updateEmployeeNote: (employee_id: string, note_id: number, data: { status?: "open" | "answered"; admin_reply?: string }) =>
     request(`/admin/employees/${employee_id}/notes/${note_id}`, { method: "PATCH", body: JSON.stringify(data) }),
   clearTime: () => request<{ deleted: number }>("/admin/import/time", { method: "DELETE" }),
+  clearAbsences: () => request<{ deleted: number }>("/admin/import/absences", { method: "DELETE" }),
   clearReviews: () => request<{ deleted: number }>("/admin/import/reviews", { method: "DELETE" }),
 };
 
@@ -116,6 +117,7 @@ export const managerApi = {
     ),
   importTime: (file: File) => uploadFile<import("./types").ImportResult>("/manager/import/time", file),
   importReviews: (file: File) => uploadFile<import("./types").ImportResult>("/manager/import/reviews", file),
+  importAbsences: (file: File) => uploadFile<import("./types").ImportResult>("/manager/import/absences", file),
 };
 
 export const notesApi = {

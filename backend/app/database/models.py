@@ -85,6 +85,22 @@ class PerformanceReview(Base):
     imported_at = Column(DateTime, default=func.now())
 
 
+class AbsenceRecord(Base):
+    """Time-off/absence events imported from HRIS report. One row per absence occurrence."""
+    __tablename__ = "absence_records"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    employee_id = Column(String, nullable=False, index=True)
+    employee_name = Column(String, nullable=True)
+    category = Column(String, nullable=True)
+    from_date = Column(String, nullable=False)   # ISO date — first day of absence
+    to_date = Column(String, nullable=True)       # ISO date — last day of absence
+    requested_date = Column(String, nullable=False)  # ISO date — when request was submitted
+    time_off_hours = Column(Float, nullable=False, default=0.0)
+    is_planned = Column(Boolean, nullable=False)  # requested_date < from_date
+    imported_at = Column(DateTime, default=func.now())
+
+
 class UserNote(Base):
     """A note or question a user writes while working through a module."""
     __tablename__ = "user_notes"

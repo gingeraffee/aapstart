@@ -172,6 +172,23 @@ function downloadHoursTemplate() {
   URL.revokeObjectURL(url);
 }
 
+function downloadAbsencesTemplate() {
+  const csv = [
+    "Employee Number,Name,Category,From,To,Requested,Time Off",
+    "1001,\"Doe, Jane\",Vacation,2026-06-02,2026-06-06,2026-05-15,40",
+    "1002,\"Smith, John\",Absent (w/ point),2026-06-03,2026-06-03,2026-06-03,8",
+    "1003,\"Lee, Maria\",Personal,2026-06-10,2026-06-10,2026-06-05,8",
+    "",
+  ].join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "absences-upload-template.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 function downloadReviewsTemplate() {
   const csv = [
     "employee_id,review_type,due_date,completed,completed_date",
@@ -1040,6 +1057,8 @@ function UploadPanel({
   result,
   error,
   onClear,
+  accept = ".csv,text/csv",
+  fileTypeLabel = "CSV",
 }: {
   title: string;
   columns: string;
@@ -1051,6 +1070,8 @@ function UploadPanel({
   result: ImportResult | null;
   error: string | null;
   onClear?: () => Promise<void>;
+  accept?: string;
+  fileTypeLabel?: string;
 }) {
   const [confirming, setConfirming] = useState(false);
   const [clearing, setClearing] = useState(false);
@@ -1075,14 +1096,14 @@ function UploadPanel({
         style={{ borderColor: "rgba(14,165,233,0.35)", background: "rgba(14,165,233,0.04)" }}
       >
         <span className="text-[0.82rem] font-semibold" style={{ color: "var(--heading-color)" }}>
-          {file ? file.name : "Choose a CSV file"}
+          {file ? file.name : `Choose a ${fileTypeLabel} file`}
         </span>
         <span className="mt-0.5 text-[0.72rem]" style={{ color: "var(--card-desc)" }}>
           {file ? `${(file.size / 1024).toFixed(1)} KB` : "Click to browse"}
         </span>
         <input
           type="file"
-          accept=".csv,text/csv"
+          accept={accept}
           className="hidden"
           onChange={(e) => onFileChange(e.target.files?.[0] ?? null)}
         />
@@ -1161,12 +1182,16 @@ function UploadPanel({
 function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success" | "error") => void }) {
   const [hoursFile, setHoursFile] = useState<File | null>(null);
   const [reviewsFile, setReviewsFile] = useState<File | null>(null);
+  const [absencesFile, setAbsencesFile] = useState<File | null>(null);
   const [hoursResult, setHoursResult] = useState<ImportResult | null>(null);
   const [reviewsResult, setReviewsResult] = useState<ImportResult | null>(null);
+  const [absencesResult, setAbsencesResult] = useState<ImportResult | null>(null);
   const [hoursLoading, setHoursLoading] = useState(false);
   const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [absencesLoading, setAbsencesLoading] = useState(false);
   const [hoursError, setHoursError] = useState<string | null>(null);
   const [reviewsError, setReviewsError] = useState<string | null>(null);
+  const [absencesError, setAbsencesError] = useState<string | null>(null);
 
   async function uploadHours() {
     if (!hoursFile) return;
@@ -1204,6 +1229,24 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
     }
   }
 
+  async function uploadAbsences() {
+    if (!absencesFile) return;
+    setAbsencesLoading(true);
+    setAbsencesError(null);
+    setAbsencesResult(null);
+    try {
+      const result = await managerApi.importAbsences(absencesFile);
+      setAbsencesResult(result);
+      onToast(`Absences uploaded — ${result.inserted} records imported.`);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Upload failed.";
+      setAbsencesError(msg);
+      onToast(msg, "error");
+    } finally {
+      setAbsencesLoading(false);
+    }
+  }
+
   return (
     <div className="relative overflow-hidden rounded-[24px] p-6 lg:p-7" style={cardStyle()}>
       <div className="absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,#0ea5d9_0%,#22d3ee_62%,#df0030_100%)]" />
@@ -1213,7 +1256,7 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
             Weekly HR Upload
           </p>
           <h2 className="mt-3 text-[1.12rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>
-            Push hours and reviews to all manager dashboards
+            Push hours, reviews, and attendance to all manager dashboards
           </h2>
           <p className="mt-1 text-[0.82rem] leading-[1.6]" style={{ color: "var(--card-desc)" }}>
             Upload one file for each type at the start of each week. Data routes automatically to each manager based on their assigned team — no manual sorting needed.
@@ -1221,7 +1264,7 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
         </div>
       </div>
 
-      <div className="mt-5 grid gap-5 lg:grid-cols-2">
+      <div className="mt-5 grid gap-5 lg:grid-cols-3">
         <UploadPanel
           title="Hours & Time Off"
           columns="employee_name · employee_id · week_start (optional) · regular_hours · ot_hours · vacation_hours · personal_hours · other_hours"
@@ -1252,6 +1295,24 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
             await adminApi.clearReviews();
             setReviewsResult(null);
             onToast("Reviews data cleared from all dashboards.");
+          }}
+        />
+        <UploadPanel
+          title="Planned vs. Unplanned Absences"
+          columns="Employee Number · Name · Category · From · To · Requested · Time Off"
+          onDownload={downloadAbsencesTemplate}
+          file={absencesFile}
+          onFileChange={setAbsencesFile}
+          onUpload={uploadAbsences}
+          loading={absencesLoading}
+          result={absencesResult}
+          error={absencesError}
+          accept=".xlsx,.csv,text/csv"
+          fileTypeLabel="XLSX or CSV"
+          onClear={async () => {
+            await adminApi.clearAbsences();
+            setAbsencesResult(null);
+            onToast("Absence data cleared from all dashboards.");
           }}
         />
       </div>

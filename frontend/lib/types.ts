@@ -116,6 +116,15 @@ export interface ManagerReview {
   days_overdue?: number;
 }
 
+export interface AbsenceEmployeeSummary {
+  employee_id: string;
+  full_name: string;
+  planned_count: number;
+  unplanned_count: number;
+  planned_hours: number;
+  unplanned_hours: number;
+}
+
 export interface ManagerDashboardData {
   team_size: number;
   last_updated: string | null;
@@ -127,6 +136,11 @@ export interface ManagerDashboardData {
   upcoming_reviews: ManagerReview[];
   past_due_reviews: ManagerReview[];
   team: ManagerTeamMember[];
+  absence_summary: AbsenceEmployeeSummary[];
+  total_planned_absences: number;
+  total_unplanned_absences: number;
+  absence_date_range: string | null;
+  last_updated_absences: string | null;
 }
 
 export interface ImportResult {
