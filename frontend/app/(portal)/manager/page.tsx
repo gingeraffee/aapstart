@@ -1355,14 +1355,6 @@ export default function ManagerDashboardPage() {
                 <KpiCard label="Past Due" value={filteredPastDue.length} accent={filteredPastDue.length > 0 ? "#dc2626" : undefined} onClick={() => document.getElementById("reviews-section")?.scrollIntoView({ behavior: "smooth", block: "start" })} />
               </div>
 
-              {/* Staffing signals */}
-              <StaffingSignals
-                hours={filteredHours}
-                teamSize={dashboard?.team_size ?? 0}
-                upcomingReviews={filteredUpcoming.length}
-                pastDue={filteredPastDue.length}
-              />
-
               {/* ── Section: Action Items ── */}
               <div className="flex items-center gap-3">
                 <span className="text-[0.62rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--sidebar-label)" }}>Action Items</span>
