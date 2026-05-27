@@ -148,7 +148,7 @@ function KpiCard({ label, value, sub, accent, onClick }: { label: string; value:
       tabIndex={onClick ? 0 : undefined}
       onClick={onClick}
       onKeyDown={onClick ? (e) => { if (e.key === "Enter" || e.key === " ") onClick(); } : undefined}
-      className="rounded-[14px] p-4 transition-opacity duration-150"
+      className={cn("group rounded-[14px] p-4 transition-all duration-150", onClick ? "hover:shadow-[0_4px_16px_rgba(12,24,47,0.12)]" : "")}
       style={{
         background: "rgba(255,255,255,0.72)",
         border: "1px solid rgba(153,182,218,0.28)",
@@ -166,7 +166,7 @@ function KpiCard({ label, value, sub, accent, onClick }: { label: string; value:
         <p className="mt-1 text-[0.66rem]" style={{ color: "var(--sidebar-label)" }}>{sub}</p>
       )}
       {onClick && (
-        <p className="mt-1 text-[0.6rem] font-medium" style={{ color: "var(--sidebar-label)", opacity: 0.7 }}>click to view ↓</p>
+        <div className="mt-1.5 h-px rounded-full opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "var(--sidebar-label)" }} />
       )}
     </div>
   );
@@ -390,15 +390,6 @@ function StaffingSignals({
       text: `${noHours.length} employee${noHours.length > 1 ? "s" : ""} with no regular hours — check upload`,
       tone: "warning",
     });
-  }
-  if (upcomingReviews > 0) {
-    signals.push({
-      icon: "📋",
-      text: `${upcomingReviews} upcoming review${upcomingReviews > 1 ? "s" : ""}${pastDue > 0 ? ` · ${pastDue} past due` : ""}`,
-      tone: pastDue > 0 ? "danger" : "info",
-    });
-  } else if (pastDue > 0) {
-    signals.push({ icon: "🚨", text: `${pastDue} review${pastDue > 1 ? "s" : ""} past due`, tone: "danger" });
   }
 
   if (signals.length === 0) return null;
@@ -665,18 +656,10 @@ function ThresholdAlertsCard({ team, onClickEmployee }: {
         className="flex w-full items-center justify-between px-5 py-4 transition-opacity hover:opacity-80"
       >
         <span className="text-[0.8rem] font-bold" style={{ color: "var(--sidebar-text)" }}>Attendance Threshold Alerts</span>
-        <div className="flex items-center gap-2">
-          {atThreshold.length > 0 && (
-            <span className="rounded-full px-2 py-0.5 text-[0.66rem] font-bold tabular-nums"
-              style={{ background: "rgba(220,38,38,0.1)", color: "#dc2626" }}>
-              {atThreshold.length}
-            </span>
-          )}
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
-            style={{ color: "var(--sidebar-label)", transform: expanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>
-            <path d="M2 4l4 4 4-4" />
-          </svg>
-        </div>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+          style={{ color: "var(--sidebar-label)", transform: expanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>
+          <path d="M2 4l4 4 4-4" />
+        </svg>
       </button>
       {expanded && (
         atThreshold.length === 0 ? (
@@ -1222,7 +1205,7 @@ export default function ManagerDashboardPage() {
 
       {/* ── Filter / control bar ── */}
       <div className="flex flex-wrap items-center gap-2.5">
-        <div className="relative flex-1" style={{ minWidth: "180px" }}>
+        <div className="relative" style={{ width: "260px", minWidth: "160px" }}>
           <svg className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--sidebar-label)" }}>
             <circle cx="6.5" cy="6.5" r="4.5" /><path d="M10.5 10.5L14 14" />
           </svg>
@@ -1380,6 +1363,12 @@ export default function ManagerDashboardPage() {
                 pastDue={filteredPastDue.length}
               />
 
+              {/* ── Section: Action Items ── */}
+              <div className="flex items-center gap-3">
+                <span className="text-[0.62rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--sidebar-label)" }}>Action Items</span>
+                <div className="flex-1 h-px" style={{ background: "rgba(153,182,218,0.25)" }} />
+              </div>
+
               {/* Reviews + Threshold alerts */}
               <div id="reviews-section" className="grid gap-4 lg:grid-cols-2">
                 {/* Reviews column */}
@@ -1421,18 +1410,10 @@ export default function ManagerDashboardPage() {
                       <span className="text-[0.8rem] font-bold" style={{ color: "var(--sidebar-text)" }}>
                         Upcoming Performance Reviews ({filteredUpcoming.length})
                       </span>
-                      <div className="flex items-center gap-2">
-                        {filteredUpcoming.length > 0 && (
-                          <span className="rounded-full px-2 py-0.5 text-[0.66rem] font-bold tabular-nums"
-                            style={{ background: "rgba(14,109,163,0.1)", color: "#0f6da3" }}>
-                            {filteredUpcoming.length}
-                          </span>
-                        )}
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
-                          style={{ color: "var(--sidebar-label)", transform: upcomingExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>
-                          <path d="M2 4l4 4 4-4" />
-                        </svg>
-                      </div>
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+                        style={{ color: "var(--sidebar-label)", transform: upcomingExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>
+                        <path d="M2 4l4 4 4-4" />
+                      </svg>
                     </button>
                     {upcomingExpanded && (
                       <div style={{ borderTop: "1px solid rgba(153,182,218,0.18)" }}>
@@ -1472,6 +1453,12 @@ export default function ManagerDashboardPage() {
                 {dashboard && (
                   <ThresholdAlertsCard team={dashboard.team} onClickEmployee={handleThresholdClick} />
                 )}
+              </div>
+
+              {/* ── Section: Analytics ── */}
+              <div className="flex items-center gap-3">
+                <span className="text-[0.62rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--sidebar-label)" }}>Analytics</span>
+                <div className="flex-1 h-px" style={{ background: "rgba(153,182,218,0.25)" }} />
               </div>
 
               {/* Insights row */}
