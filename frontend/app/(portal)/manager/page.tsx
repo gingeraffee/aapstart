@@ -1067,6 +1067,7 @@ export default function ManagerDashboardPage() {
   const [deptFilter, setDeptFilter] = useState("all");
   const [selectedEmployee, setSelectedEmployee] = useState<ManagerTeamMemberV2 | null>(null);
   const [thresholdFilter, setThresholdFilter] = useState<string[]>([]);
+  const [hoursExpanded, setHoursExpanded] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !canAccess) router.replace("/overview");
@@ -1349,6 +1350,84 @@ export default function ManagerDashboardPage() {
                 <KpiCard label="Past Due" value={filteredPastDue.length} accent={filteredPastDue.length > 0 ? "#dc2626" : undefined} onClick={() => document.getElementById("reviews-section")?.scrollIntoView({ behavior: "smooth", block: "start" })} />
               </div>
 
+              {/* Staffing signals */}
+              <StaffingSignals
+                hours={filteredHours}
+                teamSize={dashboard?.team_size ?? 0}
+                upcomingReviews={filteredUpcoming.length}
+                pastDue={filteredPastDue.length}
+              />
+
+              {/* Reviews + Threshold alerts */}
+              <div id="reviews-section" className="grid gap-4 lg:grid-cols-2">
+                {/* Reviews column */}
+                <div className="space-y-4">
+                  <Card title={`Past Due Reviews (${filteredPastDue.length})`} accent={filteredPastDue.length > 0 ? "#dc2626" : undefined}>
+                    {!dashboard || dashboard.past_due_reviews.length === 0 ? (
+                      <div className="px-5 py-6 text-center">
+                        <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No past due reviews.</p>
+                      </div>
+                    ) : filteredPastDue.length === 0 ? (
+                      <div className="px-5 py-6 text-center">
+                        <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No employees match your search.</p>
+                      </div>
+                    ) : (
+                      <ul>
+                        {filteredPastDue.map((r, i) => (
+                          <li key={i} className="flex items-center justify-between gap-3 px-5 py-3"
+                            style={{ borderBottom: i < filteredPastDue.length - 1 ? "1px solid rgba(153,182,218,0.12)" : "none" }}>
+                            <div className="min-w-0">
+                              <p className="truncate text-[0.82rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>{r.full_name}</p>
+                              <p className="text-[0.68rem]" style={{ color: "var(--sidebar-label)" }}>
+                                {reviewTypeBadge(r.review_type)} · Was due {formatDate(r.due_date)}
+                              </p>
+                            </div>
+                            <span className="shrink-0 rounded-full px-2.5 py-1 text-[0.66rem] font-bold"
+                              style={{ background: "rgba(220,38,38,0.1)", color: "#dc2626" }}>
+                              {r.days_overdue}d overdue
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </Card>
+                  <Card title={`Upcoming Performance Reviews (${filteredUpcoming.length})`}>
+                    {!dashboard || dashboard.upcoming_reviews.length === 0 ? (
+                      <div className="px-5 py-6 text-center">
+                        <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No upcoming reviews.</p>
+                      </div>
+                    ) : filteredUpcoming.length === 0 ? (
+                      <div className="px-5 py-6 text-center">
+                        <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No employees match your search.</p>
+                      </div>
+                    ) : (
+                      <ul>
+                        {filteredUpcoming.map((r, i) => (
+                          <li key={i} className="flex items-center justify-between gap-3 px-5 py-3"
+                            style={{ borderBottom: i < filteredUpcoming.length - 1 ? "1px solid rgba(153,182,218,0.12)" : "none" }}>
+                            <div className="min-w-0">
+                              <p className="truncate text-[0.82rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>{r.full_name}</p>
+                              <p className="text-[0.68rem]" style={{ color: "var(--sidebar-label)" }}>
+                                {reviewTypeBadge(r.review_type)} · Due {formatDate(r.due_date)}
+                              </p>
+                            </div>
+                            <span className="shrink-0 rounded-full px-2.5 py-1 text-[0.66rem] font-bold"
+                              style={{ background: `${daysUntilColor(r.days_until ?? 0)}18`, color: daysUntilColor(r.days_until ?? 0) }}>
+                              {r.days_until === 0 ? "Today" : `${r.days_until}d`}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </Card>
+                </div>
+
+                {/* Threshold alerts column */}
+                {dashboard && (
+                  <ThresholdAlertsCard team={dashboard.team} onClickEmployee={handleThresholdClick} />
+                )}
+              </div>
+
               {/* Insights row */}
               {filteredHours.length > 0 && (
                 <div className="grid gap-4 lg:grid-cols-3">
@@ -1357,160 +1436,105 @@ export default function ManagerDashboardPage() {
                   <LeaderboardCard title="Most Time Off Used" entries={topPto} accent="#0ea5e9" emptyMsg="No time off recorded this period." />
                 </div>
               )}
+
+              {/* Absence overview */}
+              <AbsenceCard
+                data={filteredCategoryData}
+                dateRange={dashboard?.absence_date_range ?? null}
+              />
+
+              {/* Hours detail — collapsed by default */}
+              <div>
+                <button
+                  onClick={() => setHoursExpanded(e => !e)}
+                  className="flex w-full items-center justify-between rounded-[14px] px-5 py-3.5 text-[0.8rem] font-semibold transition-opacity hover:opacity-80"
+                  style={{
+                    background: "rgba(255,255,255,0.72)",
+                    border: "1px solid rgba(153,182,218,0.28)",
+                    boxShadow: "0 2px 8px rgba(12,24,47,0.06)",
+                    color: "var(--sidebar-text)",
+                  }}
+                >
+                  <span>Hours Detail{periodLabel ? ` — ${periodLabel}` : ""}</span>
+                  <div className="flex items-center gap-2" style={{ color: "var(--sidebar-label)" }}>
+                    <span className="text-[0.72rem] font-normal">{hoursExpanded ? "collapse" : `${filteredHours.length} employees`}</span>
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+                      style={{ transform: hoursExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>
+                      <path d="M2 4l4 4 4-4" />
+                    </svg>
+                  </div>
+                </button>
+                {hoursExpanded && (
+                  <div className="mt-2 overflow-hidden rounded-[14px]" style={{ border: "1px solid rgba(153,182,218,0.28)", background: "rgba(255,255,255,0.72)", boxShadow: "0 2px 8px rgba(12,24,47,0.06)" }}>
+                    {!dashboard || dashboard.hours_summary.length === 0 ? (
+                      <div className="px-5 py-8 text-center">
+                        <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>
+                          No time data yet. HR uploads the weekly hours file each Monday.
+                        </p>
+                      </div>
+                    ) : filteredHours.length === 0 ? (
+                      <div className="px-5 py-8 text-center">
+                        <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No employees match your search.</p>
+                      </div>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-[0.8rem]">
+                          <thead>
+                            <tr style={{ borderBottom: "1px solid rgba(153,182,218,0.2)" }}>
+                              {["Employee", "Regular", "OT", "Vacation", "Personal", "Abs w/Pt", "Protected", "Other", "Uploads"].map(h => (
+                                <th key={h}
+                                  className={cn("px-4 py-3 text-[0.64rem] font-bold uppercase tracking-[0.1em]", h !== "Employee" ? "text-right" : "text-left")}
+                                  style={{ color: "var(--sidebar-label)" }}>
+                                  {h}
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {filteredHours.map((emp, i) => {
+                              const v2 = emp as ManagerHoursSummaryV2;
+                              return (
+                                <tr key={emp.employee_id} style={{ borderBottom: i < filteredHours.length - 1 ? "1px solid rgba(153,182,218,0.12)" : "none" }}>
+                                  <td className="px-4 py-3 font-semibold" style={{ color: "var(--sidebar-text)" }}>
+                                    {emp.full_name}
+                                    <span className="ml-2 text-[0.65rem] font-normal" style={{ color: "var(--sidebar-label)" }}>{emp.employee_id}</span>
+                                  </td>
+                                  <td className="px-4 py-3 text-right tabular-nums" style={{ color: "var(--sidebar-text)" }}>{emp.regular_hours.toFixed(1)}</td>
+                                  <td className="px-4 py-3 text-right tabular-nums font-semibold" style={{ color: emp.ot_hours > 0 ? "#d97706" : "var(--sidebar-label)" }}>{emp.ot_hours.toFixed(1)}</td>
+                                  <td className="px-4 py-3 text-right tabular-nums" style={{ color: emp.vacation_hours > 0 ? "#0ea5e9" : "var(--sidebar-label)" }}>{emp.vacation_hours.toFixed(1)}</td>
+                                  <td className="px-4 py-3 text-right tabular-nums" style={{ color: emp.personal_hours > 0 ? "#8b5cf6" : "var(--sidebar-label)" }}>{emp.personal_hours.toFixed(1)}</td>
+                                  <td className="px-4 py-3 text-right tabular-nums" style={{ color: (v2.absent_w_point_hours ?? 0) > 0 ? "#dc2626" : "var(--sidebar-label)" }}>{(v2.absent_w_point_hours ?? 0).toFixed(1)}</td>
+                                  <td className="px-4 py-3 text-right tabular-nums" style={{ color: (v2.protected_hours ?? 0) > 0 ? "#16a34a" : "var(--sidebar-label)" }}>{(v2.protected_hours ?? 0).toFixed(1)}</td>
+                                  <td className="px-4 py-3 text-right tabular-nums" style={{ color: emp.other_hours > 0 ? "#f59e0b" : "var(--sidebar-label)" }}>{emp.other_hours.toFixed(1)}</td>
+                                  <td className="px-4 py-3 text-right tabular-nums text-[0.72rem]"
+                                    style={{ color: emp.weeks_included < (dashboard?.hours_week_count ?? 1) ? "#d97706" : "var(--sidebar-label)" }}>
+                                    {emp.weeks_included}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                          <tfoot>
+                            <tr style={{ borderTop: "1px solid rgba(153,182,218,0.25)", background: "rgba(153,182,218,0.06)" }}>
+                              <td className="px-4 py-3 text-[0.72rem] font-bold" style={{ color: "var(--sidebar-label)" }}>Team Total</td>
+                              <td className="px-4 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalReg.toFixed(1)}</td>
+                              <td className="px-4 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: totalOt > 0 ? "#d97706" : "var(--sidebar-text)" }}>{totalOt.toFixed(1)}</td>
+                              <td className="px-4 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalVacation.toFixed(1)}</td>
+                              <td className="px-4 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalPersonal.toFixed(1)}</td>
+                              <td className="px-4 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalAbsWPt.toFixed(1)}</td>
+                              <td className="px-4 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalProtected.toFixed(1)}</td>
+                              <td className="px-4 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalOther.toFixed(1)}</td>
+                              <td />
+                            </tr>
+                          </tfoot>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </>
           )}
-
-          {/* Staffing signals */}
-          <StaffingSignals
-            hours={filteredHours}
-            teamSize={dashboard?.team_size ?? 0}
-            upcomingReviews={filteredUpcoming.length}
-            pastDue={filteredPastDue.length}
-          />
-
-          {/* Threshold alerts */}
-          {dashboard && (
-            <ThresholdAlertsCard team={dashboard.team} onClickEmployee={handleThresholdClick} />
-          )}
-
-          {/* Absence overview */}
-          <AbsenceCard
-            data={filteredCategoryData}
-            dateRange={dashboard?.absence_date_range ?? null}
-          />
-
-          {/* Full hours detail table */}
-          <Card title={`Hours Detail${periodLabel ? ` — ${periodLabel}` : ""}`}>
-            {!dashboard || dashboard.hours_summary.length === 0 ? (
-              <div className="px-5 py-8 text-center">
-                <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>
-                  No time data yet. HR uploads the weekly hours file each Monday.
-                </p>
-              </div>
-            ) : filteredHours.length === 0 ? (
-              <div className="px-5 py-8 text-center">
-                <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No employees match your search.</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-[0.8rem]">
-                  <thead>
-                    <tr style={{ borderBottom: "1px solid rgba(153,182,218,0.2)" }}>
-                      {["Employee", "Regular", "OT", "Vacation", "Personal", "Abs w/Pt", "Protected", "Other", "Uploads"].map(h => (
-                        <th key={h}
-                          className={cn("px-4 py-3 text-[0.64rem] font-bold uppercase tracking-[0.1em]", h !== "Employee" ? "text-right" : "text-left")}
-                          style={{ color: "var(--sidebar-label)" }}>
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredHours.map((emp, i) => {
-                      const v2 = emp as ManagerHoursSummaryV2;
-                      return (
-                        <tr key={emp.employee_id} style={{ borderBottom: i < filteredHours.length - 1 ? "1px solid rgba(153,182,218,0.12)" : "none" }}>
-                          <td className="px-4 py-3 font-semibold" style={{ color: "var(--sidebar-text)" }}>
-                            {emp.full_name}
-                            <span className="ml-2 text-[0.65rem] font-normal" style={{ color: "var(--sidebar-label)" }}>{emp.employee_id}</span>
-                          </td>
-                          <td className="px-4 py-3 text-right tabular-nums" style={{ color: "var(--sidebar-text)" }}>{emp.regular_hours.toFixed(1)}</td>
-                          <td className="px-4 py-3 text-right tabular-nums font-semibold" style={{ color: emp.ot_hours > 0 ? "#d97706" : "var(--sidebar-label)" }}>{emp.ot_hours.toFixed(1)}</td>
-                          <td className="px-4 py-3 text-right tabular-nums" style={{ color: emp.vacation_hours > 0 ? "#0ea5e9" : "var(--sidebar-label)" }}>{emp.vacation_hours.toFixed(1)}</td>
-                          <td className="px-4 py-3 text-right tabular-nums" style={{ color: emp.personal_hours > 0 ? "#8b5cf6" : "var(--sidebar-label)" }}>{emp.personal_hours.toFixed(1)}</td>
-                          <td className="px-4 py-3 text-right tabular-nums" style={{ color: (v2.absent_w_point_hours ?? 0) > 0 ? "#dc2626" : "var(--sidebar-label)" }}>{(v2.absent_w_point_hours ?? 0).toFixed(1)}</td>
-                          <td className="px-4 py-3 text-right tabular-nums" style={{ color: (v2.protected_hours ?? 0) > 0 ? "#16a34a" : "var(--sidebar-label)" }}>{(v2.protected_hours ?? 0).toFixed(1)}</td>
-                          <td className="px-4 py-3 text-right tabular-nums" style={{ color: emp.other_hours > 0 ? "#f59e0b" : "var(--sidebar-label)" }}>{emp.other_hours.toFixed(1)}</td>
-                          <td className="px-4 py-3 text-right tabular-nums text-[0.72rem]"
-                            style={{ color: emp.weeks_included < (dashboard?.hours_week_count ?? 1) ? "#d97706" : "var(--sidebar-label)" }}>
-                            {emp.weeks_included}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                  <tfoot>
-                    <tr style={{ borderTop: "1px solid rgba(153,182,218,0.25)", background: "rgba(153,182,218,0.06)" }}>
-                      <td className="px-4 py-3 text-[0.72rem] font-bold" style={{ color: "var(--sidebar-label)" }}>Team Total</td>
-                      <td className="px-4 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalReg.toFixed(1)}</td>
-                      <td className="px-4 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: totalOt > 0 ? "#d97706" : "var(--sidebar-text)" }}>{totalOt.toFixed(1)}</td>
-                      <td className="px-4 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalVacation.toFixed(1)}</td>
-                      <td className="px-4 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalPersonal.toFixed(1)}</td>
-                      <td className="px-4 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalAbsWPt.toFixed(1)}</td>
-                      <td className="px-4 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalProtected.toFixed(1)}</td>
-                      <td className="px-4 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalOther.toFixed(1)}</td>
-                      <td />
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            )}
-          </Card>
-
-          {/* Reviews */}
-          <div id="reviews-section" className="grid gap-4 lg:grid-cols-2">
-            <Card title={`Upcoming Performance Reviews (${filteredUpcoming.length})`}>
-              {!dashboard || dashboard.upcoming_reviews.length === 0 ? (
-                <div className="px-5 py-8 text-center">
-                  <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No upcoming reviews.</p>
-                </div>
-              ) : filteredUpcoming.length === 0 ? (
-                <div className="px-5 py-8 text-center">
-                  <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No employees match your search.</p>
-                </div>
-              ) : (
-                <ul>
-                  {filteredUpcoming.map((r, i) => (
-                    <li key={i} className="flex items-center justify-between gap-3 px-5 py-3.5"
-                      style={{ borderBottom: i < filteredUpcoming.length - 1 ? "1px solid rgba(153,182,218,0.12)" : "none" }}>
-                      <div className="min-w-0">
-                        <p className="truncate text-[0.82rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>{r.full_name}</p>
-                        <p className="text-[0.68rem]" style={{ color: "var(--sidebar-label)" }}>
-                          {reviewTypeBadge(r.review_type)} · Due {formatDate(r.due_date)}
-                        </p>
-                      </div>
-                      <span className="shrink-0 rounded-full px-2.5 py-1 text-[0.66rem] font-bold"
-                        style={{ background: `${daysUntilColor(r.days_until ?? 0)}18`, color: daysUntilColor(r.days_until ?? 0) }}>
-                        {r.days_until === 0 ? "Today" : `${r.days_until}d`}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </Card>
-
-            <Card title={`Past Due Reviews (${filteredPastDue.length})`} accent={filteredPastDue.length > 0 ? "#dc2626" : undefined}>
-              {!dashboard || dashboard.past_due_reviews.length === 0 ? (
-                <div className="px-5 py-8 text-center">
-                  <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No past due reviews.</p>
-                </div>
-              ) : filteredPastDue.length === 0 ? (
-                <div className="px-5 py-8 text-center">
-                  <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No employees match your search.</p>
-                </div>
-              ) : (
-                <ul>
-                  {filteredPastDue.map((r, i) => (
-                    <li key={i} className="flex items-center justify-between gap-3 px-5 py-3.5"
-                      style={{ borderBottom: i < filteredPastDue.length - 1 ? "1px solid rgba(153,182,218,0.12)" : "none" }}>
-                      <div className="min-w-0">
-                        <p className="truncate text-[0.82rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>{r.full_name}</p>
-                        <p className="text-[0.68rem]" style={{ color: "var(--sidebar-label)" }}>
-                          {reviewTypeBadge(r.review_type)} · Was due {formatDate(r.due_date)}
-                        </p>
-                      </div>
-                      <span className="shrink-0 rounded-full px-2.5 py-1 text-[0.66rem] font-bold"
-                        style={{ background: "rgba(220,38,38,0.1)", color: "#dc2626" }}>
-                        {r.days_overdue}d overdue
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </Card>
-          </div>
-        </>
-      )}
 
       {/* ── Employee Detail Panel (all tabs) ── */}
       {selectedEmployee && (
