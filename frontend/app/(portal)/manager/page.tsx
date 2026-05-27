@@ -1535,6 +1535,8 @@ export default function ManagerDashboardPage() {
               </div>
             </>
           )}
+        </>
+      )}
 
       {/* ── Employee Detail Panel (all tabs) ── */}
       {selectedEmployee && (
