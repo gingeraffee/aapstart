@@ -125,17 +125,14 @@ class AttendancePoint(Base):
 
 
 class WoshReport(Base):
-    """Stores uploaded WOSH (out-of-shift) Excel workbook data, one row per upload."""
+    """Stores uploaded WOSH (shift exception) Excel workbook data, one row per upload."""
     __tablename__ = "wosh_reports"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    week_label = Column(String, nullable=True)  # e.g. "Week of 2025-03-01"
-    sheet1_name = Column(String, nullable=True)
-    sheet1_data = Column(JSON, nullable=True)   # [{col: val, ...}, ...]
-    sheet2_name = Column(String, nullable=True)
-    sheet2_data = Column(JSON, nullable=True)
-    sheet3_name = Column(String, nullable=True)
-    sheet3_data = Column(JSON, nullable=True)
+    week_label = Column(String, nullable=True)   # e.g. "Week of May 18–22, 2026"
+    week_start = Column(String, nullable=True)   # ISO date derived from exceptions sheet
+    week_end = Column(String, nullable=True)     # ISO date derived from exceptions sheet
+    parsed_data = Column(JSON, nullable=True)    # structured: summary, chart, top_employees, by_manager_detail, exceptions
     uploaded_by = Column(String, nullable=True)  # employee_id
     uploaded_at = Column(DateTime, default=func.now())
 

@@ -1,652 +1,715 @@
 "use client";
 
-import { useState, useRef } from "react";
-import useSWR from "swr";
+import { useState, useRef, useMemo } from "react";
+import useSWR, { mutate } from "swr";
 import { useAuth } from "@/lib/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { executiveApi } from "@/lib/api";
-import type { ExecutiveDashboardData, WoshReport, WoshReportMeta } from "@/lib/types";
+import type {
+  ExecutiveDashboardData,
+  WoshReport,
+  WoshReportMeta,
+  WoshByManagerChart,
+  WoshException,
+} from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-type MainTab = "wosh" | "org" | "hours";
-type WoshSubTab = number; // sheet index 0, 1, or 2
+// ── helpers ──────────────────────────────────────────────────────────────────
 
-function fmt(n: number) {
+function fmtNum(n: number) {
+  return n.toLocaleString("en-US");
+}
+function fmtHrs(n: number) {
   return n.toLocaleString("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 }
+function fmtDate(iso: string | null) {
+  if (!iso) return "";
+  const d = new Date(iso + "T00:00:00");
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
 
-function KpiCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
+type KpiId =
+  | "violations" | "employees" | "early" | "late"
+  | "total_emp" | "reg_hours" | "ot_hours";
+
+// ── KPI card ─────────────────────────────────────────────────────────────────
+
+function KpiCard({
+  id, label, value, sub, active, onClick, accent,
+}: {
+  id: KpiId; label: string; value: string | number; sub?: string;
+  active: boolean; onClick: (id: KpiId) => void; accent?: string;
+}) {
   return (
-    <div
-      className="rounded-[14px] px-5 py-4"
+    <button
+      onClick={() => onClick(id)}
+      className="group relative flex-1 min-w-[130px] rounded-[14px] px-4 py-4 text-left transition-all duration-150 hover:shadow-md"
       style={{
-        background: "var(--card-bg)",
-        border: "1px solid var(--card-border)",
-        boxShadow: "var(--card-shadow)",
+        background: active ? (accent ?? "linear-gradient(135deg,#1e3a5f 0%,#2563eb 82%)") : "var(--card-bg)",
+        border: active ? "1px solid transparent" : "1px solid var(--card-border)",
+        boxShadow: active ? "0 4px 14px rgba(37,99,235,0.25)" : "var(--card-shadow)",
+        color: active ? "#fff" : "inherit",
       }}
     >
-      <p className="mb-1 text-[0.72rem] font-semibold uppercase tracking-wide" style={{ color: "var(--module-context)" }}>
+      <p
+        className="mb-1 text-[0.68rem] font-bold uppercase tracking-widest"
+        style={{ color: active ? "rgba(255,255,255,0.75)" : "var(--module-context)" }}
+      >
         {label}
       </p>
-      <p className="text-[1.6rem] font-bold leading-none" style={{ color: "var(--heading-color)" }}>
+      <p className="text-[1.5rem] font-bold leading-none" style={{ color: active ? "#fff" : "var(--heading-color)" }}>
         {value}
       </p>
       {sub && (
-        <p className="mt-1 text-[0.72rem]" style={{ color: "var(--card-desc)" }}>
+        <p className="mt-1 text-[0.7rem]" style={{ color: active ? "rgba(255,255,255,0.65)" : "var(--card-desc)" }}>
           {sub}
         </p>
       )}
-    </div>
+      <div
+        className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-opacity"
+        style={{ color: active ? "rgba(255,255,255,0.6)" : "var(--module-context)" }}
+      >
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </div>
+    </button>
   );
 }
 
-function ThresholdBadge({ label, count, color }: { label: string; count: number; color: string }) {
+// ── drill-down panels ─────────────────────────────────────────────────────────
+
+function DrillByManager({ data }: { data: WoshByManagerChart[] }) {
+  const max = Math.max(...data.map(d => d.total), 1);
   return (
-    <div className={cn("rounded-[10px] px-3.5 py-3 text-center", color)}>
-      <p className="text-[1.4rem] font-bold leading-none">{count}</p>
-      <p className="mt-1 text-[0.68rem] font-semibold uppercase tracking-wide opacity-80">{label}</p>
-    </div>
-  );
-}
-
-function SheetTable({ data }: { data: Record<string, unknown>[] }) {
-  if (!data || data.length === 0) {
-    return (
-      <p className="py-8 text-center text-[0.8rem]" style={{ color: "var(--card-desc)" }}>
-        No data in this sheet.
+    <div className="space-y-2">
+      <p className="mb-3 text-[0.75rem] font-semibold uppercase tracking-wide" style={{ color: "var(--module-context)" }}>
+        Violations by Manager
       </p>
-    );
-  }
-  const headers = Object.keys(data[0]);
+      {data.map(row => (
+        <div key={row.manager}>
+          <div className="mb-1 flex items-center justify-between gap-4">
+            <span className="text-[0.8rem] font-medium truncate" style={{ color: "var(--heading-color)" }}>{row.manager}</span>
+            <span className="shrink-0 text-[0.8rem] font-bold" style={{ color: "var(--heading-color)" }}>{row.total}</span>
+          </div>
+          <div className="flex h-2 gap-0.5 overflow-hidden rounded-full" style={{ background: "var(--tab-group-bg)" }}>
+            {row.early_only > 0 && (
+              <div className="h-full rounded-l-full" style={{ width: `${(row.early_only / max) * 100}%`, background: "#3b82f6" }} title={`Early: ${row.early_only}`} />
+            )}
+            {row.late_only > 0 && (
+              <div className="h-full" style={{ width: `${(row.late_only / max) * 100}%`, background: "#f59e0b" }} title={`Late: ${row.late_only}`} />
+            )}
+            {row.both > 0 && (
+              <div className="h-full rounded-r-full" style={{ width: `${(row.both / max) * 100}%`, background: "#ef4444" }} title={`Both: ${row.both}`} />
+            )}
+          </div>
+          <div className="mt-0.5 flex gap-3 text-[0.67rem]" style={{ color: "var(--card-desc)" }}>
+            <span style={{ color: "#3b82f6" }}>Early {row.early_only}</span>
+            <span style={{ color: "#f59e0b" }}>Late {row.late_only}</span>
+            <span style={{ color: "#ef4444" }}>Both {row.both}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function DrillByDay({ data }: { data: { day: string; count: number }[] }) {
+  const max = Math.max(...data.map(d => d.count), 1);
   return (
-    <div className="overflow-x-auto rounded-[12px]" style={{ border: "1px solid var(--card-border)" }}>
-      <table className="w-full border-collapse text-[0.78rem]">
+    <div className="space-y-1.5">
+      <p className="mb-3 text-[0.75rem] font-semibold uppercase tracking-wide" style={{ color: "var(--module-context)" }}>
+        By Day of Week
+      </p>
+      {data.map(row => (
+        <div key={row.day} className="flex items-center gap-3">
+          <span className="w-8 shrink-0 text-[0.78rem] font-semibold" style={{ color: "var(--heading-color)" }}>{row.day}</span>
+          <div className="flex-1 h-2 overflow-hidden rounded-full" style={{ background: "var(--tab-group-bg)" }}>
+            <div className="h-full rounded-full" style={{ width: `${(row.count / max) * 100}%`, background: "linear-gradient(90deg,#1e3a5f,#2563eb)" }} />
+          </div>
+          <span className="w-6 shrink-0 text-right text-[0.78rem] font-bold" style={{ color: "var(--heading-color)" }}>{row.count}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function DrillTopEmployees({ data }: { data: { employee_name: string; manager: string | null; total: number; early: number; late: number }[] }) {
+  return (
+    <div>
+      <p className="mb-3 text-[0.75rem] font-semibold uppercase tracking-wide" style={{ color: "var(--module-context)" }}>
+        Top Employees by Violations
+      </p>
+      <div className="overflow-hidden rounded-[10px]" style={{ border: "1px solid var(--card-border)" }}>
+        <table className="w-full text-[0.78rem]">
+          <thead>
+            <tr style={{ background: "var(--tab-group-bg)", borderBottom: "1px solid var(--card-border)" }}>
+              {["Employee", "Manager", "Total", "Early", "Late"].map(h => (
+                <th key={h} className="px-3 py-2 text-left font-semibold" style={{ color: "var(--module-context)" }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((row, i) => (
+              <tr key={i} style={{ borderBottom: i < data.length - 1 ? "1px solid var(--card-border)" : "none" }}>
+                <td className="px-3 py-2 font-medium" style={{ color: "var(--heading-color)" }}>{row.employee_name}</td>
+                <td className="px-3 py-2" style={{ color: "var(--card-desc)" }}>{row.manager ?? "—"}</td>
+                <td className="px-3 py-2 text-right font-bold" style={{ color: "var(--heading-color)" }}>{row.total}</td>
+                <td className="px-3 py-2 text-right" style={{ color: "#3b82f6" }}>{row.early}</td>
+                <td className="px-3 py-2 text-right" style={{ color: "#f59e0b" }}>{row.late}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function DrillHours({ rows }: { rows: ExecutiveDashboardData["hours_by_department"] }) {
+  if (!rows.length) return <p className="text-[0.8rem]" style={{ color: "var(--card-desc)" }}>No hours data imported.</p>;
+  return (
+    <div className="overflow-x-auto rounded-[10px]" style={{ border: "1px solid var(--card-border)" }}>
+      <table className="w-full text-[0.78rem]">
         <thead>
           <tr style={{ background: "var(--tab-group-bg)", borderBottom: "1px solid var(--card-border)" }}>
-            {headers.map((h) => (
-              <th
-                key={h}
-                className="whitespace-nowrap px-4 py-2.5 text-left font-semibold"
-                style={{ color: "var(--module-context)" }}
-              >
-                {h}
-              </th>
+            {["Department", "Employees", "Regular Hrs", "OT Hrs", "OT %"].map(h => (
+              <th key={h} className="px-3 py-2 text-left font-semibold whitespace-nowrap" style={{ color: "var(--module-context)" }}>{h}</th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {data.map((row, i) => (
-            <tr
-              key={i}
-              style={{
-                borderBottom: i < data.length - 1 ? "1px solid var(--card-border)" : "none",
-                background: i % 2 === 0 ? "transparent" : "var(--tab-group-bg)",
-              }}
-            >
-              {headers.map((h) => (
-                <td key={h} className="px-4 py-2 text-left" style={{ color: "var(--heading-color)" }}>
-                  {row[h] == null ? "" : String(row[h])}
-                </td>
-              ))}
-            </tr>
-          ))}
+          {rows.map((row, i) => {
+            const otPct = row.regular_hours + row.ot_hours > 0
+              ? ((row.ot_hours / (row.regular_hours + row.ot_hours)) * 100).toFixed(1) : "0.0";
+            return (
+              <tr key={row.department} style={{ borderBottom: i < rows.length - 1 ? "1px solid var(--card-border)" : "none" }}>
+                <td className="px-3 py-2 font-medium" style={{ color: "var(--heading-color)" }}>{row.department}</td>
+                <td className="px-3 py-2 text-center" style={{ color: "var(--heading-color)" }}>{row.employee_count}</td>
+                <td className="px-3 py-2 text-right" style={{ color: "var(--heading-color)" }}>{fmtHrs(row.regular_hours)}</td>
+                <td className="px-3 py-2 text-right" style={{ color: row.ot_hours > 0 ? "#b45309" : "var(--heading-color)" }}>{fmtHrs(row.ot_hours)}</td>
+                <td className="px-3 py-2 text-right" style={{ color: "var(--module-context)" }}>{otPct}%</td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
   );
 }
 
-function WoshTab() {
-  const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
+function DrillHeadcount({ rows }: { rows: { department: string; count: number }[] }) {
+  const total = rows.reduce((s, r) => s + r.count, 0) || 1;
+  return (
+    <div className="space-y-2">
+      <p className="mb-3 text-[0.75rem] font-semibold uppercase tracking-wide" style={{ color: "var(--module-context)" }}>
+        Headcount by Department
+      </p>
+      {rows.map(row => (
+        <div key={row.department}>
+          <div className="mb-1 flex justify-between">
+            <span className="text-[0.8rem] font-medium" style={{ color: "var(--heading-color)" }}>{row.department}</span>
+            <span className="text-[0.8rem] font-bold" style={{ color: "var(--heading-color)" }}>{row.count}</span>
+          </div>
+          <div className="h-2 overflow-hidden rounded-full" style={{ background: "var(--tab-group-bg)" }}>
+            <div className="h-full rounded-full" style={{ width: `${(row.count / total) * 100}%`, background: "linear-gradient(90deg,#1e3a5f,#2563eb)" }} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── violations by manager summary table ──────────────────────────────────────
+
+function ManagerSummaryTable({ data }: { data: WoshByManagerChart[] }) {
+  const maxTotal = Math.max(...data.map(d => d.total), 1);
+  return (
+    <div className="overflow-hidden rounded-[14px]" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}>
+      <div className="px-5 py-4 border-b" style={{ borderColor: "var(--card-border)" }}>
+        <h3 className="text-[0.9rem] font-bold" style={{ color: "var(--heading-color)" }}>Violations by Manager</h3>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full text-[0.8rem]">
+          <thead>
+            <tr style={{ background: "var(--tab-group-bg)", borderBottom: "1px solid var(--card-border)" }}>
+              <th className="px-5 py-3 text-left font-semibold" style={{ color: "var(--module-context)" }}>Manager</th>
+              <th className="px-4 py-3 text-center font-semibold w-20" style={{ color: "#3b82f6" }}>Early Only</th>
+              <th className="px-4 py-3 text-center font-semibold w-20" style={{ color: "#f59e0b" }}>Late Only</th>
+              <th className="px-4 py-3 text-center font-semibold w-16" style={{ color: "#ef4444" }}>Both</th>
+              <th className="px-4 py-3 text-center font-semibold w-16" style={{ color: "var(--module-context)" }}>Total</th>
+              <th className="px-5 py-3 text-left font-semibold" style={{ color: "var(--module-context)" }}>Distribution</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((row, i) => (
+              <tr key={row.manager} style={{ borderBottom: i < data.length - 1 ? "1px solid var(--card-border)" : "none" }}>
+                <td className="px-5 py-3 font-semibold" style={{ color: "var(--heading-color)" }}>{row.manager}</td>
+                <td className="px-4 py-3 text-center" style={{ color: "#3b82f6" }}>{row.early_only}</td>
+                <td className="px-4 py-3 text-center" style={{ color: "#f59e0b" }}>{row.late_only}</td>
+                <td className="px-4 py-3 text-center" style={{ color: "#ef4444" }}>{row.both}</td>
+                <td className="px-4 py-3 text-center font-bold" style={{ color: "var(--heading-color)" }}>{row.total}</td>
+                <td className="px-5 py-3 min-w-[120px]">
+                  <div className="flex h-2 gap-0.5 overflow-hidden rounded-full" style={{ background: "var(--tab-group-bg)" }}>
+                    {row.early_only > 0 && <div style={{ width: `${(row.early_only / maxTotal) * 100}%`, background: "#3b82f6" }} className="h-full" />}
+                    {row.late_only > 0 && <div style={{ width: `${(row.late_only / maxTotal) * 100}%`, background: "#f59e0b" }} className="h-full" />}
+                    {row.both > 0 && <div style={{ width: `${(row.both / maxTotal) * 100}%`, background: "#ef4444" }} className="h-full rounded-r-full" />}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+// ── all exceptions table ─────────────────────────────────────────────────────
+
+const EXCEPTION_TYPE_COLORS: Record<string, string> = {
+  "Early": "bg-blue-50 text-blue-700",
+  "Late": "bg-amber-50 text-amber-700",
+  "Early & Late": "bg-red-50 text-red-700",
+};
+
+function ExceptionsTable({ exceptions }: { exceptions: WoshException[] }) {
+  const [filterManager, setFilterManager] = useState("");
+  const [filterType, setFilterType] = useState("");
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 50;
+
+  const managers = useMemo(() => {
+    const s = new Set(exceptions.map(e => e.Manager).filter(Boolean) as string[]);
+    return Array.from(s).sort();
+  }, [exceptions]);
+
+  const types = useMemo(() => {
+    const s = new Set(exceptions.map(e => e["Exception Type"]).filter(Boolean) as string[]);
+    return Array.from(s).sort();
+  }, [exceptions]);
+
+  const filtered = useMemo(() => {
+    return exceptions.filter(e => {
+      if (filterManager && e.Manager !== filterManager) return false;
+      if (filterType && e["Exception Type"] !== filterType) return false;
+      if (search) {
+        const q = search.toLowerCase();
+        return (
+          (e["Employee Name"] ?? "").toLowerCase().includes(q) ||
+          String(e["Employee #"] ?? "").includes(q)
+        );
+      }
+      return true;
+    });
+  }, [exceptions, filterManager, filterType, search]);
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paged = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+
+  const selectStyle = {
+    background: "var(--login-input-bg)",
+    border: "1px solid var(--login-input-border)",
+    color: "var(--heading-color)",
+    borderRadius: "10px",
+    padding: "6px 10px",
+    fontSize: "0.78rem",
+    outline: "none",
+  };
+
+  return (
+    <div className="overflow-hidden rounded-[14px]" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}>
+      {/* header + filters */}
+      <div className="border-b px-5 py-4" style={{ borderColor: "var(--card-border)" }}>
+        <div className="flex flex-wrap items-center gap-3">
+          <h3 className="mr-2 text-[0.9rem] font-bold" style={{ color: "var(--heading-color)" }}>
+            All Exceptions
+            <span className="ml-2 text-[0.75rem] font-normal" style={{ color: "var(--card-desc)" }}>
+              {filtered.length} of {exceptions.length}
+            </span>
+          </h3>
+          <input
+            type="text"
+            placeholder="Search employee…"
+            value={search}
+            onChange={e => { setSearch(e.target.value); setPage(0); }}
+            className="flex-1 min-w-[140px]"
+            style={{ ...selectStyle, flex: "1 1 140px" }}
+          />
+          <select value={filterManager} onChange={e => { setFilterManager(e.target.value); setPage(0); }} style={selectStyle}>
+            <option value="">All Managers</option>
+            {managers.map(m => <option key={m} value={m}>{m}</option>)}
+          </select>
+          <select value={filterType} onChange={e => { setFilterType(e.target.value); setPage(0); }} style={selectStyle}>
+            <option value="">All Types</option>
+            {types.map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
+          {(filterManager || filterType || search) && (
+            <button
+              onClick={() => { setFilterManager(""); setFilterType(""); setSearch(""); setPage(0); }}
+              className="rounded-[8px] px-2.5 py-1.5 text-[0.72rem] font-semibold transition-all hover:opacity-80"
+              style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", color: "var(--tab-text)" }}
+            >
+              Clear
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* table */}
+      <div className="overflow-x-auto">
+        <table className="w-full text-[0.77rem]">
+          <thead>
+            <tr style={{ background: "var(--tab-group-bg)", borderBottom: "1px solid var(--card-border)" }}>
+              {["Employee", "Emp #", "Manager", "Department", "Date", "Sched Start", "Sched End", "Clock In", "Clock Out", "Time Early", "Time Late", "Type"].map(h => (
+                <th key={h} className="whitespace-nowrap px-3 py-2.5 text-left font-semibold" style={{ color: "var(--module-context)" }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {paged.length === 0 ? (
+              <tr><td colSpan={12} className="px-5 py-8 text-center text-[0.8rem]" style={{ color: "var(--card-desc)" }}>No exceptions match the current filters.</td></tr>
+            ) : paged.map((row, i) => {
+              const typeColor = EXCEPTION_TYPE_COLORS[row["Exception Type"] ?? ""] ?? "";
+              return (
+                <tr key={i} style={{ borderBottom: i < paged.length - 1 ? "1px solid var(--card-border)" : "none", background: i % 2 === 0 ? "transparent" : "var(--tab-group-bg)" }}>
+                  <td className="px-3 py-2 font-medium whitespace-nowrap" style={{ color: "var(--heading-color)" }}>{row["Employee Name"] ?? "—"}</td>
+                  <td className="px-3 py-2" style={{ color: "var(--card-desc)" }}>{row["Employee #"] ?? "—"}</td>
+                  <td className="px-3 py-2 whitespace-nowrap" style={{ color: "var(--heading-color)" }}>{row.Manager ?? "—"}</td>
+                  <td className="px-3 py-2 whitespace-nowrap" style={{ color: "var(--card-desc)" }}>{row.Department ?? "—"}</td>
+                  <td className="px-3 py-2 whitespace-nowrap" style={{ color: "var(--heading-color)" }}>{row.Date ? fmtDate(row.Date) : "—"}</td>
+                  <td className="px-3 py-2" style={{ color: "var(--card-desc)" }}>{row["Scheduled Start"] ?? "—"}</td>
+                  <td className="px-3 py-2" style={{ color: "var(--card-desc)" }}>{row["Scheduled End"] ?? "—"}</td>
+                  <td className="px-3 py-2" style={{ color: row["Time Early"] ? "#2563eb" : "var(--card-desc)" }}>{row["Actual Clock In"] ?? "—"}</td>
+                  <td className="px-3 py-2" style={{ color: row["Time Late"] ? "#b45309" : "var(--card-desc)" }}>{row["Actual Clock Out"] ?? "—"}</td>
+                  <td className="px-3 py-2 font-medium" style={{ color: "#2563eb" }}>{row["Time Early"] ?? "—"}</td>
+                  <td className="px-3 py-2 font-medium" style={{ color: "#b45309" }}>{row["Time Late"] ?? "—"}</td>
+                  <td className="px-3 py-2">
+                    <span className={cn("rounded-full px-2 py-0.5 text-[0.68rem] font-semibold", typeColor)}>
+                      {row["Exception Type"] ?? "—"}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between border-t px-5 py-3" style={{ borderColor: "var(--card-border)" }}>
+          <span className="text-[0.75rem]" style={{ color: "var(--card-desc)" }}>
+            Page {page + 1} of {totalPages}
+          </span>
+          <div className="flex gap-2">
+            <button
+              disabled={page === 0}
+              onClick={() => setPage(p => p - 1)}
+              className="rounded-[8px] px-3 py-1.5 text-[0.75rem] font-semibold transition-all disabled:opacity-40"
+              style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", color: "var(--tab-text)" }}
+            >
+              Prev
+            </button>
+            <button
+              disabled={page >= totalPages - 1}
+              onClick={() => setPage(p => p + 1)}
+              className="rounded-[8px] px-3 py-1.5 text-[0.75rem] font-semibold transition-all disabled:opacity-40"
+              style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", color: "var(--tab-text)" }}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── upload bar ────────────────────────────────────────────────────────────────
+
+function UploadBar({ onUploaded }: { onUploaded: () => void }) {
   const [weekLabel, setWeekLabel] = useState("");
-  const [activeSheet, setActiveSheet] = useState<WoshSubTab>(0);
-  const [selectedHistoryId, setSelectedHistoryId] = useState<number | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
-  const { data: latestReport, mutate: mutateLatest } = useSWR<WoshReport | null>(
-    "wosh-latest",
-    () => executiveApi.woshLatest()
-  );
-  const { data: history } = useSWR<WoshReportMeta[]>("wosh-history", () => executiveApi.woshHistory());
-  const { data: selectedReport } = useSWR<WoshReport>(
-    selectedHistoryId !== null ? `wosh-${selectedHistoryId}` : null,
-    () => executiveApi.woshById(selectedHistoryId!)
-  );
-
-  const displayReport = selectedHistoryId !== null ? selectedReport : latestReport;
-
-  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    setUploadError(null);
+    setError(null);
+    setSuccess(null);
     try {
-      await executiveApi.uploadWosh(file, weekLabel);
-      await mutateLatest();
+      const result = await executiveApi.uploadWosh(file, weekLabel);
+      setSuccess(`Uploaded: ${result.week_label ?? "report"} — ${result.exceptions} exceptions across ${result.managers} managers`);
       setWeekLabel("");
-      setSelectedHistoryId(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
+      if (fileRef.current) fileRef.current.value = "";
+      onUploaded();
     } catch (err) {
-      setUploadError(err instanceof Error ? err.message : "Upload failed.");
+      setError(err instanceof Error ? err.message : "Upload failed.");
     } finally {
       setUploading(false);
     }
   }
 
-  const sheets = displayReport?.sheets ?? [];
-
   return (
-    <div className="space-y-5">
-      {/* Upload card */}
-      <div
-        className="rounded-[16px] p-5"
-        style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}
-      >
-        <h3 className="mb-3 text-[0.9rem] font-bold" style={{ color: "var(--heading-color)" }}>
-          Upload WOSH Report
-        </h3>
-        <div className="flex flex-wrap items-end gap-3">
-          <div className="flex-1 min-w-[180px]">
-            <label className="mb-1 block text-[0.72rem] font-semibold" style={{ color: "var(--module-context)" }}>
-              Week Label (optional)
-            </label>
+    <div
+      className="mb-5 rounded-[14px] px-5 py-4"
+      style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}
+    >
+      <div className="flex flex-wrap items-end gap-3">
+        <div>
+          <p className="mb-1.5 text-[0.72rem] font-bold uppercase tracking-wide" style={{ color: "var(--module-context)" }}>
+            Upload WOSH Report
+          </p>
+          <div className="flex flex-wrap items-center gap-2">
             <input
               type="text"
-              placeholder="e.g. Week of 05/19/2025"
+              placeholder="Week label (auto-detected if blank)"
               value={weekLabel}
-              onChange={(e) => setWeekLabel(e.target.value)}
-              className="w-full rounded-[10px] px-3 py-2 text-[0.8rem]"
-              style={{
-                background: "var(--login-input-bg)",
-                border: "1px solid var(--login-input-border)",
-                color: "var(--heading-color)",
-                outline: "none",
-              }}
+              onChange={e => setWeekLabel(e.target.value)}
+              className="rounded-[10px] px-3 py-2 text-[0.78rem] w-64"
+              style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)", outline: "none" }}
             />
-          </div>
-          <div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".xlsx,.xlsm,.xls"
-              onChange={handleUpload}
-              disabled={uploading}
-              className="hidden"
-              id="wosh-file-input"
-            />
+            <input ref={fileRef} type="file" accept=".xlsx,.xlsm,.xls" onChange={handleFile} disabled={uploading} className="hidden" id="wosh-upload" />
             <label
-              htmlFor="wosh-file-input"
-              className={cn(
-                "inline-flex cursor-pointer items-center gap-2 rounded-[10px] px-4 py-2 text-[0.8rem] font-semibold transition-all",
-                uploading ? "cursor-not-allowed opacity-50" : "hover:opacity-90"
-              )}
-              style={{ background: "linear-gradient(135deg, #1e3a5f 0%, #2563eb 82%)", color: "#ffffff" }}
+              htmlFor="wosh-upload"
+              className={cn("inline-flex cursor-pointer items-center gap-2 rounded-[10px] px-4 py-2 text-[0.78rem] font-semibold transition-all select-none", uploading && "opacity-50 cursor-not-allowed")}
+              style={{ background: "linear-gradient(135deg,#1e3a5f 0%,#2563eb 82%)", color: "#fff" }}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <polyline points="17 8 12 3 7 8" />
                 <line x1="12" y1="3" x2="12" y2="15" />
               </svg>
-              {uploading ? "Uploading…" : "Choose Excel File"}
+              {uploading ? "Uploading…" : "Choose File"}
             </label>
           </div>
         </div>
-        {uploadError && (
-          <p className="mt-2 text-[0.75rem] font-medium text-red-600">{uploadError}</p>
-        )}
-        {displayReport?.uploaded_at && (
-          <p className="mt-2 text-[0.72rem]" style={{ color: "var(--card-desc)" }}>
-            Showing:{" "}
-            <span className="font-semibold">
-              {displayReport.week_label ?? "Untitled report"}
-            </span>{" "}
-            — uploaded {new Date(displayReport.uploaded_at).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" })}
-          </p>
-        )}
       </div>
-
-      {/* History selector */}
-      {history && history.length > 1 && (
-        <div
-          className="rounded-[14px] px-5 py-4"
-          style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}
-        >
-          <p className="mb-2 text-[0.72rem] font-semibold uppercase tracking-wide" style={{ color: "var(--module-context)" }}>
-            Previous Uploads
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setSelectedHistoryId(null)}
-              className={cn(
-                "rounded-[8px] px-3 py-1.5 text-[0.75rem] font-semibold transition-all",
-                selectedHistoryId === null
-                  ? "text-white"
-                  : "hover:opacity-80"
-              )}
-              style={{
-                background: selectedHistoryId === null
-                  ? "linear-gradient(135deg, #1e3a5f 0%, #2563eb 82%)"
-                  : "var(--tab-group-bg)",
-                border: "1px solid var(--tab-group-border)",
-                color: selectedHistoryId === null ? "#ffffff" : "var(--tab-text)",
-              }}
-            >
-              Latest
-            </button>
-            {history.slice(1).map((r) => (
-              <button
-                key={r.id}
-                onClick={() => setSelectedHistoryId(r.id)}
-                className={cn(
-                  "rounded-[8px] px-3 py-1.5 text-[0.75rem] font-semibold transition-all hover:opacity-80"
-                )}
-                style={{
-                  background: selectedHistoryId === r.id
-                    ? "linear-gradient(135deg, #1e3a5f 0%, #2563eb 82%)"
-                    : "var(--tab-group-bg)",
-                  border: "1px solid var(--tab-group-border)",
-                  color: selectedHistoryId === r.id ? "#ffffff" : "var(--tab-text)",
-                }}
-              >
-                {r.week_label ?? `Report #${r.id}`}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Sheet tabs + data */}
-      {sheets.length > 0 && (
-        <div
-          className="rounded-[16px]"
-          style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}
-        >
-          {/* Sheet tab bar */}
-          <div
-            className="flex gap-1 border-b px-4 pt-3"
-            style={{ borderColor: "var(--card-border)" }}
-          >
-            {sheets.map((sheet, idx) => (
-              sheet.name && (
-                <button
-                  key={idx}
-                  onClick={() => setActiveSheet(idx)}
-                  className={cn(
-                    "rounded-t-[8px] px-4 py-2 text-[0.8rem] font-semibold transition-all",
-                    activeSheet === idx ? "" : "hover:opacity-70"
-                  )}
-                  style={{
-                    background: activeSheet === idx ? "var(--sidebar-active-bg)" : "transparent",
-                    border: activeSheet === idx ? "1px solid var(--card-border)" : "1px solid transparent",
-                    borderBottom: activeSheet === idx ? "1px solid var(--card-bg)" : "1px solid transparent",
-                    color: activeSheet === idx ? "var(--sidebar-text-active)" : "var(--module-context)",
-                    marginBottom: activeSheet === idx ? "-1px" : "0",
-                  }}
-                >
-                  {sheet.name}
-                </button>
-              )
-            ))}
-          </div>
-          <div className="p-5">
-            {sheets[activeSheet] ? (
-              <SheetTable data={sheets[activeSheet].data as Record<string, unknown>[]} />
-            ) : (
-              <p className="py-8 text-center text-[0.8rem]" style={{ color: "var(--card-desc)" }}>
-                Select a sheet above.
-              </p>
-            )}
-          </div>
-        </div>
-      )}
-
-      {!displayReport && (
-        <div
-          className="rounded-[16px] py-16 text-center"
-          style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}
-        >
-          <svg className="mx-auto mb-3 opacity-30" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--heading-color)" }}>
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <polyline points="14 2 14 8 20 8" />
-            <line x1="12" y1="12" x2="12" y2="18" />
-            <line x1="9" y1="15" x2="15" y2="15" />
-          </svg>
-          <p className="text-[0.85rem] font-semibold" style={{ color: "var(--heading-color)" }}>
-            No WOSH report uploaded yet
-          </p>
-          <p className="mt-1 text-[0.78rem]" style={{ color: "var(--card-desc)" }}>
-            Upload an Excel workbook above to view the report.
-          </p>
-        </div>
-      )}
+      {error && <p className="mt-2 text-[0.75rem] font-medium text-red-600">{error}</p>}
+      {success && <p className="mt-2 text-[0.75rem] font-medium text-emerald-600">{success}</p>}
     </div>
   );
 }
 
-function OrgTab({ data }: { data: ExecutiveDashboardData | undefined }) {
-  if (!data) {
-    return (
-      <div className="py-16 text-center">
-        <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
-      </div>
-    );
-  }
-
-  const { headcount } = data;
-  const TRACK_LABELS: Record<string, string> = {
-    hr: "HR",
-    warehouse: "Warehouse",
-    administrative: "Administrative",
-    management: "Management",
-  };
-
-  return (
-    <div className="space-y-5">
-      {/* Top KPIs */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <KpiCard label="Total Employees" value={headcount.total} />
-        <KpiCard label="Managers" value={headcount.managers} />
-        <KpiCard label="Executives" value={headcount.executives} />
-        <KpiCard label="Admins" value={headcount.admins} />
-      </div>
-
-      <div className="grid gap-5 md:grid-cols-2">
-        {/* By Department */}
-        <div
-          className="rounded-[16px] p-5"
-          style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}
-        >
-          <h3 className="mb-4 text-[0.9rem] font-bold" style={{ color: "var(--heading-color)" }}>
-            Headcount by Department
-          </h3>
-          {headcount.by_department.length === 0 ? (
-            <p className="text-[0.8rem]" style={{ color: "var(--card-desc)" }}>No department data available.</p>
-          ) : (
-            <div className="space-y-2">
-              {headcount.by_department.map((dept) => {
-                const pct = Math.round((dept.count / headcount.total) * 100);
-                return (
-                  <div key={dept.department}>
-                    <div className="mb-1 flex items-center justify-between">
-                      <span className="text-[0.8rem] font-medium" style={{ color: "var(--heading-color)" }}>
-                        {dept.department}
-                      </span>
-                      <span className="text-[0.78rem] font-semibold" style={{ color: "var(--module-context)" }}>
-                        {dept.count}
-                      </span>
-                    </div>
-                    <div className="h-2 overflow-hidden rounded-full" style={{ background: "var(--tab-group-bg)" }}>
-                      <div
-                        className="h-full rounded-full transition-all duration-500"
-                        style={{
-                          width: `${pct}%`,
-                          background: "linear-gradient(90deg, #1e3a5f 0%, #2563eb 100%)",
-                        }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* By Track */}
-        <div
-          className="rounded-[16px] p-5"
-          style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}
-        >
-          <h3 className="mb-4 text-[0.9rem] font-bold" style={{ color: "var(--heading-color)" }}>
-            Headcount by Track
-          </h3>
-          <div className="space-y-2">
-            {Object.entries(headcount.by_track).map(([track, count]) => {
-              const pct = Math.round((count / headcount.total) * 100);
-              return (
-                <div key={track}>
-                  <div className="mb-1 flex items-center justify-between">
-                    <span className="text-[0.8rem] font-medium" style={{ color: "var(--heading-color)" }}>
-                      {TRACK_LABELS[track] ?? track}
-                    </span>
-                    <span className="text-[0.78rem] font-semibold" style={{ color: "var(--module-context)" }}>
-                      {count}
-                    </span>
-                  </div>
-                  <div className="h-2 overflow-hidden rounded-full" style={{ background: "var(--tab-group-bg)" }}>
-                    <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{
-                        width: `${pct}%`,
-                        background: "linear-gradient(90deg, #134e26 0%, #16a34a 100%)",
-                      }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Attendance thresholds */}
-      <div
-        className="rounded-[16px] p-5"
-        style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}
-      >
-        <h3 className="mb-4 text-[0.9rem] font-bold" style={{ color: "var(--heading-color)" }}>
-          Attendance Threshold Summary
-        </h3>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <ThresholdBadge label="Verbal" count={data.attendance_thresholds.verbal} color="bg-yellow-50 text-yellow-800 border border-yellow-200 rounded-[10px]" />
-          <ThresholdBadge label="Written" count={data.attendance_thresholds.written} color="bg-orange-50 text-orange-800 border border-orange-200 rounded-[10px]" />
-          <ThresholdBadge label="Final" count={data.attendance_thresholds.final} color="bg-red-50 text-red-800 border border-red-200 rounded-[10px]" />
-          <ThresholdBadge label="Termination" count={data.attendance_thresholds.termination} color="bg-red-100 text-red-900 border border-red-300 rounded-[10px]" />
-        </div>
-        <p className="mt-3 text-[0.72rem]" style={{ color: "var(--card-desc)" }}>
-          Counts employees at or above each attendance point threshold across the entire organization.
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function HoursTab({ data }: { data: ExecutiveDashboardData | undefined }) {
-  if (!data) {
-    return (
-      <div className="py-16 text-center">
-        <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
-      </div>
-    );
-  }
-
-  const rows = data.hours_by_department;
-
-  if (rows.length === 0) {
-    return (
-      <div
-        className="rounded-[16px] py-16 text-center"
-        style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}
-      >
-        <p className="text-[0.85rem] font-semibold" style={{ color: "var(--heading-color)" }}>
-          No hours data imported yet.
-        </p>
-        <p className="mt-1 text-[0.78rem]" style={{ color: "var(--card-desc)" }}>
-          Import time records via the Admin panel to see department-level hours.
-        </p>
-      </div>
-    );
-  }
-
-  const totalReg = rows.reduce((s, r) => s + r.regular_hours, 0);
-  const totalOt = rows.reduce((s, r) => s + r.ot_hours, 0);
-  const totalEmp = rows.reduce((s, r) => s + r.employee_count, 0);
-
-  return (
-    <div className="space-y-5">
-      {/* Summary KPIs */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-        <KpiCard label="Employees with Hours" value={totalEmp} />
-        <KpiCard
-          label="Total Regular Hours"
-          value={fmt(totalReg)}
-          sub={data.hours_date_range ?? undefined}
-        />
-        <KpiCard label="Total OT Hours" value={fmt(totalOt)} sub={`${((totalOt / (totalReg + totalOt || 1)) * 100).toFixed(1)}% of total`} />
-      </div>
-
-      {/* Department table */}
-      <div
-        className="rounded-[16px] overflow-hidden"
-        style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}
-      >
-        <div className="border-b px-5 py-4" style={{ borderColor: "var(--card-border)" }}>
-          <h3 className="text-[0.9rem] font-bold" style={{ color: "var(--heading-color)" }}>
-            Hours & OT by Department
-          </h3>
-          {data.hours_date_range && (
-            <p className="mt-0.5 text-[0.72rem]" style={{ color: "var(--card-desc)" }}>
-              Period: {data.hours_date_range}
-            </p>
-          )}
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-[0.8rem]">
-            <thead>
-              <tr style={{ background: "var(--tab-group-bg)", borderBottom: "1px solid var(--card-border)" }}>
-                {["Department", "Employees", "Regular Hrs", "OT Hrs", "OT %", "Vacation", "Personal", "Absent (w/pt)", "Protected"].map((h) => (
-                  <th
-                    key={h}
-                    className="whitespace-nowrap px-4 py-3 text-left text-[0.72rem] font-semibold uppercase tracking-wide"
-                    style={{ color: "var(--module-context)" }}
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row, i) => {
-                const otPct = row.regular_hours + row.ot_hours > 0
-                  ? ((row.ot_hours / (row.regular_hours + row.ot_hours)) * 100).toFixed(1)
-                  : "0.0";
-                return (
-                  <tr
-                    key={row.department}
-                    style={{
-                      borderBottom: i < rows.length - 1 ? "1px solid var(--card-border)" : "none",
-                      background: i % 2 === 0 ? "transparent" : "var(--tab-group-bg)",
-                    }}
-                  >
-                    <td className="px-4 py-3 font-semibold" style={{ color: "var(--heading-color)" }}>{row.department}</td>
-                    <td className="px-4 py-3 text-center" style={{ color: "var(--heading-color)" }}>{row.employee_count}</td>
-                    <td className="px-4 py-3 text-right" style={{ color: "var(--heading-color)" }}>{fmt(row.regular_hours)}</td>
-                    <td className="px-4 py-3 text-right" style={{ color: row.ot_hours > 0 ? "#b45309" : "var(--heading-color)" }}>
-                      {fmt(row.ot_hours)}
-                    </td>
-                    <td className="px-4 py-3 text-right" style={{ color: "var(--module-context)" }}>{otPct}%</td>
-                    <td className="px-4 py-3 text-right" style={{ color: "var(--heading-color)" }}>{fmt(row.vacation_hours)}</td>
-                    <td className="px-4 py-3 text-right" style={{ color: "var(--heading-color)" }}>{fmt(row.personal_hours)}</td>
-                    <td className="px-4 py-3 text-right" style={{ color: row.absent_w_point_hours > 0 ? "#b91c1c" : "var(--heading-color)" }}>
-                      {fmt(row.absent_w_point_hours)}
-                    </td>
-                    <td className="px-4 py-3 text-right" style={{ color: "var(--heading-color)" }}>{fmt(row.protected_hours)}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-            <tfoot>
-              <tr style={{ borderTop: "2px solid var(--card-border)", background: "var(--tab-group-bg)" }}>
-                <td className="px-4 py-3 font-bold" style={{ color: "var(--heading-color)" }}>Total</td>
-                <td className="px-4 py-3 text-center font-bold" style={{ color: "var(--heading-color)" }}>{totalEmp}</td>
-                <td className="px-4 py-3 text-right font-bold" style={{ color: "var(--heading-color)" }}>{fmt(totalReg)}</td>
-                <td className="px-4 py-3 text-right font-bold" style={{ color: "var(--heading-color)" }}>{fmt(totalOt)}</td>
-                <td className="px-4 py-3 text-right font-bold" style={{ color: "var(--module-context)" }}>
-                  {((totalOt / (totalReg + totalOt || 1)) * 100).toFixed(1)}%
-                </td>
-                <td className="px-4 py-3 text-right font-bold" style={{ color: "var(--heading-color)" }}>
-                  {fmt(rows.reduce((s, r) => s + r.vacation_hours, 0))}
-                </td>
-                <td className="px-4 py-3 text-right font-bold" style={{ color: "var(--heading-color)" }}>
-                  {fmt(rows.reduce((s, r) => s + r.personal_hours, 0))}
-                </td>
-                <td className="px-4 py-3 text-right font-bold" style={{ color: "var(--heading-color)" }}>
-                  {fmt(rows.reduce((s, r) => s + r.absent_w_point_hours, 0))}
-                </td>
-                <td className="px-4 py-3 text-right font-bold" style={{ color: "var(--heading-color)" }}>
-                  {fmt(rows.reduce((s, r) => s + r.protected_hours, 0))}
-                </td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
-}
+// ── main page ─────────────────────────────────────────────────────────────────
 
 export default function ExecutivePage() {
   const { user } = useAuth();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<MainTab>("wosh");
+  const [activeKpi, setActiveKpi] = useState<KpiId | null>(null);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
-  const { data: dashboardData } = useSWR<ExecutiveDashboardData>(
+  const { data: dashData } = useSWR<ExecutiveDashboardData>(
     "executive-dashboard",
     () => executiveApi.dashboard()
   );
+  const { data: history, mutate: mutateHistory } = useSWR<WoshReportMeta[]>(
+    "wosh-history",
+    () => executiveApi.woshHistory()
+  );
+  const { data: latestReport, mutate: mutateLatest } = useSWR<WoshReport | null>(
+    "wosh-latest",
+    () => executiveApi.woshLatest()
+  );
+  const { data: selectedReport } = useSWR<WoshReport>(
+    selectedId !== null ? `wosh-${selectedId}` : null,
+    () => executiveApi.woshById(selectedId!)
+  );
 
-  // Redirect non-executives who aren't admins
   if (user && !user.is_executive && !user.is_admin) {
     router.replace("/overview");
     return null;
   }
 
-  const tabs: { id: MainTab; label: string }[] = [
-    { id: "wosh", label: "WOSH Report" },
-    { id: "org", label: "Org Summary" },
-    { id: "hours", label: "Hours & OT" },
-  ];
+  const report = selectedId !== null ? selectedReport : latestReport;
+  const pd = report?.parsed_data ?? null;
+  const summary = pd?.summary;
+
+  function handleKpi(id: KpiId) {
+    setActiveKpi(prev => prev === id ? null : id);
+  }
+
+  function handleUploaded() {
+    mutateHistory();
+    mutateLatest();
+  }
+
+  // ── drill-down content ──────────────────────────────────────────────────────
+
+  function renderDrillDown() {
+    if (!activeKpi) return null;
+
+    let content: React.ReactNode = null;
+
+    switch (activeKpi) {
+      case "violations":
+        content = (
+          <div className="grid gap-6 md:grid-cols-2">
+            <DrillByManager data={pd?.chart.by_manager ?? []} />
+            <DrillByDay data={pd?.chart.by_day ?? []} />
+          </div>
+        );
+        break;
+      case "employees":
+        content = <DrillTopEmployees data={pd?.top_employees ?? []} />;
+        break;
+      case "early":
+        content = (
+          <div>
+            <p className="mb-3 text-[0.75rem] font-semibold uppercase tracking-wide" style={{ color: "var(--module-context)" }}>
+              Early Arrivals by Manager
+            </p>
+            <DrillByManager data={(pd?.chart.by_manager ?? []).filter(m => m.early_only + m.both > 0).map(m => ({ ...m, late_only: 0, both: 0, total: m.early_only + m.both }))} />
+          </div>
+        );
+        break;
+      case "late":
+        content = (
+          <div>
+            <p className="mb-3 text-[0.75rem] font-semibold uppercase tracking-wide" style={{ color: "var(--module-context)" }}>
+              Late Departures by Manager
+            </p>
+            <DrillByManager data={(pd?.chart.by_manager ?? []).filter(m => m.late_only + m.both > 0).map(m => ({ ...m, early_only: 0, both: 0, total: m.late_only + m.both }))} />
+          </div>
+        );
+        break;
+      case "total_emp":
+        content = <DrillHeadcount rows={dashData?.headcount.by_department ?? []} />;
+        break;
+      case "reg_hours":
+      case "ot_hours":
+        content = <DrillHours rows={dashData?.hours_by_department ?? []} />;
+        break;
+    }
+
+    return (
+      <div
+        className="mb-5 rounded-[14px] p-5"
+        style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}
+      >
+        {content}
+      </div>
+    );
+  }
 
   return (
-    <div className="mx-auto max-w-[1100px] px-4 py-8 md:px-8">
+    <div className="mx-auto max-w-[1200px] px-4 py-8 md:px-8">
+
       {/* Page header */}
-      <div className="mb-6">
-        <h1 className="text-[1.55rem] font-bold leading-tight" style={{ color: "var(--heading-color)" }}>
-          Executive Dashboard
-        </h1>
-        <p className="mt-1 text-[0.83rem]" style={{ color: "var(--card-desc)" }}>
-          Organization-wide reports and metrics
-        </p>
+      <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-[1.5rem] font-bold leading-tight" style={{ color: "var(--heading-color)" }}>
+            Executive Dashboard
+          </h1>
+          {summary && (
+            <p className="mt-1 text-[0.8rem]" style={{ color: "var(--card-desc)" }}>
+              {report?.week_label && <span className="font-semibold" style={{ color: "var(--heading-color)" }}>{report.week_label} · </span>}
+              {summary.generated_text && (
+                <span>{summary.total_violations} violations · {summary.employees_affected} employees · {summary.managers} managers</span>
+              )}
+            </p>
+          )}
+        </div>
+
+        {/* Week selector */}
+        {history && history.length > 1 && (
+          <div className="flex items-center gap-2">
+            <label className="text-[0.72rem] font-semibold" style={{ color: "var(--module-context)" }}>Week:</label>
+            <select
+              value={selectedId ?? ""}
+              onChange={e => setSelectedId(e.target.value === "" ? null : Number(e.target.value))}
+              className="rounded-[10px] px-3 py-1.5 text-[0.78rem]"
+              style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)", outline: "none" }}
+            >
+              <option value="">Latest</option>
+              {history.map(r => (
+                <option key={r.id} value={r.id}>
+                  {r.week_label ?? `Report #${r.id}`}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
-      {/* Tab bar */}
-      <div
-        className="mb-6 flex gap-1 rounded-[12px] p-1"
-        style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)" }}
-      >
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={cn(
-              "flex-1 rounded-[9px] py-2 text-[0.82rem] font-semibold transition-all duration-150"
-            )}
-            style={{
-              background: activeTab === tab.id ? "var(--card-bg)" : "transparent",
-              boxShadow: activeTab === tab.id ? "0 1px 4px rgba(12,24,47,0.10)" : "none",
-              color: activeTab === tab.id ? "var(--heading-color)" : "var(--tab-text)",
-              border: activeTab === tab.id ? "1px solid var(--card-border)" : "1px solid transparent",
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
+      {/* Upload bar */}
+      <UploadBar onUploaded={handleUploaded} />
+
+      {/* KPI row — WOSH violations */}
+      {summary ? (
+        <>
+          <p className="mb-2 text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
+            Shift Exceptions
+          </p>
+          <div className="mb-3 flex flex-wrap gap-2">
+            <KpiCard id="violations" label="Total Violations" value={fmtNum(summary.total_violations)} active={activeKpi === "violations"} onClick={handleKpi} />
+            <KpiCard id="employees" label="Employees Affected" value={fmtNum(summary.employees_affected)} active={activeKpi === "employees"} onClick={handleKpi} />
+            <KpiCard id="early" label="Early Arrivals" value={fmtNum(summary.early_arrivals)} active={activeKpi === "early"} onClick={handleKpi} accent="linear-gradient(135deg,#1e40af 0%,#3b82f6 82%)" />
+            <KpiCard id="late" label="Late Departures" value={fmtNum(summary.late_departures)} active={activeKpi === "late"} onClick={handleKpi} accent="linear-gradient(135deg,#92400e 0%,#f59e0b 82%)" />
+          </div>
+        </>
+      ) : (
+        <div className="mb-3 rounded-[14px] py-8 text-center" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}>
+          <p className="text-[0.85rem] font-semibold" style={{ color: "var(--heading-color)" }}>No WOSH report uploaded yet</p>
+          <p className="mt-1 text-[0.78rem]" style={{ color: "var(--card-desc)" }}>Upload a Shift_Exception_Report.xlsx above to see violation data.</p>
+        </div>
+      )}
+
+      {/* KPI row — company-wide */}
+      <p className="mb-2 text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
+        Company Overview
+      </p>
+      <div className="mb-5 flex flex-wrap gap-2">
+        <KpiCard
+          id="total_emp"
+          label="Total Employees"
+          value={fmtNum(dashData?.headcount.total ?? 0)}
+          sub={dashData ? `${dashData.headcount.managers} managers` : undefined}
+          active={activeKpi === "total_emp"}
+          onClick={handleKpi}
+          accent="linear-gradient(135deg,#134e26 0%,#16a34a 82%)"
+        />
+        <KpiCard
+          id="reg_hours"
+          label="Regular Hours"
+          value={fmtHrs(dashData?.totals.regular_hours ?? 0)}
+          sub={dashData?.hours_date_range ?? undefined}
+          active={activeKpi === "reg_hours"}
+          onClick={handleKpi}
+          accent="linear-gradient(135deg,#134e26 0%,#16a34a 82%)"
+        />
+        <KpiCard
+          id="ot_hours"
+          label="OT Hours"
+          value={fmtHrs(dashData?.totals.ot_hours ?? 0)}
+          sub={dashData && dashData.totals.regular_hours > 0
+            ? `${((dashData.totals.ot_hours / (dashData.totals.regular_hours + dashData.totals.ot_hours)) * 100).toFixed(1)}% of total`
+            : undefined}
+          active={activeKpi === "ot_hours"}
+          onClick={handleKpi}
+          accent="linear-gradient(135deg,#92400e 0%,#d97706 82%)"
+        />
       </div>
 
-      {/* Tab content */}
-      {activeTab === "wosh" && <WoshTab />}
-      {activeTab === "org" && <OrgTab data={dashboardData} />}
-      {activeTab === "hours" && <HoursTab data={dashboardData} />}
+      {/* Drill-down panel */}
+      {renderDrillDown()}
+
+      {/* Violations by manager */}
+      {pd?.chart.by_manager && pd.chart.by_manager.length > 0 && (
+        <div className="mb-5">
+          <ManagerSummaryTable data={pd.chart.by_manager} />
+        </div>
+      )}
+
+      {/* All exceptions */}
+      {pd?.exceptions && pd.exceptions.length > 0 && (
+        <ExceptionsTable exceptions={pd.exceptions as WoshException[]} />
+      )}
     </div>
   );
 }

@@ -121,6 +121,19 @@ def _migrate():
                     conn.execute(text(f"ALTER TABLE time_records ADD COLUMN {col} {ddl}"))
                 print(f"[OK] Added {col} column to time_records table")
 
+    # wosh_reports — structured parsed data column added after initial release
+    if insp.has_table("wosh_reports"):
+        wr_cols = {c["name"] for c in insp.get_columns("wosh_reports")}
+        for col, ddl in [
+            ("week_start",   "VARCHAR"),
+            ("week_end",     "VARCHAR"),
+            ("parsed_data",  "JSON"),
+        ]:
+            if col not in wr_cols:
+                with engine.begin() as conn:
+                    conn.execute(text(f"ALTER TABLE wosh_reports ADD COLUMN {col} {ddl}"))
+                print(f"[OK] Added {col} column to wosh_reports table")
+
     # attendance_points — add optional columns for installs that predate full schema
     if insp.has_table("attendance_points"):
         ap_cols = {c["name"] for c in insp.get_columns("attendance_points")}

@@ -313,24 +313,87 @@ export interface LoginResponse {
   totp_required: boolean;
 }
 
-export interface WoshSheetData {
-  name: string | null;
-  data: Record<string, unknown>[];
+export interface WoshSummary {
+  total_violations: number;
+  employees_affected: number;
+  early_arrivals: number;
+  late_departures: number;
+  managers: number;
+  generated_text: string;
+  week_start: string | null;
+  week_end: string | null;
+}
+
+export interface WoshByManagerChart {
+  manager: string;
+  early_only: number;
+  late_only: number;
+  both: number;
+  total: number;
+}
+
+export interface WoshException {
+  "Employee Name": string | null;
+  "Employee #": number | null;
+  Manager: string | null;
+  Location: string | null;
+  Department: string | null;
+  Date: string | null;
+  "Scheduled Start": string | null;
+  "Scheduled End": string | null;
+  "Actual Clock In": string | null;
+  "Actual Clock Out": string | null;
+  "Time Early": string | null;
+  "Time Late": string | null;
+  "Exception Type": string | null;
+}
+
+export interface WoshManagerDetailRow {
+  employee_name: string | null;
+  emp_num: number | null;
+  department: string | null;
+  total: number | null;
+  early_arrive: number | null;
+  late_leave: number | null;
+  extra_time: string | null;
+  days_affected: string | null;
+}
+
+export interface WoshManagerDetail {
+  manager: string;
+  violations: number;
+  employee_count: number;
+  rows: WoshManagerDetailRow[];
+}
+
+export interface WoshParsedData {
+  summary: WoshSummary;
+  chart: {
+    by_manager: WoshByManagerChart[];
+    by_type: { type: string; count: number }[];
+    by_day: { day: string; count: number }[];
+  };
+  top_employees: { employee_name: string; manager: string | null; total: number; early: number; late: number }[];
+  by_manager_detail: WoshManagerDetail[];
+  exceptions: WoshException[];
 }
 
 export interface WoshReport {
   id: number;
   week_label: string | null;
+  week_start: string | null;
+  week_end: string | null;
   uploaded_at: string | null;
-  sheets: WoshSheetData[];
+  parsed_data: WoshParsedData | null;
 }
 
 export interface WoshReportMeta {
   id: number;
   week_label: string | null;
+  week_start: string | null;
+  week_end: string | null;
   uploaded_at: string | null;
-  uploaded_by: string | null;
-  sheets: { name: string | null; rows: number }[];
+  parsed_data: { summary: WoshSummary } | null;
 }
 
 export interface ExecutiveDashboardData {
@@ -360,6 +423,10 @@ export interface ExecutiveDashboardData {
     written: number;
     final: number;
     termination: number;
+  };
+  totals: {
+    regular_hours: number;
+    ot_hours: number;
   };
 }
 

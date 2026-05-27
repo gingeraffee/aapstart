@@ -165,7 +165,7 @@ export const executiveApi = {
   woshLatest: () => request<import("./types").WoshReport | null>("/executive/wosh/latest"),
   woshHistory: () => request<import("./types").WoshReportMeta[]>("/executive/wosh/history"),
   woshById: (id: number) => request<import("./types").WoshReport>(`/executive/wosh/${id}`),
-  uploadWosh: async (file: File, weekLabel?: string): Promise<{ id: number; week_label: string | null; sheets: { name: string | null; rows: number }[]; uploaded_at: string }> => {
+  uploadWosh: async (file: File, weekLabel?: string): Promise<{ id: number; week_label: string | null; week_start: string | null; week_end: string | null; uploaded_at: string; exceptions: number; managers: number }> => {
     const url = `${API_BASE}/executive/wosh/upload${weekLabel ? `?week_label=${encodeURIComponent(weekLabel)}` : ""}`;
     const formData = new FormData();
     formData.append("file", file);

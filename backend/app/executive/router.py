@@ -1,5 +1,6 @@
 import io
-from datetime import datetime, timezone
+import re
+from datetime import datetime, date, timezone
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from openpyxl import load_workbook
@@ -19,25 +20,204 @@ from app.database.models import (
 router = APIRouter(prefix="/api/executive", tags=["executive"])
 
 
-def _sheet_to_records(ws) -> list[dict]:
-    """Convert an openpyxl worksheet to a list of row dicts."""
+# ── WOSH Parsing ──────────────────────────────────────────────────────────────
+
+def _find_sheet(wb, *fragments):
+    """Return the first worksheet whose name contains any of the fragments (case-insensitive)."""
+    for frag in fragments:
+        for name in wb.sheetnames:
+            if frag.lower() in name.lower():
+                return wb[name]
+    return None
+
+
+def _parse_dashboard(ws):
+    """Extract summary KPIs and top-employees table from the Dashboard sheet."""
+    rows = list(ws.iter_rows(values_only=True))
+    summary = {
+        "total_violations": 0,
+        "employees_affected": 0,
+        "early_arrivals": 0,
+        "late_departures": 0,
+        "managers": 0,
+        "generated_text": "",
+    }
+
+    # Row 2 (index 1): generated text with counts
+    if len(rows) > 1 and rows[1][0]:
+        text = str(rows[1][0])
+        summary["generated_text"] = text
+        m = re.search(r"(\d+)\s+managers?", text, re.IGNORECASE)
+        if m:
+            summary["managers"] = int(m.group(1))
+
+    # Row 4 (index 3): KPI values at cols 0, 4, 8, 12
+    if len(rows) > 3:
+        r = rows[3]
+        def _safe_int(val):
+            try:
+                return int(val)
+            except (TypeError, ValueError):
+                return 0
+        summary["total_violations"]  = _safe_int(r[0]  if len(r) > 0  else None)
+        summary["employees_affected"] = _safe_int(r[4]  if len(r) > 4  else None)
+        summary["early_arrivals"]    = _safe_int(r[8]  if len(r) > 8  else None)
+        summary["late_departures"]   = _safe_int(r[12] if len(r) > 12 else None)
+
+    # Top employees — find the header row then read until None or footnote
+    top_employees = []
+    header_idx = None
+    for i, row in enumerate(rows):
+        if row[0] == "Employee Name" and len(row) > 1 and row[1] == "Manager":
+            header_idx = i
+            break
+
+    if header_idx is not None:
+        for row in rows[header_idx + 1:]:
+            if row[0] is None or (isinstance(row[0], str) and row[0].startswith("*")):
+                break
+            top_employees.append({
+                "employee_name": str(row[0]),
+                "manager":       str(row[1]) if row[1] else None,
+                "total":         row[2],
+                "early":         row[3],
+                "late":          row[4],
+            })
+
+    return summary, top_employees
+
+
+def _parse_chart_data(ws):
+    """Parse _ChartData sheet: by_manager, by_type, by_day."""
+    rows = list(ws.iter_rows(values_only=True))
+    by_manager, by_type, by_day = [], [], []
+
+    for row in rows[1:]:  # skip header
+        if len(row) < 5:
+            continue
+        if row[0] is not None:
+            by_manager.append({
+                "manager":    str(row[0]),
+                "early_only": int(row[1] or 0),
+                "late_only":  int(row[2] or 0),
+                "both":       int(row[3] or 0),
+                "total":      int(row[4] or 0),
+            })
+        if len(row) > 7 and row[6] is not None:
+            by_type.append({"type": str(row[6]), "count": int(row[7] or 0)})
+        if len(row) > 10 and row[9] is not None:
+            by_day.append({"day": str(row[9]), "count": int(row[10] or 0)})
+
+    return by_manager, by_type, by_day
+
+
+def _parse_by_manager(ws):
+    """Parse 'By Manager' sheet into a list of manager objects with employee sub-rows."""
+    result = []
+    current = None
+
+    for row in ws.iter_rows(values_only=True):
+        if all(c is None for c in row):
+            continue
+        cell0 = row[0]
+        if cell0 is None:
+            continue
+        s = str(cell0).strip()
+
+        # Manager header: only col A has a value and it contains "|"
+        if row[1] is None and "|" in s:
+            if current is not None:
+                result.append(current)
+            parts = [p.strip() for p in s.split("|")]
+            name = parts[0]
+            violations = 0
+            emp_count = 0
+            for p in parts[1:]:
+                nums = [int(x) for x in p.split() if x.isdigit()]
+                if "violation" in p.lower() and nums:
+                    violations = nums[0]
+                elif "employee" in p.lower() and nums:
+                    emp_count = nums[0]
+            current = {"manager": name, "violations": violations, "employee_count": emp_count, "rows": []}
+            continue
+
+        # Skip column headers and subtotal rows
+        if s == "Employee Name" or "subtotal" in s.lower():
+            continue
+
+        # Employee data row
+        if current is not None and row[1] is not None:
+            current["rows"].append({
+                "employee_name": str(row[0]).strip() if row[0] else None,
+                "emp_num":       row[1],
+                "department":    str(row[2]) if row[2] else None,
+                "total":         row[3],
+                "early_arrive":  row[4],
+                "late_leave":    row[5],
+                "extra_time":    str(row[6]) if row[6] is not None else None,
+                "days_affected": str(row[7]) if row[7] is not None else None,
+            })
+
+    if current is not None:
+        result.append(current)
+
+    return result
+
+
+def _parse_exceptions(ws):
+    """Parse 'All Exceptions' sheet into row dicts; also returns week_start/end dates."""
     rows = list(ws.iter_rows(values_only=True))
     if not rows:
-        return []
-    headers = [str(c).strip() if c is not None else f"col_{i}" for i, c in enumerate(rows[0])]
-    result = []
+        return [], None, None
+
+    headers = [str(h).strip() if h is not None else f"col_{i}" for i, h in enumerate(rows[0])]
+    exceptions = []
+    date_objs = []
+
     for row in rows[1:]:
         if all(c is None for c in row):
             continue
         record = {}
-        for header, cell in zip(headers, row):
-            val = cell
+        for h, val in zip(headers, row):
             if isinstance(val, datetime):
-                val = val.isoformat()
-            record[header] = val
-        result.append(record)
-    return result
+                record[h] = val.strftime("%Y-%m-%d")
+                date_objs.append(val.date())
+            else:
+                record[h] = val
+        exceptions.append(record)
 
+    week_start = str(min(date_objs)) if date_objs else None
+    week_end   = str(max(date_objs)) if date_objs else None
+
+    return exceptions, week_start, week_end
+
+
+def _parse_wosh_workbook(wb):
+    """Parse a WOSH Excel workbook into structured data."""
+    dashboard_ws = _find_sheet(wb, "dashboard")
+    chart_ws     = _find_sheet(wb, "chartdata", "_chart")
+    by_mgr_ws    = _find_sheet(wb, "by manager")
+    exc_ws       = _find_sheet(wb, "all exception", "exception")
+
+    summary, top_employees = _parse_dashboard(dashboard_ws) if dashboard_ws else ({}, [])
+    by_manager_chart, by_type, by_day = _parse_chart_data(chart_ws) if chart_ws else ([], [], [])
+    by_manager_detail = _parse_by_manager(by_mgr_ws) if by_mgr_ws else []
+    exceptions, week_start, week_end = _parse_exceptions(exc_ws) if exc_ws else ([], None, None)
+
+    return {
+        "summary":           summary,
+        "chart": {
+            "by_manager": by_manager_chart,
+            "by_type":    by_type,
+            "by_day":     by_day,
+        },
+        "top_employees":     top_employees,
+        "by_manager_detail": by_manager_detail,
+        "exceptions":        exceptions,
+    }, week_start, week_end
+
+
+# ── Dashboard endpoint ────────────────────────────────────────────────────────
 
 @router.get("/dashboard")
 def executive_dashboard(
@@ -47,7 +227,6 @@ def executive_dashboard(
     """Org-wide headcount and hours-by-department summary."""
     employees = db.query(Employee).all()
 
-    # Headcount
     total = len(employees)
     by_dept: dict[str, int] = {}
     by_track: dict[str, int] = {}
@@ -60,14 +239,11 @@ def executive_dashboard(
         by_dept[dept] = by_dept.get(dept, 0) + 1
         for t in normalize_tracks(emp.track):
             by_track[t] = by_track.get(t, 0) + 1
-        if emp.is_manager:
-            managers += 1
-        if emp.is_admin:
-            admins += 1
-        if emp.is_executive:
-            executives += 1
+        if emp.is_manager:   managers += 1
+        if emp.is_admin:     admins += 1
+        if emp.is_executive: executives += 1
 
-    # Hours by department — aggregate all TimeRecord rows joined to Employee
+    # Hours by department
     time_rows = (
         db.query(
             Employee.department,
@@ -87,33 +263,33 @@ def executive_dashboard(
 
     hours_by_dept = [
         {
-            "department": row.department or "Unassigned",
-            "employee_count": row.emp_count,
-            "regular_hours": round(row.regular or 0, 2),
-            "ot_hours": round(row.ot or 0, 2),
-            "vacation_hours": round(row.vacation or 0, 2),
-            "personal_hours": round(row.personal or 0, 2),
-            "other_hours": round(row.other or 0, 2),
+            "department":         row.department or "Unassigned",
+            "employee_count":     row.emp_count,
+            "regular_hours":      round(row.regular or 0, 2),
+            "ot_hours":           round(row.ot or 0, 2),
+            "vacation_hours":     round(row.vacation or 0, 2),
+            "personal_hours":     round(row.personal or 0, 2),
+            "other_hours":        round(row.other or 0, 2),
             "absent_w_point_hours": round(row.absent_w_point or 0, 2),
-            "protected_hours": round(row.protected or 0, 2),
+            "protected_hours":    round(row.protected or 0, 2),
         }
         for row in time_rows
     ]
 
-    # Date range of hours data
     date_range_row = db.query(
         sa_func.min(TimeRecord.week_start).label("earliest"),
         sa_func.max(TimeRecord.week_start).label("latest"),
         sa_func.max(TimeRecord.imported_at).label("imported"),
     ).first()
+
     hours_date_range = None
+    last_updated = None
     if date_range_row and date_range_row.earliest:
         hours_date_range = f"{date_range_row.earliest} – {date_range_row.latest}"
+    if date_range_row and date_range_row.imported:
+        last_updated = date_range_row.imported.isoformat()
 
-    # Latest import timestamp
-    last_updated = date_range_row.imported.isoformat() if date_range_row and date_range_row.imported else None
-
-    # Attendance threshold summary — latest point_total per employee
+    # Attendance thresholds
     subq = (
         db.query(
             AttendancePoint.employee_id,
@@ -123,25 +299,34 @@ def executive_dashboard(
         .subquery()
     )
     threshold_counts = {"verbal": 0, "written": 0, "final": 0, "termination": 0}
-    point_rows = db.query(subq).all()
-    for row in point_rows:
+    for row in db.query(subq).all():
         t = _classify_threshold(row.max_total)
         if t:
             threshold_counts[t] += 1
 
+    # Company-wide totals for KPI row
+    totals_row = db.query(
+        sa_func.sum(TimeRecord.regular_hours).label("total_reg"),
+        sa_func.sum(TimeRecord.ot_hours).label("total_ot"),
+    ).first()
+
     return {
         "headcount": {
-            "total": total,
+            "total":         total,
             "by_department": [{"department": k, "count": v} for k, v in sorted(by_dept.items())],
-            "by_track": by_track,
-            "managers": managers,
-            "admins": admins,
-            "executives": executives,
+            "by_track":      by_track,
+            "managers":      managers,
+            "admins":        admins,
+            "executives":    executives,
         },
         "hours_by_department": sorted(hours_by_dept, key=lambda x: x["department"]),
-        "hours_date_range": hours_date_range,
-        "last_updated_hours": last_updated,
+        "hours_date_range":    hours_date_range,
+        "last_updated_hours":  last_updated,
         "attendance_thresholds": threshold_counts,
+        "totals": {
+            "regular_hours": round(totals_row.total_reg or 0, 2) if totals_row else 0,
+            "ot_hours":      round(totals_row.total_ot  or 0, 2) if totals_row else 0,
+        },
     }
 
 
@@ -154,6 +339,22 @@ def _classify_threshold(total: float | None) -> str | None:
     return None
 
 
+# ── WOSH endpoints ────────────────────────────────────────────────────────────
+
+def _serialize_report(r: WoshReport, include_exceptions: bool = True) -> dict:
+    pd = r.parsed_data or {}
+    if not include_exceptions and pd:
+        pd = {k: v for k, v in pd.items() if k != "exceptions"}
+    return {
+        "id":          r.id,
+        "week_label":  r.week_label,
+        "week_start":  r.week_start,
+        "week_end":    r.week_end,
+        "uploaded_at": r.uploaded_at.isoformat() if r.uploaded_at else None,
+        "parsed_data": pd,
+    }
+
+
 @router.post("/wosh/upload")
 async def upload_wosh(
     file: UploadFile = File(...),
@@ -161,7 +362,6 @@ async def upload_wosh(
     user: dict = Depends(require_executive),
     db: Session = Depends(get_db),
 ):
-    """Upload a WOSH Excel workbook. Parses all sheets and stores the data."""
     if not file.filename or not file.filename.lower().endswith((".xlsx", ".xlsm", ".xls")):
         raise HTTPException(status_code=400, detail="File must be an Excel workbook (.xlsx or .xlsm).")
 
@@ -171,44 +371,48 @@ async def upload_wosh(
     except Exception:
         raise HTTPException(status_code=400, detail="Could not parse Excel file. Make sure it is a valid .xlsx workbook.")
 
-    sheet_names = wb.sheetnames
-    if len(sheet_names) < 1:
-        raise HTTPException(status_code=400, detail="Workbook has no sheets.")
+    parsed_data, week_start, week_end = _parse_wosh_workbook(wb)
 
-    def _get_sheet(idx: int):
-        if idx < len(sheet_names):
-            ws = wb[sheet_names[idx]]
-            return sheet_names[idx], _sheet_to_records(ws)
-        return None, None
+    # Auto-generate week_label from date range if not provided
+    if not week_label.strip() and week_start and week_end:
+        try:
+            s = date.fromisoformat(week_start)
+            e = date.fromisoformat(week_end)
+            if s.month == e.month:
+                week_label = f"Week of {s.strftime('%b %-d')}–{e.strftime('%-d, %Y')}"
+            else:
+                week_label = f"Week of {s.strftime('%b %-d')} – {e.strftime('%b %-d, %Y')}"
+        except Exception:
+            week_label = f"{week_start} to {week_end}"
 
-    s1_name, s1_data = _get_sheet(0)
-    s2_name, s2_data = _get_sheet(1)
-    s3_name, s3_data = _get_sheet(2)
+    # Store week_start/end in summary too
+    if parsed_data.get("summary") is not None:
+        parsed_data["summary"]["week_start"] = week_start
+        parsed_data["summary"]["week_end"]   = week_end
 
     report = WoshReport(
-        week_label=week_label.strip() or None,
-        sheet1_name=s1_name,
-        sheet1_data=s1_data,
-        sheet2_name=s2_name,
-        sheet2_data=s2_data,
-        sheet3_name=s3_name,
-        sheet3_data=s3_data,
-        uploaded_by=user.get("sub"),
-        uploaded_at=datetime.now(timezone.utc),
+        week_label  = week_label.strip() or None,
+        week_start  = week_start,
+        week_end    = week_end,
+        parsed_data = parsed_data,
+        uploaded_by = user.get("sub"),
+        uploaded_at = datetime.now(timezone.utc),
     )
     db.add(report)
     db.commit()
     db.refresh(report)
 
+    exc_count = len(parsed_data.get("exceptions") or [])
+    mgr_count = len(parsed_data.get("by_manager_detail") or [])
     return {
-        "id": report.id,
-        "week_label": report.week_label,
-        "sheets": [
-            {"name": s1_name, "rows": len(s1_data or [])},
-            {"name": s2_name, "rows": len(s2_data or [])},
-            {"name": s3_name, "rows": len(s3_data or [])},
-        ],
-        "uploaded_at": report.uploaded_at.isoformat(),
+        "id":           report.id,
+        "week_label":   report.week_label,
+        "week_start":   report.week_start,
+        "week_end":     report.week_end,
+        "uploaded_at":  report.uploaded_at.isoformat(),
+        "exceptions":   exc_count,
+        "managers":     mgr_count,
+        "summary":      parsed_data.get("summary"),
     }
 
 
@@ -217,20 +421,10 @@ def get_wosh_latest(
     user: dict = Depends(require_executive),
     db: Session = Depends(get_db),
 ):
-    """Return the most recently uploaded WOSH report."""
     report = db.query(WoshReport).order_by(WoshReport.uploaded_at.desc()).first()
     if not report:
         return None
-    return {
-        "id": report.id,
-        "week_label": report.week_label,
-        "uploaded_at": report.uploaded_at.isoformat() if report.uploaded_at else None,
-        "sheets": [
-            {"name": report.sheet1_name, "data": report.sheet1_data or []},
-            {"name": report.sheet2_name, "data": report.sheet2_data or []},
-            {"name": report.sheet3_name, "data": report.sheet3_data or []},
-        ],
-    }
+    return _serialize_report(report)
 
 
 @router.get("/wosh/history")
@@ -238,22 +432,8 @@ def get_wosh_history(
     user: dict = Depends(require_executive),
     db: Session = Depends(get_db),
 ):
-    """Return the list of all uploaded WOSH reports (metadata only, no row data)."""
     reports = db.query(WoshReport).order_by(WoshReport.uploaded_at.desc()).all()
-    return [
-        {
-            "id": r.id,
-            "week_label": r.week_label,
-            "uploaded_at": r.uploaded_at.isoformat() if r.uploaded_at else None,
-            "uploaded_by": r.uploaded_by,
-            "sheets": [
-                {"name": r.sheet1_name, "rows": len(r.sheet1_data or [])},
-                {"name": r.sheet2_name, "rows": len(r.sheet2_data or [])},
-                {"name": r.sheet3_name, "rows": len(r.sheet3_data or [])},
-            ],
-        }
-        for r in reports
-    ]
+    return [_serialize_report(r, include_exceptions=False) for r in reports]
 
 
 @router.get("/wosh/{report_id}")
@@ -262,17 +442,7 @@ def get_wosh_report(
     user: dict = Depends(require_executive),
     db: Session = Depends(get_db),
 ):
-    """Return a specific WOSH report by ID."""
     report = db.query(WoshReport).filter_by(id=report_id).first()
     if not report:
         raise HTTPException(status_code=404, detail="WOSH report not found.")
-    return {
-        "id": report.id,
-        "week_label": report.week_label,
-        "uploaded_at": report.uploaded_at.isoformat() if report.uploaded_at else None,
-        "sheets": [
-            {"name": report.sheet1_name, "data": report.sheet1_data or []},
-            {"name": report.sheet2_name, "data": report.sheet2_data or []},
-            {"name": report.sheet3_name, "data": report.sheet3_data or []},
-        ],
-    }
+    return _serialize_report(report)
