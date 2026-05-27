@@ -66,9 +66,11 @@ class TimeRecord(Base):
     regular_hours = Column(Float, nullable=False, default=0.0)
     ot_hours = Column(Float, nullable=False, default=0.0)
     pto_hours = Column(Float, nullable=False, default=0.0)   # legacy catch-all
-    vacation_hours = Column(Float, nullable=False, default=0.0)
-    personal_hours = Column(Float, nullable=False, default=0.0)
-    other_hours = Column(Float, nullable=False, default=0.0)
+    vacation_hours       = Column(Float, nullable=False, default=0.0)
+    personal_hours       = Column(Float, nullable=False, default=0.0)
+    other_hours          = Column(Float, nullable=False, default=0.0)
+    absent_w_point_hours = Column(Float, nullable=False, default=0.0)
+    protected_hours      = Column(Float, nullable=False, default=0.0)
     imported_at = Column(DateTime, default=func.now())
 
 
@@ -98,6 +100,26 @@ class AbsenceRecord(Base):
     requested_date = Column(String, nullable=False)  # ISO date — when request was submitted
     time_off_hours = Column(Float, nullable=False, default=0.0)
     is_planned = Column(Boolean, nullable=False)  # requested_date < from_date
+    imported_at = Column(DateTime, default=func.now())
+
+
+# Threshold levels keyed by minimum point total (used in dashboard + import logic)
+ATTENDANCE_THRESHOLDS = {8.0: "termination", 7.0: "final", 6.0: "written", 5.0: "verbal"}
+
+
+class AttendancePoint(Base):
+    """Attendance point events imported from point tracker. Append-only historical ledger."""
+    __tablename__ = "attendance_points"
+
+    id          = Column(Integer, primary_key=True, autoincrement=True)
+    employee_id = Column(String, nullable=False, index=True)
+    location    = Column(String, nullable=True)
+    point_date  = Column(String, nullable=False)       # ISO date "YYYY-MM-DD"
+    point       = Column(Float,  nullable=False, default=0.0)
+    reason      = Column(String, nullable=True)
+    note        = Column(String, nullable=True)
+    flag_code   = Column(String, nullable=True)        # non-null = Monday absence pattern
+    point_total = Column(Float,  nullable=False, default=0.0)
     imported_at = Column(DateTime, default=func.now())
 
 

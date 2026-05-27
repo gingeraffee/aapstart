@@ -106,14 +106,29 @@ def _migrate():
     if insp.has_table("time_records"):
         tr_cols = {c["name"] for c in insp.get_columns("time_records")}
         for col, ddl in [
-            ("vacation_hours", "REAL DEFAULT 0.0"),
-            ("personal_hours", "REAL DEFAULT 0.0"),
-            ("other_hours",    "REAL DEFAULT 0.0"),
+            ("vacation_hours",       "REAL DEFAULT 0.0"),
+            ("personal_hours",       "REAL DEFAULT 0.0"),
+            ("other_hours",          "REAL DEFAULT 0.0"),
+            ("absent_w_point_hours", "REAL DEFAULT 0.0"),
+            ("protected_hours",      "REAL DEFAULT 0.0"),
         ]:
             if col not in tr_cols:
                 with engine.begin() as conn:
                     conn.execute(text(f"ALTER TABLE time_records ADD COLUMN {col} {ddl}"))
                 print(f"[OK] Added {col} column to time_records table")
+
+    # attendance_points — add optional columns for installs that predate full schema
+    if insp.has_table("attendance_points"):
+        ap_cols = {c["name"] for c in insp.get_columns("attendance_points")}
+        for col, ddl in [
+            ("location",  "VARCHAR"),
+            ("note",      "VARCHAR"),
+            ("flag_code", "VARCHAR"),
+        ]:
+            if col not in ap_cols:
+                with engine.begin() as conn:
+                    conn.execute(text(f"ALTER TABLE attendance_points ADD COLUMN {col} {ddl}"))
+                print(f"[OK] Added {col} column to attendance_points table")
 
 
 def _migrate_track_to_array():

@@ -7,7 +7,20 @@ import { useAuth } from "@/lib/context/AuthContext";
 import { managerApi } from "@/lib/api";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
-import type { ManagerDashboardData, ManagerHoursSummary, ManagerTeamMember, AbsenceEmployeeSummary } from "@/lib/types";
+import type {
+  MonthDashboardData,
+  DashboardCompareData,
+  ManagerHoursSummary,
+  ManagerHoursSummaryV2,
+  ManagerTeamMemberV2,
+  AbsenceEmployeeSummary,
+  AbsenceCategoryEntry,
+  EmployeeDetailData,
+  AttendanceThreshold,
+} from "@/lib/types";
+import { isDashboardCompare } from "@/lib/types";
+
+// ── Constants ─────────────────────────────────────────────────────────────────
 
 const TRACK_LABELS: Record<string, string> = {
   hr: "HR",
@@ -17,11 +30,13 @@ const TRACK_LABELS: Record<string, string> = {
 };
 
 const TRACK_COLORS: Record<string, { bg: string; text: string }> = {
-  hr: { bg: "rgba(59,130,246,0.1)", text: "#1d4ed8" },
-  warehouse: { bg: "rgba(245,158,11,0.1)", text: "#92400e" },
-  administrative: { bg: "rgba(168,85,247,0.1)", text: "#7e22ce" },
-  management: { bg: "rgba(22,163,74,0.1)", text: "#15803d" },
+  hr:             { bg: "rgba(59,130,246,0.1)",  text: "#1d4ed8" },
+  warehouse:      { bg: "rgba(245,158,11,0.1)",  text: "#92400e" },
+  administrative: { bg: "rgba(168,85,247,0.1)",  text: "#7e22ce" },
+  management:     { bg: "rgba(22,163,74,0.1)",   text: "#15803d" },
 };
+
+const THRESHOLD_ORDER = ["termination", "final", "written", "verbal"] as const;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -33,6 +48,11 @@ function formatDateTime(iso: string): string {
   return new Date(iso).toLocaleString("en-US", {
     month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit",
   });
+}
+
+function formatMonth(yyyymm: string): string {
+  const [y, m] = yyyymm.split("-").map(Number);
+  return new Date(y, m - 1, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
 }
 
 function daysUntilColor(days: number): string {
@@ -51,9 +71,46 @@ function reviewTypeBadge(type: string): string {
   return type;
 }
 
-function totalTimeOff(e: ManagerHoursSummary): number {
-  return e.vacation_hours + e.personal_hours + e.other_hours;
+function totalTimeOff(e: { vacation_hours: number; personal_hours: number }): number {
+  return e.vacation_hours + e.personal_hours;
 }
+
+function thresholdColor(t: AttendanceThreshold): string {
+  if (t === "termination") return "#dc2626";
+  if (t === "final")       return "#d97706";
+  if (t === "written")     return "#3b82f6";
+  if (t === "verbal")      return "#16a34a";
+  return "transparent";
+}
+
+function thresholdLabel(t: AttendanceThreshold): string {
+  if (!t) return "";
+  return t.charAt(0).toUpperCase() + t.slice(1);
+}
+
+function buildMonthOptions(): { value: string; label: string }[] {
+  const opts: { value: string; label: string }[] = [];
+  const now = new Date();
+  for (let i = 23; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    const label = d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    opts.push({ value, label });
+  }
+  return opts;
+}
+
+const _now = new Date();
+const currentMonthStr = `${_now.getFullYear()}-${String(_now.getMonth() + 1).padStart(2, "0")}`;
+const _prevDate = new Date(_now.getFullYear(), _now.getMonth() - 1, 1);
+const prevMonthStr = `${_prevDate.getFullYear()}-${String(_prevDate.getMonth() + 1).padStart(2, "0")}`;
+const MONTH_OPTIONS = buildMonthOptions();
+
+const SELECT_STYLE = {
+  background: "rgba(255,255,255,0.72)",
+  border: "1px solid rgba(153,182,218,0.4)",
+  color: "var(--sidebar-text)",
+} as const;
 
 // ── Shared card shell ─────────────────────────────────────────────────────────
 
@@ -118,7 +175,6 @@ function DonutChart({ slices }: { slices: { label: string; value: number; color:
 
   return (
     <svg width="136" height="136" viewBox="0 0 136 136">
-      {/* Track ring */}
       <circle cx={CX} cy={CY} r={R} fill="none" stroke="rgba(153,182,218,0.15)" strokeWidth={SW} />
       {total > 0 && slices.filter(d => d.value > 0).map((d) => {
         const pct = d.value / total;
@@ -153,12 +209,11 @@ function DonutChart({ slices }: { slices: { label: string; value: number; color:
   );
 }
 
-// ── PTO Breakdown card ────────────────────────────────────────────────────────
+// ── PTO Breakdown card (vacation + personal only) ─────────────────────────────
 
 const PTO_SLICES = [
   { key: "vacation_hours" as const, label: "Vacation", color: "#0ea5e9" },
   { key: "personal_hours" as const, label: "Personal", color: "#8b5cf6" },
-  { key: "other_hours"   as const, label: "Other",    color: "#f59e0b" },
 ];
 
 function PtoBreakdownCard({ hours }: { hours: ManagerHoursSummary[] }) {
@@ -186,11 +241,11 @@ function PtoBreakdownCard({ hours }: { hours: ManagerHoursSummary[] }) {
                     </span>
                   </div>
                   <div className="mt-0.5 h-[5px] w-full rounded-full overflow-hidden" style={{ background: "rgba(153,182,218,0.15)" }}>
-                    <div className="h-full rounded-full" style={{ width: `${Math.round((s.value / total) * 100)}%`, background: s.color }} />
+                    <div className="h-full rounded-full" style={{ width: `${total > 0 ? Math.round((s.value / total) * 100) : 0}%`, background: s.color }} />
                   </div>
                 </div>
                 <span className="w-8 shrink-0 text-right text-[0.68rem] font-medium tabular-nums" style={{ color: "var(--sidebar-label)" }}>
-                  {Math.round((s.value / total) * 100)}%
+                  {total > 0 ? Math.round((s.value / total) * 100) : 0}%
                 </span>
               </div>
             ))}
@@ -291,25 +346,21 @@ function StaffingSignals({
   if (hours.length === 0) return null;
 
   const signals: { icon: string; text: string; tone: SignalTone }[] = [];
+  const totalReg = hours.reduce((s, e) => s + e.regular_hours, 0);
+  const totalOt  = hours.reduce((s, e) => s + e.ot_hours, 0);
+  const totalOff = hours.reduce((s, e) => s + totalTimeOff(e), 0);
+  const withOt   = hours.filter(e => e.ot_hours > 0);
+  const noHours  = hours.filter(e => e.regular_hours === 0);
+  const avgReg   = totalReg / hours.length;
 
-  const totalReg  = hours.reduce((s, e) => s + e.regular_hours, 0);
-  const totalOt   = hours.reduce((s, e) => s + e.ot_hours, 0);
-  const totalOff  = hours.reduce((s, e) => s + totalTimeOff(e), 0);
-  const withOt    = hours.filter(e => e.ot_hours > 0);
-  const noHours   = hours.filter(e => e.regular_hours === 0);
-  const avgReg    = totalReg / hours.length;
-
-  // OT rate
   if (totalReg > 0) {
     const otRate = (totalOt / totalReg) * 100;
     signals.push({
       icon: "⏱",
-      text: `${otRate.toFixed(1)}% OT rate${totalReg > 0 ? ` · ${avgReg.toFixed(0)}h avg/person` : ""}`,
+      text: `${otRate.toFixed(1)}% OT rate · ${avgReg.toFixed(0)}h avg/person`,
       tone: otRate > 15 ? "warning" : "neutral",
     });
   }
-
-  // OT concentration
   if (withOt.length > 0) {
     const topOtWorker = [...hours].sort((a, b) => b.ot_hours - a.ot_hours)[0];
     const concentration = totalOt > 0 ? Math.round((topOtWorker.ot_hours / totalOt) * 100) : 0;
@@ -319,18 +370,13 @@ function StaffingSignals({
       tone: concentration >= 60 && withOt.length > 1 ? "warning" : "neutral",
     });
   }
-
-  // Time-off rate
   if (totalOff > 0 && totalReg > 0) {
-    const offRate = (totalOff / (totalReg + totalOff)) * 100;
     signals.push({
       icon: "🌴",
-      text: `${offRate.toFixed(1)}% of hours taken as time off this period`,
+      text: `${((totalOff / (totalReg + totalOff)) * 100).toFixed(1)}% of hours taken as time off this period`,
       tone: "neutral",
     });
   }
-
-  // Missing hours
   if (noHours.length > 0) {
     signals.push({
       icon: "⚠",
@@ -338,8 +384,6 @@ function StaffingSignals({
       tone: "warning",
     });
   }
-
-  // Upcoming reviews this week
   if (upcomingReviews > 0) {
     signals.push({
       icon: "📋",
@@ -351,7 +395,6 @@ function StaffingSignals({
   }
 
   if (signals.length === 0) return null;
-
   return (
     <div className="flex flex-wrap gap-2">
       {signals.map((s, i) => <Signal key={i} {...s} />)}
@@ -417,44 +460,31 @@ function AbsenceCard({
         </div>
       ) : (
         <div className="px-5 py-5 space-y-5">
-          {/* Summary row */}
           <div className="flex items-center gap-6">
             <AbsenceDonut planned={totalPlanned} unplanned={totalUnplanned} />
             <div className="flex flex-col gap-3 flex-1">
-              <div className="flex items-center gap-2.5">
-                <div className="h-2 w-2 shrink-0 rounded-full" style={{ background: "#16a34a" }} />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-1">
-                    <span className="text-[0.74rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>Planned</span>
-                    <span className="text-[0.74rem] font-bold tabular-nums" style={{ color: "#16a34a" }}>{totalPlanned}</span>
+              {[
+                { label: "Planned",   count: totalPlanned,   color: "#16a34a" },
+                { label: "Unplanned", count: totalUnplanned, color: "#dc2626" },
+              ].map(row => (
+                <div key={row.label} className="flex items-center gap-2.5">
+                  <div className="h-2 w-2 shrink-0 rounded-full" style={{ background: row.color }} />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-1">
+                      <span className="text-[0.74rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>{row.label}</span>
+                      <span className="text-[0.74rem] font-bold tabular-nums" style={{ color: row.color }}>{row.count}</span>
+                    </div>
+                    <div className="mt-0.5 h-[5px] w-full rounded-full overflow-hidden" style={{ background: "rgba(153,182,218,0.15)" }}>
+                      <div className="h-full rounded-full" style={{ width: `${total > 0 ? Math.round((row.count / total) * 100) : 0}%`, background: row.color }} />
+                    </div>
                   </div>
-                  <div className="mt-0.5 h-[5px] w-full rounded-full overflow-hidden" style={{ background: "rgba(153,182,218,0.15)" }}>
-                    <div className="h-full rounded-full" style={{ width: `${total > 0 ? Math.round((totalPlanned / total) * 100) : 0}%`, background: "#16a34a" }} />
-                  </div>
+                  <span className="w-8 shrink-0 text-right text-[0.68rem] font-medium tabular-nums" style={{ color: "var(--sidebar-label)" }}>
+                    {total > 0 ? Math.round((row.count / total) * 100) : 0}%
+                  </span>
                 </div>
-                <span className="w-8 shrink-0 text-right text-[0.68rem] font-medium tabular-nums" style={{ color: "var(--sidebar-label)" }}>
-                  {total > 0 ? Math.round((totalPlanned / total) * 100) : 0}%
-                </span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <div className="h-2 w-2 shrink-0 rounded-full" style={{ background: "#dc2626" }} />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-1">
-                    <span className="text-[0.74rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>Unplanned</span>
-                    <span className="text-[0.74rem] font-bold tabular-nums" style={{ color: "#dc2626" }}>{totalUnplanned}</span>
-                  </div>
-                  <div className="mt-0.5 h-[5px] w-full rounded-full overflow-hidden" style={{ background: "rgba(153,182,218,0.15)" }}>
-                    <div className="h-full rounded-full" style={{ width: `${unplannedRate}%`, background: "#dc2626" }} />
-                  </div>
-                </div>
-                <span className="w-8 shrink-0 text-right text-[0.68rem] font-medium tabular-nums" style={{ color: "var(--sidebar-label)" }}>
-                  {unplannedRate}%
-                </span>
-              </div>
+              ))}
             </div>
           </div>
-
-          {/* Per-employee table */}
           {summary.length > 0 && (
             <div className="overflow-x-auto rounded-[12px]" style={{ border: "1px solid rgba(153,182,218,0.18)" }}>
               <table className="w-full text-[0.78rem]">
@@ -475,15 +505,9 @@ function AbsenceCard({
                           {emp.full_name}
                           <span className="ml-2 text-[0.62rem] font-normal" style={{ color: "var(--sidebar-label)" }}>{emp.employee_id}</span>
                         </td>
-                        <td className="px-4 py-2.5 text-right tabular-nums font-semibold" style={{ color: emp.planned_count > 0 ? "#16a34a" : "var(--sidebar-label)" }}>
-                          {emp.planned_count}
-                        </td>
-                        <td className="px-4 py-2.5 text-right tabular-nums font-semibold" style={{ color: emp.unplanned_count > 0 ? "#dc2626" : "var(--sidebar-label)" }}>
-                          {emp.unplanned_count}
-                        </td>
-                        <td className="px-4 py-2.5 text-right tabular-nums" style={{ color: "var(--sidebar-text)" }}>
-                          {emp.planned_count + emp.unplanned_count}
-                        </td>
+                        <td className="px-4 py-2.5 text-right tabular-nums font-semibold" style={{ color: emp.planned_count > 0 ? "#16a34a" : "var(--sidebar-label)" }}>{emp.planned_count}</td>
+                        <td className="px-4 py-2.5 text-right tabular-nums font-semibold" style={{ color: emp.unplanned_count > 0 ? "#dc2626" : "var(--sidebar-label)" }}>{emp.unplanned_count}</td>
+                        <td className="px-4 py-2.5 text-right tabular-nums" style={{ color: "var(--sidebar-text)" }}>{emp.planned_count + emp.unplanned_count}</td>
                       </tr>
                     ))}
                 </tbody>
@@ -496,24 +520,39 @@ function AbsenceCard({
   );
 }
 
-// ── Team Roster ───────────────────────────────────────────────────────────────
+// ── Employee Card ─────────────────────────────────────────────────────────────
 
-function EmployeeCard({ member }: { member: ManagerTeamMember }) {
+function EmployeeCard({ member, onClick }: { member: ManagerTeamMemberV2; onClick: () => void }) {
   const lastLogin = member.last_login_at
     ? formatDate(member.last_login_at)
     : member.first_login_at ? "Never logged in" : "Not yet enrolled";
+  const tc = member.threshold ? thresholdColor(member.threshold) : null;
 
   return (
     <div
-      className="rounded-[14px] p-4"
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(e) => e.key === "Enter" && onClick()}
+      className="rounded-[14px] p-4 cursor-pointer transition-all duration-150 hover:shadow-md hover:-translate-y-0.5"
       style={{
         background: "rgba(255,255,255,0.82)",
-        border: "1px solid rgba(153,182,218,0.28)",
+        border: tc ? `1px solid ${tc}40` : "1px solid rgba(153,182,218,0.28)",
         boxShadow: "0 2px 6px rgba(12,24,47,0.05)",
       }}
     >
-      <p className="text-[0.88rem] font-bold leading-tight" style={{ color: "var(--sidebar-text)" }}>{member.full_name}</p>
-      <p className="mt-0.5 text-[0.68rem]" style={{ color: "var(--sidebar-label)" }}>{member.employee_id}</p>
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <p className="text-[0.88rem] font-bold leading-tight" style={{ color: "var(--sidebar-text)" }}>{member.full_name}</p>
+          <p className="mt-0.5 text-[0.68rem]" style={{ color: "var(--sidebar-label)" }}>{member.employee_id}</p>
+        </div>
+        {tc && member.threshold && (
+          <span className="shrink-0 rounded-full px-2 py-0.5 text-[0.62rem] font-bold"
+            style={{ background: `${tc}18`, color: tc, border: `1px solid ${tc}30` }}>
+            {thresholdLabel(member.threshold)}
+          </span>
+        )}
+      </div>
       {member.department && (
         <p className="mt-2 text-[0.74rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>{member.department}</p>
       )}
@@ -533,15 +572,19 @@ function EmployeeCard({ member }: { member: ManagerTeamMember }) {
           <p className="mt-0.5 text-[0.72rem] font-medium" style={{ color: "var(--sidebar-text)" }}>{lastLogin}</p>
         </div>
         <div className="text-right">
-          <p className="text-[0.64rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>Modules</p>
-          <p className="mt-0.5 text-[0.72rem] font-medium" style={{ color: "var(--sidebar-text)" }}>{member.modules_completed} done</p>
+          <p className="text-[0.64rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>Points</p>
+          <p className="mt-0.5 text-[0.72rem] font-medium tabular-nums" style={{ color: tc ?? "var(--sidebar-text)" }}>
+            {member.point_total !== null ? member.point_total.toFixed(1) : "—"}
+          </p>
         </div>
       </div>
     </div>
   );
 }
 
-function TeamRosterView({ team }: { team: ManagerTeamMember[] }) {
+// ── Team Roster View ──────────────────────────────────────────────────────────
+
+function TeamRosterView({ team, onSelect }: { team: ManagerTeamMemberV2[]; onSelect: (m: ManagerTeamMemberV2) => void }) {
   if (team.length === 0) {
     return (
       <div className="py-16 text-center">
@@ -552,7 +595,7 @@ function TeamRosterView({ team }: { team: ManagerTeamMember[] }) {
     );
   }
 
-  const groups = new Map<string, ManagerTeamMember[]>();
+  const groups = new Map<string, ManagerTeamMemberV2[]>();
   for (const member of team) {
     const key = member.department ?? "No Department";
     if (!groups.has(key)) groups.set(key, []);
@@ -576,11 +619,414 @@ function TeamRosterView({ team }: { team: ManagerTeamMember[] }) {
             <div className="h-px flex-1" style={{ background: "rgba(153,182,218,0.25)" }} />
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {members.map((m) => <EmployeeCard key={m.employee_id} member={m} />)}
+            {members.map((m) => <EmployeeCard key={m.employee_id} member={m} onClick={() => onSelect(m)} />)}
           </div>
         </div>
       ))}
     </div>
+  );
+}
+
+// ── Threshold Alerts Card ─────────────────────────────────────────────────────
+
+function ThresholdAlertsCard({ team, onClickEmployee }: {
+  team: ManagerTeamMemberV2[];
+  onClickEmployee: (employeeId: string) => void;
+}) {
+  const atThreshold = team.filter(m => m.threshold !== null);
+
+  return (
+    <Card title="Attendance Threshold Alerts">
+      {atThreshold.length === 0 ? (
+        <div className="px-5 py-8 text-center">
+          <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>
+            No employees are currently at a threshold level.
+          </p>
+        </div>
+      ) : (
+        <div>
+          {THRESHOLD_ORDER.filter(level => atThreshold.some(m => m.threshold === level)).map(level => {
+            const members = atThreshold.filter(m => m.threshold === level);
+            const color = thresholdColor(level);
+            return (
+              <div key={level} className="px-5 py-3" style={{ borderBottom: "1px solid rgba(153,182,218,0.12)" }}>
+                <div className="mb-2 flex items-center gap-2">
+                  <span className="rounded-full px-2.5 py-0.5 text-[0.66rem] font-bold capitalize"
+                    style={{ background: `${color}18`, color, border: `1px solid ${color}30` }}>
+                    {level}
+                  </span>
+                  <span className="text-[0.68rem]" style={{ color: "var(--sidebar-label)" }}>
+                    {members.length} employee{members.length !== 1 ? "s" : ""}
+                  </span>
+                </div>
+                <div className="space-y-1">
+                  {members.map(m => (
+                    <button
+                      key={m.employee_id}
+                      onClick={() => onClickEmployee(m.employee_id)}
+                      className="flex w-full items-center justify-between rounded-[10px] px-3 py-2 text-left transition-all hover:opacity-75"
+                      style={{ background: `${color}08`, border: `1px solid ${color}20` }}
+                    >
+                      <span className="text-[0.8rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>{m.full_name}</span>
+                      <span className="text-[0.74rem] font-bold tabular-nums" style={{ color }}>
+                        {m.point_total?.toFixed(1) ?? "—"} pts
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </Card>
+  );
+}
+
+// ── Employee Detail Panel ─────────────────────────────────────────────────────
+
+function EmployeeDetailInner({ employeeId, month, onClose }: {
+  employeeId: string;
+  month: string;
+  onClose: () => void;
+}) {
+  const { data, isLoading, error } = useSWR<EmployeeDetailData>(
+    ["emp-detail", employeeId, month],
+    () => managerApi.employeeDetail(employeeId, month),
+    { revalidateOnFocus: false }
+  );
+
+  const tc = data?.threshold ? thresholdColor(data.threshold) : null;
+
+  return (
+    <div style={{
+      background: "rgba(255,255,255,0.97)",
+      borderLeft: "1px solid rgba(153,182,218,0.28)",
+      height: "100%",
+      display: "flex",
+      flexDirection: "column",
+    }}>
+      {/* Header */}
+      <div className="flex shrink-0 items-center justify-between px-5 py-4"
+        style={{ borderBottom: "1px solid rgba(153,182,218,0.22)", background: "rgba(255,255,255,0.9)" }}>
+        <div>
+          {data ? (
+            <>
+              <p className="text-[1rem] font-bold" style={{ color: "var(--sidebar-text)" }}>{data.employee.full_name}</p>
+              <p className="text-[0.68rem]" style={{ color: "var(--sidebar-label)" }}>
+                {data.employee.employee_id}{data.employee.department ? ` · ${data.employee.department}` : ""}
+              </p>
+            </>
+          ) : (
+            <p className="text-[0.85rem] font-semibold" style={{ color: "var(--sidebar-label)" }}>Loading…</p>
+          )}
+        </div>
+        <button onClick={onClose}
+          className="rounded-full p-1.5 transition-all hover:opacity-60"
+          style={{ color: "var(--sidebar-label)", background: "rgba(153,182,218,0.12)" }}>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <path d="M1 1l12 12M13 1L1 13" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Body */}
+      <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
+        {isLoading && (
+          <div className="flex items-center justify-center py-16"><Spinner className="h-6 w-6" /></div>
+        )}
+        {error && (
+          <p className="text-center text-[0.8rem] py-8" style={{ color: "#dc2626" }}>
+            Could not load employee details.
+          </p>
+        )}
+        {data && (
+          <>
+            {/* Threshold banner */}
+            {data.threshold && tc && (
+              <div className="rounded-[12px] px-4 py-3 flex items-center gap-3"
+                style={{ background: `${tc}10`, border: `1px solid ${tc}30` }}>
+                <span className="text-[0.7rem] font-bold uppercase tracking-wide" style={{ color: tc }}>
+                  {thresholdLabel(data.threshold)} Warning
+                </span>
+                <span className="text-[0.88rem] font-bold tabular-nums ml-auto" style={{ color: tc }}>
+                  {data.current_point_total?.toFixed(1) ?? "—"} pts total
+                </span>
+              </div>
+            )}
+
+            {/* Hours */}
+            <div>
+              <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>
+                Hours — {formatMonth(month)}
+              </p>
+              <div className="rounded-[12px] overflow-hidden" style={{ border: "1px solid rgba(153,182,218,0.2)" }}>
+                {([
+                  { label: "Regular",         value: data.hours.regular,         color: "var(--sidebar-text)" },
+                  { label: "Overtime",         value: data.hours.ot,              color: data.hours.ot > 0 ? "#d97706" : "var(--sidebar-label)" },
+                  { label: "Vacation",         value: data.hours.vacation,        color: data.hours.vacation > 0 ? "#0ea5e9" : "var(--sidebar-label)" },
+                  { label: "Personal",         value: data.hours.personal,        color: data.hours.personal > 0 ? "#8b5cf6" : "var(--sidebar-label)" },
+                  { label: "Absent w/ Point",  value: data.hours.absent_w_point,  color: data.hours.absent_w_point > 0 ? "#dc2626" : "var(--sidebar-label)" },
+                  { label: "Protected",        value: data.hours.protected,       color: data.hours.protected > 0 ? "#16a34a" : "var(--sidebar-label)" },
+                  { label: "Other",            value: data.hours.other,           color: data.hours.other > 0 ? "#f59e0b" : "var(--sidebar-label)" },
+                ]).map((row, i, arr) => (
+                  <div key={row.label} className="flex items-center justify-between px-4 py-2.5"
+                    style={{ borderBottom: i < arr.length - 1 ? "1px solid rgba(153,182,218,0.1)" : "none" }}>
+                    <span className="text-[0.78rem]" style={{ color: "var(--sidebar-label)" }}>{row.label}</span>
+                    <span className="text-[0.82rem] font-semibold tabular-nums" style={{ color: row.color }}>{row.value.toFixed(1)}h</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Reviews */}
+            {(data.reviews.past_due.length > 0 || data.reviews.upcoming.length > 0) && (
+              <div>
+                <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>
+                  Performance Reviews
+                </p>
+                <div className="space-y-1.5">
+                  {data.reviews.past_due.map((r, i) => (
+                    <div key={i} className="rounded-[10px] px-3 py-2.5 flex items-center justify-between gap-2"
+                      style={{ background: "rgba(220,38,38,0.06)", border: "1px solid rgba(220,38,38,0.2)" }}>
+                      <div>
+                        <p className="text-[0.78rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>{reviewTypeBadge(r.review_type)}</p>
+                        <p className="text-[0.66rem]" style={{ color: "var(--sidebar-label)" }}>Was due {formatDate(r.due_date)}</p>
+                      </div>
+                      <span className="shrink-0 rounded-full px-2 py-0.5 text-[0.66rem] font-bold"
+                        style={{ background: "rgba(220,38,38,0.12)", color: "#dc2626" }}>
+                        {r.days_overdue}d overdue
+                      </span>
+                    </div>
+                  ))}
+                  {data.reviews.upcoming.map((r, i) => (
+                    <div key={i} className="rounded-[10px] px-3 py-2.5 flex items-center justify-between gap-2"
+                      style={{ background: "rgba(14,165,233,0.06)", border: "1px solid rgba(14,165,233,0.2)" }}>
+                      <div>
+                        <p className="text-[0.78rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>{reviewTypeBadge(r.review_type)}</p>
+                        <p className="text-[0.66rem]" style={{ color: "var(--sidebar-label)" }}>Due {formatDate(r.due_date)}</p>
+                      </div>
+                      <span className="shrink-0 rounded-full px-2 py-0.5 text-[0.66rem] font-bold"
+                        style={{ background: `${daysUntilColor(r.days_until)}18`, color: daysUntilColor(r.days_until) }}>
+                        {r.days_until === 0 ? "Today" : `${r.days_until}d`}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Attendance Points */}
+            <div>
+              <div className="mb-2 flex items-center justify-between">
+                <p className="text-[0.65rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>
+                  Points — {formatMonth(month)}
+                </p>
+                {data.current_point_total !== null && !data.threshold && (
+                  <span className="text-[0.72rem] font-semibold tabular-nums" style={{ color: "var(--sidebar-label)" }}>
+                    Total: {data.current_point_total.toFixed(1)}
+                  </span>
+                )}
+              </div>
+              {data.attendance_points.length === 0 ? (
+                <p className="text-[0.78rem]" style={{ color: "var(--sidebar-label)" }}>No point events this month.</p>
+              ) : (
+                <div className="rounded-[12px] overflow-hidden" style={{ border: "1px solid rgba(153,182,218,0.2)" }}>
+                  <table className="w-full text-[0.76rem]">
+                    <thead>
+                      <tr style={{ borderBottom: "1px solid rgba(153,182,218,0.18)", background: "rgba(153,182,218,0.06)" }}>
+                        {["Date", "Reason", "Pts", "Total", "Mon"].map(h => (
+                          <th key={h}
+                            className={cn("px-3 py-2 text-[0.6rem] font-bold uppercase tracking-[0.1em]",
+                              h === "Pts" || h === "Total" ? "text-right" : h === "Mon" ? "text-center" : "text-left")}
+                            style={{ color: "var(--sidebar-label)" }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.attendance_points.map((p, i) => (
+                        <tr key={i} style={{ borderBottom: i < data.attendance_points.length - 1 ? "1px solid rgba(153,182,218,0.1)" : "none" }}>
+                          <td className="px-3 py-2 tabular-nums whitespace-nowrap" style={{ color: "var(--sidebar-text)" }}>{formatDate(p.point_date)}</td>
+                          <td className="px-3 py-2 max-w-[120px] truncate" style={{ color: "var(--sidebar-label)" }}>{p.reason ?? "—"}</td>
+                          <td className="px-3 py-2 text-right tabular-nums font-semibold" style={{ color: p.point > 0 ? "#dc2626" : "var(--sidebar-label)" }}>{p.point}</td>
+                          <td className="px-3 py-2 text-right tabular-nums font-bold" style={{ color: "var(--sidebar-text)" }}>{p.point_total.toFixed(1)}</td>
+                          <td className="px-3 py-2 text-center text-[0.7rem] font-bold" style={{ color: p.flag_code ? "#d97706" : "var(--sidebar-label)" }}>
+                            {p.flag_code ? "✓" : "—"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function EmployeeDetailPanel({ employee, month, onClose }: {
+  employee: ManagerTeamMemberV2;
+  month: string;
+  onClose: () => void;
+}) {
+  return (
+    <>
+      <div
+        className="fixed inset-0 z-40"
+        style={{ background: "rgba(12,24,47,0.25)" }}
+        onClick={onClose}
+      />
+      <div className="fixed right-0 top-0 z-50 h-full w-[420px] shadow-2xl" style={{ maxWidth: "100vw" }}>
+        <EmployeeDetailInner
+          key={employee.employee_id}
+          employeeId={employee.employee_id}
+          month={month}
+          onClose={onClose}
+        />
+      </div>
+    </>
+  );
+}
+
+// ── Absence Category Table ────────────────────────────────────────────────────
+
+function AbsenceCategoryTable({ data, filter }: { data: AbsenceCategoryEntry[]; filter: string[] }) {
+  const rows = filter.length > 0 ? data.filter(r => filter.includes(r.employee_id)) : data;
+
+  return (
+    <Card title="Time Off by Category">
+      {rows.length === 0 ? (
+        <div className="px-5 py-8 text-center">
+          <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No absence category data for this period.</p>
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-[0.78rem]">
+            <thead>
+              <tr style={{ borderBottom: "1px solid rgba(153,182,218,0.2)" }}>
+                {["Employee", "Vacation", "Personal", "Abs w/Pt", "Protected", "Other", "Total"].map(h => (
+                  <th key={h}
+                    className={cn("px-4 py-3 text-[0.62rem] font-bold uppercase tracking-[0.1em]", h !== "Employee" ? "text-right" : "text-left")}
+                    style={{ color: "var(--sidebar-label)" }}>
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {[...rows]
+                .sort((a, b) => {
+                  const ta = a.vacation_hours + a.personal_hours + a.absent_w_point_hours + a.protected_hours + a.other_hours;
+                  const tb = b.vacation_hours + b.personal_hours + b.absent_w_point_hours + b.protected_hours + b.other_hours;
+                  return tb - ta;
+                })
+                .map((emp, i, arr) => {
+                  const total = emp.vacation_hours + emp.personal_hours + emp.absent_w_point_hours + emp.protected_hours + emp.other_hours;
+                  return (
+                    <tr key={emp.employee_id} style={{ borderBottom: i < arr.length - 1 ? "1px solid rgba(153,182,218,0.12)" : "none" }}>
+                      <td className="px-4 py-2.5 font-semibold" style={{ color: "var(--sidebar-text)" }}>
+                        {emp.full_name}
+                        {emp.has_monday_flag && (
+                          <span className="ml-1.5 text-[0.6rem] font-bold rounded-full px-1.5 py-0.5"
+                            style={{ background: "rgba(217,119,6,0.12)", color: "#d97706" }}>MON</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-2.5 text-right tabular-nums" style={{ color: emp.vacation_hours > 0 ? "#0ea5e9" : "var(--sidebar-label)" }}>{emp.vacation_hours.toFixed(1)}</td>
+                      <td className="px-4 py-2.5 text-right tabular-nums" style={{ color: emp.personal_hours > 0 ? "#8b5cf6" : "var(--sidebar-label)" }}>{emp.personal_hours.toFixed(1)}</td>
+                      <td className="px-4 py-2.5 text-right tabular-nums" style={{ color: emp.absent_w_point_hours > 0 ? "#dc2626" : "var(--sidebar-label)" }}>{emp.absent_w_point_hours.toFixed(1)}</td>
+                      <td className="px-4 py-2.5 text-right tabular-nums" style={{ color: emp.protected_hours > 0 ? "#16a34a" : "var(--sidebar-label)" }}>{emp.protected_hours.toFixed(1)}</td>
+                      <td className="px-4 py-2.5 text-right tabular-nums" style={{ color: emp.other_hours > 0 ? "#f59e0b" : "var(--sidebar-label)" }}>{emp.other_hours.toFixed(1)}</td>
+                      <td className="px-4 py-2.5 text-right tabular-nums font-bold" style={{ color: "var(--sidebar-text)" }}>{total.toFixed(1)}</td>
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </Card>
+  );
+}
+
+// ── Attendance Points Table ───────────────────────────────────────────────────
+
+function AttendancePointsTable({ team, absenceByCategory, filter, onSelectEmployee }: {
+  team: ManagerTeamMemberV2[];
+  absenceByCategory: AbsenceCategoryEntry[];
+  filter: string[];
+  onSelectEmployee: (m: ManagerTeamMemberV2) => void;
+}) {
+  const mondayIds = new Set(absenceByCategory.filter(a => a.has_monday_flag).map(a => a.employee_id));
+  const source = filter.length > 0 ? team.filter(m => filter.includes(m.employee_id)) : team;
+  const rows = [...source]
+    .filter(m => m.point_total !== null || mondayIds.has(m.employee_id))
+    .sort((a, b) => (b.point_total ?? 0) - (a.point_total ?? 0));
+
+  return (
+    <Card title="Attendance Points">
+      {rows.length === 0 ? (
+        <div className="px-5 py-8 text-center">
+          <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No attendance point data available.</p>
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-[0.78rem]">
+            <thead>
+              <tr style={{ borderBottom: "1px solid rgba(153,182,218,0.2)" }}>
+                {["Employee", "Current Total", "Threshold", "Mon Flag"].map(h => (
+                  <th key={h}
+                    className={cn("px-4 py-3 text-[0.62rem] font-bold uppercase tracking-[0.1em]", h !== "Employee" ? "text-center" : "text-left")}
+                    style={{ color: "var(--sidebar-label)" }}>
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((m, i) => {
+                const tc = m.threshold ? thresholdColor(m.threshold) : null;
+                return (
+                  <tr
+                    key={m.employee_id}
+                    onClick={() => onSelectEmployee(m)}
+                    className="cursor-pointer transition-colors hover:bg-blue-50/30"
+                    style={{ borderBottom: i < rows.length - 1 ? "1px solid rgba(153,182,218,0.12)" : "none" }}
+                  >
+                    <td className="px-4 py-2.5 font-semibold" style={{ color: "var(--sidebar-text)" }}>
+                      {m.full_name}
+                      <span className="ml-2 text-[0.62rem] font-normal" style={{ color: "var(--sidebar-label)" }}>{m.employee_id}</span>
+                    </td>
+                    <td className="px-4 py-2.5 text-center tabular-nums font-bold" style={{ color: tc ?? "var(--sidebar-text)" }}>
+                      {m.point_total?.toFixed(1) ?? "—"}
+                    </td>
+                    <td className="px-4 py-2.5 text-center">
+                      {m.threshold ? (
+                        <span className="rounded-full px-2 py-0.5 text-[0.64rem] font-bold capitalize"
+                          style={{ background: `${tc}18`, color: tc!, border: `1px solid ${tc}30` }}>
+                          {m.threshold}
+                        </span>
+                      ) : (
+                        <span style={{ color: "var(--sidebar-label)" }}>—</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-2.5 text-center">
+                      {mondayIds.has(m.employee_id) ? (
+                        <span className="text-[0.72rem] font-bold" style={{ color: "#d97706" }}>✓</span>
+                      ) : (
+                        <span style={{ color: "var(--sidebar-label)" }}>—</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </Card>
   );
 }
 
@@ -590,22 +1036,27 @@ export default function ManagerDashboardPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const canAccess = user?.is_manager || user?.is_admin;
-  const [activeTab, setActiveTab] = useState<"metrics" | "team">("metrics");
+
+  const [activeTab, setActiveTab] = useState<"metrics" | "roster" | "analytics">("metrics");
+  const [selectedMonth, setSelectedMonth] = useState(currentMonthStr);
+  const [compareMode, setCompareMode] = useState(false);
+  const [compareMonth, setCompareMonth] = useState(prevMonthStr);
   const [searchQuery, setSearchQuery] = useState("");
   const [deptFilter, setDeptFilter] = useState("all");
-  const [weeks, setWeeks] = useState(4);
+  const [selectedEmployee, setSelectedEmployee] = useState<ManagerTeamMemberV2 | null>(null);
+  const [thresholdFilter, setThresholdFilter] = useState<string[]>([]);
 
   useEffect(() => {
     if (!authLoading && !canAccess) router.replace("/overview");
   }, [authLoading, canAccess, router]);
 
-  const { data, error, isLoading } = useSWR(
-    canAccess ? ["manager-dashboard", weeks] : null,
-    () => managerApi.dashboard(weeks),
+  const { data: rawData, error, isLoading } = useSWR(
+    canAccess ? ["mgr-dash", selectedMonth, compareMode ? compareMonth : null] : null,
+    () => managerApi.monthDashboard(selectedMonth, compareMode ? compareMonth : undefined),
     { revalidateOnFocus: false }
   );
 
-  if (authLoading || (!data && isLoading)) {
+  if (authLoading || (!rawData && isLoading)) {
     return <div className="flex min-h-[60vh] items-center justify-center"><Spinner className="h-8 w-8" /></div>;
   }
 
@@ -621,11 +1072,15 @@ export default function ManagerDashboardPage() {
     );
   }
 
-  const dashboard = data as ManagerDashboardData | undefined;
+  const isCompare = rawData ? isDashboardCompare(rawData) : false;
+  const dashboard = rawData
+    ? (isCompare ? (rawData as DashboardCompareData).month : (rawData as MonthDashboardData))
+    : undefined;
+  const compareDashboard = isCompare ? (rawData as DashboardCompareData).compare_month : undefined;
 
   // ── Filters ──
   const departments = [...new Set(
-    (dashboard?.team ?? []).map((m) => m.department ?? "No Department")
+    (dashboard?.team ?? []).map(m => m.department ?? "No Department")
   )].sort((a, b) => a === "No Department" ? 1 : b === "No Department" ? -1 : a.localeCompare(b));
 
   const isFiltered = searchQuery.trim() !== "" || deptFilter !== "all";
@@ -634,42 +1089,52 @@ export default function ManagerDashboardPage() {
     return (!q || name.toLowerCase().includes(q) || id.toLowerCase().includes(q))
       && (deptFilter === "all" || (dept ?? "No Department") === deptFilter);
   };
-  const teamLookup = new Map((dashboard?.team ?? []).map((m) => [m.employee_id, m]));
+  const teamLookup = new Map((dashboard?.team ?? []).map(m => [m.employee_id, m]));
 
-  const filteredTeam     = (dashboard?.team ?? []).filter((m) => matchesMember(m.full_name, m.employee_id, m.department ?? null));
-  const filteredHours    = (dashboard?.hours_summary ?? []).filter((e) => matchesMember(e.full_name, e.employee_id, teamLookup.get(e.employee_id)?.department ?? null));
-  const filteredUpcoming = (dashboard?.upcoming_reviews ?? []).filter((r) => matchesMember(r.full_name, r.employee_id, teamLookup.get(r.employee_id)?.department ?? null));
-  const filteredPastDue  = (dashboard?.past_due_reviews ?? []).filter((r) => matchesMember(r.full_name, r.employee_id, teamLookup.get(r.employee_id)?.department ?? null));
-  const filteredAbsences = (dashboard?.absence_summary ?? []).filter((a) => matchesMember(a.full_name, a.employee_id, teamLookup.get(a.employee_id)?.department ?? null));
+  const filteredTeam     = (dashboard?.team ?? []).filter(m => matchesMember(m.full_name, m.employee_id, m.department ?? null));
+  const filteredHours    = (dashboard?.hours_summary ?? []).filter(e => matchesMember(e.full_name, e.employee_id, teamLookup.get(e.employee_id)?.department ?? null));
+  const filteredUpcoming = (dashboard?.upcoming_reviews ?? []).filter(r => matchesMember(r.full_name, r.employee_id, teamLookup.get(r.employee_id)?.department ?? null));
+  const filteredPastDue  = (dashboard?.past_due_reviews ?? []).filter(r => matchesMember(r.full_name, r.employee_id, teamLookup.get(r.employee_id)?.department ?? null));
+  const filteredAbsences = (dashboard?.absence_summary ?? []).filter(a => matchesMember(a.full_name, a.employee_id, teamLookup.get(a.employee_id)?.department ?? null));
 
   // ── Aggregates ──
-  const totalReg      = filteredHours.reduce((s, e) => s + e.regular_hours, 0);
-  const totalOt       = filteredHours.reduce((s, e) => s + e.ot_hours, 0);
-  const totalVacation = filteredHours.reduce((s, e) => s + e.vacation_hours, 0);
-  const totalPersonal = filteredHours.reduce((s, e) => s + e.personal_hours, 0);
-  const totalOther    = filteredHours.reduce((s, e) => s + e.other_hours, 0);
-  const totalOff      = totalVacation + totalPersonal + totalOther;
+  const totalReg       = filteredHours.reduce((s, e) => s + e.regular_hours, 0);
+  const totalOt        = filteredHours.reduce((s, e) => s + e.ot_hours, 0);
+  const totalVacation  = filteredHours.reduce((s, e) => s + e.vacation_hours, 0);
+  const totalPersonal  = filteredHours.reduce((s, e) => s + e.personal_hours, 0);
+  const totalAbsWPt    = filteredHours.reduce((s, e) => s + ((e as ManagerHoursSummaryV2).absent_w_point_hours ?? 0), 0);
+  const totalProtected = filteredHours.reduce((s, e) => s + ((e as ManagerHoursSummaryV2).protected_hours ?? 0), 0);
+  const totalOther     = filteredHours.reduce((s, e) => s + e.other_hours, 0);
+  const totalOff       = totalVacation + totalPersonal;
 
-  // ── Leaderboard data ──
   const topOt = [...filteredHours]
     .filter(e => e.ot_hours > 0)
     .sort((a, b) => b.ot_hours - a.ot_hours)
-    .slice(0, 3)
+    .slice(0, 5)
     .map(e => ({ name: e.full_name, id: e.employee_id, value: e.ot_hours }));
 
   const topPto = [...filteredHours]
     .filter(e => totalTimeOff(e) > 0)
     .sort((a, b) => totalTimeOff(b) - totalTimeOff(a))
-    .slice(0, 3)
+    .slice(0, 5)
     .map(e => ({ name: e.full_name, id: e.employee_id, value: totalTimeOff(e) }));
 
   const filteredPlanned   = filteredAbsences.reduce((s, a) => s + a.planned_count, 0);
   const filteredUnplanned = filteredAbsences.reduce((s, a) => s + a.unplanned_count, 0);
 
+  // ── Compare aggregates (unfiltered team-wide) ──
+  const cmpTotalReg  = compareDashboard ? compareDashboard.hours_summary.reduce((s, e) => s + e.regular_hours, 0) : 0;
+  const cmpTotalOt   = compareDashboard ? compareDashboard.hours_summary.reduce((s, e) => s + e.ot_hours, 0) : 0;
+  const cmpTotalOff  = compareDashboard ? compareDashboard.hours_summary.reduce((s, e) => s + totalTimeOff(e), 0) : 0;
+
   // ── Period label ──
-  const periodLabel = dashboard?.hours_week_count
-    ? `${dashboard.hours_date_range ?? ""}${(dashboard.hours_week_count ?? 0) > 1 ? ` (${dashboard.hours_week_count} uploads)` : ""}`
-    : "";
+  const periodLabel = dashboard?.hours_date_range ?? "";
+
+  // ── Threshold click → Analytics tab filtered to employee ──
+  const handleThresholdClick = (employeeId: string) => {
+    setActiveTab("analytics");
+    setThresholdFilter([employeeId]);
+  };
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 px-4 py-8 md:px-8">
@@ -683,35 +1148,61 @@ export default function ManagerDashboardPage() {
           </p>
         ) : (
           <p className="mt-1 text-[0.72rem]" style={{ color: "var(--sidebar-label)" }}>
-            No data uploaded yet — ask HR to upload the weekly file.
+            No data uploaded yet — ask HR to upload the data files.
           </p>
         )}
         {dashboard && dashboard.team_size === 0 && (
-          <div className="mt-3 rounded-[12px] px-4 py-3 text-[0.78rem]" style={{ background: "rgba(217,119,6,0.08)", border: "1px solid rgba(217,119,6,0.22)", color: "#92400e" }}>
+          <div className="mt-3 rounded-[12px] px-4 py-3 text-[0.78rem]"
+            style={{ background: "rgba(217,119,6,0.08)", border: "1px solid rgba(217,119,6,0.22)", color: "#92400e" }}>
             No employees are assigned to you yet. Ask an admin to set your employees' "Reports To" field to your account.
           </div>
         )}
       </div>
 
-      {/* ── Tabs ── */}
+      {/* ── Top Nav Tabs ── */}
       <div className="flex gap-1 self-start rounded-[12px] p-1"
         style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", boxShadow: "var(--tab-group-shadow)" }}>
-        {(["metrics", "team"] as const).map((tab) => (
+        <button
+          className="rounded-[9px] px-5 py-1.5 text-[0.8rem] font-semibold"
+          style={{ color: "var(--tab-text-active)", background: "var(--tab-active-bg)", boxShadow: "var(--tab-active-shadow)" }}
+        >
+          My Team
+        </button>
+        <button
+          onClick={() => router.push("/overview")}
+          className="rounded-[9px] px-5 py-1.5 text-[0.8rem] font-semibold transition-all duration-200 hover:opacity-70"
+          style={{ color: "var(--tab-text)" }}
+        >
+          Training →
+        </button>
+        <button
+          onClick={() => router.push("/resources")}
+          className="rounded-[9px] px-5 py-1.5 text-[0.8rem] font-semibold transition-all duration-200 hover:opacity-70"
+          style={{ color: "var(--tab-text)" }}
+        >
+          Resource Hub →
+        </button>
+      </div>
+
+      {/* ── Sub-tabs ── */}
+      <div className="flex gap-1 self-start rounded-[12px] p-1"
+        style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", boxShadow: "var(--tab-group-shadow)" }}>
+        {(["metrics", "roster", "analytics"] as const).map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className="rounded-[9px] px-5 py-1.5 text-[0.8rem] font-semibold capitalize transition-all duration-200"
+            className="rounded-[9px] px-5 py-1.5 text-[0.8rem] font-semibold transition-all duration-200"
             style={{
               color: activeTab === tab ? "var(--tab-text-active)" : "var(--tab-text)",
               ...(activeTab === tab ? { background: "var(--tab-active-bg)", boxShadow: "var(--tab-active-shadow)" } : {}),
             }}
           >
-            {tab === "metrics" ? "Metrics" : "Team Roster"}
+            {tab === "metrics" ? "Metrics" : tab === "roster" ? "Team Roster" : "Team Analytics"}
           </button>
         ))}
       </div>
 
-      {/* ── Filter bar ── */}
+      {/* ── Filter / control bar ── */}
       <div className="flex flex-wrap items-center gap-2.5">
         <div className="relative flex-1" style={{ minWidth: "180px" }}>
           <svg className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--sidebar-label)" }}>
@@ -721,29 +1212,39 @@ export default function ManagerDashboardPage() {
             type="search"
             placeholder="Search by name or ID…"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
             className="w-full rounded-[12px] py-2 pl-9 pr-4 text-[0.82rem] outline-none"
             style={{ background: "rgba(255,255,255,0.72)", border: "1px solid rgba(153,182,218,0.4)", color: "var(--sidebar-text)" }}
           />
         </div>
         {departments.length > 1 && (
-          <select value={deptFilter} onChange={(e) => setDeptFilter(e.target.value)}
+          <select value={deptFilter} onChange={e => setDeptFilter(e.target.value)}
             className="rounded-[12px] px-3 py-2 text-[0.82rem] font-medium outline-none"
-            style={{ background: "rgba(255,255,255,0.72)", border: "1px solid rgba(153,182,218,0.4)", color: "var(--sidebar-text)" }}>
+            style={SELECT_STYLE}>
             <option value="all">All Departments</option>
-            {departments.map((d) => <option key={d} value={d}>{d}</option>)}
+            {departments.map(d => <option key={d} value={d}>{d}</option>)}
           </select>
         )}
-        {activeTab === "metrics" && (
-          <select value={weeks} onChange={(e) => setWeeks(Number(e.target.value))}
+        <select value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)}
+          className="rounded-[12px] px-3 py-2 text-[0.82rem] font-medium outline-none"
+          style={SELECT_STYLE}>
+          {MONTH_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+        </select>
+        <button
+          onClick={() => setCompareMode(m => !m)}
+          className="rounded-[12px] px-3 py-2 text-[0.82rem] font-semibold transition-all"
+          style={{
+            background: compareMode ? "rgba(14,165,233,0.12)" : "rgba(255,255,255,0.72)",
+            border: compareMode ? "1px solid rgba(14,165,233,0.4)" : "1px solid rgba(153,182,218,0.4)",
+            color: compareMode ? "#0369a1" : "var(--sidebar-text)",
+          }}>
+          Compare
+        </button>
+        {compareMode && (
+          <select value={compareMonth} onChange={e => setCompareMonth(e.target.value)}
             className="rounded-[12px] px-3 py-2 text-[0.82rem] font-medium outline-none"
-            style={{ background: "rgba(255,255,255,0.72)", border: "1px solid rgba(153,182,218,0.4)", color: "var(--sidebar-text)" }}>
-            <option value={4}>Last 4 weeks</option>
-            <option value={8}>Last 8 weeks</option>
-            <option value={13}>Last 3 months</option>
-            <option value={26}>Last 6 months</option>
-            <option value={52}>Last year</option>
-            <option value={0}>All time</option>
+            style={{ ...SELECT_STYLE, border: "1px solid rgba(14,165,233,0.3)" }}>
+            {MONTH_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
         )}
         {isFiltered && (
@@ -756,195 +1257,289 @@ export default function ManagerDashboardPage() {
       </div>
 
       {/* ════════════════ TEAM ROSTER TAB ════════════════ */}
-      {activeTab === "team" ? (
-        <TeamRosterView team={filteredTeam} />
-      ) : (
-        <>
+      {activeTab === "roster" && (
+        <TeamRosterView team={filteredTeam} onSelect={setSelectedEmployee} />
+      )}
 
-        {/* ── KPI strip ── */}
-        <div className="grid grid-cols-3 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          <KpiCard
-            label="Team Members"
-            value={isFiltered ? filteredTeam.length : (dashboard?.team_size ?? 0)}
-            sub={isFiltered ? `of ${dashboard?.team_size ?? 0} total` : undefined}
-          />
-          <KpiCard label="Regular Hrs" value={totalReg.toFixed(0)} />
-          <KpiCard label="OT Hours" value={totalOt.toFixed(1)} accent={totalOt > 0 ? "#d97706" : undefined} />
-          <KpiCard label="Time Off" value={totalOff.toFixed(0)} />
-          <KpiCard
-            label="Upcoming Reviews"
-            value={filteredUpcoming.length}
-            accent={filteredUpcoming.length > 0 ? "#0f6da3" : undefined}
-          />
-          <KpiCard
-            label="Past Due"
-            value={filteredPastDue.length}
-            accent={filteredPastDue.length > 0 ? "#dc2626" : undefined}
-          />
-        </div>
-
-        {/* ── Insights row: donut + leaderboards ── */}
-        {filteredHours.length > 0 && (
-          <div className="grid gap-4 lg:grid-cols-3">
-            <PtoBreakdownCard hours={filteredHours} />
-            <LeaderboardCard
-              title="Top OT Hours"
-              entries={topOt}
-              accent="#d97706"
-              emptyMsg="No overtime recorded this period."
-            />
-            <LeaderboardCard
-              title="Most Time Off Used"
-              entries={topPto}
-              accent="#0ea5e9"
-              emptyMsg="No time off recorded this period."
-            />
-          </div>
-        )}
-
-        {/* ── Staffing signals ── */}
-        <StaffingSignals
-          hours={filteredHours}
-          teamSize={dashboard?.team_size ?? 0}
-          upcomingReviews={filteredUpcoming.length}
-          pastDue={filteredPastDue.length}
-        />
-
-        {/* ── Absence overview ── */}
-        <AbsenceCard
-          summary={filteredAbsences}
-          totalPlanned={filteredPlanned}
-          totalUnplanned={filteredUnplanned}
-          dateRange={dashboard?.absence_date_range ?? null}
-        />
-
-        {/* ── Full hours detail table ── */}
-        <Card title={`Hours Detail${periodLabel ? ` — ${periodLabel}` : ""}`}>
-          {!dashboard || dashboard.hours_summary.length === 0 ? (
-            <div className="px-5 py-8 text-center">
-              <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>
-                No time data yet. HR uploads the weekly hours file each Monday.
-              </p>
-            </div>
-          ) : filteredHours.length === 0 ? (
-            <div className="px-5 py-8 text-center">
-              <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No employees match your search.</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-[0.8rem]">
-                <thead>
-                  <tr style={{ borderBottom: "1px solid rgba(153,182,218,0.2)" }}>
-                    {["Employee", "Regular", "OT", "Vacation", "Personal", "Other", "Uploads"].map((h) => (
-                      <th
-                        key={h}
-                        className={cn("px-5 py-3 text-[0.64rem] font-bold uppercase tracking-[0.1em]", h !== "Employee" ? "text-right" : "text-left")}
-                        style={{ color: "var(--sidebar-label)" }}
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredHours.map((emp, i) => (
-                    <tr key={emp.employee_id} style={{ borderBottom: i < filteredHours.length - 1 ? "1px solid rgba(153,182,218,0.12)" : "none" }}>
-                      <td className="px-5 py-3 font-semibold" style={{ color: "var(--sidebar-text)" }}>
-                        {emp.full_name}
-                        <span className="ml-2 text-[0.65rem] font-normal" style={{ color: "var(--sidebar-label)" }}>{emp.employee_id}</span>
-                      </td>
-                      <td className="px-5 py-3 text-right tabular-nums" style={{ color: "var(--sidebar-text)" }}>{emp.regular_hours.toFixed(1)}</td>
-                      <td className="px-5 py-3 text-right tabular-nums font-semibold" style={{ color: emp.ot_hours > 0 ? "#d97706" : "var(--sidebar-label)" }}>{emp.ot_hours.toFixed(1)}</td>
-                      <td className="px-5 py-3 text-right tabular-nums" style={{ color: emp.vacation_hours > 0 ? "#0ea5e9" : "var(--sidebar-label)" }}>{emp.vacation_hours.toFixed(1)}</td>
-                      <td className="px-5 py-3 text-right tabular-nums" style={{ color: emp.personal_hours > 0 ? "#8b5cf6" : "var(--sidebar-label)" }}>{emp.personal_hours.toFixed(1)}</td>
-                      <td className="px-5 py-3 text-right tabular-nums" style={{ color: emp.other_hours > 0 ? "#f59e0b" : "var(--sidebar-label)" }}>{emp.other_hours.toFixed(1)}</td>
-                      <td className="px-5 py-3 text-right tabular-nums text-[0.72rem]"
-                        style={{ color: emp.weeks_included < (dashboard?.hours_week_count ?? 1) ? "#d97706" : "var(--sidebar-label)" }}>
-                        {emp.weeks_included}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr style={{ borderTop: "1px solid rgba(153,182,218,0.25)", background: "rgba(153,182,218,0.06)" }}>
-                    <td className="px-5 py-3 text-[0.72rem] font-bold" style={{ color: "var(--sidebar-label)" }}>Team Total</td>
-                    <td className="px-5 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalReg.toFixed(1)}</td>
-                    <td className="px-5 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: totalOt > 0 ? "#d97706" : "var(--sidebar-text)" }}>{totalOt.toFixed(1)}</td>
-                    <td className="px-5 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalVacation.toFixed(1)}</td>
-                    <td className="px-5 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalPersonal.toFixed(1)}</td>
-                    <td className="px-5 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalOther.toFixed(1)}</td>
-                    <td />
-                  </tr>
-                </tfoot>
-              </table>
+      {/* ════════════════ TEAM ANALYTICS TAB ════════════════ */}
+      {activeTab === "analytics" && (
+        <div className="space-y-5">
+          {thresholdFilter.length > 0 && (
+            <div className="flex items-center gap-3 rounded-[12px] px-4 py-2.5"
+              style={{ background: "rgba(14,165,233,0.08)", border: "1px solid rgba(14,165,233,0.25)" }}>
+              <span className="text-[0.78rem] font-semibold" style={{ color: "#0369a1" }}>
+                Filtered to {thresholdFilter.length} employee{thresholdFilter.length !== 1 ? "s" : ""}
+              </span>
+              <button onClick={() => setThresholdFilter([])}
+                className="ml-auto text-[0.72rem] font-semibold hover:opacity-70 transition-opacity"
+                style={{ color: "#0369a1" }}>
+                Clear filter ✕
+              </button>
             </div>
           )}
-        </Card>
-
-        {/* ── Reviews ── */}
-        <div className="grid gap-4 lg:grid-cols-2">
-          <Card title={`Upcoming Performance Reviews (${filteredUpcoming.length})`}>
-            {!dashboard || dashboard.upcoming_reviews.length === 0 ? (
-              <div className="px-5 py-8 text-center">
-                <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No upcoming reviews.</p>
-              </div>
-            ) : filteredUpcoming.length === 0 ? (
-              <div className="px-5 py-8 text-center">
-                <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No employees match your search.</p>
-              </div>
-            ) : (
-              <ul>
-                {filteredUpcoming.map((r, i) => (
-                  <li key={i} className="flex items-center justify-between gap-3 px-5 py-3.5"
-                    style={{ borderBottom: i < filteredUpcoming.length - 1 ? "1px solid rgba(153,182,218,0.12)" : "none" }}>
-                    <div className="min-w-0">
-                      <p className="truncate text-[0.82rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>{r.full_name}</p>
-                      <p className="text-[0.68rem]" style={{ color: "var(--sidebar-label)" }}>
-                        {reviewTypeBadge(r.review_type)} · Due {formatDate(r.due_date)}
-                      </p>
-                    </div>
-                    <span className="shrink-0 rounded-full px-2.5 py-1 text-[0.66rem] font-bold"
-                      style={{ background: `${daysUntilColor(r.days_until ?? 0)}18`, color: daysUntilColor(r.days_until ?? 0) }}>
-                      {r.days_until === 0 ? "Today" : `${r.days_until}d`}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Card>
-
-          <Card title={`Past Due Reviews (${filteredPastDue.length})`} accent={filteredPastDue.length > 0 ? "#dc2626" : undefined}>
-            {!dashboard || dashboard.past_due_reviews.length === 0 ? (
-              <div className="px-5 py-8 text-center">
-                <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No past due reviews.</p>
-              </div>
-            ) : filteredPastDue.length === 0 ? (
-              <div className="px-5 py-8 text-center">
-                <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No employees match your search.</p>
-              </div>
-            ) : (
-              <ul>
-                {filteredPastDue.map((r, i) => (
-                  <li key={i} className="flex items-center justify-between gap-3 px-5 py-3.5"
-                    style={{ borderBottom: i < filteredPastDue.length - 1 ? "1px solid rgba(153,182,218,0.12)" : "none" }}>
-                    <div className="min-w-0">
-                      <p className="truncate text-[0.82rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>{r.full_name}</p>
-                      <p className="text-[0.68rem]" style={{ color: "var(--sidebar-label)" }}>
-                        {reviewTypeBadge(r.review_type)} · Was due {formatDate(r.due_date)}
-                      </p>
-                    </div>
-                    <span className="shrink-0 rounded-full px-2.5 py-1 text-[0.66rem] font-bold"
-                      style={{ background: "rgba(220,38,38,0.1)", color: "#dc2626" }}>
-                      {r.days_overdue}d overdue
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Card>
+          <AbsenceCard
+            summary={
+              thresholdFilter.length > 0
+                ? filteredAbsences.filter(a => thresholdFilter.includes(a.employee_id))
+                : filteredAbsences
+            }
+            totalPlanned={
+              thresholdFilter.length > 0
+                ? filteredAbsences.filter(a => thresholdFilter.includes(a.employee_id)).reduce((s, a) => s + a.planned_count, 0)
+                : filteredPlanned
+            }
+            totalUnplanned={
+              thresholdFilter.length > 0
+                ? filteredAbsences.filter(a => thresholdFilter.includes(a.employee_id)).reduce((s, a) => s + a.unplanned_count, 0)
+                : filteredUnplanned
+            }
+            dateRange={dashboard?.absence_date_range ?? null}
+          />
+          <AbsenceCategoryTable
+            data={dashboard?.absence_by_category ?? []}
+            filter={thresholdFilter}
+          />
+          <AttendancePointsTable
+            team={filteredTeam}
+            absenceByCategory={dashboard?.absence_by_category ?? []}
+            filter={thresholdFilter}
+            onSelectEmployee={setSelectedEmployee}
+          />
         </div>
+      )}
 
+      {/* ════════════════ METRICS TAB ════════════════ */}
+      {activeTab === "metrics" && (
+        <>
+          {/* Compare mode: two-column KPIs + donuts */}
+          {isCompare && dashboard && compareDashboard ? (
+            <div className="grid gap-6 lg:grid-cols-2">
+              {[
+                {
+                  label: formatMonth(selectedMonth),
+                  dash: dashboard,
+                  hours: dashboard.hours_summary,
+                  reg: totalReg, ot: totalOt, off: totalOff,
+                  upcoming: filteredUpcoming.length,
+                  pastDue: filteredPastDue.length,
+                },
+                {
+                  label: formatMonth(compareMonth),
+                  dash: compareDashboard,
+                  hours: compareDashboard.hours_summary,
+                  reg: cmpTotalReg, ot: cmpTotalOt, off: cmpTotalOff,
+                  upcoming: compareDashboard.upcoming_reviews.length,
+                  pastDue: compareDashboard.past_due_reviews.length,
+                },
+              ].map(col => (
+                <div key={col.label} className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <div className="h-px flex-1" style={{ background: "rgba(153,182,218,0.25)" }} />
+                    <span className="text-[0.72rem] font-bold uppercase tracking-wider px-2" style={{ color: "var(--sidebar-label)" }}>
+                      {col.label}
+                    </span>
+                    <div className="h-px flex-1" style={{ background: "rgba(153,182,218,0.25)" }} />
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <KpiCard label="Team Size" value={col.dash.team_size} />
+                    <KpiCard label="Regular Hrs" value={col.reg.toFixed(0)} />
+                    <KpiCard label="OT Hours" value={col.ot.toFixed(1)} accent={col.ot > 0 ? "#d97706" : undefined} />
+                    <KpiCard label="Time Off" value={col.off.toFixed(0)} />
+                    <KpiCard label="Upcoming" value={col.upcoming} accent={col.upcoming > 0 ? "#0f6da3" : undefined} />
+                    <KpiCard label="Past Due" value={col.pastDue} accent={col.pastDue > 0 ? "#dc2626" : undefined} />
+                  </div>
+                  <PtoBreakdownCard hours={col.hours} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <>
+              {/* KPI strip */}
+              <div className="grid grid-cols-3 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+                <KpiCard
+                  label="Team Members"
+                  value={isFiltered ? filteredTeam.length : (dashboard?.team_size ?? 0)}
+                  sub={isFiltered ? `of ${dashboard?.team_size ?? 0} total` : undefined}
+                />
+                <KpiCard label="Regular Hrs" value={totalReg.toFixed(0)} />
+                <KpiCard label="OT Hours" value={totalOt.toFixed(1)} accent={totalOt > 0 ? "#d97706" : undefined} />
+                <KpiCard label="Time Off" value={totalOff.toFixed(0)} />
+                <KpiCard label="Upcoming Reviews" value={filteredUpcoming.length} accent={filteredUpcoming.length > 0 ? "#0f6da3" : undefined} />
+                <KpiCard label="Past Due" value={filteredPastDue.length} accent={filteredPastDue.length > 0 ? "#dc2626" : undefined} />
+              </div>
+
+              {/* Insights row */}
+              {filteredHours.length > 0 && (
+                <div className="grid gap-4 lg:grid-cols-3">
+                  <PtoBreakdownCard hours={filteredHours} />
+                  <LeaderboardCard title="Top OT Hours" entries={topOt} accent="#d97706" emptyMsg="No overtime recorded this period." />
+                  <LeaderboardCard title="Most Time Off Used" entries={topPto} accent="#0ea5e9" emptyMsg="No time off recorded this period." />
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Staffing signals */}
+          <StaffingSignals
+            hours={filteredHours}
+            teamSize={dashboard?.team_size ?? 0}
+            upcomingReviews={filteredUpcoming.length}
+            pastDue={filteredPastDue.length}
+          />
+
+          {/* Threshold alerts */}
+          {dashboard && (
+            <ThresholdAlertsCard team={dashboard.team} onClickEmployee={handleThresholdClick} />
+          )}
+
+          {/* Absence overview */}
+          <AbsenceCard
+            summary={filteredAbsences}
+            totalPlanned={filteredPlanned}
+            totalUnplanned={filteredUnplanned}
+            dateRange={dashboard?.absence_date_range ?? null}
+          />
+
+          {/* Full hours detail table */}
+          <Card title={`Hours Detail${periodLabel ? ` — ${periodLabel}` : ""}`}>
+            {!dashboard || dashboard.hours_summary.length === 0 ? (
+              <div className="px-5 py-8 text-center">
+                <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>
+                  No time data yet. HR uploads the weekly hours file each Monday.
+                </p>
+              </div>
+            ) : filteredHours.length === 0 ? (
+              <div className="px-5 py-8 text-center">
+                <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No employees match your search.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-[0.8rem]">
+                  <thead>
+                    <tr style={{ borderBottom: "1px solid rgba(153,182,218,0.2)" }}>
+                      {["Employee", "Regular", "OT", "Vacation", "Personal", "Abs w/Pt", "Protected", "Other", "Uploads"].map(h => (
+                        <th key={h}
+                          className={cn("px-4 py-3 text-[0.64rem] font-bold uppercase tracking-[0.1em]", h !== "Employee" ? "text-right" : "text-left")}
+                          style={{ color: "var(--sidebar-label)" }}>
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredHours.map((emp, i) => {
+                      const v2 = emp as ManagerHoursSummaryV2;
+                      return (
+                        <tr key={emp.employee_id} style={{ borderBottom: i < filteredHours.length - 1 ? "1px solid rgba(153,182,218,0.12)" : "none" }}>
+                          <td className="px-4 py-3 font-semibold" style={{ color: "var(--sidebar-text)" }}>
+                            {emp.full_name}
+                            <span className="ml-2 text-[0.65rem] font-normal" style={{ color: "var(--sidebar-label)" }}>{emp.employee_id}</span>
+                          </td>
+                          <td className="px-4 py-3 text-right tabular-nums" style={{ color: "var(--sidebar-text)" }}>{emp.regular_hours.toFixed(1)}</td>
+                          <td className="px-4 py-3 text-right tabular-nums font-semibold" style={{ color: emp.ot_hours > 0 ? "#d97706" : "var(--sidebar-label)" }}>{emp.ot_hours.toFixed(1)}</td>
+                          <td className="px-4 py-3 text-right tabular-nums" style={{ color: emp.vacation_hours > 0 ? "#0ea5e9" : "var(--sidebar-label)" }}>{emp.vacation_hours.toFixed(1)}</td>
+                          <td className="px-4 py-3 text-right tabular-nums" style={{ color: emp.personal_hours > 0 ? "#8b5cf6" : "var(--sidebar-label)" }}>{emp.personal_hours.toFixed(1)}</td>
+                          <td className="px-4 py-3 text-right tabular-nums" style={{ color: (v2.absent_w_point_hours ?? 0) > 0 ? "#dc2626" : "var(--sidebar-label)" }}>{(v2.absent_w_point_hours ?? 0).toFixed(1)}</td>
+                          <td className="px-4 py-3 text-right tabular-nums" style={{ color: (v2.protected_hours ?? 0) > 0 ? "#16a34a" : "var(--sidebar-label)" }}>{(v2.protected_hours ?? 0).toFixed(1)}</td>
+                          <td className="px-4 py-3 text-right tabular-nums" style={{ color: emp.other_hours > 0 ? "#f59e0b" : "var(--sidebar-label)" }}>{emp.other_hours.toFixed(1)}</td>
+                          <td className="px-4 py-3 text-right tabular-nums text-[0.72rem]"
+                            style={{ color: emp.weeks_included < (dashboard?.hours_week_count ?? 1) ? "#d97706" : "var(--sidebar-label)" }}>
+                            {emp.weeks_included}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                  <tfoot>
+                    <tr style={{ borderTop: "1px solid rgba(153,182,218,0.25)", background: "rgba(153,182,218,0.06)" }}>
+                      <td className="px-4 py-3 text-[0.72rem] font-bold" style={{ color: "var(--sidebar-label)" }}>Team Total</td>
+                      <td className="px-4 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalReg.toFixed(1)}</td>
+                      <td className="px-4 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: totalOt > 0 ? "#d97706" : "var(--sidebar-text)" }}>{totalOt.toFixed(1)}</td>
+                      <td className="px-4 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalVacation.toFixed(1)}</td>
+                      <td className="px-4 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalPersonal.toFixed(1)}</td>
+                      <td className="px-4 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalAbsWPt.toFixed(1)}</td>
+                      <td className="px-4 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalProtected.toFixed(1)}</td>
+                      <td className="px-4 py-3 text-right text-[0.8rem] font-bold tabular-nums" style={{ color: "var(--sidebar-text)" }}>{totalOther.toFixed(1)}</td>
+                      <td />
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            )}
+          </Card>
+
+          {/* Reviews */}
+          <div className="grid gap-4 lg:grid-cols-2">
+            <Card title={`Upcoming Performance Reviews (${filteredUpcoming.length})`}>
+              {!dashboard || dashboard.upcoming_reviews.length === 0 ? (
+                <div className="px-5 py-8 text-center">
+                  <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No upcoming reviews.</p>
+                </div>
+              ) : filteredUpcoming.length === 0 ? (
+                <div className="px-5 py-8 text-center">
+                  <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No employees match your search.</p>
+                </div>
+              ) : (
+                <ul>
+                  {filteredUpcoming.map((r, i) => (
+                    <li key={i} className="flex items-center justify-between gap-3 px-5 py-3.5"
+                      style={{ borderBottom: i < filteredUpcoming.length - 1 ? "1px solid rgba(153,182,218,0.12)" : "none" }}>
+                      <div className="min-w-0">
+                        <p className="truncate text-[0.82rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>{r.full_name}</p>
+                        <p className="text-[0.68rem]" style={{ color: "var(--sidebar-label)" }}>
+                          {reviewTypeBadge(r.review_type)} · Due {formatDate(r.due_date)}
+                        </p>
+                      </div>
+                      <span className="shrink-0 rounded-full px-2.5 py-1 text-[0.66rem] font-bold"
+                        style={{ background: `${daysUntilColor(r.days_until ?? 0)}18`, color: daysUntilColor(r.days_until ?? 0) }}>
+                        {r.days_until === 0 ? "Today" : `${r.days_until}d`}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Card>
+
+            <Card title={`Past Due Reviews (${filteredPastDue.length})`} accent={filteredPastDue.length > 0 ? "#dc2626" : undefined}>
+              {!dashboard || dashboard.past_due_reviews.length === 0 ? (
+                <div className="px-5 py-8 text-center">
+                  <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No past due reviews.</p>
+                </div>
+              ) : filteredPastDue.length === 0 ? (
+                <div className="px-5 py-8 text-center">
+                  <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No employees match your search.</p>
+                </div>
+              ) : (
+                <ul>
+                  {filteredPastDue.map((r, i) => (
+                    <li key={i} className="flex items-center justify-between gap-3 px-5 py-3.5"
+                      style={{ borderBottom: i < filteredPastDue.length - 1 ? "1px solid rgba(153,182,218,0.12)" : "none" }}>
+                      <div className="min-w-0">
+                        <p className="truncate text-[0.82rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>{r.full_name}</p>
+                        <p className="text-[0.68rem]" style={{ color: "var(--sidebar-label)" }}>
+                          {reviewTypeBadge(r.review_type)} · Was due {formatDate(r.due_date)}
+                        </p>
+                      </div>
+                      <span className="shrink-0 rounded-full px-2.5 py-1 text-[0.66rem] font-bold"
+                        style={{ background: "rgba(220,38,38,0.1)", color: "#dc2626" }}>
+                        {r.days_overdue}d overdue
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Card>
+          </div>
         </>
+      )}
+
+      {/* ── Employee Detail Panel (all tabs) ── */}
+      {selectedEmployee && (
+        <EmployeeDetailPanel
+          employee={selectedEmployee}
+          month={selectedMonth}
+          onClose={() => setSelectedEmployee(null)}
+        />
       )}
     </div>
   );

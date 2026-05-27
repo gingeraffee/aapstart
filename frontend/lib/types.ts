@@ -97,6 +97,11 @@ export interface ManagerHoursSummary {
   weeks_included: number;
 }
 
+export interface ManagerHoursSummaryV2 extends ManagerHoursSummary {
+  absent_w_point_hours: number;
+  protected_hours: number;
+}
+
 export interface ManagerTeamMember {
   employee_id: string;
   full_name: string;
@@ -105,6 +110,38 @@ export interface ManagerTeamMember {
   last_login_at: string | null;
   first_login_at: string | null;
   modules_completed: number;
+}
+
+export type AttendanceThreshold = "verbal" | "written" | "final" | "termination" | null;
+
+export interface ManagerTeamMemberV2 extends ManagerTeamMember {
+  point_total: number | null;
+  threshold: AttendanceThreshold;
+}
+
+export interface AttendancePointRecord {
+  point_date: string;
+  point: number;
+  reason: string | null;
+  note: string | null;
+  flag_code: string | null;
+  point_total: number;
+  imported_at: string | null;
+}
+
+export interface AbsenceCategoryEntry {
+  employee_id: string;
+  full_name: string;
+  vacation_hours: number;
+  personal_hours: number;
+  absent_w_point_hours: number;
+  protected_hours: number;
+  other_hours: number;
+  planned_count: number;
+  unplanned_count: number;
+  planned_hours: number;
+  unplanned_hours: number;
+  has_monday_flag: boolean;
 }
 
 export interface ManagerReview {
@@ -141,6 +178,45 @@ export interface ManagerDashboardData {
   total_unplanned_absences: number;
   absence_date_range: string | null;
   last_updated_absences: string | null;
+}
+
+export interface MonthDashboardData extends Omit<ManagerDashboardData, "team" | "hours_summary"> {
+  month: string;
+  team: ManagerTeamMemberV2[];
+  hours_summary: ManagerHoursSummaryV2[];
+  absence_by_category: AbsenceCategoryEntry[];
+  last_updated_absences: string | null;
+}
+
+export interface DashboardCompareData {
+  month: MonthDashboardData;
+  compare_month: MonthDashboardData;
+}
+
+export function isDashboardCompare(
+  d: MonthDashboardData | DashboardCompareData
+): d is DashboardCompareData {
+  return "compare_month" in d;
+}
+
+export interface EmployeeDetailData {
+  employee: ManagerTeamMemberV2;
+  hours: {
+    regular: number;
+    ot: number;
+    vacation: number;
+    personal: number;
+    absent_w_point: number;
+    protected: number;
+    other: number;
+  };
+  reviews: {
+    upcoming: (ManagerReview & { days_until: number })[];
+    past_due: (ManagerReview & { days_overdue: number })[];
+  };
+  attendance_points: AttendancePointRecord[];
+  current_point_total: number | null;
+  threshold: AttendanceThreshold;
 }
 
 export interface ImportResult {

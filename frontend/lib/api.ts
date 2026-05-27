@@ -96,6 +96,10 @@ export const adminApi = {
   clearTime: () => request<{ deleted: number }>("/admin/import/time", { method: "DELETE" }),
   clearAbsences: () => request<{ deleted: number }>("/admin/import/absences", { method: "DELETE" }),
   clearReviews: () => request<{ deleted: number }>("/admin/import/reviews", { method: "DELETE" }),
+  clearPoints: () => request<{ deleted: number }>("/admin/import/points", { method: "DELETE" }),
+  importPoints: (file: File) => uploadFile<import("./types").ImportResult>("/admin/import/points", file),
+  managersList: () =>
+    request<{ employee_id: string; full_name: string; department: string | null }[]>("/admin/managers"),
 };
 
 async function uploadFile<T>(path: string, file: File): Promise<T> {
@@ -114,6 +118,18 @@ export const managerApi = {
   dashboard: (weeks?: number) =>
     request<import("./types").ManagerDashboardData>(
       `/manager/dashboard${weeks !== undefined ? `?weeks=${weeks}` : ""}`
+    ),
+  monthDashboard: (month: string, compareTo?: string, asManagerId?: string) => {
+    const p = new URLSearchParams({ month });
+    if (compareTo) p.set("compare_month", compareTo);
+    if (asManagerId) p.set("as_manager_id", asManagerId);
+    return request<import("./types").MonthDashboardData | import("./types").DashboardCompareData>(
+      `/manager/dashboard?${p.toString()}`
+    );
+  },
+  employeeDetail: (employeeId: string, month: string) =>
+    request<import("./types").EmployeeDetailData>(
+      `/manager/employee/${employeeId}?month=${month}`
     ),
   importTime: (file: File) => uploadFile<import("./types").ImportResult>("/manager/import/time", file),
   importReviews: (file: File) => uploadFile<import("./types").ImportResult>("/manager/import/reviews", file),

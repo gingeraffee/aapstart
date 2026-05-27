@@ -174,8 +174,8 @@ export function AppShell({ children }: AppShellProps) {
         <ViewAsSelector />
 
         <div className="flex-1 overflow-y-auto px-3.5 pb-3 pt-4">
-          {/* Overview link for non-management tracks */}
-          {!isManagement && (
+          {/* Overview link — hidden for pure managers (they use the manager dashboard) */}
+          {!isManagement && !(user?.is_manager && !user?.is_admin) && (
           <Link
             href="/overview"
             className={cn(

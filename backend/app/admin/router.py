@@ -1,12 +1,17 @@
+import csv
+import io
 from datetime import datetime, timedelta, timezone
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from sqlalchemy import func as sa_func
 
 from app.auth.service import require_admin, normalize_tracks
 from app.database.connection import get_db
-from app.database.models import Employee, UserProgress, UserNote, TimeRecord, PerformanceReview, AbsenceRecord
+from app.database.models import (
+    AttendancePoint, Employee, UserProgress, UserNote,
+    TimeRecord, PerformanceReview, AbsenceRecord,
+)
 from app.content.loader import get_modules_for_tracks
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
@@ -428,6 +433,216 @@ def update_employee_note(
         "created_at": note.created_at.isoformat() if note.created_at else None,
         "updated_at": note.updated_at.isoformat() if note.updated_at else None,
     }
+
+
+# -- Attendance points import helpers (duplicated from manager router; no shared module) --
+
+_POINTS_COL_MAP = {
+    "employee #": "employee_id",
+    "employee_number": "employee_id",
+    "employee number": "employee_id",
+    "employeenumber": "employee_id",
+    "employee_id": "employee_id",
+    "emp_id": "employee_id",
+    "id": "employee_id",
+    # Ignored lookup fields
+    "last name": "_ignore",
+    "last_name": "_ignore",
+    "first name": "_ignore",
+    "first_name": "_ignore",
+    "location": "location",
+    "point date": "point_date",
+    "point_date": "point_date",
+    "date": "point_date",
+    "point": "point",
+    "points": "point",
+    "reason": "reason",
+    "note": "note",
+    "notes": "note",
+    "flag code": "flag_code",
+    "flag_code": "flag_code",
+    "flagcode": "flag_code",
+    "point total": "point_total",
+    "point_total": "point_total",
+    "total": "point_total",
+    "running total": "point_total",
+}
+
+
+def _normalize_header(value: str) -> str:
+    return value.strip().lower().replace("-", "_")
+
+
+def _parse_date(value: str) -> str | None:
+    value = value.strip()
+    if not value:
+        return None
+    for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%m-%d-%Y", "%Y/%m/%d"):
+        try:
+            return datetime.strptime(value, fmt).date().isoformat()
+        except ValueError:
+            continue
+    return None
+
+
+def _parse_float(value: str) -> float:
+    try:
+        return float(str(value).strip() or "0")
+    except ValueError:
+        return 0.0
+
+
+def _map_row(raw_row: dict, col_map: dict) -> dict:
+    mapped: dict = {}
+    for raw_key, value in raw_row.items():
+        canonical = col_map.get(_normalize_header(raw_key))
+        if canonical:
+            mapped[canonical] = value
+    return mapped
+
+
+def _read_csv_admin(contents: bytes) -> list[dict]:
+    text = contents.decode("utf-8-sig")
+    reader = csv.DictReader(io.StringIO(text))
+    return list(reader)
+
+
+def _read_xlsx_admin(contents: bytes) -> list[dict]:
+    import openpyxl
+    wb = openpyxl.load_workbook(filename=io.BytesIO(contents), read_only=True, data_only=True)
+    ws = wb[wb.sheetnames[0]]
+    rows_data = list(ws.iter_rows(values_only=True))
+    if not rows_data:
+        return []
+    headers = [str(h).strip() if h is not None else "" for h in rows_data[0]]
+    result = []
+    for row in rows_data[1:]:
+        if all(v is None for v in row):
+            continue
+        d: dict = {}
+        for i, val in enumerate(row):
+            if i >= len(headers):
+                break
+            if hasattr(val, "date") and callable(val.date):
+                d[headers[i]] = val.date().isoformat()
+            elif hasattr(val, "isoformat"):
+                d[headers[i]] = val.isoformat()
+            elif val is None:
+                d[headers[i]] = ""
+            else:
+                d[headers[i]] = str(val).strip()
+        result.append(d)
+    return result
+
+
+# -- Attendance points import --
+
+@router.post("/import/points")
+async def import_attendance_points(
+    file: UploadFile = File(...),
+    admin: dict = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """
+    Upload weekly attendance point events (append-only historical ledger).
+    Re-uploading the same file appends duplicate records — use DELETE to clear before re-uploading.
+
+    Expected columns: Employee #, Location, Point Date, Point, Reason, Note, Flag Code, Point Total
+    """
+    name = file.filename or ""
+    is_xlsx = name.lower().endswith(".xlsx")
+    is_csv = name.lower().endswith(".csv")
+    if not is_xlsx and not is_csv:
+        raise HTTPException(status_code=400, detail="File must be a .xlsx or .csv file.")
+
+    contents = await file.read()
+    try:
+        rows = _read_xlsx_admin(contents) if is_xlsx else _read_csv_admin(contents)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Could not parse file.")
+
+    if not rows:
+        raise HTTPException(status_code=400, detail="File is empty.")
+
+    imported_at = datetime.now(timezone.utc)
+    inserted = 0
+    skipped = 0
+    errors: list[dict] = []
+
+    for i, raw_row in enumerate(rows, start=2):
+        row = _map_row(raw_row, _POINTS_COL_MAP)
+
+        employee_id = str(row.get("employee_id", "")).strip()
+        if not employee_id:
+            errors.append({"row": i, "detail": "Missing employee number / ID."})
+            skipped += 1
+            continue
+
+        emp = db.query(Employee).filter_by(employee_id=employee_id).first()
+        if not emp:
+            errors.append({"row": i, "employee_id": employee_id, "detail": f"Employee '{employee_id}' not found."})
+            skipped += 1
+            continue
+
+        point_date_raw = str(row.get("point_date", "")).strip()
+        point_date = _parse_date(point_date_raw)
+        if not point_date:
+            errors.append({"row": i, "employee_id": employee_id, "detail": f"Cannot parse Point Date: '{point_date_raw}'."})
+            skipped += 1
+            continue
+
+        flag_code_raw = str(row.get("flag_code", "")).strip()
+
+        db.add(AttendancePoint(
+            employee_id=employee_id,
+            location=str(row.get("location", "")).strip() or None,
+            point_date=point_date,
+            point=_parse_float(str(row.get("point", "0"))),
+            reason=str(row.get("reason", "")).strip() or None,
+            note=str(row.get("note", "")).strip() or None,
+            flag_code=flag_code_raw or None,
+            point_total=_parse_float(str(row.get("point_total", "0"))),
+            imported_at=imported_at,
+        ))
+        inserted += 1
+
+    db.commit()
+    return {"inserted": inserted, "skipped": skipped, "errors": errors}
+
+
+@router.delete("/import/points", status_code=status.HTTP_200_OK)
+def clear_attendance_points(
+    admin: dict = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Delete all attendance point records so HR can re-upload a corrected file."""
+    deleted = db.query(AttendancePoint).delete()
+    db.commit()
+    return {"deleted": deleted}
+
+
+# -- Managers list --
+
+@router.get("/managers")
+def list_managers(
+    admin: dict = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Return all employees with is_manager=True, for the view-as-manager dropdown."""
+    managers = (
+        db.query(Employee)
+        .filter_by(is_manager=True)
+        .order_by(Employee.last_name, Employee.first_name)
+        .all()
+    )
+    return [
+        {
+            "employee_id": m.employee_id,
+            "full_name": f"{m.first_name} {m.last_name}",
+            "department": m.department,
+        }
+        for m in managers
+    ]
 
 
 # -- Data clear endpoints --

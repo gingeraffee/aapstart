@@ -207,6 +207,22 @@ function downloadReviewsTemplate() {
   URL.revokeObjectURL(url);
 }
 
+function downloadPointsTemplate() {
+  const csv = [
+    "Employee #,Last Name,First Name,Location,Point Date,Point,Reason,Note,Flag Code,Point Total",
+    "1001,Doe,Jane,Sboro Warehouse,2026-05-27,0.5,Tardy,,, 1.5",
+    "1002,Smith,John,Sboro Warehouse,2026-05-27,1,Absent,,M,2.0",
+    "",
+  ].join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "attendance-points-template.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 function cardStyle() {
   return {
     background: "var(--card-bg)",
@@ -1047,6 +1063,55 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
   );
 }
 
+function ManagerSnapshotView({ managerEmployeeId }: { managerEmployeeId: string }) {
+  const today = new Date();
+  const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
+  const { data, isLoading } = useSWR(
+    ["manager-snap", managerEmployeeId, currentMonth],
+    () => managerApi.monthDashboard(currentMonth, undefined, managerEmployeeId) as Promise<import("@/lib/types").MonthDashboardData>,
+  );
+
+  if (isLoading) return <div className="py-4 text-center text-[0.8rem]" style={{ color: "var(--card-desc)" }}>Loading…</div>;
+  if (!data) return null;
+
+  const snap = "compare_month" in data ? (data as import("@/lib/types").DashboardCompareData).month : data as import("@/lib/types").MonthDashboardData;
+
+  const kpis = [
+    { label: "Team Members", value: snap.team_size },
+    { label: "Regular Hrs", value: snap.hours_summary.reduce((s, h) => s + h.regular_hours, 0).toFixed(1) },
+    { label: "OT Hours", value: snap.hours_summary.reduce((s, h) => s + h.ot_hours, 0).toFixed(1) },
+    { label: "Upcoming Reviews", value: snap.upcoming_reviews.length },
+    { label: "Past Due Reviews", value: snap.past_due_reviews.length },
+  ];
+
+  const flagged = snap.team.filter((m) => m.threshold);
+
+  return (
+    <div className="space-y-3">
+      <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
+        {kpis.map((k) => (
+          <div key={k.label} className="rounded-[14px] px-3 py-3 text-center" style={{ background: "var(--welcome-stat-bg)", border: "1px solid var(--welcome-stat-border)" }}>
+            <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>{k.label}</p>
+            <p className="mt-1 text-[1.1rem] font-extrabold" style={{ color: "var(--heading-color)" }}>{k.value}</p>
+          </div>
+        ))}
+      </div>
+      {flagged.length > 0 && (
+        <div className="rounded-[14px] px-4 py-3" style={{ background: "rgba(223,0,48,0.05)", border: "1px solid rgba(223,0,48,0.14)" }}>
+          <p className="text-[0.72rem] font-bold" style={{ color: "#9f1239" }}>Threshold Alerts — {flagged.length} employee{flagged.length !== 1 ? "s" : ""}</p>
+          <ul className="mt-1.5 space-y-0.5">
+            {flagged.map((m) => (
+              <li key={m.employee_id} className="text-[0.72rem]" style={{ color: "var(--heading-color)" }}>
+                {m.full_name} — <span style={{ color: "#9f1239" }}>{m.point_total} pts ({m.threshold})</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function UploadPanel({
   title,
   columns,
@@ -1184,15 +1249,19 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
   const [hoursFile, setHoursFile] = useState<File | null>(null);
   const [reviewsFile, setReviewsFile] = useState<File | null>(null);
   const [absencesFile, setAbsencesFile] = useState<File | null>(null);
+  const [pointsFile, setPointsFile] = useState<File | null>(null);
   const [hoursResult, setHoursResult] = useState<ImportResult | null>(null);
   const [reviewsResult, setReviewsResult] = useState<ImportResult | null>(null);
   const [absencesResult, setAbsencesResult] = useState<ImportResult | null>(null);
+  const [pointsResult, setPointsResult] = useState<ImportResult | null>(null);
   const [hoursLoading, setHoursLoading] = useState(false);
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [absencesLoading, setAbsencesLoading] = useState(false);
+  const [pointsLoading, setPointsLoading] = useState(false);
   const [hoursError, setHoursError] = useState<string | null>(null);
   const [reviewsError, setReviewsError] = useState<string | null>(null);
   const [absencesError, setAbsencesError] = useState<string | null>(null);
+  const [pointsError, setPointsError] = useState<string | null>(null);
 
   async function uploadHours() {
     if (!hoursFile) return;
@@ -1248,24 +1317,42 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
     }
   }
 
+  async function uploadPoints() {
+    if (!pointsFile) return;
+    setPointsLoading(true);
+    setPointsError(null);
+    setPointsResult(null);
+    try {
+      const result = await adminApi.importPoints(pointsFile);
+      setPointsResult(result);
+      onToast(`Attendance points uploaded — ${result.inserted} events added.`);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Upload failed.";
+      setPointsError(msg);
+      onToast(msg, "error");
+    } finally {
+      setPointsLoading(false);
+    }
+  }
+
   return (
     <div className="relative overflow-hidden rounded-[24px] p-6 lg:p-7" style={cardStyle()}>
       <div className="absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,#0ea5d9_0%,#22d3ee_62%,#df0030_100%)]" />
       <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="inline-flex rounded-full px-2.5 py-1 text-[0.64rem] font-bold uppercase tracking-[0.16em]" style={{ background: "rgba(14,165,233,0.08)", color: "#0d6b9d" }}>
-            Weekly HR Upload
+            HR Data Uploads
           </p>
           <h2 className="mt-3 text-[1.12rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>
-            Push hours, reviews, and attendance to all manager dashboards
+            Push hours, reviews, attendance, and points to all manager dashboards
           </h2>
           <p className="mt-1 text-[0.82rem] leading-[1.6]" style={{ color: "var(--card-desc)" }}>
-            Upload one file for each type. Hours &amp; Time Off handles regular and OT hours. The Absences report covers vacation, personal, and other time off — it also logs planned vs. unplanned automatically. Data routes to each manager based on their assigned team.
+            Upload one file for each type. Absences auto-fills planned vs. unplanned and routes hours by category. Attendance Points are append-only — use Clear before re-uploading the same file to avoid duplicates.
           </p>
         </div>
       </div>
 
-      <div className="mt-5 grid gap-5 lg:grid-cols-3">
+      <div className="mt-5 grid gap-5 lg:grid-cols-2 xl:grid-cols-4">
         <UploadPanel
           title="Hours & Time Off"
           columns="employee_name · employee_id · week_start (optional) · regular_hours · ot_hours"
@@ -1300,7 +1387,7 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
         />
         <UploadPanel
           title="Absences (Time Off Used)"
-          columns="Employee Number · Name · Category · From · To · Requested · Time Off — auto-fills vacation / personal / other hours"
+          columns="Employee Number · Name · Category · From · To · Requested · Time Off"
           onDownload={downloadAbsencesTemplate}
           file={absencesFile}
           onFileChange={setAbsencesFile}
@@ -1314,6 +1401,24 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
             await adminApi.clearAbsences();
             setAbsencesResult(null);
             onToast("Absence data cleared from all dashboards.");
+          }}
+        />
+        <UploadPanel
+          title="Attendance Points"
+          columns="Employee # · Location · Point Date · Point · Reason · Note · Flag Code · Point Total"
+          onDownload={downloadPointsTemplate}
+          file={pointsFile}
+          onFileChange={setPointsFile}
+          onUpload={uploadPoints}
+          loading={pointsLoading}
+          result={pointsResult}
+          error={pointsError}
+          accept=".xlsx,.csv,text/csv"
+          fileTypeLabel="XLSX or CSV"
+          onClear={async () => {
+            await adminApi.clearPoints();
+            setPointsResult(null);
+            onToast("Attendance points cleared.");
           }}
         />
       </div>
@@ -1370,9 +1475,11 @@ export default function AdminPage() {
   const [lastImportResult, setLastImportResult] = useState<EmployeeImportResult | null>(null);
   const [toast, setToast] = useState<ToastState | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [viewingAsManager, setViewingAsManager] = useState<{ employee_id: string; full_name: string } | null>(null);
 
   const { data: employees, isLoading, mutate } = useSWR("admin-employees", () => adminApi.listEmployees() as Promise<EmployeeRecord[]>);
   const { data: allModules } = useSWR("modules", () => modulesApi.list() as Promise<ModuleSummary[]>);
+  const { data: managersList } = useSWR("admin-managers", () => adminApi.managersList());
   const publishedModules = (allModules ?? []).filter((m) => m.status === "published").sort((a, b) => a.order - b.order);
 
   useEffect(() => {
@@ -1539,6 +1646,51 @@ export default function AdminPage() {
             </ul>
           </div>
         </div>
+      </div>
+
+      {/* View as Manager */}
+      <div className="relative mt-5 overflow-hidden rounded-[24px] p-6" style={cardStyle()}>
+        <div className="absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,#16a34a_0%,#0ea5d9_100%)]" />
+        <p className="inline-flex rounded-full px-2.5 py-1 text-[0.64rem] font-bold uppercase tracking-[0.16em]" style={{ background: "rgba(22,163,74,0.08)", color: "#15803d" }}>
+          View as Manager
+        </p>
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <select
+            value={viewingAsManager?.employee_id ?? ""}
+            onChange={(e) => {
+              const selected = (managersList ?? []).find((m) => m.employee_id === e.target.value);
+              setViewingAsManager(selected ?? null);
+            }}
+            className="rounded-[12px] px-3 py-2 text-[0.82rem] outline-none"
+            style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)", minWidth: "240px" }}
+          >
+            <option value="">Select a manager…</option>
+            {(managersList ?? []).map((m) => (
+              <option key={m.employee_id} value={m.employee_id}>
+                {m.full_name}{m.department ? ` — ${m.department}` : ""}
+              </option>
+            ))}
+          </select>
+          {viewingAsManager && (
+            <button
+              onClick={() => setViewingAsManager(null)}
+              className="rounded-[10px] px-3 py-1.5 text-[0.75rem] font-semibold transition-all hover:opacity-70"
+              style={{ background: "rgba(223,0,48,0.07)", color: "#9f1239" }}
+            >
+              ✕ Dismiss
+            </button>
+          )}
+        </div>
+        {viewingAsManager && (
+          <div className="mt-4">
+            <div className="mb-3 flex items-center gap-2 rounded-[12px] px-4 py-2.5" style={{ background: "rgba(22,163,74,0.07)", border: "1px solid rgba(22,163,74,0.18)" }}>
+              <span className="text-[0.78rem] font-semibold" style={{ color: "#15803d" }}>
+                Viewing as: {viewingAsManager.full_name}
+              </span>
+            </div>
+            <ManagerSnapshotView managerEmployeeId={viewingAsManager.employee_id} />
+          </div>
+        )}
       </div>
 
       <div className="mt-5">
