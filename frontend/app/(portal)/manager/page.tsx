@@ -1159,33 +1159,8 @@ export default function ManagerDashboardPage() {
         )}
       </div>
 
-      {/* ── Top Nav Tabs ── */}
-      <div className="flex gap-1 self-start rounded-[12px] p-1"
-        style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", boxShadow: "var(--tab-group-shadow)" }}>
-        <button
-          className="rounded-[9px] px-5 py-1.5 text-[0.8rem] font-semibold"
-          style={{ color: "var(--tab-text-active)", background: "var(--tab-active-bg)", boxShadow: "var(--tab-active-shadow)" }}
-        >
-          My Team
-        </button>
-        <button
-          onClick={() => router.push("/overview")}
-          className="rounded-[9px] px-5 py-1.5 text-[0.8rem] font-semibold transition-all duration-200 hover:opacity-70"
-          style={{ color: "var(--tab-text)" }}
-        >
-          Training →
-        </button>
-        <button
-          onClick={() => router.push("/resources")}
-          className="rounded-[9px] px-5 py-1.5 text-[0.8rem] font-semibold transition-all duration-200 hover:opacity-70"
-          style={{ color: "var(--tab-text)" }}
-        >
-          Resource Hub →
-        </button>
-      </div>
-
       {/* ── Sub-tabs ── */}
-      <div className="flex gap-1 self-start rounded-[12px] p-1"
+      <div className="inline-flex gap-1 rounded-[12px] p-1"
         style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", boxShadow: "var(--tab-group-shadow)" }}>
         {(["metrics", "roster", "analytics"] as const).map(tab => (
           <button
@@ -1364,7 +1339,7 @@ export default function ManagerDashboardPage() {
                 <KpiCard label="Regular Hrs" value={totalReg.toFixed(0)} />
                 <KpiCard label="OT Hours" value={totalOt.toFixed(1)} accent={totalOt > 0 ? "#d97706" : undefined} />
                 <KpiCard label="Time Off" value={totalOff.toFixed(0)} />
-                <KpiCard label="Upcoming Reviews" value={filteredUpcoming.length} accent={filteredUpcoming.length > 0 ? "#0f6da3" : undefined} />
+                <KpiCard label="Upcoming" value={filteredUpcoming.length} accent={filteredUpcoming.length > 0 ? "#0f6da3" : undefined} />
                 <KpiCard label="Past Due" value={filteredPastDue.length} accent={filteredPastDue.length > 0 ? "#dc2626" : undefined} />
               </div>
 

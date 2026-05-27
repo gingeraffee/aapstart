@@ -126,6 +126,7 @@ export function AppShell({ children }: AppShellProps) {
   const isManagementGuidesPage = pathname.startsWith("/management-guides");
   const isJourneyActive = pathname === "/overview" || pathname.startsWith("/modules") || pathname === "/roadmap" || isLearningProgramPage;
   const isResourcesActive = pathname.startsWith("/resources");
+  const isManagerActive = pathname.startsWith("/manager");
   const showManagementTab = isEffectiveHR && !isManagement;
   const isRoadmapActive = pathname === "/roadmap";
 
@@ -771,6 +772,26 @@ export function AppShell({ children }: AppShellProps) {
             boxShadow: "var(--tab-group-shadow)",
           }}
         >
+          {(user?.is_manager || user?.is_admin) && (
+            <button
+              onClick={() => router.push("/manager")}
+              className={cn(
+                "rounded-[9px] px-5 py-1.5 text-[0.8rem] font-semibold transition-all duration-200",
+                isManagerActive ? "shadow-[0_1px_8px_rgba(15,29,60,0.16)]" : ""
+              )}
+              style={{
+                color: isManagerActive ? "var(--tab-text-active)" : "var(--tab-text)",
+                ...(isManagerActive
+                  ? {
+                      background: "var(--tab-active-bg)",
+                      boxShadow: "var(--tab-active-shadow)",
+                    }
+                  : undefined),
+              }}
+            >
+              My Team
+            </button>
+          )}
           <button
             onClick={() => router.push(isLearningProgramPage ? "/learning-program" : "/overview")}
             className={cn(
