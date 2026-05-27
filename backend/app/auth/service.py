@@ -58,6 +58,7 @@ def _get_dev_user(*, for_token: bool = False) -> dict:
         "tracks": [_normalize_track(settings.dev_auth_track)],
         "is_admin": True,
         "is_manager": True,
+        "is_executive": True,
     }
     # Token/cookie payloads use "sub"; login response uses "employee_id"
     if for_token:
@@ -106,13 +107,14 @@ def validate_login(employee_id: str, first_name: str, last_name: str) -> dict:
             "tracks": normalize_tracks(employee.track),
             "is_admin": employee.is_admin,
             "is_manager": bool(employee.is_manager),
+            "is_executive": bool(employee.is_executive),
             "totp_enabled": bool(employee.totp_enabled),
         }
     finally:
         db.close()
 
 
-def create_token(employee_id: str, full_name: str, tracks: list[str], is_admin: bool = False, is_manager: bool = False) -> str:
+def create_token(employee_id: str, full_name: str, tracks: list[str], is_admin: bool = False, is_manager: bool = False, is_executive: bool = False) -> str:
     expiry = datetime.now(timezone.utc) + timedelta(hours=settings.jwt_expiration_hours)
     payload = {
         "sub": employee_id,
@@ -120,6 +122,7 @@ def create_token(employee_id: str, full_name: str, tracks: list[str], is_admin: 
         "tracks": tracks,
         "is_admin": is_admin,
         "is_manager": is_manager,
+        "is_executive": is_executive,
         "exp": expiry,
     }
     return jwt.encode(payload, settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
@@ -173,6 +176,17 @@ def require_manager(request: Request) -> dict:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Manager access required.",
+        )
+    return user
+
+
+def require_executive(request: Request) -> dict:
+    """FastAPI dependency — requires is_executive=True or is_admin=True."""
+    user = get_current_user(request)
+    if not user.get("is_executive") and not user.get("is_admin"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Executive access required.",
         )
     return user
 

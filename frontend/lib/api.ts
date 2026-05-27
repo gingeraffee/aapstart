@@ -78,7 +78,7 @@ export const adminApi = {
     request("/admin/employees", { method: "POST", body: JSON.stringify(data) }),
   importEmployees: (employees: Array<{ employee_id: string; track: string; name?: string; full_name?: string; first_name?: string; last_name?: string; is_admin?: boolean }>) =>
     request("/admin/employees/import", { method: "POST", body: JSON.stringify({ employees }) }),
-  updateEmployee: (employee_id: string, data: { first_name?: string; last_name?: string; tracks?: string[]; is_admin?: boolean; is_manager?: boolean; manager_employee_id?: string | null; department?: string | null }) =>
+  updateEmployee: (employee_id: string, data: { first_name?: string; last_name?: string; tracks?: string[]; is_admin?: boolean; is_manager?: boolean; is_executive?: boolean; manager_employee_id?: string | null; department?: string | null }) =>
     request(`/admin/employees/${employee_id}`, { method: "PATCH", body: JSON.stringify(data) }),
   deleteEmployee: (employee_id: string) =>
     request(`/admin/employees/${employee_id}`, { method: "DELETE" }),
@@ -158,6 +158,24 @@ export const searchApi = {
     request<import("./types").SearchResultItem[]>(
       `/search?q=${encodeURIComponent(q)}`
     ),
+};
+
+export const executiveApi = {
+  dashboard: () => request<import("./types").ExecutiveDashboardData>("/executive/dashboard"),
+  woshLatest: () => request<import("./types").WoshReport | null>("/executive/wosh/latest"),
+  woshHistory: () => request<import("./types").WoshReportMeta[]>("/executive/wosh/history"),
+  woshById: (id: number) => request<import("./types").WoshReport>(`/executive/wosh/${id}`),
+  uploadWosh: async (file: File, weekLabel?: string): Promise<{ id: number; week_label: string | null; sheets: { name: string | null; rows: number }[]; uploaded_at: string }> => {
+    const url = `${API_BASE}/executive/wosh/upload${weekLabel ? `?week_label=${encodeURIComponent(weekLabel)}` : ""}`;
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await fetch(url, { method: "POST", credentials: "include", body: formData });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new ApiError(body.detail ?? res.statusText, res.status);
+    }
+    return res.json();
+  },
 };
 
 export const resourcesApi = {

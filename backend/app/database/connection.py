@@ -98,6 +98,10 @@ def _migrate():
             with engine.begin() as conn:
                 conn.execute(text("ALTER TABLE employees ADD COLUMN department VARCHAR"))
             print("[OK] Added department column to employees table")
+        if "is_executive" not in cols:
+            with engine.begin() as conn:
+                conn.execute(text("ALTER TABLE employees ADD COLUMN is_executive BOOLEAN DEFAULT 0"))
+            print("[OK] Added is_executive column to employees table")
 
         # Migrate track column from string to JSON array
         _migrate_track_to_array()

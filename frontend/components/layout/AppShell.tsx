@@ -127,6 +127,7 @@ export function AppShell({ children }: AppShellProps) {
   const isJourneyActive = pathname === "/overview" || pathname.startsWith("/modules") || pathname === "/roadmap" || isLearningProgramPage;
   const isResourcesActive = pathname.startsWith("/resources");
   const isManagerActive = pathname.startsWith("/manager");
+  const isExecutiveActive = pathname.startsWith("/executive");
   const showManagementTab = isEffectiveHR && !isManagement;
   const isRoadmapActive = pathname === "/roadmap";
 
@@ -658,6 +659,42 @@ export function AppShell({ children }: AppShellProps) {
             </Link>
           )}
 
+          {/* Executive Dashboard button */}
+          {(user?.is_executive || user?.is_admin) && (
+            <Link
+              href="/executive"
+              title="Executive Dashboard"
+              className={cn(
+                "flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] transition-all duration-200",
+                isExecutiveActive
+                  ? "shadow-[0_4px_10px_rgba(16,35,60,0.18)]"
+                  : "hover:opacity-80"
+              )}
+              style={{
+                background: isExecutiveActive
+                  ? "linear-gradient(135deg, #1e3a5f 0%, #2563eb 82%)"
+                  : "var(--sidebar-icon-bg)",
+              }}
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{
+                  color: isExecutiveActive ? "#ffffff" : "var(--sidebar-icon-text)",
+                }}
+              >
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                <polyline points="17 6 23 6 23 12" />
+              </svg>
+            </Link>
+          )}
+
           {/* Manager Dashboard button — for managers (and admins who aren't already seeing the admin button) */}
           {(user?.is_manager || user?.is_admin) && (
             <Link
@@ -765,6 +802,18 @@ export function AppShell({ children }: AppShellProps) {
         )}
 
         <div className="mx-auto flex items-center gap-7 md:absolute md:left-1/2 md:mx-0 md:-translate-x-1/2">
+          {(user?.is_executive || user?.is_admin) && (
+            <button
+              onClick={() => router.push("/executive")}
+              className="pb-0.5 text-[0.85rem] font-semibold transition-colors duration-200"
+              style={{
+                color: isExecutiveActive ? "var(--sidebar-text)" : "var(--sidebar-label)",
+                borderBottom: isExecutiveActive ? "2px solid var(--sidebar-text)" : "2px solid transparent",
+              }}
+            >
+              Executive
+            </button>
+          )}
           {(user?.is_manager || user?.is_admin) && (
             <button
               onClick={() => router.push("/manager")}

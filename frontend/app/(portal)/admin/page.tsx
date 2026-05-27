@@ -401,6 +401,7 @@ function EmployeeRow({ emp, currentUserId, modules, allEmployees, onDeleted }: {
   const [editTracks, setEditTracks] = useState<string[]>(emp.tracks ?? ["hr"]);
   const [editAdmin, setEditAdmin] = useState(emp.is_admin);
   const [editIsManager, setEditIsManager] = useState(emp.is_manager ?? false);
+  const [editIsExecutive, setEditIsExecutive] = useState(emp.is_executive ?? false);
   const [editManagerEmployeeId, setEditManagerEmployeeId] = useState(emp.manager_employee_id ?? "");
   const [editDepartment, setEditDepartment] = useState(emp.department ?? "");
   const existingDepartments = [...new Set(allEmployees.map((e) => e.department).filter(Boolean) as string[])].sort();
@@ -461,12 +462,13 @@ function EmployeeRow({ emp, currentUserId, modules, allEmployees, onDeleted }: {
         tracks: editTracks,
         is_admin: editAdmin,
         is_manager: editIsManager,
+        is_executive: editIsExecutive,
         manager_employee_id: editManagerEmployeeId || null,
         department: editDepartment.trim() || null,
       });
       setEditing(false);
       const trackLabel = editTracks.map((t) => TRACK_LABELS[t] ?? t).join(", ");
-      onDeleted(`Updated ${emp.full_name} - track: ${trackLabel}${editAdmin ? " (Admin)" : ""}${editIsManager ? " (Manager)" : ""}.`);
+      onDeleted(`Updated ${emp.full_name} - track: ${trackLabel}${editAdmin ? " (Admin)" : ""}${editIsManager ? " (Manager)" : ""}${editIsExecutive ? " (Executive)" : ""}.`);
     } catch (err) {
       onDeleted(err instanceof Error ? err.message : "Failed to update.", "error");
     } finally {
@@ -570,6 +572,15 @@ function EmployeeRow({ emp, currentUserId, modules, allEmployees, onDeleted }: {
               />
               Manager
             </label>
+            <label className="flex items-center gap-1.5 text-[0.72rem] font-medium" style={{ color: "var(--card-desc)" }}>
+              <input
+                type="checkbox"
+                checked={editIsExecutive}
+                onChange={(e) => setEditIsExecutive(e.target.checked)}
+                className="rounded"
+              />
+              Executive
+            </label>
             <div className="mt-1.5">
               <p className="mb-1 text-[0.64rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>Department</p>
               <input
@@ -625,6 +636,7 @@ function EmployeeRow({ emp, currentUserId, modules, allEmployees, onDeleted }: {
             </div>
             {emp.is_admin && <span className="mt-1 inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-[0.68rem] font-semibold text-slate-600">Admin</span>}
             {emp.is_manager && <span className="mt-1 ml-1 inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-[0.68rem] font-semibold text-emerald-700">Manager</span>}
+            {emp.is_executive && <span className="mt-1 ml-1 inline-flex rounded-full bg-blue-50 px-2.5 py-1 text-[0.68rem] font-semibold text-blue-700">Executive</span>}
             {emp.totp_enabled && <span className="mt-1 ml-1 inline-flex rounded-full bg-purple-50 px-2.5 py-1 text-[0.68rem] font-semibold text-purple-700">2FA</span>}
             {emp.department && (
               <p className="mt-1 text-[0.67rem] font-medium" style={{ color: "var(--module-context)" }}>
@@ -648,7 +660,7 @@ function EmployeeRow({ emp, currentUserId, modules, allEmployees, onDeleted }: {
         {editing ? (
           <div className="flex items-center justify-end gap-2">
             <button
-              onClick={() => { setEditing(false); setEditTracks(emp.tracks ?? ["hr"]); setEditAdmin(emp.is_admin); setEditIsManager(emp.is_manager ?? false); setEditManagerEmployeeId(emp.manager_employee_id ?? ""); setEditDepartment(emp.department ?? ""); }}
+              onClick={() => { setEditing(false); setEditTracks(emp.tracks ?? ["hr"]); setEditAdmin(emp.is_admin); setEditIsManager(emp.is_manager ?? false); setEditIsExecutive(emp.is_executive ?? false); setEditManagerEmployeeId(emp.manager_employee_id ?? ""); setEditDepartment(emp.department ?? ""); }}
               disabled={saving}
               className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold transition-all hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-50"
               style={{ color: "var(--card-desc)" }}

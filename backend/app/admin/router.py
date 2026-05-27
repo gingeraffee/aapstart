@@ -36,6 +36,7 @@ class EmployeeUpdate(BaseModel):
     tracks: list[str] | None = None
     is_admin: bool | None = None
     is_manager: bool | None = None
+    is_executive: bool | None = None
     manager_employee_id: str | None = None
     department: str | None = None
 
@@ -84,6 +85,7 @@ def _serialize(emp: Employee, db: Session) -> dict:
         "tracks": normalize_tracks(emp.track),
         "is_admin": emp.is_admin,
         "is_manager": bool(emp.is_manager),
+        "is_executive": bool(emp.is_executive),
         "manager_employee_id": emp.manager_employee_id,
         "department": emp.department,
         "totp_enabled": bool(emp.totp_enabled),
@@ -260,6 +262,8 @@ def update_employee(
         emp.is_admin = payload.is_admin
     if payload.is_manager is not None:
         emp.is_manager = payload.is_manager
+    if payload.is_executive is not None:
+        emp.is_executive = payload.is_executive
     if payload.manager_employee_id is not None:
         emp.manager_employee_id = payload.manager_employee_id if payload.manager_employee_id != "" else None
     if payload.department is not None:

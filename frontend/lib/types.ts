@@ -83,6 +83,7 @@ export interface User {
   tracks: Track[];
   is_admin: boolean;
   is_manager: boolean;
+  is_executive: boolean;
 }
 
 export interface ManagerHoursSummary {
@@ -235,6 +236,7 @@ export interface EmployeeRecord {
   tracks: string[];
   is_admin: boolean;
   is_manager: boolean;
+  is_executive: boolean;
   manager_employee_id: string | null;
   department: string | null;
   totp_enabled: boolean;
@@ -304,9 +306,61 @@ export interface LoginResponse {
   full_name: string;
   tracks: Track[];
   is_admin: boolean;
+  is_manager: boolean;
+  is_executive: boolean;
   requires_totp: boolean;
   totp_enabled: boolean;
   totp_required: boolean;
+}
+
+export interface WoshSheetData {
+  name: string | null;
+  data: Record<string, unknown>[];
+}
+
+export interface WoshReport {
+  id: number;
+  week_label: string | null;
+  uploaded_at: string | null;
+  sheets: WoshSheetData[];
+}
+
+export interface WoshReportMeta {
+  id: number;
+  week_label: string | null;
+  uploaded_at: string | null;
+  uploaded_by: string | null;
+  sheets: { name: string | null; rows: number }[];
+}
+
+export interface ExecutiveDashboardData {
+  headcount: {
+    total: number;
+    by_department: { department: string; count: number }[];
+    by_track: Record<string, number>;
+    managers: number;
+    admins: number;
+    executives: number;
+  };
+  hours_by_department: {
+    department: string;
+    employee_count: number;
+    regular_hours: number;
+    ot_hours: number;
+    vacation_hours: number;
+    personal_hours: number;
+    other_hours: number;
+    absent_w_point_hours: number;
+    protected_hours: number;
+  }[];
+  hours_date_range: string | null;
+  last_updated_hours: string | null;
+  attendance_thresholds: {
+    verbal: number;
+    written: number;
+    final: number;
+    termination: number;
+  };
 }
 
 export interface TotpSetupData {

@@ -13,6 +13,7 @@ class Employee(Base):
     track = Column(JSON, nullable=False, default=lambda: ["hr"])
     is_admin = Column(Boolean, default=False)
     is_manager = Column(Boolean, default=False)
+    is_executive = Column(Boolean, default=False)
     manager_employee_id = Column(String, nullable=True)  # who this employee reports to
     department = Column(String, nullable=True)
     totp_secret = Column(String, nullable=True)
@@ -121,6 +122,22 @@ class AttendancePoint(Base):
     flag_code   = Column(String, nullable=True)        # non-null = Monday absence pattern
     point_total = Column(Float,  nullable=False, default=0.0)
     imported_at = Column(DateTime, default=func.now())
+
+
+class WoshReport(Base):
+    """Stores uploaded WOSH (out-of-shift) Excel workbook data, one row per upload."""
+    __tablename__ = "wosh_reports"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    week_label = Column(String, nullable=True)  # e.g. "Week of 2025-03-01"
+    sheet1_name = Column(String, nullable=True)
+    sheet1_data = Column(JSON, nullable=True)   # [{col: val, ...}, ...]
+    sheet2_name = Column(String, nullable=True)
+    sheet2_data = Column(JSON, nullable=True)
+    sheet3_name = Column(String, nullable=True)
+    sheet3_data = Column(JSON, nullable=True)
+    uploaded_by = Column(String, nullable=True)  # employee_id
+    uploaded_at = Column(DateTime, default=func.now())
 
 
 class UserNote(Base):

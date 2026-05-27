@@ -16,6 +16,7 @@ export interface TotpPending {
   tracks: string[];
   is_admin: boolean;
   is_manager: boolean;
+  is_executive: boolean;
 }
 
 interface AuthContextValue {
@@ -154,7 +155,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // ---------- Helpers ----------
 
-  function _persistUser(data: { employee_id: string; full_name: string; tracks: string[]; is_admin: boolean; is_manager?: boolean }, payload?: LoginPayload) {
+  function _persistUser(data: { employee_id: string; full_name: string; tracks: string[]; is_admin: boolean; is_manager?: boolean; is_executive?: boolean }, payload?: LoginPayload) {
     const parts = data.full_name.split(" ");
     const loggedInUser: User = {
       employee_id: data.employee_id,
@@ -164,6 +165,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       tracks: (data.tracks as User["tracks"]) ?? ["administrative"],
       is_admin: data.is_admin ?? false,
       is_manager: data.is_manager ?? false,
+      is_executive: data.is_executive ?? false,
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(loggedInUser));
     setUser(loggedInUser);
@@ -183,6 +185,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         tracks: ["administrative"],
         is_admin: false,
         is_manager: false,
+        is_executive: false,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(devUser));
       setUser(devUser);
@@ -223,7 +226,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         full_name: data.full_name,
         tracks: data.tracks,
         is_admin: data.is_admin,
-        is_manager: (data as LoginResponse & { is_manager?: boolean }).is_manager ?? false,
+        is_manager: data.is_manager ?? false,
+        is_executive: data.is_executive ?? false,
       });
       return;
     }

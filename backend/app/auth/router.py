@@ -42,6 +42,7 @@ def login(payload: LoginRequest, response: Response):
             tracks=user["tracks"],
             is_admin=user.get("is_admin", False),
             is_manager=user.get("is_manager", False),
+            is_executive=user.get("is_executive", False),
             requires_totp=True,
             totp_enabled=True,
             totp_required=totp_policy,
@@ -54,6 +55,7 @@ def login(payload: LoginRequest, response: Response):
         tracks=user["tracks"],
         is_admin=user.get("is_admin", False),
         is_manager=user.get("is_manager", False),
+        is_executive=user.get("is_executive", False),
     )
     _set_session_cookie(response, token)
     return LoginResponse(
@@ -62,6 +64,7 @@ def login(payload: LoginRequest, response: Response):
         tracks=user["tracks"],
         is_admin=user.get("is_admin", False),
         is_manager=user.get("is_manager", False),
+        is_executive=user.get("is_executive", False),
         requires_totp=False,
         totp_enabled=False,
         totp_required=totp_policy,
@@ -97,6 +100,7 @@ def totp_validate(payload: TotpVerifyRequest, response: Response):
             tracks=tracks,
             is_admin=employee.is_admin,
             is_manager=bool(employee.is_manager),
+            is_executive=bool(employee.is_executive),
         )
         _set_session_cookie(response, token)
         return UserResponse(
@@ -105,6 +109,7 @@ def totp_validate(payload: TotpVerifyRequest, response: Response):
             tracks=tracks,
             is_admin=employee.is_admin,
             is_manager=bool(employee.is_manager),
+            is_executive=bool(employee.is_executive),
         )
     finally:
         db.close()
@@ -194,6 +199,7 @@ def me(current_user: dict = Depends(service.get_current_user)):
         tracks=current_user["tracks"],
         is_admin=current_user.get("is_admin", False),
         is_manager=current_user.get("is_manager", False),
+        is_executive=current_user.get("is_executive", False),
     )
 
 
