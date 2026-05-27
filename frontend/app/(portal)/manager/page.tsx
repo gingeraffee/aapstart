@@ -409,10 +409,40 @@ const ABSENCE_ROWS = [
   { key: "protected", label: "Protected", color: "#8b5cf6", hKey: "protected_hours" as const },
 ] as const;
 
+function AbsenceDonut({ rows, grandTotal }: { rows: { label: string; value: number; color: string }[]; grandTotal: number }) {
+  const R = 44, CX = 56, CY = 56, SW = 17;
+  const C = 2 * Math.PI * R;
+  let cumPct = 0;
+  return (
+    <svg width="112" height="112" viewBox="0 0 112 112" className="shrink-0">
+      <circle cx={CX} cy={CY} r={R} fill="none" stroke="rgba(153,182,218,0.15)" strokeWidth={SW} />
+      {rows.filter(d => d.value > 0).map(d => {
+        const pct = d.value / grandTotal;
+        const dash = Math.max(0, pct * C - 1.5);
+        const rotation = cumPct * 360 - 90;
+        cumPct += pct;
+        return (
+          <circle key={d.label} cx={CX} cy={CY} r={R} fill="none" stroke={d.color}
+            strokeWidth={SW} strokeDasharray={`${dash} ${C}`}
+            transform={`rotate(${rotation} ${CX} ${CY})`} />
+        );
+      })}
+      <text x={CX} y={CY - 4} textAnchor="middle" fontSize="15" fontWeight="700" fill="var(--sidebar-text)">
+        {grandTotal % 1 === 0 ? grandTotal : grandTotal.toFixed(0)}
+      </text>
+      <text x={CX} y={CY + 9} textAnchor="middle" fontSize="6.5" fill="var(--sidebar-label)">HOURS</text>
+    </svg>
+  );
+}
+
 function AbsenceCard({ data, dateRange }: { data: AbsenceCategoryEntry[]; dateRange: string | null }) {
+  const [expanded, setExpanded] = useState(false);
   const totals = ABSENCE_ROWS.map(r => ({ ...r, value: data.reduce((s, e) => s + e[r.hKey], 0) }));
   const grandTotal = totals.reduce((s, r) => s + r.value, 0);
   const activeRows = totals.filter(r => r.value > 0);
+  const tableRows = [...data]
+    .filter(e => e.planned_hours + e.unplanned_hours + e.protected_hours > 0)
+    .sort((a, b) => (b.planned_hours + b.unplanned_hours + b.protected_hours) - (a.planned_hours + a.unplanned_hours + a.protected_hours));
 
   return (
     <Card title={`Planned vs. Unplanned Absences${dateRange ? ` — ${dateRange}` : ""}`}>
@@ -424,61 +454,79 @@ function AbsenceCard({ data, dateRange }: { data: AbsenceCategoryEntry[]; dateRa
         </div>
       ) : (
         <>
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-1 px-5 pt-4 pb-2">
-            {activeRows.map(row => (
-              <div key={row.key} className="flex items-center gap-1.5">
-                <div className="h-2 w-2 shrink-0 rounded-full" style={{ background: row.color }} />
-                <span className="text-[0.72rem] font-medium" style={{ color: "var(--sidebar-label)" }}>{row.label}</span>
-                <span className="text-[0.82rem] font-bold tabular-nums" style={{ color: row.color }}>{row.value % 1 === 0 ? row.value : row.value.toFixed(1)} hrs</span>
-                <span className="text-[0.68rem] tabular-nums" style={{ color: "var(--sidebar-label)" }}>
-                  {Math.round((row.value / grandTotal) * 100)}%
-                </span>
-              </div>
-            ))}
-            <span className="ml-auto text-[0.72rem] tabular-nums font-medium" style={{ color: "var(--sidebar-label)" }}>
-              {grandTotal % 1 === 0 ? grandTotal : grandTotal.toFixed(1)} hrs total
-            </span>
-          </div>
-          <div className="mx-5 mb-3 h-1.5 rounded-full overflow-hidden flex" style={{ background: "rgba(153,182,218,0.15)" }}>
-            {activeRows.map(r => (
-              <div key={r.key} className="h-full" style={{ width: `${(r.value / grandTotal) * 100}%`, background: r.color }} />
-            ))}
-          </div>
-          {data.length > 0 && (
-            <div className="overflow-x-auto" style={{ borderTop: "1px solid rgba(153,182,218,0.18)" }}>
-              <table className="w-full text-[0.76rem]">
-                <thead>
-                  <tr style={{ background: "rgba(153,182,218,0.06)", borderBottom: "1px solid rgba(153,182,218,0.18)" }}>
-                    <th className="px-4 py-2 text-left text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>Employee</th>
-                    {ABSENCE_ROWS.map(r => (
-                      <th key={r.key} className="px-4 py-2 text-right text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: r.color }}>{r.label}</th>
-                    ))}
-                    <th className="px-4 py-2 text-right text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[...data]
-                    .filter(e => e.planned_hours + e.unplanned_hours + e.protected_hours > 0)
-                    .sort((a, b) => (b.planned_hours + b.unplanned_hours + b.protected_hours) - (a.planned_hours + a.unplanned_hours + a.protected_hours))
-                    .map((emp, i, arr) => {
-                      const empTotal = emp.planned_hours + emp.unplanned_hours + emp.protected_hours;
-                      const fmt = (v: number) => v > 0 ? (v % 1 === 0 ? String(v) : v.toFixed(1)) : "—";
-                      return (
-                        <tr key={emp.employee_id} style={{ borderBottom: i < arr.length - 1 ? "1px solid rgba(153,182,218,0.1)" : "none" }}>
-                          <td className="px-4 py-1.5 font-semibold" style={{ color: "var(--sidebar-text)" }}>
-                            {emp.full_name}
-                            <span className="ml-2 text-[0.62rem] font-normal" style={{ color: "var(--sidebar-label)" }}>{emp.employee_id}</span>
-                          </td>
-                          <td className="px-4 py-1.5 text-right tabular-nums font-semibold" style={{ color: emp.planned_hours > 0 ? "#0ea5e9" : "var(--sidebar-label)" }}>{fmt(emp.planned_hours)}</td>
-                          <td className="px-4 py-1.5 text-right tabular-nums font-semibold" style={{ color: emp.unplanned_hours > 0 ? "#dc2626" : "var(--sidebar-label)" }}>{fmt(emp.unplanned_hours)}</td>
-                          <td className="px-4 py-1.5 text-right tabular-nums font-semibold" style={{ color: emp.protected_hours > 0 ? "#8b5cf6" : "var(--sidebar-label)" }}>{fmt(emp.protected_hours)}</td>
-                          <td className="px-4 py-1.5 text-right tabular-nums" style={{ color: "var(--sidebar-text)" }}>{empTotal % 1 === 0 ? empTotal : empTotal.toFixed(1)}</td>
-                        </tr>
-                      );
-                    })}
-                </tbody>
-              </table>
+          <div className="flex items-center gap-5 px-5 py-4">
+            <AbsenceDonut rows={activeRows} grandTotal={grandTotal} />
+            <div className="flex flex-col gap-2.5 flex-1">
+              {activeRows.map(row => {
+                const fmt = (v: number) => v % 1 === 0 ? String(v) : v.toFixed(1);
+                return (
+                  <div key={row.key} className="flex items-center gap-2.5">
+                    <div className="h-2 w-2 shrink-0 rounded-full" style={{ background: row.color }} />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1 mb-0.5">
+                        <span className="text-[0.74rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>{row.label}</span>
+                        <span className="text-[0.74rem] font-bold tabular-nums" style={{ color: row.color }}>{fmt(row.value)} hrs</span>
+                      </div>
+                      <div className="h-[5px] w-full rounded-full overflow-hidden" style={{ background: "rgba(153,182,218,0.15)" }}>
+                        <div className="h-full rounded-full" style={{ width: `${Math.round((row.value / grandTotal) * 100)}%`, background: row.color }} />
+                      </div>
+                    </div>
+                    <span className="w-8 shrink-0 text-right text-[0.68rem] font-medium tabular-nums" style={{ color: "var(--sidebar-label)" }}>
+                      {Math.round((row.value / grandTotal) * 100)}%
+                    </span>
+                  </div>
+                );
+              })}
             </div>
+          </div>
+
+          {tableRows.length > 0 && (
+            <>
+              <button
+                onClick={() => setExpanded(e => !e)}
+                className="flex w-full items-center justify-between px-5 py-2 text-[0.74rem] font-semibold transition-colors hover:opacity-70"
+                style={{ borderTop: "1px solid rgba(153,182,218,0.18)", color: "var(--sidebar-label)" }}
+              >
+                <span>{expanded ? "Hide" : "Show"} employee breakdown ({tableRows.length})</span>
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+                  style={{ transform: expanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>
+                  <path d="M2 4l4 4 4-4" />
+                </svg>
+              </button>
+              {expanded && (
+                <div className="overflow-x-auto" style={{ borderTop: "1px solid rgba(153,182,218,0.18)" }}>
+                  <table className="w-full text-[0.76rem]">
+                    <thead>
+                      <tr style={{ background: "rgba(153,182,218,0.06)", borderBottom: "1px solid rgba(153,182,218,0.18)" }}>
+                        <th className="px-4 py-2 text-left text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>Employee</th>
+                        {ABSENCE_ROWS.map(r => (
+                          <th key={r.key} className="px-4 py-2 text-right text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: r.color }}>{r.label}</th>
+                        ))}
+                        <th className="px-4 py-2 text-right text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tableRows.map((emp, i, arr) => {
+                        const empTotal = emp.planned_hours + emp.unplanned_hours + emp.protected_hours;
+                        const fmt = (v: number) => v > 0 ? (v % 1 === 0 ? String(v) : v.toFixed(1)) : "—";
+                        return (
+                          <tr key={emp.employee_id} style={{ borderBottom: i < arr.length - 1 ? "1px solid rgba(153,182,218,0.1)" : "none" }}>
+                            <td className="px-4 py-1.5 font-semibold" style={{ color: "var(--sidebar-text)" }}>
+                              {emp.full_name}
+                              <span className="ml-2 text-[0.62rem] font-normal" style={{ color: "var(--sidebar-label)" }}>{emp.employee_id}</span>
+                            </td>
+                            <td className="px-4 py-1.5 text-right tabular-nums font-semibold" style={{ color: emp.planned_hours > 0 ? "#0ea5e9" : "var(--sidebar-label)" }}>{fmt(emp.planned_hours)}</td>
+                            <td className="px-4 py-1.5 text-right tabular-nums font-semibold" style={{ color: emp.unplanned_hours > 0 ? "#dc2626" : "var(--sidebar-label)" }}>{fmt(emp.unplanned_hours)}</td>
+                            <td className="px-4 py-1.5 text-right tabular-nums font-semibold" style={{ color: emp.protected_hours > 0 ? "#8b5cf6" : "var(--sidebar-label)" }}>{fmt(emp.protected_hours)}</td>
+                            <td className="px-4 py-1.5 text-right tabular-nums" style={{ color: "var(--sidebar-text)" }}>{empTotal % 1 === 0 ? empTotal : empTotal.toFixed(1)}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
           )}
         </>
       )}
