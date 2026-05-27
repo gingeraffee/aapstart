@@ -1074,7 +1074,7 @@ function ManagerSnapshotView({ managerEmployeeId }: { managerEmployeeId: string 
   if (isLoading) return <div className="py-4 text-center text-[0.8rem]" style={{ color: "var(--card-desc)" }}>Loading…</div>;
   if (!data) return null;
 
-  const snap = "compare_month" in data ? (data as import("@/lib/types").DashboardCompareData).month : data as import("@/lib/types").MonthDashboardData;
+  const snap = data;
 
   const kpis = [
     { label: "Team Members", value: snap.team_size },
