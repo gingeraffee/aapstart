@@ -514,7 +514,7 @@ export function AppShell({ children }: AppShellProps) {
           )}
 
           {/* Executive Dashboard button */}
-          {(user?.is_executive || user?.is_admin) && (
+          {user?.is_executive && (
             <Link
               href="/executive"
               title="Executive Dashboard"
@@ -656,7 +656,7 @@ export function AppShell({ children }: AppShellProps) {
         )}
 
         <div className="mx-auto flex items-center gap-7 md:absolute md:left-1/2 md:mx-0 md:-translate-x-1/2">
-          {(user?.is_executive || user?.is_admin) && (
+          {user?.is_executive && (
             <button
               onClick={() => router.push("/executive")}
               className="pb-0.5 text-[0.85rem] font-semibold transition-colors duration-200"
