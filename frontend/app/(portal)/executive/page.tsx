@@ -637,8 +637,8 @@ export default function ExecutivePage() {
         )}
       </div>
 
-      {/* Upload bar */}
-      <UploadBar onUploaded={handleUploaded} />
+      {/* Upload bar — admins only */}
+      {user?.is_admin && <UploadBar onUploaded={handleUploaded} />}
 
       {/* KPI row — WOSH violations */}
       {summary ? (
