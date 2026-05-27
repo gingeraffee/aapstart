@@ -726,8 +726,8 @@ export default function ExecutivePage() {
         )}
       </div>
 
-      {/* Upload bar — HR and admins only */}
-      {(user?.is_admin || user?.tracks?.includes("hr")) && <UploadBar onUploaded={handleUploaded} />}
+      {/* Upload bar — HR admins only (must be both HR track and admin) */}
+      {(user?.is_admin && user?.tracks?.includes("hr")) && <UploadBar onUploaded={handleUploaded} />}
 
       {/* Hours by location */}
       {hoursLocData && hoursLocData.locations.length > 0 && (

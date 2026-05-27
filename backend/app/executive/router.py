@@ -7,7 +7,7 @@ from openpyxl import load_workbook
 from sqlalchemy import func as sa_func
 from sqlalchemy.orm import Session
 
-from app.auth.service import require_executive, require_hr_or_admin, normalize_tracks
+from app.auth.service import require_executive, require_hr_and_admin, normalize_tracks
 from app.database.connection import get_db
 from app.database.models import (
     ATTENDANCE_THRESHOLDS,
@@ -439,7 +439,7 @@ def _serialize_report(r: WoshReport, include_exceptions: bool = True) -> dict:
 async def upload_wosh(
     file: UploadFile = File(...),
     week_label: str = "",
-    user: dict = Depends(require_hr_or_admin),
+    user: dict = Depends(require_hr_and_admin),
     db: Session = Depends(get_db),
 ):
     if not file.filename or not file.filename.lower().endswith((".xlsx", ".xlsm", ".xls")):

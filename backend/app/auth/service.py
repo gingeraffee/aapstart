@@ -191,14 +191,14 @@ def require_executive(request: Request) -> dict:
     return user
 
 
-def require_hr_or_admin(request: Request) -> dict:
-    """FastAPI dependency — requires is_admin=True or 'hr' in tracks."""
+def require_hr_and_admin(request: Request) -> dict:
+    """FastAPI dependency — requires is_admin=True AND 'hr' in tracks."""
     user = get_current_user(request)
     is_hr = "hr" in (user.get("tracks") or [])
-    if not user.get("is_admin") and not is_hr:
+    if not user.get("is_admin") or not is_hr:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="HR or admin access required.",
+            detail="HR admin access required.",
         )
     return user
 
