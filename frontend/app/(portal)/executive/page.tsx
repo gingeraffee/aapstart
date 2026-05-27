@@ -84,7 +84,7 @@ function DrillByManager({ data }: { data: WoshByManagerChart[] }) {
   return (
     <div className="space-y-2">
       <p className="mb-3 text-[0.75rem] font-semibold uppercase tracking-wide" style={{ color: "var(--module-context)" }}>
-        Violations by Manager
+        Irregularities by Manager
       </p>
       {data.map(row => (
         <div key={row.manager}>
@@ -138,7 +138,7 @@ function DrillTopEmployees({ data }: { data: { employee_name: string; manager: s
   return (
     <div>
       <p className="mb-3 text-[0.75rem] font-semibold uppercase tracking-wide" style={{ color: "var(--module-context)" }}>
-        Top Employees by Violations
+        Top Employees by Irregularities
       </p>
       <div className="overflow-hidden rounded-[10px]" style={{ border: "1px solid var(--card-border)" }}>
         <table className="w-full text-[0.78rem]">
@@ -227,7 +227,7 @@ function ManagerSummaryTable({ data }: { data: WoshByManagerChart[] }) {
   return (
     <div className="overflow-hidden rounded-[14px]" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}>
       <div className="px-5 py-4 border-b" style={{ borderColor: "var(--card-border)" }}>
-        <h3 className="text-[0.9rem] font-bold" style={{ color: "var(--heading-color)" }}>Violations by Manager</h3>
+        <h3 className="text-[0.9rem] font-bold" style={{ color: "var(--heading-color)" }}>Irregularities by Manager</h3>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-[0.8rem]">
@@ -610,7 +610,7 @@ export default function ExecutivePage() {
             <p className="mt-1 text-[0.8rem]" style={{ color: "var(--card-desc)" }}>
               {report?.week_label && <span className="font-semibold" style={{ color: "var(--heading-color)" }}>{report.week_label} · </span>}
               {summary.generated_text && (
-                <span>{summary.total_violations} violations · {summary.employees_affected} employees · {summary.managers} managers</span>
+                <span>{summary.total_violations} irregularities · {summary.employees_affected} employees · {summary.managers} managers</span>
               )}
             </p>
           )}
@@ -647,7 +647,7 @@ export default function ExecutivePage() {
             Shift Exceptions
           </p>
           <div className="mb-3 flex flex-wrap gap-2">
-            <KpiCard id="violations" label="Total Violations" value={fmtNum(summary.total_violations)} active={activeKpi === "violations"} onClick={handleKpi} />
+            <KpiCard id="violations" label="Total Irregularities" value={fmtNum(summary.total_violations)} active={activeKpi === "violations"} onClick={handleKpi} />
             <KpiCard id="employees" label="Employees Affected" value={fmtNum(summary.employees_affected)} active={activeKpi === "employees"} onClick={handleKpi} />
             <KpiCard id="early" label="Early Arrivals" value={fmtNum(summary.early_arrivals)} active={activeKpi === "early"} onClick={handleKpi} accent="linear-gradient(135deg,#1e40af 0%,#3b82f6 82%)" />
             <KpiCard id="late" label="Late Departures" value={fmtNum(summary.late_departures)} active={activeKpi === "late"} onClick={handleKpi} accent="linear-gradient(135deg,#92400e 0%,#f59e0b 82%)" />
