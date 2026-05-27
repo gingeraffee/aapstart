@@ -1160,16 +1160,15 @@ export default function ManagerDashboardPage() {
       </div>
 
       {/* ── Sub-tabs ── */}
-      <div className="inline-flex gap-1 rounded-[12px] p-1"
-        style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", boxShadow: "var(--tab-group-shadow)" }}>
+      <div className="flex items-center gap-7">
         {(["metrics", "roster", "analytics"] as const).map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className="rounded-[9px] px-5 py-1.5 text-[0.8rem] font-semibold transition-all duration-200"
+            className="pb-0.5 text-[0.85rem] font-semibold transition-colors duration-200"
             style={{
-              color: activeTab === tab ? "var(--tab-text-active)" : "var(--tab-text)",
-              ...(activeTab === tab ? { background: "var(--tab-active-bg)", boxShadow: "var(--tab-active-shadow)" } : {}),
+              color: activeTab === tab ? "var(--sidebar-text)" : "var(--sidebar-label)",
+              borderBottom: activeTab === tab ? "2px solid var(--sidebar-text)" : "2px solid transparent",
             }}
           >
             {tab === "metrics" ? "Metrics" : tab === "roster" ? "Team Roster" : "Team Analytics"}

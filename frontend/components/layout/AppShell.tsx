@@ -764,29 +764,14 @@ export function AppShell({ children }: AppShellProps) {
           </div>
         )}
 
-        <div
-          className="mx-auto flex rounded-[12px] p-1 md:absolute md:left-1/2 md:mx-0 md:-translate-x-1/2"
-          style={{
-            background: "var(--tab-group-bg)",
-            border: "1px solid var(--tab-group-border)",
-            boxShadow: "var(--tab-group-shadow)",
-          }}
-        >
+        <div className="mx-auto flex items-center gap-7 md:absolute md:left-1/2 md:mx-0 md:-translate-x-1/2">
           {(user?.is_manager || user?.is_admin) && (
             <button
               onClick={() => router.push("/manager")}
-              className={cn(
-                "rounded-[9px] px-5 py-1.5 text-[0.8rem] font-semibold transition-all duration-200",
-                isManagerActive ? "shadow-[0_1px_8px_rgba(15,29,60,0.16)]" : ""
-              )}
+              className="pb-0.5 text-[0.85rem] font-semibold transition-colors duration-200"
               style={{
-                color: isManagerActive ? "var(--tab-text-active)" : "var(--tab-text)",
-                ...(isManagerActive
-                  ? {
-                      background: "var(--tab-active-bg)",
-                      boxShadow: "var(--tab-active-shadow)",
-                    }
-                  : undefined),
+                color: isManagerActive ? "var(--sidebar-text)" : "var(--sidebar-label)",
+                borderBottom: isManagerActive ? "2px solid var(--sidebar-text)" : "2px solid transparent",
               }}
             >
               My Team
@@ -794,36 +779,20 @@ export function AppShell({ children }: AppShellProps) {
           )}
           <button
             onClick={() => router.push(isLearningProgramPage ? "/learning-program" : "/overview")}
-            className={cn(
-              "rounded-[9px] px-5 py-1.5 text-[0.8rem] font-semibold transition-all duration-200",
-              isJourneyActive ? "shadow-[0_1px_8px_rgba(15,29,60,0.16)]" : ""
-            )}
+            className="pb-0.5 text-[0.85rem] font-semibold transition-colors duration-200"
             style={{
-              color: isJourneyActive ? "var(--tab-text-active)" : "var(--tab-text)",
-              ...(isJourneyActive
-                ? {
-                    background: "var(--tab-active-bg)",
-                    boxShadow: "var(--tab-active-shadow)",
-                  }
-                : undefined),
+              color: isJourneyActive ? "var(--sidebar-text)" : "var(--sidebar-label)",
+              borderBottom: isJourneyActive ? "2px solid var(--sidebar-text)" : "2px solid transparent",
             }}
           >
             {isManagement ? "Training" : isLearningProgramPage ? "Learning Program" : "Your Journey"}
           </button>
           <button
             onClick={() => router.push("/resources")}
-            className={cn(
-              "rounded-[9px] px-5 py-1.5 text-[0.8rem] font-semibold transition-all duration-200",
-              isResourcesActive ? "shadow-[0_1px_8px_rgba(15,29,60,0.16)]" : ""
-            )}
+            className="pb-0.5 text-[0.85rem] font-semibold transition-colors duration-200"
             style={{
-              color: isResourcesActive ? "var(--tab-text-active)" : "var(--tab-text)",
-              ...(isResourcesActive
-                ? {
-                    background: "var(--tab-active-bg)",
-                    boxShadow: "var(--tab-active-shadow)",
-                  }
-                : undefined),
+              color: isResourcesActive ? "var(--sidebar-text)" : "var(--sidebar-label)",
+              borderBottom: isResourcesActive ? "2px solid var(--sidebar-text)" : "2px solid transparent",
             }}
           >
             Resource Hub
@@ -831,18 +800,10 @@ export function AppShell({ children }: AppShellProps) {
           {showManagementTab && (
             <button
               onClick={() => router.push("/management-guides")}
-              className={cn(
-                "rounded-[9px] px-5 py-1.5 text-[0.8rem] font-semibold transition-all duration-200",
-                isManagementGuidesPage ? "shadow-[0_1px_8px_rgba(15,29,60,0.16)]" : ""
-              )}
+              className="pb-0.5 text-[0.85rem] font-semibold transition-colors duration-200"
               style={{
-                color: isManagementGuidesPage ? "var(--tab-text-active)" : "var(--tab-text)",
-                ...(isManagementGuidesPage
-                  ? {
-                      background: "var(--tab-active-bg)",
-                      boxShadow: "var(--tab-active-shadow)",
-                    }
-                  : undefined),
+                color: isManagementGuidesPage ? "var(--sidebar-text)" : "var(--sidebar-label)",
+                borderBottom: isManagementGuidesPage ? "2px solid var(--sidebar-text)" : "2px solid transparent",
               }}
             >
               Manager Resources
