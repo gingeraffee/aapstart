@@ -655,53 +655,74 @@ function ThresholdAlertsCard({ team, onClickEmployee }: {
   team: ManagerTeamMemberV2[];
   onClickEmployee: (employeeId: string) => void;
 }) {
+  const [expanded, setExpanded] = useState(true);
   const atThreshold = team.filter(m => m.threshold !== null);
 
   return (
-    <Card title="Attendance Threshold Alerts">
-      {atThreshold.length === 0 ? (
-        <div className="px-5 py-8 text-center">
-          <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>
-            No employees are currently at a threshold level.
-          </p>
+    <div className="overflow-hidden rounded-[16px]" style={{ background: "rgba(255,255,255,0.82)", border: "1px solid rgba(153,182,218,0.28)", boxShadow: "0 2px 12px rgba(12,24,47,0.07)" }}>
+      <button
+        onClick={() => setExpanded(e => !e)}
+        className="flex w-full items-center justify-between px-5 py-4 transition-opacity hover:opacity-80"
+      >
+        <span className="text-[0.8rem] font-bold" style={{ color: "var(--sidebar-text)" }}>Attendance Threshold Alerts</span>
+        <div className="flex items-center gap-2">
+          {atThreshold.length > 0 && (
+            <span className="rounded-full px-2 py-0.5 text-[0.66rem] font-bold tabular-nums"
+              style={{ background: "rgba(220,38,38,0.1)", color: "#dc2626" }}>
+              {atThreshold.length}
+            </span>
+          )}
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+            style={{ color: "var(--sidebar-label)", transform: expanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>
+            <path d="M2 4l4 4 4-4" />
+          </svg>
         </div>
-      ) : (
-        <div>
-          {THRESHOLD_ORDER.filter(level => atThreshold.some(m => m.threshold === level)).map(level => {
-            const members = atThreshold.filter(m => m.threshold === level);
-            const color = thresholdColor(level);
-            return (
-              <div key={level} className="px-5 py-3" style={{ borderBottom: "1px solid rgba(153,182,218,0.12)" }}>
-                <div className="mb-2 flex items-center gap-2">
-                  <span className="rounded-full px-2.5 py-0.5 text-[0.66rem] font-bold capitalize"
-                    style={{ background: `${color}18`, color, border: `1px solid ${color}30` }}>
-                    {level}
-                  </span>
-                  <span className="text-[0.68rem]" style={{ color: "var(--sidebar-label)" }}>
-                    {members.length} employee{members.length !== 1 ? "s" : ""}
-                  </span>
+      </button>
+      {expanded && (
+        atThreshold.length === 0 ? (
+          <div className="px-5 pb-6 text-center">
+            <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>
+              No employees are currently at a threshold level.
+            </p>
+          </div>
+        ) : (
+          <div style={{ borderTop: "1px solid rgba(153,182,218,0.18)" }}>
+            {THRESHOLD_ORDER.filter(level => atThreshold.some(m => m.threshold === level)).map(level => {
+              const members = atThreshold.filter(m => m.threshold === level);
+              const color = thresholdColor(level);
+              return (
+                <div key={level} className="px-5 py-3" style={{ borderBottom: "1px solid rgba(153,182,218,0.12)" }}>
+                  <div className="mb-2 flex items-center gap-2">
+                    <span className="rounded-full px-2.5 py-0.5 text-[0.66rem] font-bold capitalize"
+                      style={{ background: `${color}18`, color, border: `1px solid ${color}30` }}>
+                      {level}
+                    </span>
+                    <span className="text-[0.68rem]" style={{ color: "var(--sidebar-label)" }}>
+                      {members.length} employee{members.length !== 1 ? "s" : ""}
+                    </span>
+                  </div>
+                  <div className="space-y-1">
+                    {members.map(m => (
+                      <button
+                        key={m.employee_id}
+                        onClick={() => onClickEmployee(m.employee_id)}
+                        className="flex w-full items-center justify-between rounded-[10px] px-3 py-2 text-left transition-all hover:opacity-75"
+                        style={{ background: `${color}08`, border: `1px solid ${color}20` }}
+                      >
+                        <span className="text-[0.8rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>{m.full_name}</span>
+                        <span className="text-[0.74rem] font-bold tabular-nums" style={{ color }}>
+                          {m.point_total?.toFixed(1) ?? "—"} pts
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  {members.map(m => (
-                    <button
-                      key={m.employee_id}
-                      onClick={() => onClickEmployee(m.employee_id)}
-                      className="flex w-full items-center justify-between rounded-[10px] px-3 py-2 text-left transition-all hover:opacity-75"
-                      style={{ background: `${color}08`, border: `1px solid ${color}20` }}
-                    >
-                      <span className="text-[0.8rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>{m.full_name}</span>
-                      <span className="text-[0.74rem] font-bold tabular-nums" style={{ color }}>
-                        {m.point_total?.toFixed(1) ?? "—"} pts
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )
       )}
-    </Card>
+    </div>
   );
 }
 
@@ -1068,6 +1089,7 @@ export default function ManagerDashboardPage() {
   const [selectedEmployee, setSelectedEmployee] = useState<ManagerTeamMemberV2 | null>(null);
   const [thresholdFilter, setThresholdFilter] = useState<string[]>([]);
   const [hoursExpanded, setHoursExpanded] = useState(false);
+  const [upcomingExpanded, setUpcomingExpanded] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !canAccess) router.replace("/overview");
@@ -1391,35 +1413,59 @@ export default function ManagerDashboardPage() {
                       </ul>
                     )}
                   </Card>
-                  <Card title={`Upcoming Performance Reviews (${filteredUpcoming.length})`}>
-                    {!dashboard || dashboard.upcoming_reviews.length === 0 ? (
-                      <div className="px-5 py-6 text-center">
-                        <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No upcoming reviews.</p>
+                  <div className="overflow-hidden rounded-[16px]" style={{ background: "rgba(255,255,255,0.82)", border: "1px solid rgba(153,182,218,0.28)", boxShadow: "0 2px 12px rgba(12,24,47,0.07)" }}>
+                    <button
+                      onClick={() => setUpcomingExpanded(e => !e)}
+                      className="flex w-full items-center justify-between px-5 py-4 transition-opacity hover:opacity-80"
+                    >
+                      <span className="text-[0.8rem] font-bold" style={{ color: "var(--sidebar-text)" }}>
+                        Upcoming Performance Reviews ({filteredUpcoming.length})
+                      </span>
+                      <div className="flex items-center gap-2">
+                        {filteredUpcoming.length > 0 && (
+                          <span className="rounded-full px-2 py-0.5 text-[0.66rem] font-bold tabular-nums"
+                            style={{ background: "rgba(14,109,163,0.1)", color: "#0f6da3" }}>
+                            {filteredUpcoming.length}
+                          </span>
+                        )}
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+                          style={{ color: "var(--sidebar-label)", transform: upcomingExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>
+                          <path d="M2 4l4 4 4-4" />
+                        </svg>
                       </div>
-                    ) : filteredUpcoming.length === 0 ? (
-                      <div className="px-5 py-6 text-center">
-                        <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No employees match your search.</p>
+                    </button>
+                    {upcomingExpanded && (
+                      <div style={{ borderTop: "1px solid rgba(153,182,218,0.18)" }}>
+                        {!dashboard || dashboard.upcoming_reviews.length === 0 ? (
+                          <div className="px-5 py-6 text-center">
+                            <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No upcoming reviews.</p>
+                          </div>
+                        ) : filteredUpcoming.length === 0 ? (
+                          <div className="px-5 py-6 text-center">
+                            <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>No employees match your search.</p>
+                          </div>
+                        ) : (
+                          <ul>
+                            {filteredUpcoming.map((r, i) => (
+                              <li key={i} className="flex items-center justify-between gap-3 px-5 py-3"
+                                style={{ borderBottom: i < filteredUpcoming.length - 1 ? "1px solid rgba(153,182,218,0.12)" : "none" }}>
+                                <div className="min-w-0">
+                                  <p className="truncate text-[0.82rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>{r.full_name}</p>
+                                  <p className="text-[0.68rem]" style={{ color: "var(--sidebar-label)" }}>
+                                    {reviewTypeBadge(r.review_type)} · Due {formatDate(r.due_date)}
+                                  </p>
+                                </div>
+                                <span className="shrink-0 rounded-full px-2.5 py-1 text-[0.66rem] font-bold"
+                                  style={{ background: `${daysUntilColor(r.days_until ?? 0)}18`, color: daysUntilColor(r.days_until ?? 0) }}>
+                                  {r.days_until === 0 ? "Today" : `${r.days_until}d`}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
                       </div>
-                    ) : (
-                      <ul>
-                        {filteredUpcoming.map((r, i) => (
-                          <li key={i} className="flex items-center justify-between gap-3 px-5 py-3"
-                            style={{ borderBottom: i < filteredUpcoming.length - 1 ? "1px solid rgba(153,182,218,0.12)" : "none" }}>
-                            <div className="min-w-0">
-                              <p className="truncate text-[0.82rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>{r.full_name}</p>
-                              <p className="text-[0.68rem]" style={{ color: "var(--sidebar-label)" }}>
-                                {reviewTypeBadge(r.review_type)} · Due {formatDate(r.due_date)}
-                              </p>
-                            </div>
-                            <span className="shrink-0 rounded-full px-2.5 py-1 text-[0.66rem] font-bold"
-                              style={{ background: `${daysUntilColor(r.days_until ?? 0)}18`, color: daysUntilColor(r.days_until ?? 0) }}>
-                              {r.days_until === 0 ? "Today" : `${r.days_until}d`}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
                     )}
-                  </Card>
+                  </div>
                 </div>
 
                 {/* Threshold alerts column */}
