@@ -16,6 +16,8 @@ class Employee(Base):
     is_executive = Column(Boolean, default=False)
     manager_employee_id = Column(String, nullable=True)  # who this employee reports to
     department = Column(String, nullable=True)
+    location = Column(String, nullable=True)   # e.g. "AAP Scottsboro", "API Memphis"
+    division = Column(String, nullable=True)   # "AAP" or "API"
     totp_secret = Column(String, nullable=True)
     totp_enabled = Column(Boolean, default=False)
     created_at = Column(DateTime, default=func.now())

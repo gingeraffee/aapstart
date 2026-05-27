@@ -330,6 +330,86 @@ def executive_dashboard(
     }
 
 
+@router.get("/hours-by-location")
+def hours_by_location(
+    user: dict = Depends(require_executive),
+    db: Session = Depends(get_db),
+):
+    """Hours (regular + OT) grouped by display location and department."""
+    rows = (
+        db.query(
+            Employee.location,
+            Employee.division,
+            Employee.department,
+            sa_func.sum(TimeRecord.regular_hours).label("regular"),
+            sa_func.sum(TimeRecord.ot_hours).label("ot"),
+        )
+        .join(TimeRecord, Employee.employee_id == TimeRecord.employee_id)
+        .group_by(Employee.location, Employee.division, Employee.department)
+        .all()
+    )
+
+    # Normalize location into 3 display buckets
+    def _display_location(loc: str | None, div: str | None) -> str:
+        if not loc or loc == "Remote":
+            return "AAP"
+        if loc == "AAP Scottsboro":
+            return "AAP"
+        if loc == "API Scottsboro":
+            return "API Scottsboro"
+        if loc == "API Memphis":
+            return "API Memphis"
+        return loc  # fallback
+
+    # Accumulate: display_location → department → {regular, ot}
+    groups: dict[str, dict[str, dict]] = {}
+    for row in rows:
+        display = _display_location(row.location, row.division)
+        dept = row.department or "Unassigned"
+        if display not in groups:
+            groups[display] = {}
+        if dept not in groups[display]:
+            groups[display][dept] = {"regular_hours": 0.0, "ot_hours": 0.0}
+        groups[display][dept]["regular_hours"] += row.regular or 0
+        groups[display][dept]["ot_hours"] += row.ot or 0
+
+    ORDER = ["AAP", "API Scottsboro", "API Memphis"]
+
+    result = []
+    for loc in ORDER:
+        if loc not in groups:
+            continue
+        depts = [
+            {"department": dept, "regular_hours": round(v["regular_hours"], 2), "ot_hours": round(v["ot_hours"], 2)}
+            for dept, v in sorted(groups[loc].items())
+        ]
+        total_reg = round(sum(d["regular_hours"] for d in depts), 2)
+        total_ot  = round(sum(d["ot_hours"]      for d in depts), 2)
+        result.append({
+            "location":      loc,
+            "regular_hours": total_reg,
+            "ot_hours":      total_ot,
+            "departments":   depts,
+        })
+
+    # Any locations not in ORDER list
+    for loc, dept_map in groups.items():
+        if loc in ORDER:
+            continue
+        depts = [
+            {"department": dept, "regular_hours": round(v["regular_hours"], 2), "ot_hours": round(v["ot_hours"], 2)}
+            for dept, v in sorted(dept_map.items())
+        ]
+        result.append({
+            "location":      loc,
+            "regular_hours": round(sum(d["regular_hours"] for d in depts), 2),
+            "ot_hours":      round(sum(d["ot_hours"]      for d in depts), 2),
+            "departments":   depts,
+        })
+
+    return {"locations": result}
+
+
 def _classify_threshold(total: float | None) -> str | None:
     if total is None:
         return None

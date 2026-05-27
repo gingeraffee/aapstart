@@ -94,6 +94,7 @@ export const adminApi = {
   clearReviews: () => request<{ deleted: number }>("/admin/import/reviews", { method: "DELETE" }),
   clearPoints: () => request<{ deleted: number }>("/admin/import/points", { method: "DELETE" }),
   importPoints: (file: File) => uploadFile<import("./types").ImportResult>("/admin/import/points", file),
+  importEmployeeDirectory: (file: File) => uploadFile<import("./types").ImportResult>("/admin/import/employee-directory", file),
   managersList: () =>
     request<{ employee_id: string; full_name: string; department: string | null }[]>("/admin/managers"),
 };
@@ -144,6 +145,7 @@ export const executiveApi = {
   woshLatest: () => request<import("./types").WoshReport | null>("/executive/wosh/latest"),
   woshHistory: () => request<import("./types").WoshReportMeta[]>("/executive/wosh/history"),
   woshById: (id: number) => request<import("./types").WoshReport>(`/executive/wosh/${id}`),
+  hoursByLocation: () => request<{ locations: Array<{ location: string; regular_hours: number; ot_hours: number; departments: Array<{ department: string; regular_hours: number; ot_hours: number }> }> }>("/executive/hours-by-location"),
   uploadWosh: async (file: File, weekLabel?: string): Promise<{ id: number; week_label: string | null; week_start: string | null; week_end: string | null; uploaded_at: string; exceptions: number; managers: number }> => {
     const url = `${API_BASE}/executive/wosh/upload${weekLabel ? `?week_label=${encodeURIComponent(weekLabel)}` : ""}`;
     const formData = new FormData();

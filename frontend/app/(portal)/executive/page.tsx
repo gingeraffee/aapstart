@@ -427,6 +427,91 @@ function ExceptionsTable({ exceptions }: { exceptions: WoshException[] }) {
   );
 }
 
+// ── hours by location ─────────────────────────────────────────────────────────
+
+type LocationHours = {
+  location: string;
+  regular_hours: number;
+  ot_hours: number;
+  departments: { department: string; regular_hours: number; ot_hours: number }[];
+};
+
+function HoursByLocation({ locations }: { locations: LocationHours[] }) {
+  const [open, setOpen] = useState<string | null>(null);
+
+  return (
+    <div className="mb-5">
+      <p className="mb-2 text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
+        Hours by Location
+      </p>
+      <div className="grid gap-3 sm:grid-cols-3">
+        {locations.map((loc) => {
+          const isOpen = open === loc.location;
+          const total = loc.regular_hours + loc.ot_hours;
+          const otPct = total > 0 ? ((loc.ot_hours / total) * 100).toFixed(1) : "0.0";
+          return (
+            <div
+              key={loc.location}
+              className="overflow-hidden rounded-[16px]"
+              style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}
+            >
+              <button
+                onClick={() => setOpen(isOpen ? null : loc.location)}
+                className="flex w-full items-start justify-between gap-3 px-4 py-4 text-left transition-all hover:bg-black/[0.02]"
+              >
+                <div>
+                  <p className="text-[0.8rem] font-bold" style={{ color: "var(--heading-color)" }}>{loc.location}</p>
+                  <div className="mt-2 flex gap-4">
+                    <div>
+                      <p className="text-[0.6rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>Regular</p>
+                      <p className="text-[1.1rem] font-extrabold leading-tight" style={{ color: "var(--heading-color)" }}>{loc.regular_hours.toLocaleString("en-US", { maximumFractionDigits: 1 })}</p>
+                    </div>
+                    <div>
+                      <p className="text-[0.6rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>OT</p>
+                      <p className="text-[1.1rem] font-extrabold leading-tight" style={{ color: "#b45309" }}>{loc.ot_hours.toLocaleString("en-US", { maximumFractionDigits: 1 })}</p>
+                    </div>
+                    <div>
+                      <p className="text-[0.6rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>OT %</p>
+                      <p className="text-[1.1rem] font-extrabold leading-tight" style={{ color: "var(--heading-color)" }}>{otPct}%</p>
+                    </div>
+                  </div>
+                </div>
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+                  className={cn("mt-1 shrink-0 transition-transform duration-200", isOpen && "rotate-90")} style={{ color: "var(--card-desc)" }}>
+                  <path d="M3 1.5L7 5L3 8.5" />
+                </svg>
+              </button>
+
+              {isOpen && (
+                <div className="border-t px-4 pb-3 pt-2" style={{ borderColor: "var(--card-border)" }}>
+                  <table className="w-full text-[0.74rem]">
+                    <thead>
+                      <tr>
+                        <th className="pb-1.5 text-left font-bold uppercase tracking-[0.08em]" style={{ color: "var(--module-context)", fontSize: "0.6rem" }}>Department</th>
+                        <th className="pb-1.5 text-right font-bold uppercase tracking-[0.08em]" style={{ color: "var(--module-context)", fontSize: "0.6rem" }}>Reg</th>
+                        <th className="pb-1.5 text-right font-bold uppercase tracking-[0.08em]" style={{ color: "var(--module-context)", fontSize: "0.6rem" }}>OT</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {loc.departments.map((d) => (
+                        <tr key={d.department} className="border-t" style={{ borderColor: "var(--card-border)" }}>
+                          <td className="py-1.5 font-medium" style={{ color: "var(--heading-color)" }}>{d.department}</td>
+                          <td className="py-1.5 text-right" style={{ color: "var(--heading-color)" }}>{d.regular_hours.toLocaleString("en-US", { maximumFractionDigits: 1 })}</td>
+                          <td className="py-1.5 text-right font-semibold" style={{ color: d.ot_hours > 0 ? "#b45309" : "var(--card-desc)" }}>{d.ot_hours.toLocaleString("en-US", { maximumFractionDigits: 1 })}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ── upload bar ────────────────────────────────────────────────────────────────
 
 function UploadBar({ onUploaded }: { onUploaded: () => void }) {
@@ -519,6 +604,10 @@ export default function ExecutivePage() {
   const { data: selectedReport } = useSWR<WoshReport>(
     selectedId !== null ? `wosh-${selectedId}` : null,
     () => executiveApi.woshById(selectedId!)
+  );
+  const { data: hoursLocData } = useSWR(
+    "executive-hours-by-location",
+    () => executiveApi.hoursByLocation()
   );
 
   if (user && !user.is_executive && !user.is_admin) {
@@ -639,6 +728,11 @@ export default function ExecutivePage() {
 
       {/* Upload bar — admins only */}
       {user?.is_admin && <UploadBar onUploaded={handleUploaded} />}
+
+      {/* Hours by location */}
+      {hoursLocData && hoursLocData.locations.length > 0 && (
+        <HoursByLocation locations={hoursLocData.locations} />
+      )}
 
       {/* KPI row — WOSH violations */}
       {summary ? (

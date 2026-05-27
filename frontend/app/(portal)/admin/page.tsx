@@ -1001,15 +1001,19 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
   const [hoursFile, setHoursFile] = useState<File | null>(null);
   const [reviewsFile, setReviewsFile] = useState<File | null>(null);
   const [pointsFile, setPointsFile] = useState<File | null>(null);
+  const [directoryFile, setDirectoryFile] = useState<File | null>(null);
   const [hoursResult, setHoursResult] = useState<ImportResult | null>(null);
   const [reviewsResult, setReviewsResult] = useState<ImportResult | null>(null);
   const [pointsResult, setPointsResult] = useState<ImportResult | null>(null);
+  const [directoryResult, setDirectoryResult] = useState<ImportResult | null>(null);
   const [hoursLoading, setHoursLoading] = useState(false);
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [pointsLoading, setPointsLoading] = useState(false);
+  const [directoryLoading, setDirectoryLoading] = useState(false);
   const [hoursError, setHoursError] = useState<string | null>(null);
   const [reviewsError, setReviewsError] = useState<string | null>(null);
   const [pointsError, setPointsError] = useState<string | null>(null);
+  const [directoryError, setDirectoryError] = useState<string | null>(null);
 
   async function uploadHours() {
     if (!hoursFile) return;
@@ -1065,6 +1069,24 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
     }
   }
 
+  async function uploadDirectory() {
+    if (!directoryFile) return;
+    setDirectoryLoading(true);
+    setDirectoryError(null);
+    setDirectoryResult(null);
+    try {
+      const result = await adminApi.importEmployeeDirectory(directoryFile);
+      setDirectoryResult(result);
+      onToast(`Employee directory synced — ${result.inserted} employees updated.`);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Upload failed.";
+      setDirectoryError(msg);
+      onToast(msg, "error");
+    } finally {
+      setDirectoryLoading(false);
+    }
+  }
+
   return (
     <div className="relative overflow-hidden rounded-[24px] p-6 lg:p-7" style={cardStyle()}>
       <div className="absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,#0ea5d9_0%,#22d3ee_62%,#df0030_100%)]" />
@@ -1074,15 +1096,15 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
             HR Data Uploads
           </p>
           <h2 className="mt-3 text-[1.12rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>
-            Three uploads power all manager dashboards
+            Four uploads power all dashboards
           </h2>
           <p className="mt-1 text-[0.82rem] leading-[1.6]" style={{ color: "var(--card-desc)" }}>
-            Upload reports directly from Payclock, BambooHR, and your attendance tracker. Each upload replaces existing data for the employees in the file — re-uploading the same report won&apos;t create duplicates.
+            Upload reports directly from Payclock, BambooHR, and your attendance tracker. Re-uploading is safe — data is replaced per employee, never duplicated.
           </p>
         </div>
       </div>
 
-      <div className="mt-5 grid gap-5 lg:grid-cols-3">
+      <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <UploadPanel
           title="Payclock Export"
           columns="Employee Name · ID · Reg · OT 1 · Vac · Personal · Other"
@@ -1133,6 +1155,18 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
             setPointsResult(null);
             onToast("Point history cleared.");
           }}
+        />
+        <UploadPanel
+          title="Employee Directory"
+          columns="Employee # · Location · Division · Department"
+          file={directoryFile}
+          onFileChange={setDirectoryFile}
+          onUpload={uploadDirectory}
+          loading={directoryLoading}
+          result={directoryResult}
+          error={directoryError}
+          accept=".xlsx"
+          fileTypeLabel="XLSX"
         />
       </div>
     </div>

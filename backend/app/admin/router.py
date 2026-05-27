@@ -638,6 +638,88 @@ def clear_attendance_points(
     return {"deleted": deleted}
 
 
+# -- Employee directory import (BambooHR) --
+
+def _parse_employee_directory(contents: bytes) -> list[dict]:
+    """Parse BambooHR Employee Division and Department export.
+    Expected columns: Last name First name, Employee #, Location, Division, Department, Job Title, Reporting to
+    Skips rows where Location == 'Memphis, TN'.
+    """
+    import openpyxl
+    wb = openpyxl.load_workbook(io.BytesIO(contents), read_only=True, data_only=True)
+    ws = wb.active
+    rows = list(ws.iter_rows(values_only=True))
+    if len(rows) < 2:
+        return []
+
+    headers = [str(h).strip().lower() if h is not None else "" for h in rows[0]]
+
+    def _col(row: tuple, name: str):
+        try:
+            return row[headers.index(name)]
+        except ValueError:
+            return None
+
+    results = []
+    for row in rows[1:]:
+        emp_num = _col(row, "employee #")
+        location = str(_col(row, "location") or "").strip()
+        division = str(_col(row, "division") or "").strip()
+        department = str(_col(row, "department") or "").strip()
+
+        if not emp_num:
+            continue
+        if location == "Memphis, TN":
+            continue
+
+        results.append({
+            "employee_id": str(int(emp_num)) if isinstance(emp_num, (int, float)) else str(emp_num).strip(),
+            "location": location or None,
+            "division": division or None,
+            "department": department or None,
+        })
+    return results
+
+
+@router.post("/import/employee-directory")
+async def import_employee_directory(
+    file: UploadFile = File(...),
+    admin: dict = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Upload BambooHR employee directory to sync location, division, and department on existing employees."""
+    name = file.filename or ""
+    if not name.lower().endswith(".xlsx"):
+        raise HTTPException(status_code=400, detail="File must be a .xlsx file.")
+
+    contents = await file.read()
+    try:
+        rows = _parse_employee_directory(contents)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Could not parse file.")
+
+    if not rows:
+        raise HTTPException(status_code=400, detail="No valid rows found in file.")
+
+    updated = 0
+    skipped = 0
+    errors: list[dict] = []
+
+    for i, row in enumerate(rows, start=2):
+        emp = db.query(Employee).filter_by(employee_id=row["employee_id"]).first()
+        if not emp:
+            skipped += 1
+            errors.append({"row": i, "employee_id": row["employee_id"], "detail": "Employee not found in system"})
+            continue
+        emp.location = row["location"]
+        emp.division = row["division"]
+        emp.department = row["department"]
+        updated += 1
+
+    db.commit()
+    return {"inserted": updated, "skipped": skipped, "errors": errors[:20]}
+
+
 # -- Managers list --
 
 @router.get("/managers")
