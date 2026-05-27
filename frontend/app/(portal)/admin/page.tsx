@@ -1139,48 +1139,6 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
   );
 }
 
-function RosterTable({
-  rows,
-  currentUserId,
-  modules,
-  allEmployees,
-  onAction,
-}: {
-  rows: EmployeeRecord[];
-  currentUserId: string;
-  modules: ModuleSummary[];
-  allEmployees: EmployeeRecord[];
-  onAction: (message: string, tone?: "success" | "error") => void;
-}) {
-  return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[780px]">
-        <thead>
-          <tr className="border-b" style={{ borderColor: "var(--card-border)" }}>
-            {["Employee", "Track", "Progress", "Last Login", ""].map((header) => (
-              <th key={header} className="px-6 py-3 text-left text-[0.66rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>
-                {header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((employee) => (
-            <EmployeeRow
-              key={employee.employee_id}
-              emp={employee}
-              currentUserId={currentUserId}
-              modules={modules}
-              allEmployees={allEmployees}
-              onDeleted={(message, tone = "success") => onAction(message, tone)}
-            />
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
 export default function AdminPage() {
   const { user } = useAuth();
   const router = useRouter();
