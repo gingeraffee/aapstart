@@ -568,6 +568,19 @@ async def import_attendance_points(
     if not rows:
         raise HTTPException(status_code=400, detail="File is empty.")
 
+    # Collect valid employee IDs first so we can do a replace-per-employee
+    seen_employees: set[str] = set()
+    for raw_row in rows:
+        row = _map_row(raw_row, _POINTS_COL_MAP)
+        emp_id = str(row.get("employee_id", "")).strip()
+        if emp_id:
+            seen_employees.add(emp_id)
+
+    # Delete existing records for every employee in the file before re-inserting
+    for emp_id in seen_employees:
+        db.query(AttendancePoint).filter_by(employee_id=emp_id).delete()
+    db.flush()
+
     imported_at = datetime.now(timezone.utc)
     inserted = 0
     skipped = 0

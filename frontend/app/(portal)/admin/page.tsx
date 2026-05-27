@@ -144,85 +144,6 @@ function downloadImportTemplate() {
   URL.revokeObjectURL(url);
 }
 
-function getMostRecentMonday(): string {
-  const today = new Date();
-  const day = today.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
-  const mon = new Date(today);
-  mon.setDate(today.getDate() + diff);
-  return mon.toISOString().split("T")[0];
-}
-
-function downloadHoursTemplate() {
-  const monday = getMostRecentMonday();
-  const csv = [
-    // week_start is optional — use a specific date for historical imports, omit for "upload date"
-    // vacation/personal/other hours come from the Absences upload, not this file
-    "employee_name,employee_id,week_start,regular_hours,ot_hours",
-    `Jane Doe,EMP-100,${monday},40,2.5`,
-    `Marcus Lane,EMP-101,${monday},35,0`,
-    `Olivia Grant,EMP-102,${monday},40,5`,
-    "",
-  ].join("\n");
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `hours-upload-${monday}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function downloadAbsencesTemplate() {
-  const csv = [
-    "Employee Number,Name,Category,From,To,Requested,Time Off",
-    "1001,\"Doe, Jane\",Vacation,2026-06-02,2026-06-06,2026-05-15,40",
-    "1002,\"Smith, John\",Absent (w/ point),2026-06-03,2026-06-03,2026-06-03,8",
-    "1003,\"Lee, Maria\",Personal,2026-06-10,2026-06-10,2026-06-05,8",
-    "",
-  ].join("\n");
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "absences-upload-template.csv";
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function downloadReviewsTemplate() {
-  const csv = [
-    "employee_id,review_type,due_date,completed,completed_date",
-    "EMP-100,Annual Review,2026-06-15,false,",
-    "EMP-101,90-Day Review,2026-05-30,true,2026-05-28",
-    "EMP-102,6-Month Review,2026-07-01,false,",
-    "",
-  ].join("\n");
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "reviews-upload-template.csv";
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function downloadPointsTemplate() {
-  const csv = [
-    "Employee #,Last Name,First Name,Location,Point Date,Point,Reason,Note,Flag Code,Point Total",
-    "1001,Doe,Jane,Sboro Warehouse,2026-05-27,0.5,Tardy,,, 1.5",
-    "1002,Smith,John,Sboro Warehouse,2026-05-27,1,Absent,,M,2.0",
-    "",
-  ].join("\n");
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "attendance-points-template.csv";
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
 function cardStyle() {
   return {
     background: "var(--card-bg)",
@@ -1140,7 +1061,7 @@ function UploadPanel({
 }: {
   title: string;
   columns: string;
-  onDownload: () => void;
+  onDownload?: () => void;
   file: File | null;
   onFileChange: (f: File | null) => void;
   onUpload: () => void;
@@ -1160,14 +1081,16 @@ function UploadPanel({
         <p className="mt-0.5 font-mono text-[0.66rem]" style={{ color: "var(--module-context)" }}>{columns}</p>
       </div>
 
-      <button
-        type="button"
-        onClick={onDownload}
-        className="self-start rounded-[12px] px-3.5 py-2 text-[0.75rem] font-semibold transition-all hover:-translate-y-px"
-        style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", color: "var(--heading-color)" }}
-      >
-        Download Template
-      </button>
+      {onDownload && (
+        <button
+          type="button"
+          onClick={onDownload}
+          className="self-start rounded-[12px] px-3.5 py-2 text-[0.75rem] font-semibold transition-all hover:-translate-y-px"
+          style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", color: "var(--heading-color)" }}
+        >
+          Download Template
+        </button>
+      )}
 
       <label
         className="flex cursor-pointer flex-col items-center justify-center rounded-[16px] border border-dashed px-4 py-6 text-center transition-all hover:-translate-y-px"
@@ -1260,19 +1183,15 @@ function UploadPanel({
 function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success" | "error") => void }) {
   const [hoursFile, setHoursFile] = useState<File | null>(null);
   const [reviewsFile, setReviewsFile] = useState<File | null>(null);
-  const [absencesFile, setAbsencesFile] = useState<File | null>(null);
   const [pointsFile, setPointsFile] = useState<File | null>(null);
   const [hoursResult, setHoursResult] = useState<ImportResult | null>(null);
   const [reviewsResult, setReviewsResult] = useState<ImportResult | null>(null);
-  const [absencesResult, setAbsencesResult] = useState<ImportResult | null>(null);
   const [pointsResult, setPointsResult] = useState<ImportResult | null>(null);
   const [hoursLoading, setHoursLoading] = useState(false);
   const [reviewsLoading, setReviewsLoading] = useState(false);
-  const [absencesLoading, setAbsencesLoading] = useState(false);
   const [pointsLoading, setPointsLoading] = useState(false);
   const [hoursError, setHoursError] = useState<string | null>(null);
   const [reviewsError, setReviewsError] = useState<string | null>(null);
-  const [absencesError, setAbsencesError] = useState<string | null>(null);
   const [pointsError, setPointsError] = useState<string | null>(null);
 
   async function uploadHours() {
@@ -1283,7 +1202,7 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
     try {
       const result = await managerApi.importTime(hoursFile);
       setHoursResult(result);
-      onToast(`Hours uploaded — ${result.inserted} records updated.`);
+      onToast(`Payclock data uploaded — ${result.inserted} employees updated.`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Upload failed.";
       setHoursError(msg);
@@ -1301,31 +1220,13 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
     try {
       const result = await managerApi.importReviews(reviewsFile);
       setReviewsResult(result);
-      onToast(`Reviews uploaded — ${result.inserted} records updated.`);
+      onToast(`Reviews uploaded — ${result.inserted} upcoming reviews added.`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Upload failed.";
       setReviewsError(msg);
       onToast(msg, "error");
     } finally {
       setReviewsLoading(false);
-    }
-  }
-
-  async function uploadAbsences() {
-    if (!absencesFile) return;
-    setAbsencesLoading(true);
-    setAbsencesError(null);
-    setAbsencesResult(null);
-    try {
-      const result = await managerApi.importAbsences(absencesFile);
-      setAbsencesResult(result);
-      onToast(`Absences uploaded — ${result.inserted} records imported, ${result.hours_upserted ?? 0} weeks updated.`);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Upload failed.";
-      setAbsencesError(msg);
-      onToast(msg, "error");
-    } finally {
-      setAbsencesLoading(false);
     }
   }
 
@@ -1337,7 +1238,7 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
     try {
       const result = await adminApi.importPoints(pointsFile);
       setPointsResult(result);
-      onToast(`Attendance points uploaded — ${result.inserted} events added.`);
+      onToast(`Point history uploaded — ${result.inserted} events loaded.`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Upload failed.";
       setPointsError(msg);
@@ -1356,25 +1257,26 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
             HR Data Uploads
           </p>
           <h2 className="mt-3 text-[1.12rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>
-            Push hours, reviews, attendance, and points to all manager dashboards
+            Three uploads power all manager dashboards
           </h2>
           <p className="mt-1 text-[0.82rem] leading-[1.6]" style={{ color: "var(--card-desc)" }}>
-            Upload one file for each type. Absences auto-fills planned vs. unplanned and routes hours by category. Attendance Points are append-only — use Clear before re-uploading the same file to avoid duplicates.
+            Upload reports directly from Payclock, BambooHR, and your attendance tracker. Each upload replaces existing data for the employees in the file — re-uploading the same report won&apos;t create duplicates.
           </p>
         </div>
       </div>
 
-      <div className="mt-5 grid gap-5 lg:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-5 grid gap-5 lg:grid-cols-3">
         <UploadPanel
-          title="Hours & Time Off"
-          columns="employee_name · employee_id · week_start (optional) · regular_hours · ot_hours"
-          onDownload={downloadHoursTemplate}
+          title="Payclock Export"
+          columns="Employee Name · ID · Reg · OT 1 · Vac · Personal · Other"
           file={hoursFile}
           onFileChange={setHoursFile}
           onUpload={uploadHours}
           loading={hoursLoading}
           result={hoursResult}
           error={hoursError}
+          accept=".xlsx,.csv,text/csv"
+          fileTypeLabel="XLSX or CSV"
           onClear={async () => {
             await adminApi.clearTime();
             setHoursResult(null);
@@ -1383,14 +1285,15 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
         />
         <UploadPanel
           title="Performance Reviews"
-          columns="employee_id · review_type · due_date · completed · completed_date"
-          onDownload={downloadReviewsTemplate}
+          columns="Employee # · Review Date Due · Review Type"
           file={reviewsFile}
           onFileChange={setReviewsFile}
           onUpload={uploadReviews}
           loading={reviewsLoading}
           result={reviewsResult}
           error={reviewsError}
+          accept=".xlsx,.csv,text/csv"
+          fileTypeLabel="XLSX or CSV"
           onClear={async () => {
             await adminApi.clearReviews();
             setReviewsResult(null);
@@ -1398,27 +1301,8 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
           }}
         />
         <UploadPanel
-          title="Absences (Time Off Used)"
-          columns="Employee Number · Name · Category · From · To · Requested · Time Off"
-          onDownload={downloadAbsencesTemplate}
-          file={absencesFile}
-          onFileChange={setAbsencesFile}
-          onUpload={uploadAbsences}
-          loading={absencesLoading}
-          result={absencesResult}
-          error={absencesError}
-          accept=".xlsx,.csv,text/csv"
-          fileTypeLabel="XLSX or CSV"
-          onClear={async () => {
-            await adminApi.clearAbsences();
-            setAbsencesResult(null);
-            onToast("Absence data cleared from all dashboards.");
-          }}
-        />
-        <UploadPanel
-          title="Attendance Points"
-          columns="Employee # · Location · Point Date · Point · Reason · Note · Flag Code · Point Total"
-          onDownload={downloadPointsTemplate}
+          title="Point History"
+          columns="Employee # · Point Date · Point · Reason · Note · Flag Code · Point Total"
           file={pointsFile}
           onFileChange={setPointsFile}
           onUpload={uploadPoints}
@@ -1430,7 +1314,7 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
           onClear={async () => {
             await adminApi.clearPoints();
             setPointsResult(null);
-            onToast("Attendance points cleared.");
+            onToast("Point history cleared.");
           }}
         />
       </div>

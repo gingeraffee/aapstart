@@ -107,16 +107,24 @@ _REVIEW_COL_MAP = {
     "scheduled date": "due_date",
     "review_date": "due_date",
     "review date": "due_date",
+    "review date due": "due_date",
     "date": "due_date",
     "completed": "completed",
     "status": "completed",
     "complete": "completed",
     "done": "completed",
+    "review completed (y/n)": "completed",
+    "review completed": "completed",
     "completed_date": "completed_date",
     "completion_date": "completed_date",
     "date_completed": "completed_date",
     "actual_date": "completed_date",
     "review_completed_date": "completed_date",
+    # BambooHR columns we don't need
+    "last name, first name": "_ignore",
+    "reports to": "_ignore",
+    "department": "_ignore",
+    "location": "_ignore",
 }
 
 
@@ -161,7 +169,7 @@ def _parse_date(value: str) -> str | None:
 
 
 def _parse_bool(value: str) -> bool:
-    return value.strip().lower() in {"true", "yes", "1", "completed", "done", "complete"}
+    return value.strip().lower() in {"true", "yes", "y", "1", "completed", "done", "complete"}
 
 
 def _parse_float(value: str) -> float:
@@ -266,6 +274,99 @@ def _read_xlsx(contents: bytes) -> list[dict]:
     return result
 
 
+def _read_xlsx_generic(contents: bytes) -> list[dict]:
+    """Standard header-row XLSX reader — works for BambooHR reviews and similar reports."""
+    import openpyxl
+    wb = openpyxl.load_workbook(filename=io.BytesIO(contents), data_only=True)
+    sheet_name = "Report Data" if "Report Data" in wb.sheetnames else wb.sheetnames[0]
+    ws = wb[sheet_name]
+    rows_data = list(ws.iter_rows(values_only=True))
+    if not rows_data:
+        return []
+    headers = [str(h).strip() if h is not None else "" for h in rows_data[0]]
+    result = []
+    for row in rows_data[1:]:
+        if all(v is None for v in row):
+            continue
+        d: dict = {}
+        for i, val in enumerate(row):
+            if i >= len(headers):
+                break
+            if hasattr(val, "date") and callable(val.date):
+                d[headers[i]] = val.date().isoformat()
+            elif hasattr(val, "isoformat"):
+                d[headers[i]] = val.isoformat()
+            elif val is None:
+                d[headers[i]] = ""
+            else:
+                d[headers[i]] = str(val).strip()
+        result.append(d)
+    return result
+
+
+def _parse_period_totals_xlsx(contents: bytes) -> tuple[list[dict], str]:
+    """
+    Parse a Payclock 'Period Totals Report' XLSX into a flat list of dicts.
+
+    Layout expected:
+      Row 1 : report title + timestamp
+      Row 4 : date range cell, e.g. "04/01/26 Wed - 05/23/26 Sat"
+      Row 8 : column headers  (Employee Name | … | Id | … | Reg | OT 1 | Vac | Personal | Other)
+      Row 9+: one data row per employee
+      Last  : "Employee Count: N …" totals row (skipped)
+
+    Returns (rows, period_start_iso).
+    """
+    import re, openpyxl
+    wb = openpyxl.load_workbook(filename=io.BytesIO(contents), data_only=True)
+    ws = wb.active
+    rows_data = list(ws.iter_rows(values_only=True))
+
+    # Extract period start from row 4 col D (index 3): "04/01/26 Wed - 05/23/26 Sat"
+    period_start = date.today().isoformat()
+    if len(rows_data) >= 4:
+        cell = rows_data[3][3]
+        if cell and isinstance(cell, str):
+            m = re.match(r"(\d{2}/\d{2}/\d{2})", cell.strip())
+            if m:
+                try:
+                    period_start = datetime.strptime(m.group(1), "%m/%d/%y").date().isoformat()
+                except ValueError:
+                    pass
+
+    # Find the header row dynamically (first column = "Employee Name")
+    header_row_idx = None
+    for i, row in enumerate(rows_data):
+        if row[0] and str(row[0]).strip().lower() == "employee name":
+            header_row_idx = i
+            break
+
+    if header_row_idx is None:
+        return [], period_start
+
+    result = []
+    for row in rows_data[header_row_idx + 1:]:
+        name = row[0]
+        if not name:
+            continue
+        if str(name).strip().lower().startswith("employee count"):
+            break
+        emp_id = str(row[2]).strip() if row[2] is not None else ""
+        if not emp_id or emp_id == "None":
+            continue
+        result.append({
+            "employee_id": emp_id,
+            "week_start": period_start,
+            "regular_hours": str(row[4] or 0),
+            "ot_hours":      str(row[5] or 0),
+            "vacation_hours": str(row[6] or 0),
+            "personal_hours": str(row[7] or 0),
+            "other_hours":   str(row[8] or 0),
+        })
+
+    return result, period_start
+
+
 # ── Import endpoints ──────────────────────────────────────────────────────────
 
 @router.post("/import/time")
@@ -275,20 +376,29 @@ async def import_time(
     db: Session = Depends(get_db),
 ):
     """
-    Upload a weekly hours CSV. Replaces existing records for any
-    (employee_id, week_start) pair found in the file.
+    Upload a Payclock Period Totals Report (XLSX) or a weekly hours CSV.
+    Replaces existing records for any (employee_id, week_start) pair in the file.
 
-    Expected columns (flexible — see _TIME_COL_MAP for accepted aliases):
-      employee_id, week_start, regular_hours, ot_hours, pto_hours
+    XLSX: Payclock 'Period Totals Report' — period start date is auto-detected from the header.
+    CSV columns (flexible — see _TIME_COL_MAP for accepted aliases):
+      employee_id, week_start, regular_hours, ot_hours, vacation_hours, personal_hours, other_hours
     """
-    if not file.filename or not file.filename.lower().endswith(".csv"):
-        raise HTTPException(status_code=400, detail="File must be a .csv file.")
+    name = file.filename or ""
+    is_xlsx = name.lower().endswith(".xlsx")
+    is_csv = name.lower().endswith(".csv")
+    if not is_xlsx and not is_csv:
+        raise HTTPException(status_code=400, detail="File must be a .xlsx or .csv file.")
 
     contents = await file.read()
+    period_start_from_file: str | None = None
+
     try:
-        rows = _read_csv(contents)
+        if is_xlsx:
+            rows, period_start_from_file = _parse_period_totals_xlsx(contents)
+        else:
+            rows = _read_csv(contents)
     except Exception:
-        raise HTTPException(status_code=400, detail="Could not parse CSV file.")
+        raise HTTPException(status_code=400, detail="Could not parse file.")
 
     if not rows:
         raise HTTPException(status_code=400, detail="CSV file is empty.")
@@ -356,22 +466,27 @@ async def import_reviews(
     db: Session = Depends(get_db),
 ):
     """
-    Upload a performance reviews CSV. Upserts on (employee_id, review_type, due_date).
+    Upload a BambooHR Performance Reviews XLSX or a custom CSV.
+    Upserts on (employee_id, review_type, due_date). Skips already-completed reviews.
 
-    Expected columns (flexible — see _REVIEW_COL_MAP for accepted aliases):
-      employee_id, review_type, due_date, completed, completed_date
+    XLSX: BambooHR 'Performance Reviews Due' export — uses 'Report Data' sheet.
+    CSV columns (flexible — see _REVIEW_COL_MAP for accepted aliases):
+      employee_id, review_type, due_date
     """
-    if not file.filename or not file.filename.lower().endswith(".csv"):
-        raise HTTPException(status_code=400, detail="File must be a .csv file.")
+    name = file.filename or ""
+    is_xlsx = name.lower().endswith(".xlsx")
+    is_csv = name.lower().endswith(".csv")
+    if not is_xlsx and not is_csv:
+        raise HTTPException(status_code=400, detail="File must be a .xlsx or .csv file.")
 
     contents = await file.read()
     try:
-        rows = _read_csv(contents)
+        rows = _read_xlsx_generic(contents) if is_xlsx else _read_csv(contents)
     except Exception:
-        raise HTTPException(status_code=400, detail="Could not parse CSV file.")
+        raise HTTPException(status_code=400, detail="Could not parse file.")
 
     if not rows:
-        raise HTTPException(status_code=400, detail="CSV file is empty.")
+        raise HTTPException(status_code=400, detail="File is empty.")
 
     imported_at = datetime.now(timezone.utc)
     inserted = 0
@@ -381,12 +496,17 @@ async def import_reviews(
     for i, raw_row in enumerate(rows, start=2):
         row = _map_row(raw_row, _REVIEW_COL_MAP)
 
-        employee_id = row.get("employee_id", "").strip()
+        employee_id = str(row.get("employee_id", "")).strip()
         review_type = row.get("review_type", "").strip()
         due_date_raw = row.get("due_date", "").strip()
 
         if not employee_id:
             errors.append({"row": i, "detail": "Missing employee_id."})
+            skipped += 1
+            continue
+
+        # Skip reviews already marked as completed
+        if _parse_bool(row.get("completed", "false")):
             skipped += 1
             continue
 
@@ -408,9 +528,6 @@ async def import_reviews(
             skipped += 1
             continue
 
-        completed = _parse_bool(row.get("completed", "false"))
-        completed_date = _parse_date(row.get("completed_date", ""))
-
         # Upsert: delete existing match, then insert
         db.query(PerformanceReview).filter_by(
             employee_id=employee_id,
@@ -422,8 +539,8 @@ async def import_reviews(
             employee_id=employee_id,
             review_type=review_type,
             due_date=due_date,
-            completed=completed,
-            completed_date=completed_date,
+            completed=False,
+            completed_date=None,
             imported_at=imported_at,
         ))
         inserted += 1
