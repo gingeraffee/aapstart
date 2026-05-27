@@ -89,10 +89,6 @@ export const adminApi = {
     request(`/admin/employees/${employee_id}/reset-totp`, { method: "POST" }),
   employeeProgress: (employee_id: string) =>
     request(`/admin/employees/${employee_id}/progress`),
-  employeeNotes: (employee_id: string) =>
-    request(`/admin/employees/${employee_id}/notes`),
-  updateEmployeeNote: (employee_id: string, note_id: number, data: { status?: "open" | "answered"; admin_reply?: string }) =>
-    request(`/admin/employees/${employee_id}/notes/${note_id}`, { method: "PATCH", body: JSON.stringify(data) }),
   clearTime: () => request<{ deleted: number }>("/admin/import/time", { method: "DELETE" }),
   clearAbsences: () => request<{ deleted: number }>("/admin/import/absences", { method: "DELETE" }),
   clearReviews: () => request<{ deleted: number }>("/admin/import/reviews", { method: "DELETE" }),
@@ -134,23 +130,6 @@ export const managerApi = {
   importTime: (file: File) => uploadFile<import("./types").ImportResult>("/manager/import/time", file),
   importReviews: (file: File) => uploadFile<import("./types").ImportResult>("/manager/import/reviews", file),
   importAbsences: (file: File) => uploadFile<import("./types").ImportResult>("/manager/import/absences", file),
-};
-
-export const notesApi = {
-  getAll: () => request<import("./types").UserNote[]>("/notes"),
-  getForModule: (slug: string) => request<import("./types").UserNote[]>(`/notes/${slug}`),
-  create: (slug: string, payload: { note_text: string; module_title?: string; selected_text?: string; anchor_id?: string }) =>
-    request<import("./types").UserNote>(`/notes/${slug}`, {
-      method: "POST",
-      body: JSON.stringify(payload),
-    }),
-  updateStatus: (note_id: number, status: "open" | "answered") =>
-    request<import("./types").UserNote>(`/notes/${note_id}/status`, {
-      method: "PATCH",
-      body: JSON.stringify({ status }),
-    }),
-  delete: (note_id: number) =>
-    request<void>(`/notes/${note_id}`, { method: "DELETE" }),
 };
 
 export const searchApi = {

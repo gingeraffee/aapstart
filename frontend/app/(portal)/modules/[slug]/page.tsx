@@ -10,9 +10,7 @@ import { usePreview } from "@/lib/context/PreviewContext";
 import { ContentBlock } from "@/components/features/modules/ContentBlock";
 import { GuidanceAccordion } from "@/components/features/modules/GuidanceAccordion";
 import { GutCheckBlock } from "@/components/features/modules/GutCheckBlock";
-import { ModuleNotesSidebar } from "@/components/features/modules/ModuleNotesSidebar";
 import { ModulePanel, ModuleShell, buildModuleSteps } from "@/components/features/modules/ModuleShell";
-import { NoteWidget } from "@/components/features/notes/NoteWidget";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
@@ -2163,9 +2161,6 @@ export default function ModulePage() {
           ))}
         </div>
       ) : null}
-      {!isPreviewing && (
-        <NoteWidget moduleSlug={currentModule.slug} moduleTitle={currentModule.title} />
-      )}
     </div>
   ) : (
     <div className="space-y-3">
@@ -2228,9 +2223,6 @@ export default function ModulePage() {
           </div>
         </div>
       ) : null}
-      {!isPreviewing && (
-        <NoteWidget moduleSlug={currentModule.slug} moduleTitle={currentModule.title} />
-      )}
     </div>
   );
 
@@ -2654,8 +2646,7 @@ export default function ModulePage() {
         )}
       </div>
     </ModuleShell>
-    <ModuleNotesSidebar moduleSlug={slug as string} moduleTitle={currentModule.title} />
-    </>
+</>
   );
 }
 

@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/context/AuthContext";
 import { adminApi, managerApi, modulesApi } from "@/lib/api";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
-import type { EmployeeImportResult, EmployeeImportRowInput, EmployeeRecord, ImportResult, ModuleSummary, NoteRecord } from "@/lib/types";
+import type { EmployeeImportResult, EmployeeImportRowInput, EmployeeRecord, ImportResult, ModuleSummary } from "@/lib/types";
 
 const TRACKS = ["hr", "warehouse", "administrative", "management"] as const;
 const TRACK_LABELS: Record<string, string> = {
@@ -315,7 +315,7 @@ interface ModuleProgress {
   completed_at: string | null;
 }
 
-function EmployeeRow({ emp, currentUserId, modules, allEmployees, onDeleted }: { emp: EmployeeRecord; currentUserId: string; modules: ModuleSummary[]; allEmployees: EmployeeRecord[]; onDeleted: (message: string, tone?: "success" | "error") => void }) {
+function EmployeeCard({ emp, currentUserId, modules, allEmployees, onAction }: { emp: EmployeeRecord; currentUserId: string; modules: ModuleSummary[]; allEmployees: EmployeeRecord[]; onAction: (message: string, tone?: "success" | "error") => void }) {
   const [deleting, setDeleting] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -333,30 +333,21 @@ function EmployeeRow({ emp, currentUserId, modules, allEmployees, onDeleted }: {
   const [expanded, setExpanded] = useState(false);
   const [moduleProgress, setModuleProgress] = useState<ModuleProgress[] | null>(null);
   const [loadingProgress, setLoadingProgress] = useState(false);
-  const [employeeNotes, setEmployeeNotes] = useState<NoteRecord[] | null>(null);
   const isSelf = emp.employee_id === currentUserId;
   const lastLogin = emp.last_login_at
     ? new Date(emp.last_login_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
     : "Not yet";
 
   async function handleExpand() {
-    if (expanded) {
-      setExpanded(false);
-      return;
-    }
+    if (expanded) { setExpanded(false); return; }
     setExpanded(true);
     if (!moduleProgress) {
       setLoadingProgress(true);
       try {
-        const [progressData, notesData] = await Promise.all([
-          adminApi.employeeProgress(emp.employee_id) as Promise<ModuleProgress[]>,
-          adminApi.employeeNotes(emp.employee_id) as Promise<NoteRecord[]>,
-        ]);
+        const progressData = await adminApi.employeeProgress(emp.employee_id) as ModuleProgress[];
         setModuleProgress(progressData);
-        setEmployeeNotes(notesData);
       } catch {
         setModuleProgress([]);
-        setEmployeeNotes([]);
       } finally {
         setLoadingProgress(false);
       }
@@ -368,9 +359,9 @@ function EmployeeRow({ emp, currentUserId, modules, allEmployees, onDeleted }: {
     try {
       await adminApi.deleteEmployee(emp.employee_id);
       setConfirmingDelete(false);
-      onDeleted("Changes saved. Employee removed.");
+      onAction("Changes saved. Employee removed.");
     } catch (err) {
-      onDeleted(err instanceof Error ? err.message : "Failed to delete.", "error");
+      onAction(err instanceof Error ? err.message : "Failed to delete.", "error");
     } finally {
       setDeleting(false);
     }
@@ -389,9 +380,9 @@ function EmployeeRow({ emp, currentUserId, modules, allEmployees, onDeleted }: {
       });
       setEditing(false);
       const trackLabel = editTracks.map((t) => TRACK_LABELS[t] ?? t).join(", ");
-      onDeleted(`Updated ${emp.full_name} - track: ${trackLabel}${editAdmin ? " (Admin)" : ""}${editIsManager ? " (Manager)" : ""}${editIsExecutive ? " (Executive)" : ""}.`);
+      onAction(`Updated ${emp.full_name} - track: ${trackLabel}${editAdmin ? " (Admin)" : ""}${editIsManager ? " (Manager)" : ""}${editIsExecutive ? " (Executive)" : ""}.`);
     } catch (err) {
-      onDeleted(err instanceof Error ? err.message : "Failed to update.", "error");
+      onAction(err instanceof Error ? err.message : "Failed to update.", "error");
     } finally {
       setSaving(false);
     }
@@ -402,9 +393,9 @@ function EmployeeRow({ emp, currentUserId, modules, allEmployees, onDeleted }: {
     try {
       await adminApi.resetProgress(emp.employee_id);
       setConfirmingReset(false);
-      onDeleted(`Progress reset for ${emp.full_name}.`);
+      onAction(`Progress reset for ${emp.full_name}.`);
     } catch (err) {
-      onDeleted(err instanceof Error ? err.message : "Failed to reset progress.", "error");
+      onAction(err instanceof Error ? err.message : "Failed to reset progress.", "error");
     } finally {
       setResetting(false);
     }
@@ -414,421 +405,247 @@ function EmployeeRow({ emp, currentUserId, modules, allEmployees, onDeleted }: {
     setResettingTotp(true);
     try {
       await adminApi.resetTotp(emp.employee_id);
-      onDeleted(`Two-factor authentication reset for ${emp.full_name}.`);
+      onAction(`Two-factor authentication reset for ${emp.full_name}.`);
     } catch (err) {
-      onDeleted(err instanceof Error ? err.message : "Failed to reset 2FA.", "error");
+      onAction(err instanceof Error ? err.message : "Failed to reset 2FA.", "error");
     } finally {
       setResettingTotp(false);
     }
   }
 
   return (
-    <>
-    <tr className={cn("border-b border-slate-100 last:border-0", expanded && "border-b-0")}>
-      <td className="px-6 py-4">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleExpand}
-            className="flex h-5 w-5 shrink-0 items-center justify-center rounded transition-all hover:bg-slate-100"
-            title={expanded ? "Collapse" : "View module progress"}
-          >
-            <svg
-              width="10"
-              height="10"
-              viewBox="0 0 10 10"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className={cn("transition-transform duration-200", expanded && "rotate-90")}
-              style={{ color: "var(--card-desc)" }}
-            >
-              <path d="M3 1.5L7 5L3 8.5" />
-            </svg>
-          </button>
-          <div>
-            <p className="text-[0.86rem] font-semibold leading-tight" style={{ color: "var(--heading-color)" }}>{emp.full_name}</p>
-            <p className="mt-0.5 text-[0.72rem]" style={{ color: "var(--module-context)" }}>{emp.employee_id}</p>
-          </div>
+    <div className={cn("rounded-[14px] transition-all", expanded && "outline outline-1 outline-black/5")}>
+      <button
+        onClick={handleExpand}
+        className="flex w-full items-center gap-3 rounded-[14px] px-4 py-3 text-left transition-all hover:bg-black/[0.025]"
+      >
+        <svg
+          width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor"
+          strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+          className={cn("shrink-0 transition-transform duration-200", expanded && "rotate-90")}
+          style={{ color: "var(--card-desc)" }}
+        >
+          <path d="M3 1.5L7 5L3 8.5" />
+        </svg>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[0.86rem] font-semibold" style={{ color: "var(--heading-color)" }}>{emp.full_name}</p>
+          <p className="text-[0.7rem]" style={{ color: "var(--module-context)" }}>{emp.employee_id}</p>
         </div>
-      </td>
-      <td className="px-6 py-4">
-        {editing ? (
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-col gap-1">
-              {Object.entries(TRACK_LABELS).map(([val, label]) => (
-                <label key={val} className="flex items-center gap-1.5 text-[0.72rem] font-medium" style={{ color: "var(--card-desc)" }}>
-                  <input
-                    type="checkbox"
-                    checked={editTracks.includes(val)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setEditTracks((prev) => [...prev, val]);
-                      } else {
-                        setEditTracks((prev) => prev.filter((t) => t !== val));
-                      }
-                    }}
-                    className="rounded"
-                  />
-                  {label}
-                </label>
-              ))}
-            </div>
-            <label className="flex items-center gap-1.5 text-[0.72rem] font-medium" style={{ color: "var(--card-desc)" }}>
-              <input
-                type="checkbox"
-                checked={editAdmin}
-                onChange={(e) => setEditAdmin(e.target.checked)}
-                className="rounded"
-              />
-              Admin
-            </label>
-            <label className="flex items-center gap-1.5 text-[0.72rem] font-medium" style={{ color: "var(--card-desc)" }}>
-              <input
-                type="checkbox"
-                checked={editIsManager}
-                onChange={(e) => setEditIsManager(e.target.checked)}
-                className="rounded"
-              />
-              Manager
-            </label>
-            <label className="flex items-center gap-1.5 text-[0.72rem] font-medium" style={{ color: "var(--card-desc)" }}>
-              <input
-                type="checkbox"
-                checked={editIsExecutive}
-                onChange={(e) => setEditIsExecutive(e.target.checked)}
-                className="rounded"
-              />
-              Executive
-            </label>
-            <div className="mt-1.5">
-              <p className="mb-1 text-[0.64rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>Department</p>
-              <input
-                list={`dept-list-${emp.employee_id}`}
-                value={editDepartment}
-                onChange={(e) => setEditDepartment(e.target.value)}
-                placeholder="e.g. Inside Sales…"
-                className="w-full rounded-[10px] px-2.5 py-1.5 text-[0.74rem]"
-                style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)" }}
-              />
-              <datalist id={`dept-list-${emp.employee_id}`}>
-                {existingDepartments.map((d) => <option key={d} value={d} />)}
-              </datalist>
-            </div>
-            <div className="mt-1.5">
-              <p className="mb-1 text-[0.64rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>Reports To</p>
-              <select
-                value={editManagerEmployeeId}
-                onChange={(e) => setEditManagerEmployeeId(e.target.value)}
-                className="w-full rounded-[10px] px-2.5 py-1.5 text-[0.74rem]"
-                style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)" }}
-              >
-                <option value="">No manager assigned</option>
-                {allEmployees
-                  .filter((e) => e.is_manager && e.employee_id !== emp.employee_id)
-                  .sort((a, b) => a.last_name.localeCompare(b.last_name))
-                  .map((m) => (
-                    <option key={m.employee_id} value={m.employee_id}>{m.full_name}</option>
-                  ))}
-              </select>
-            </div>
-          </div>
-        ) : (
-          <>
-            <div className="flex flex-wrap gap-1">
-              {(emp.tracks ?? []).map((t) => (
-                <span
-                  key={t}
-                  className={cn(
-                    "inline-flex rounded-full px-2.5 py-1 text-[0.68rem] font-semibold",
-                    t === "hr"
-                      ? "bg-blue-50 text-blue-700"
-                      : t === "warehouse"
-                        ? "bg-amber-50 text-amber-700"
-                        : t === "management"
-                          ? "bg-emerald-50 text-emerald-700"
-                          : "bg-fuchsia-50 text-fuchsia-700"
-                  )}
-                >
-                  {TRACK_LABELS[t] ?? t}
-                </span>
-              ))}
-            </div>
-            {emp.is_admin && <span className="mt-1 inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-[0.68rem] font-semibold text-slate-600">Admin</span>}
-            {emp.is_manager && <span className="mt-1 ml-1 inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-[0.68rem] font-semibold text-emerald-700">Manager</span>}
-            {emp.is_executive && <span className="mt-1 ml-1 inline-flex rounded-full bg-blue-50 px-2.5 py-1 text-[0.68rem] font-semibold text-blue-700">Executive</span>}
-            {emp.totp_enabled && <span className="mt-1 ml-1 inline-flex rounded-full bg-purple-50 px-2.5 py-1 text-[0.68rem] font-semibold text-purple-700">2FA</span>}
-            {emp.department && (
-              <p className="mt-1 text-[0.67rem] font-medium" style={{ color: "var(--module-context)" }}>
-                {emp.department}
-              </p>
-            )}
-            {emp.manager_employee_id && (
-              <p className="mt-0.5 text-[0.67rem]" style={{ color: "var(--module-context)" }}>
-                Reports to: {allEmployees.find((e) => e.employee_id === emp.manager_employee_id)?.full_name ?? emp.manager_employee_id}
-              </p>
-            )}
-          </>
-        )}
-      </td>
-      <td className="px-6 py-4">
-        <p className="text-[0.82rem] font-semibold" style={{ color: "var(--heading-color)" }}>{emp.progress.modules_completed} completed</p>
-        <p className="text-[0.7rem]" style={{ color: "var(--module-context)" }}>{emp.progress.total_modules_seen} touched</p>
-      </td>
-      <td className="px-6 py-4 text-[0.78rem]" style={{ color: "var(--card-desc)" }}>{lastLogin}</td>
-      <td className="px-6 py-4 text-right">
-        {editing ? (
-          <div className="flex items-center justify-end gap-2">
-            <button
-              onClick={() => { setEditing(false); setEditTracks(emp.tracks ?? ["hr"]); setEditAdmin(emp.is_admin); setEditIsManager(emp.is_manager ?? false); setEditIsExecutive(emp.is_executive ?? false); setEditManagerEmployeeId(emp.manager_employee_id ?? ""); setEditDepartment(emp.department ?? ""); }}
-              disabled={saving}
-              className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold transition-all hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-50"
-              style={{ color: "var(--card-desc)" }}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSaveEdit}
-              disabled={saving}
-              className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold text-white transition-all hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
-              style={{ background: "linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)" }}
-            >
-              {saving ? "Saving..." : "Save"}
-            </button>
-          </div>
-        ) : confirmingDelete ? (
-            <div className="flex items-center justify-end gap-2">
-              <button
-                onClick={() => setConfirmingDelete(false)}
-                disabled={deleting}
-                className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold transition-all hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-50"
-                style={{ color: "var(--card-desc)" }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold text-white transition-all hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
-                style={{ background: "linear-gradient(135deg, #b91c1c 0%, #df0030 100%)" }}
-              >
-                {deleting ? "Removing..." : "Confirm"}
-              </button>
-            </div>
-        ) : confirmingReset ? (
-            <div className="flex items-center justify-end gap-2">
-              <button
-                onClick={() => setConfirmingReset(false)}
-                disabled={resetting}
-                className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold transition-all hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-50"
-                style={{ color: "var(--card-desc)" }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleResetProgress}
-                disabled={resetting}
-                className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold text-white transition-all hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
-                style={{ background: "linear-gradient(135deg, #d97706 0%, #b45309 100%)" }}
-              >
-                {resetting ? "Resetting..." : "Confirm Reset"}
-              </button>
-            </div>
-        ) : (
-          <div className="flex items-center justify-end gap-2">
-            <button
-              onClick={() => setEditing(true)}
-              className="rounded-[10px] px-3 py-1.5 text-[0.74rem] font-semibold transition-all hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50"
-              style={{ color: "#0369a1" }}
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => setConfirmingReset(true)}
-              className="rounded-[10px] px-3 py-1.5 text-[0.74rem] font-semibold transition-all hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-50"
-              style={{ color: "#b45309" }}
-            >
-              Reset
-            </button>
-            {emp.totp_enabled && (
-              <button
-                onClick={handleResetTotp}
-                disabled={resettingTotp}
-                className="rounded-[10px] px-3 py-1.5 text-[0.74rem] font-semibold transition-all hover:bg-purple-50 disabled:cursor-not-allowed disabled:opacity-50"
-                style={{ color: "#7c3aed" }}
-              >
-                {resettingTotp ? "Resetting..." : "Reset 2FA"}
-              </button>
-            )}
-            {!isSelf && (
-              <button
-                onClick={() => setConfirmingDelete(true)}
-                disabled={deleting}
-                className="rounded-[10px] px-3 py-1.5 text-[0.74rem] font-semibold transition-all hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
-                style={{ color: "#be123c" }}
-              >
-                Remove
-              </button>
-            )}
-          </div>
-        )}
-      </td>
-    </tr>
-    {expanded && (
-      <tr className="border-b border-slate-100">
-        <td colSpan={5} className="px-6 pb-4 pt-0">
-          <div className="space-y-3">
-          <div
-            className="rounded-[14px] p-4"
-            style={{ background: "rgba(241, 245, 249, 0.6)", border: "1px solid rgba(153,182,218,0.25)" }}
-          >
-            <p className="mb-3 text-[0.66rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>
-              Module Progress
-            </p>
-            {loadingProgress ? (
-              <div className="flex items-center gap-2 py-2">
-                <Spinner />
-                <span className="text-[0.76rem]" style={{ color: "var(--card-desc)" }}>Loading...</span>
+        <div className="flex flex-wrap justify-end gap-1">
+          {(emp.tracks ?? []).map((t) => (
+            <span key={t} className={cn("inline-flex rounded-full px-2 py-0.5 text-[0.64rem] font-semibold",
+              t === "hr" ? "bg-blue-50 text-blue-700"
+              : t === "warehouse" ? "bg-amber-50 text-amber-700"
+              : t === "management" ? "bg-emerald-50 text-emerald-700"
+              : "bg-fuchsia-50 text-fuchsia-700"
+            )}>
+              {TRACK_LABELS[t] ?? t}
+            </span>
+          ))}
+          {emp.is_admin && <span className="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[0.64rem] font-semibold text-slate-600">Admin</span>}
+          {emp.is_manager && <span className="inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-[0.64rem] font-semibold text-emerald-700">Mgr</span>}
+          {emp.is_executive && <span className="inline-flex rounded-full bg-blue-50 px-2 py-0.5 text-[0.64rem] font-semibold text-blue-700">Exec</span>}
+        </div>
+        <p className="ml-2 shrink-0 text-[0.7rem]" style={{ color: "var(--card-desc)" }}>{lastLogin}</p>
+      </button>
+
+      {expanded && (
+        <div className="space-y-3 px-4 pb-4 pt-1">
+          {editing ? (
+            <div className="rounded-[14px] p-4" style={{ background: "rgba(241,245,249,0.6)", border: "1px solid rgba(153,182,218,0.25)" }}>
+              <p className="mb-3 text-[0.66rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>Edit Employee</p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <p className="mb-1.5 text-[0.64rem] font-bold uppercase tracking-[0.12em]" style={{ color: "var(--module-context)" }}>Tracks</p>
+                  <div className="flex flex-col gap-1">
+                    {Object.entries(TRACK_LABELS).map(([val, label]) => (
+                      <label key={val} className="flex cursor-pointer items-center gap-1.5 text-[0.72rem] font-medium" style={{ color: "var(--card-desc)" }}>
+                        <input type="checkbox" checked={editTracks.includes(val)} onChange={(e) => { if (e.target.checked) setEditTracks((p) => [...p, val]); else setEditTracks((p) => p.filter((t) => t !== val)); }} className="rounded" />
+                        {label}
+                      </label>
+                    ))}
+                  </div>
+                  <div className="mt-2.5 flex flex-col gap-1">
+                    <label className="flex cursor-pointer items-center gap-1.5 text-[0.72rem] font-medium" style={{ color: "var(--card-desc)" }}>
+                      <input type="checkbox" checked={editAdmin} onChange={(e) => setEditAdmin(e.target.checked)} className="rounded" /> Admin
+                    </label>
+                    <label className="flex cursor-pointer items-center gap-1.5 text-[0.72rem] font-medium" style={{ color: "var(--card-desc)" }}>
+                      <input type="checkbox" checked={editIsManager} onChange={(e) => setEditIsManager(e.target.checked)} className="rounded" /> Manager
+                    </label>
+                    <label className="flex cursor-pointer items-center gap-1.5 text-[0.72rem] font-medium" style={{ color: "var(--card-desc)" }}>
+                      <input type="checkbox" checked={editIsExecutive} onChange={(e) => setEditIsExecutive(e.target.checked)} className="rounded" /> Executive
+                    </label>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <p className="mb-1 text-[0.64rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>Department</p>
+                    <input list={`dept-list-${emp.employee_id}`} value={editDepartment} onChange={(e) => setEditDepartment(e.target.value)} placeholder="e.g. Inside Sales…" className="w-full rounded-[10px] px-2.5 py-1.5 text-[0.74rem]" style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)" }} />
+                    <datalist id={`dept-list-${emp.employee_id}`}>{existingDepartments.map((d) => <option key={d} value={d} />)}</datalist>
+                  </div>
+                  <div>
+                    <p className="mb-1 text-[0.64rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>Reports To</p>
+                    <select value={editManagerEmployeeId} onChange={(e) => setEditManagerEmployeeId(e.target.value)} className="w-full rounded-[10px] px-2.5 py-1.5 text-[0.74rem]" style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)" }}>
+                      <option value="">No manager assigned</option>
+                      {allEmployees.filter((e) => e.is_manager && e.employee_id !== emp.employee_id).sort((a, b) => a.last_name.localeCompare(b.last_name)).map((m) => (
+                        <option key={m.employee_id} value={m.employee_id}>{m.full_name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
               </div>
-            ) : (
-              <div className="space-y-1.5">
-                {modules
-                  .filter((m) => m.status === "published")
-                  .sort((a, b) => a.order - b.order)
-                  .map((m) => {
+              <div className="mt-4 flex gap-2">
+                <button onClick={() => { setEditing(false); setEditTracks(emp.tracks ?? ["hr"]); setEditAdmin(emp.is_admin); setEditIsManager(emp.is_manager ?? false); setEditIsExecutive(emp.is_executive ?? false); setEditManagerEmployeeId(emp.manager_employee_id ?? ""); setEditDepartment(emp.department ?? ""); }} disabled={saving} className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold transition-all hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-50" style={{ color: "var(--card-desc)" }}>Cancel</button>
+                <button onClick={handleSaveEdit} disabled={saving} className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold text-white transition-all hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-50" style={{ background: "linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)" }}>{saving ? "Saving..." : "Save"}</button>
+              </div>
+            </div>
+          ) : (
+            (emp.department || emp.manager_employee_id || emp.totp_enabled) && (
+              <div className="flex flex-wrap gap-x-4 gap-y-1 rounded-[12px] px-3 py-2.5 text-[0.74rem]" style={{ background: "rgba(241,245,249,0.4)", border: "1px solid rgba(153,182,218,0.18)" }}>
+                {emp.department && <span style={{ color: "var(--module-context)" }}><span className="font-semibold">Dept:</span> {emp.department}</span>}
+                {emp.manager_employee_id && <span style={{ color: "var(--module-context)" }}><span className="font-semibold">Reports to:</span> {allEmployees.find((e) => e.employee_id === emp.manager_employee_id)?.full_name ?? emp.manager_employee_id}</span>}
+                {emp.totp_enabled && <span className="inline-flex rounded-full bg-purple-50 px-2 py-0.5 text-[0.64rem] font-semibold text-purple-700">2FA enabled</span>}
+              </div>
+            )
+          )}
+
+          {!editing && (
+            <div className="rounded-[14px] p-4" style={{ background: "rgba(241,245,249,0.6)", border: "1px solid rgba(153,182,218,0.25)" }}>
+              <p className="mb-3 text-[0.66rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>Module Progress</p>
+              {loadingProgress ? (
+                <div className="flex items-center gap-2 py-2"><Spinner /><span className="text-[0.76rem]" style={{ color: "var(--card-desc)" }}>Loading...</span></div>
+              ) : (
+                <div className="space-y-1.5">
+                  {modules.filter((m) => m.status === "published").sort((a, b) => a.order - b.order).map((m) => {
                     const prog = moduleProgress?.find((p) => p.module_slug === m.slug);
                     const isCompleted = prog?.module_completed ?? false;
                     const isVisited = prog?.visited ?? false;
-                    const completedDate = prog?.completed_at
-                      ? new Date(prog.completed_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })
-                      : null;
+                    const completedDate = prog?.completed_at ? new Date(prog.completed_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : null;
                     return (
-                      <div
-                        key={m.slug}
-                        className="flex items-center gap-2.5 rounded-[10px] px-3 py-2"
-                        style={{
-                          background: isCompleted ? "rgba(22, 163, 74, 0.06)" : isVisited ? "rgba(255,255,255,0.7)" : "transparent",
-                          border: isCompleted ? "1px solid rgba(22, 163, 74, 0.15)" : "1px solid transparent",
-                        }}
-                      >
-                        {/* Status icon */}
-                        <span
-                          className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full"
-                          style={{
-                            background: isCompleted ? "rgba(22, 163, 74, 0.12)" : isVisited ? "rgba(14, 165, 233, 0.1)" : "rgba(148, 163, 184, 0.15)",
-                          }}
-                        >
-                          {isCompleted ? (
-                            <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M2 5.5l2 2L8 2.5" />
-                            </svg>
-                          ) : isVisited ? (
-                            <svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="#0ea5e9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <circle cx="5" cy="5" r="2" />
-                            </svg>
-                          ) : (
-                            <span className="h-1.5 w-1.5 rounded-full" style={{ background: "rgba(148, 163, 184, 0.5)" }} />
-                          )}
+                      <div key={m.slug} className="flex items-center gap-2.5 rounded-[10px] px-3 py-2" style={{ background: isCompleted ? "rgba(22,163,74,0.06)" : isVisited ? "rgba(255,255,255,0.7)" : "transparent", border: isCompleted ? "1px solid rgba(22,163,74,0.15)" : "1px solid transparent" }}>
+                        <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full" style={{ background: isCompleted ? "rgba(22,163,74,0.12)" : isVisited ? "rgba(14,165,233,0.1)" : "rgba(148,163,184,0.15)" }}>
+                          {isCompleted ? <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 5.5l2 2L8 2.5" /></svg>
+                            : isVisited ? <svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="#0ea5e9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="5" cy="5" r="2" /></svg>
+                            : <span className="h-1.5 w-1.5 rounded-full" style={{ background: "rgba(148,163,184,0.5)" }} />}
                         </span>
-
-                        {/* Module title */}
-                        <span
-                          className="flex-1 text-[0.76rem] font-medium leading-tight"
-                          style={{ color: isCompleted ? "#15803d" : isVisited ? "var(--heading-color)" : "var(--card-desc)" }}
-                        >
-                          {m.title}
-                        </span>
-
-                        {/* Status label */}
-                        {isCompleted && completedDate ? (
-                          <span className="text-[0.64rem] font-medium" style={{ color: "#16a34a" }}>{completedDate}</span>
-                        ) : isVisited ? (
-                          <span className="text-[0.64rem] font-medium" style={{ color: "#0ea5e9" }}>In progress</span>
-                        ) : (
-                          <span className="text-[0.64rem] font-medium" style={{ color: "rgba(148, 163, 184, 0.8)" }}>Not started</span>
-                        )}
+                        <span className="flex-1 text-[0.76rem] font-medium leading-tight" style={{ color: isCompleted ? "#15803d" : isVisited ? "var(--heading-color)" : "var(--card-desc)" }}>{m.title}</span>
+                        {isCompleted && completedDate ? <span className="text-[0.64rem] font-medium" style={{ color: "#16a34a" }}>{completedDate}</span>
+                          : isVisited ? <span className="text-[0.64rem] font-medium" style={{ color: "#0ea5e9" }}>In progress</span>
+                          : <span className="text-[0.64rem] font-medium" style={{ color: "rgba(148,163,184,0.8)" }}>Not started</span>}
                       </div>
                     );
                   })}
-              </div>
-            )}
-          </div>
-
-          {/* Notes panel - only shown when there are notes */}
-          {!loadingProgress && employeeNotes && employeeNotes.length > 0 && (
-            <div
-              className="rounded-[14px] p-4"
-              style={{ background: "rgba(241, 245, 249, 0.6)", border: "1px solid rgba(153,182,218,0.25)" }}
-            >
-              <p className="mb-3 text-[0.66rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>
-                Module Notes
-              </p>
-              <div className="space-y-2">
-                {employeeNotes.map((note) => {
-                  const moduleTitle = modules.find((m) => m.slug === note.module_slug)?.title ?? note.module_title ?? note.module_slug;
-                  const updatedDate = note.updated_at
-                    ? new Date(note.updated_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })
-                    : null;
-                  return (
-                    <div
-                      key={note.id}
-                      className="rounded-[10px] px-3 py-2.5"
-                      style={{ background: "rgba(14,118,189,0.05)", border: "1px solid rgba(14,118,189,0.12)" }}
-                    >
-                      <div className="flex items-center justify-between gap-3 mb-1">
-                        <p className="text-[0.72rem] font-semibold leading-tight" style={{ color: "var(--heading-color)" }}>
-                          {moduleTitle}
-                        </p>
-                        {updatedDate && (
-                          <span className="shrink-0 text-[0.64rem]" style={{ color: "var(--module-context)" }}>
-                            {updatedDate}
-                          </span>
-                        )}
-                      </div>
-                      {note.selected_text && (
-                        <div className="mb-1.5 rounded-[8px] px-2.5 py-2" style={{ background: "rgba(14,118,189,0.08)", border: "1px solid rgba(14,118,189,0.18)" }}>
-                          <p className="text-[0.68rem] italic leading-[1.45]" style={{ color: "#335174" }}>
-                            "{note.selected_text}"
-                          </p>
-                          {note.anchor_id && (
-                            <a
-                              href={`/modules/${note.module_slug}#${encodeURIComponent(note.anchor_id)}`}
-                              className="mt-1 inline-block text-[0.66rem] font-semibold"
-                              style={{ color: "#0f7fb3" }}
-                            >
-                              Jump to section
-                            </a>
-                          )}
-                        </div>
-                      )}
-                      <p
-                        className="text-[0.76rem] leading-[1.55] whitespace-pre-wrap"
-                        style={{ color: "var(--card-desc)" }}
-                      >
-                        {note.note_text}
-                      </p>
-                      {note.admin_reply && (
-                        <div className="mt-1.5 rounded-[8px] px-2.5 py-2" style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)" }}>
-                          <p className="text-[0.62rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "#15803d" }}>
-                            Admin Reply
-                          </p>
-                          <p className="mt-1 text-[0.72rem] leading-[1.45]" style={{ color: "#1f5135" }}>
-                            {note.admin_reply}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+                </div>
+              )}
             </div>
           )}
-          </div>
-        </td>
-      </tr>
-    )}
-    </>
+
+          {!editing && (
+            confirmingDelete ? (
+              <div className="flex items-center gap-2">
+                <span className="flex-1 text-[0.74rem]" style={{ color: "var(--card-desc)" }}>Remove {emp.full_name}?</span>
+                <button onClick={() => setConfirmingDelete(false)} disabled={deleting} className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold transition-all hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-50" style={{ color: "var(--card-desc)" }}>Cancel</button>
+                <button onClick={handleDelete} disabled={deleting} className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50" style={{ background: "linear-gradient(135deg, #b91c1c 0%, #df0030 100%)" }}>{deleting ? "Removing..." : "Confirm"}</button>
+              </div>
+            ) : confirmingReset ? (
+              <div className="flex items-center gap-2">
+                <span className="flex-1 text-[0.74rem]" style={{ color: "var(--card-desc)" }}>Reset progress for {emp.full_name}?</span>
+                <button onClick={() => setConfirmingReset(false)} disabled={resetting} className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold transition-all hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-50" style={{ color: "var(--card-desc)" }}>Cancel</button>
+                <button onClick={handleResetProgress} disabled={resetting} className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50" style={{ background: "linear-gradient(135deg, #d97706 0%, #b45309 100%)" }}>{resetting ? "Resetting..." : "Confirm Reset"}</button>
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                <button onClick={() => setEditing(true)} className="rounded-[10px] px-3 py-1.5 text-[0.74rem] font-semibold transition-all hover:bg-blue-50" style={{ color: "#0369a1" }}>Edit</button>
+                <button onClick={() => setConfirmingReset(true)} className="rounded-[10px] px-3 py-1.5 text-[0.74rem] font-semibold transition-all hover:bg-amber-50" style={{ color: "#b45309" }}>Reset</button>
+                {emp.totp_enabled && <button onClick={handleResetTotp} disabled={resettingTotp} className="rounded-[10px] px-3 py-1.5 text-[0.74rem] font-semibold transition-all hover:bg-purple-50 disabled:cursor-not-allowed disabled:opacity-50" style={{ color: "#7c3aed" }}>{resettingTotp ? "Resetting..." : "Reset 2FA"}</button>}
+                {!isSelf && <button onClick={() => setConfirmingDelete(true)} disabled={deleting} className="rounded-[10px] px-3 py-1.5 text-[0.74rem] font-semibold transition-all hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50" style={{ color: "#be123c" }}>Remove</button>}
+              </div>
+            )
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ManagerGroup({
+  managerName,
+  employees,
+  currentUserId,
+  modules,
+  allEmployees,
+  onAction,
+}: {
+  managerName: string;
+  employees: EmployeeRecord[];
+  currentUserId: string;
+  modules: ModuleSummary[];
+  allEmployees: EmployeeRecord[];
+  onAction: (message: string, tone?: "success" | "error") => void;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="overflow-hidden rounded-[20px]" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}>
+      <button onClick={() => setOpen(!open)} className="flex w-full items-center gap-3 px-5 py-4 transition-all hover:bg-black/[0.02]">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+          className={cn("shrink-0 transition-transform duration-200", open && "rotate-90")} style={{ color: "var(--card-desc)" }}>
+          <path d="M3 1.5L7 5L3 8.5" />
+        </svg>
+        <p className="flex-1 text-left text-[0.88rem] font-semibold" style={{ color: "var(--heading-color)" }}>{managerName}</p>
+        <span className="rounded-full px-2.5 py-0.5 text-[0.68rem] font-semibold" style={{ background: "var(--welcome-stat-bg)", color: "var(--module-context)", border: "1px solid var(--welcome-stat-border)" }}>
+          {employees.length} {employees.length === 1 ? "employee" : "employees"}
+        </span>
+      </button>
+      {open && (
+        <div className="space-y-1 border-t px-4 pb-4 pt-2" style={{ borderColor: "var(--card-border)" }}>
+          {[...employees].sort((a, b) => a.last_name.localeCompare(b.last_name)).map((emp) => (
+            <EmployeeCard key={emp.employee_id} emp={emp} currentUserId={currentUserId} modules={modules} allEmployees={allEmployees} onAction={onAction} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function GroupedRoster({
+  rows,
+  currentUserId,
+  modules,
+  allEmployees,
+  onAction,
+}: {
+  rows: EmployeeRecord[];
+  currentUserId: string;
+  modules: ModuleSummary[];
+  allEmployees: EmployeeRecord[];
+  onAction: (message: string, tone?: "success" | "error") => void;
+}) {
+  const groupMap = new Map<string, EmployeeRecord[]>();
+  for (const emp of rows) {
+    const key = emp.manager_employee_id ?? "__unassigned__";
+    if (!groupMap.has(key)) groupMap.set(key, []);
+    groupMap.get(key)!.push(emp);
+  }
+
+  const sortedGroups = [...groupMap.entries()].sort(([aKey], [bKey]) => {
+    if (aKey === "__unassigned__") return 1;
+    if (bKey === "__unassigned__") return -1;
+    const aName = allEmployees.find((e) => e.employee_id === aKey)?.full_name ?? aKey;
+    const bName = allEmployees.find((e) => e.employee_id === bKey)?.full_name ?? bKey;
+    return aName.localeCompare(bName);
+  });
+
+  return (
+    <div className="space-y-3">
+      {sortedGroups.map(([key, emps]) => {
+        const manager = key !== "__unassigned__" ? allEmployees.find((e) => e.employee_id === key) : null;
+        const managerName = manager?.full_name ?? (key !== "__unassigned__" ? key : "Unassigned");
+        return (
+          <ManagerGroup key={key} managerName={managerName} employees={emps} currentUserId={currentUserId} modules={modules} allEmployees={allEmployees} onAction={onAction} />
+        );
+      })}
+    </div>
   );
 }
 
@@ -1634,7 +1451,11 @@ export default function AdminPage() {
               </p>
             </div>
             {searchResults.length > 0 ? (
-              <RosterTable rows={searchResults} currentUserId={user.employee_id} modules={publishedModules} allEmployees={allEmployees} onAction={handleRosterAction} />
+              <div className="space-y-1 p-4">
+                {searchResults.map((emp) => (
+                  <EmployeeCard key={emp.employee_id} emp={emp} currentUserId={user.employee_id} modules={publishedModules} allEmployees={allEmployees} onAction={handleRosterAction} />
+                ))}
+              </div>
             ) : (
               <p className="px-6 py-10 text-center text-[0.84rem]" style={{ color: "var(--card-desc)" }}>
                 Try a different name or employee number.
@@ -1642,9 +1463,7 @@ export default function AdminPage() {
             )}
           </div>
         ) : (
-          <div className="overflow-hidden rounded-[24px]" style={cardStyle()}>
-            <RosterTable rows={allEmployeesSorted} currentUserId={user.employee_id} modules={publishedModules} allEmployees={allEmployees} onAction={handleRosterAction} />
-          </div>
+          <GroupedRoster rows={allEmployees} currentUserId={user.employee_id} modules={publishedModules} allEmployees={allEmployees} onAction={handleRosterAction} />
         )}
       </div>
     </div>
