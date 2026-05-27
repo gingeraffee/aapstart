@@ -13,7 +13,6 @@ import type {
   ManagerHoursSummary,
   ManagerHoursSummaryV2,
   ManagerTeamMemberV2,
-  AbsenceEmployeeSummary,
   AbsenceCategoryEntry,
   EmployeeDetailData,
   AttendanceThreshold,
@@ -404,117 +403,84 @@ function StaffingSignals({
 
 // ── Planned vs. Unplanned Absence card ───────────────────────────────────────
 
-function AbsenceDonut({ planned, unplanned }: { planned: number; unplanned: number }) {
-  const total = planned + unplanned;
-  const R = 44, CX = 56, CY = 56, SW = 17;
-  const C = 2 * Math.PI * R;
-  const slices = [
-    { label: "Planned", value: planned, color: "#0ea5e9" },
-    { label: "Unplanned", value: unplanned, color: "#dc2626" },
-  ];
-  let cumPct = 0;
-  return (
-    <svg width="112" height="112" viewBox="0 0 112 112">
-      <circle cx={CX} cy={CY} r={R} fill="none" stroke="rgba(153,182,218,0.15)" strokeWidth={SW} />
-      {total > 0 && slices.filter(d => d.value > 0).map((d) => {
-        const pct = d.value / total;
-        const dash = Math.max(0, pct * C - 1.5);
-        const rotation = cumPct * 360 - 90;
-        cumPct += pct;
-        return (
-          <circle key={d.label} cx={CX} cy={CY} r={R} fill="none" stroke={d.color}
-            strokeWidth={SW} strokeDasharray={`${dash} ${C}`}
-            transform={`rotate(${rotation} ${CX} ${CY})`} />
-        );
-      })}
-      {total > 0 ? (
-        <>
-          <text x={CX} y={CY - 4} textAnchor="middle" fontSize="15" fontWeight="700" fill="var(--sidebar-text)">{total}</text>
-          <text x={CX} y={CY + 9} textAnchor="middle" fontSize="6.5" fill="var(--sidebar-label)">INCIDENTS</text>
-        </>
-      ) : (
-        <text x={CX} y={CY + 4} textAnchor="middle" fontSize="8" fill="var(--sidebar-label)">No data</text>
-      )}
-    </svg>
-  );
-}
+const ABSENCE_ROWS = [
+  { key: "planned",   label: "Planned",   color: "#0ea5e9", hKey: "planned_hours"   as const },
+  { key: "unplanned", label: "Unplanned", color: "#dc2626", hKey: "unplanned_hours" as const },
+  { key: "protected", label: "Protected", color: "#8b5cf6", hKey: "protected_hours" as const },
+] as const;
 
-function AbsenceCard({
-  summary, totalPlanned, totalUnplanned, dateRange,
-}: {
-  summary: AbsenceEmployeeSummary[];
-  totalPlanned: number;
-  totalUnplanned: number;
-  dateRange: string | null;
-}) {
-  const total = totalPlanned + totalUnplanned;
-  const unplannedRate = total > 0 ? Math.round((totalUnplanned / total) * 100) : 0;
+function AbsenceCard({ data, dateRange }: { data: AbsenceCategoryEntry[]; dateRange: string | null }) {
+  const totals = ABSENCE_ROWS.map(r => ({ ...r, value: data.reduce((s, e) => s + e[r.hKey], 0) }));
+  const grandTotal = totals.reduce((s, r) => s + r.value, 0);
+  const activeRows = totals.filter(r => r.value > 0);
 
   return (
     <Card title={`Planned vs. Unplanned Absences${dateRange ? ` — ${dateRange}` : ""}`}>
-      {total === 0 ? (
-        <div className="px-5 py-8 text-center">
+      {grandTotal === 0 ? (
+        <div className="px-5 py-6 text-center">
           <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>
-            No absence data yet. Upload the Time Off Used report to see planned vs. unplanned breakdown.
+            No absence data yet. Upload the Time Off Used report to see breakdown.
           </p>
         </div>
       ) : (
-        <div className="px-5 py-5 space-y-5">
-          <div className="flex items-center gap-6">
-            <AbsenceDonut planned={totalPlanned} unplanned={totalUnplanned} />
-            <div className="flex flex-col gap-3 flex-1">
-              {[
-                { label: "Planned",   count: totalPlanned,   color: "#0ea5e9" },
-                { label: "Unplanned", count: totalUnplanned, color: "#dc2626" },
-              ].map(row => (
-                <div key={row.label} className="flex items-center gap-2.5">
-                  <div className="h-2 w-2 shrink-0 rounded-full" style={{ background: row.color }} />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-1">
-                      <span className="text-[0.74rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>{row.label}</span>
-                      <span className="text-[0.74rem] font-bold tabular-nums" style={{ color: row.color }}>{row.count}</span>
-                    </div>
-                    <div className="mt-0.5 h-[5px] w-full rounded-full overflow-hidden" style={{ background: "rgba(153,182,218,0.15)" }}>
-                      <div className="h-full rounded-full" style={{ width: `${total > 0 ? Math.round((row.count / total) * 100) : 0}%`, background: row.color }} />
-                    </div>
-                  </div>
-                  <span className="w-8 shrink-0 text-right text-[0.68rem] font-medium tabular-nums" style={{ color: "var(--sidebar-label)" }}>
-                    {total > 0 ? Math.round((row.count / total) * 100) : 0}%
-                  </span>
-                </div>
-              ))}
-            </div>
+        <>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-1 px-5 pt-4 pb-2">
+            {activeRows.map(row => (
+              <div key={row.key} className="flex items-center gap-1.5">
+                <div className="h-2 w-2 shrink-0 rounded-full" style={{ background: row.color }} />
+                <span className="text-[0.72rem] font-medium" style={{ color: "var(--sidebar-label)" }}>{row.label}</span>
+                <span className="text-[0.82rem] font-bold tabular-nums" style={{ color: row.color }}>{row.value % 1 === 0 ? row.value : row.value.toFixed(1)} hrs</span>
+                <span className="text-[0.68rem] tabular-nums" style={{ color: "var(--sidebar-label)" }}>
+                  {Math.round((row.value / grandTotal) * 100)}%
+                </span>
+              </div>
+            ))}
+            <span className="ml-auto text-[0.72rem] tabular-nums font-medium" style={{ color: "var(--sidebar-label)" }}>
+              {grandTotal % 1 === 0 ? grandTotal : grandTotal.toFixed(1)} hrs total
+            </span>
           </div>
-          {summary.length > 0 && (
-            <div className="overflow-x-auto rounded-[12px]" style={{ border: "1px solid rgba(153,182,218,0.18)" }}>
-              <table className="w-full text-[0.78rem]">
+          <div className="mx-5 mb-3 h-1.5 rounded-full overflow-hidden flex" style={{ background: "rgba(153,182,218,0.15)" }}>
+            {activeRows.map(r => (
+              <div key={r.key} className="h-full" style={{ width: `${(r.value / grandTotal) * 100}%`, background: r.color }} />
+            ))}
+          </div>
+          {data.length > 0 && (
+            <div className="overflow-x-auto" style={{ borderTop: "1px solid rgba(153,182,218,0.18)" }}>
+              <table className="w-full text-[0.76rem]">
                 <thead>
-                  <tr style={{ borderBottom: "1px solid rgba(153,182,218,0.18)", background: "rgba(153,182,218,0.06)" }}>
-                    <th className="px-4 py-2.5 text-left text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>Employee</th>
-                    <th className="px-4 py-2.5 text-right text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "#0ea5e9" }}>Planned</th>
-                    <th className="px-4 py-2.5 text-right text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "#dc2626" }}>Unplanned</th>
-                    <th className="px-4 py-2.5 text-right text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>Total</th>
+                  <tr style={{ background: "rgba(153,182,218,0.06)", borderBottom: "1px solid rgba(153,182,218,0.18)" }}>
+                    <th className="px-4 py-2 text-left text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>Employee</th>
+                    {ABSENCE_ROWS.map(r => (
+                      <th key={r.key} className="px-4 py-2 text-right text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: r.color }}>{r.label}</th>
+                    ))}
+                    <th className="px-4 py-2 text-right text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>Total</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {[...summary]
-                    .sort((a, b) => (b.unplanned_count + b.planned_count) - (a.unplanned_count + a.planned_count))
-                    .map((emp, i, arr) => (
-                      <tr key={emp.employee_id} style={{ borderBottom: i < arr.length - 1 ? "1px solid rgba(153,182,218,0.1)" : "none" }}>
-                        <td className="px-4 py-2.5 font-semibold" style={{ color: "var(--sidebar-text)" }}>
-                          {emp.full_name}
-                          <span className="ml-2 text-[0.62rem] font-normal" style={{ color: "var(--sidebar-label)" }}>{emp.employee_id}</span>
-                        </td>
-                        <td className="px-4 py-2.5 text-right tabular-nums font-semibold" style={{ color: emp.planned_count > 0 ? "#0ea5e9" : "var(--sidebar-label)" }}>{emp.planned_count}</td>
-                        <td className="px-4 py-2.5 text-right tabular-nums font-semibold" style={{ color: emp.unplanned_count > 0 ? "#dc2626" : "var(--sidebar-label)" }}>{emp.unplanned_count}</td>
-                        <td className="px-4 py-2.5 text-right tabular-nums" style={{ color: "var(--sidebar-text)" }}>{emp.planned_count + emp.unplanned_count}</td>
-                      </tr>
-                    ))}
+                  {[...data]
+                    .filter(e => e.planned_hours + e.unplanned_hours + e.protected_hours > 0)
+                    .sort((a, b) => (b.planned_hours + b.unplanned_hours + b.protected_hours) - (a.planned_hours + a.unplanned_hours + a.protected_hours))
+                    .map((emp, i, arr) => {
+                      const empTotal = emp.planned_hours + emp.unplanned_hours + emp.protected_hours;
+                      const fmt = (v: number) => v > 0 ? (v % 1 === 0 ? String(v) : v.toFixed(1)) : "—";
+                      return (
+                        <tr key={emp.employee_id} style={{ borderBottom: i < arr.length - 1 ? "1px solid rgba(153,182,218,0.1)" : "none" }}>
+                          <td className="px-4 py-1.5 font-semibold" style={{ color: "var(--sidebar-text)" }}>
+                            {emp.full_name}
+                            <span className="ml-2 text-[0.62rem] font-normal" style={{ color: "var(--sidebar-label)" }}>{emp.employee_id}</span>
+                          </td>
+                          <td className="px-4 py-1.5 text-right tabular-nums font-semibold" style={{ color: emp.planned_hours > 0 ? "#0ea5e9" : "var(--sidebar-label)" }}>{fmt(emp.planned_hours)}</td>
+                          <td className="px-4 py-1.5 text-right tabular-nums font-semibold" style={{ color: emp.unplanned_hours > 0 ? "#dc2626" : "var(--sidebar-label)" }}>{fmt(emp.unplanned_hours)}</td>
+                          <td className="px-4 py-1.5 text-right tabular-nums font-semibold" style={{ color: emp.protected_hours > 0 ? "#8b5cf6" : "var(--sidebar-label)" }}>{fmt(emp.protected_hours)}</td>
+                          <td className="px-4 py-1.5 text-right tabular-nums" style={{ color: "var(--sidebar-text)" }}>{empTotal % 1 === 0 ? empTotal : empTotal.toFixed(1)}</td>
+                        </tr>
+                      );
+                    })}
                 </tbody>
               </table>
             </div>
           )}
-        </div>
+        </>
       )}
     </Card>
   );
@@ -1095,7 +1061,8 @@ export default function ManagerDashboardPage() {
   const filteredHours    = (dashboard?.hours_summary ?? []).filter(e => matchesMember(e.full_name, e.employee_id, teamLookup.get(e.employee_id)?.department ?? null));
   const filteredUpcoming = (dashboard?.upcoming_reviews ?? []).filter(r => matchesMember(r.full_name, r.employee_id, teamLookup.get(r.employee_id)?.department ?? null));
   const filteredPastDue  = (dashboard?.past_due_reviews ?? []).filter(r => matchesMember(r.full_name, r.employee_id, teamLookup.get(r.employee_id)?.department ?? null));
-  const filteredAbsences = (dashboard?.absence_summary ?? []).filter(a => matchesMember(a.full_name, a.employee_id, teamLookup.get(a.employee_id)?.department ?? null));
+  const filteredAbsences     = (dashboard?.absence_summary ?? []).filter(a => matchesMember(a.full_name, a.employee_id, teamLookup.get(a.employee_id)?.department ?? null));
+  const filteredCategoryData = (dashboard?.absence_by_category ?? []).filter(a => matchesMember(a.full_name, a.employee_id, teamLookup.get(a.employee_id)?.department ?? null));
 
   // ── Aggregates ──
   const totalReg       = filteredHours.reduce((s, e) => s + e.regular_hours, 0);
@@ -1119,8 +1086,6 @@ export default function ManagerDashboardPage() {
     .slice(0, 5)
     .map(e => ({ name: e.full_name, id: e.employee_id, value: totalTimeOff(e) }));
 
-  const filteredPlanned   = filteredAbsences.reduce((s, a) => s + a.planned_count, 0);
-  const filteredUnplanned = filteredAbsences.reduce((s, a) => s + a.unplanned_count, 0);
 
   // ── Compare aggregates (unfiltered team-wide) ──
   const cmpTotalReg  = compareDashboard ? compareDashboard.hours_summary.reduce((s, e) => s + e.regular_hours, 0) : 0;
@@ -1252,21 +1217,7 @@ export default function ManagerDashboardPage() {
             </div>
           )}
           <AbsenceCard
-            summary={
-              thresholdFilter.length > 0
-                ? filteredAbsences.filter(a => thresholdFilter.includes(a.employee_id))
-                : filteredAbsences
-            }
-            totalPlanned={
-              thresholdFilter.length > 0
-                ? filteredAbsences.filter(a => thresholdFilter.includes(a.employee_id)).reduce((s, a) => s + a.planned_count, 0)
-                : filteredPlanned
-            }
-            totalUnplanned={
-              thresholdFilter.length > 0
-                ? filteredAbsences.filter(a => thresholdFilter.includes(a.employee_id)).reduce((s, a) => s + a.unplanned_count, 0)
-                : filteredUnplanned
-            }
+            data={thresholdFilter.length > 0 ? filteredCategoryData.filter(a => thresholdFilter.includes(a.employee_id)) : filteredCategoryData}
             dateRange={dashboard?.absence_date_range ?? null}
           />
           <AbsenceCategoryTable
@@ -1368,9 +1319,7 @@ export default function ManagerDashboardPage() {
 
           {/* Absence overview */}
           <AbsenceCard
-            summary={filteredAbsences}
-            totalPlanned={filteredPlanned}
-            totalUnplanned={filteredUnplanned}
+            data={filteredCategoryData}
             dateRange={dashboard?.absence_date_range ?? null}
           />
 
