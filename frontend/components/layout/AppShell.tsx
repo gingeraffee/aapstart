@@ -221,7 +221,7 @@ export function AppShell({ children }: AppShellProps) {
                   if (!canCollapse) e.preventDefault();
                 }}
               >
-                <span>Your Journey</span>
+                <span>Home Base</span>
                 <span className="flex items-center gap-2">
                   <span className="rounded-full px-2 py-0.5 text-[0.5rem]" style={{ background: "var(--sidebar-icon-bg)", color: "var(--sidebar-text)" }}>
                     {journeyModules.length}
@@ -688,7 +688,7 @@ export function AppShell({ children }: AppShellProps) {
               borderBottom: isJourneyActive ? "2px solid var(--sidebar-text)" : "2px solid transparent",
             }}
           >
-            {isManagement ? "Training" : isLearningProgramPage ? "Learning Program" : "Your Journey"}
+            {isManagement ? "Training" : isLearningProgramPage ? "Learning Program" : "Home Base"}
           </button>
           <button
             onClick={() => router.push("/resources")}
