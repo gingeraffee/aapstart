@@ -141,14 +141,19 @@ function Card({ title, accent, children }: { title?: string; accent?: string; ch
 
 // ── KPI Card ──────────────────────────────────────────────────────────────────
 
-function KpiCard({ label, value, sub, accent }: { label: string; value: string | number; sub?: string; accent?: string }) {
+function KpiCard({ label, value, sub, accent, onClick }: { label: string; value: string | number; sub?: string; accent?: string; onClick?: () => void }) {
   return (
     <div
-      className="rounded-[14px] p-4"
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onClick={onClick}
+      onKeyDown={onClick ? (e) => { if (e.key === "Enter" || e.key === " ") onClick(); } : undefined}
+      className="rounded-[14px] p-4 transition-opacity duration-150"
       style={{
         background: "rgba(255,255,255,0.72)",
         border: "1px solid rgba(153,182,218,0.28)",
         boxShadow: "0 2px 8px rgba(12,24,47,0.06)",
+        cursor: onClick ? "pointer" : undefined,
       }}
     >
       <p className="mb-1 text-[0.62rem] font-bold uppercase tracking-[0.13em]" style={{ color: "var(--sidebar-label)" }}>
@@ -159,6 +164,9 @@ function KpiCard({ label, value, sub, accent }: { label: string; value: string |
       </p>
       {sub && (
         <p className="mt-1 text-[0.66rem]" style={{ color: "var(--sidebar-label)" }}>{sub}</p>
+      )}
+      {onClick && (
+        <p className="mt-1 text-[0.6rem] font-medium" style={{ color: "var(--sidebar-label)", opacity: 0.7 }}>click to view ↓</p>
       )}
     </div>
   );
@@ -1337,8 +1345,8 @@ export default function ManagerDashboardPage() {
                 <KpiCard label="Regular Hrs" value={totalReg.toFixed(0)} />
                 <KpiCard label="OT Hours" value={totalOt.toFixed(1)} accent={totalOt > 0 ? "#d97706" : undefined} />
                 <KpiCard label="Time Off" value={totalOff.toFixed(0)} />
-                <KpiCard label="Upcoming" value={filteredUpcoming.length} accent={filteredUpcoming.length > 0 ? "#0f6da3" : undefined} />
-                <KpiCard label="Past Due" value={filteredPastDue.length} accent={filteredPastDue.length > 0 ? "#dc2626" : undefined} />
+                <KpiCard label="Upcoming" value={filteredUpcoming.length} accent={filteredUpcoming.length > 0 ? "#0f6da3" : undefined} onClick={() => document.getElementById("reviews-section")?.scrollIntoView({ behavior: "smooth", block: "start" })} />
+                <KpiCard label="Past Due" value={filteredPastDue.length} accent={filteredPastDue.length > 0 ? "#dc2626" : undefined} onClick={() => document.getElementById("reviews-section")?.scrollIntoView({ behavior: "smooth", block: "start" })} />
               </div>
 
               {/* Insights row */}
@@ -1440,7 +1448,7 @@ export default function ManagerDashboardPage() {
           </Card>
 
           {/* Reviews */}
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div id="reviews-section" className="grid gap-4 lg:grid-cols-2">
             <Card title={`Upcoming Performance Reviews (${filteredUpcoming.length})`}>
               {!dashboard || dashboard.upcoming_reviews.length === 0 ? (
                 <div className="px-5 py-8 text-center">
