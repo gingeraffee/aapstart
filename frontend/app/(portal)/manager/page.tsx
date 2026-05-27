@@ -409,7 +409,7 @@ function AbsenceDonut({ planned, unplanned }: { planned: number; unplanned: numb
   const R = 44, CX = 56, CY = 56, SW = 17;
   const C = 2 * Math.PI * R;
   const slices = [
-    { label: "Planned", value: planned, color: "#16a34a" },
+    { label: "Planned", value: planned, color: "#0ea5e9" },
     { label: "Unplanned", value: unplanned, color: "#dc2626" },
   ];
   let cumPct = 0;
@@ -464,7 +464,7 @@ function AbsenceCard({
             <AbsenceDonut planned={totalPlanned} unplanned={totalUnplanned} />
             <div className="flex flex-col gap-3 flex-1">
               {[
-                { label: "Planned",   count: totalPlanned,   color: "#16a34a" },
+                { label: "Planned",   count: totalPlanned,   color: "#0ea5e9" },
                 { label: "Unplanned", count: totalUnplanned, color: "#dc2626" },
               ].map(row => (
                 <div key={row.label} className="flex items-center gap-2.5">
@@ -491,7 +491,7 @@ function AbsenceCard({
                 <thead>
                   <tr style={{ borderBottom: "1px solid rgba(153,182,218,0.18)", background: "rgba(153,182,218,0.06)" }}>
                     <th className="px-4 py-2.5 text-left text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>Employee</th>
-                    <th className="px-4 py-2.5 text-right text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "#16a34a" }}>Planned</th>
+                    <th className="px-4 py-2.5 text-right text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "#0ea5e9" }}>Planned</th>
                     <th className="px-4 py-2.5 text-right text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "#dc2626" }}>Unplanned</th>
                     <th className="px-4 py-2.5 text-right text-[0.62rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>Total</th>
                   </tr>
@@ -505,7 +505,7 @@ function AbsenceCard({
                           {emp.full_name}
                           <span className="ml-2 text-[0.62rem] font-normal" style={{ color: "var(--sidebar-label)" }}>{emp.employee_id}</span>
                         </td>
-                        <td className="px-4 py-2.5 text-right tabular-nums font-semibold" style={{ color: emp.planned_count > 0 ? "#16a34a" : "var(--sidebar-label)" }}>{emp.planned_count}</td>
+                        <td className="px-4 py-2.5 text-right tabular-nums font-semibold" style={{ color: emp.planned_count > 0 ? "#0ea5e9" : "var(--sidebar-label)" }}>{emp.planned_count}</td>
                         <td className="px-4 py-2.5 text-right tabular-nums font-semibold" style={{ color: emp.unplanned_count > 0 ? "#dc2626" : "var(--sidebar-label)" }}>{emp.unplanned_count}</td>
                         <td className="px-4 py-2.5 text-right tabular-nums" style={{ color: "var(--sidebar-text)" }}>{emp.planned_count + emp.unplanned_count}</td>
                       </tr>
