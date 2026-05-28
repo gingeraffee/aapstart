@@ -932,6 +932,36 @@ def _build_snapshot(
         if row.module_completed:
             emp_modules_completed[row.employee_id] = emp_modules_completed.get(row.employee_id, 0) + 1
 
+    # Indirect reports: fetch direct reports of any manager on this team
+    manager_ids_on_team = {e.employee_id for e in team if e.is_manager}
+    sub_reports_by_mgr: dict[str, list] = {mid: [] for mid in manager_ids_on_team}
+    if manager_ids_on_team:
+        sub_emps = (
+            db.query(Employee)
+            .filter(Employee.manager_employee_id.in_(manager_ids_on_team))
+            .order_by(Employee.last_name, Employee.first_name)
+            .all()
+        )
+        sub_ids = {e.employee_id for e in sub_emps}
+        sub_progress = db.query(UserProgress).filter(
+            UserProgress.employee_id.in_(sub_ids)
+        ).all() if sub_ids else []
+        sub_modules: dict[str, int] = {}
+        for row in sub_progress:
+            if row.module_completed:
+                sub_modules[row.employee_id] = sub_modules.get(row.employee_id, 0) + 1
+        for e in sub_emps:
+            if e.manager_employee_id in sub_reports_by_mgr:
+                sub_reports_by_mgr[e.manager_employee_id].append({
+                    "employee_id": e.employee_id,
+                    "full_name": f"{e.first_name} {e.last_name}",
+                    "tracks": normalize_tracks(e.track),
+                    "department": e.department,
+                    "last_login_at": e.last_login_at.isoformat() if e.last_login_at else None,
+                    "first_login_at": e.first_login_at.isoformat() if e.first_login_at else None,
+                    "modules_completed": sub_modules.get(e.employee_id, 0),
+                })
+
     team_list = [
         {
             "employee_id": e.employee_id,
@@ -943,6 +973,8 @@ def _build_snapshot(
             "modules_completed": emp_modules_completed.get(e.employee_id, 0),
             "point_total": pts_by_emp.get(e.employee_id),
             "threshold": _threshold_for(pts_by_emp.get(e.employee_id)),
+            "is_manager": e.is_manager,
+            "reports": sub_reports_by_mgr.get(e.employee_id, []),
         }
         for e in sorted(team, key=lambda x: (x.last_name, x.first_name))
     ]

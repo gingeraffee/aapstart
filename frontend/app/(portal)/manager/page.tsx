@@ -13,6 +13,7 @@ import type {
   ManagerHoursSummary,
   ManagerHoursSummaryV2,
   ManagerTeamMemberV2,
+  IndirectReport,
   AbsenceCategoryEntry,
   EmployeeDetailData,
   AttendanceThreshold,
@@ -595,6 +596,70 @@ function EmployeeCard({ member, onClick }: { member: ManagerTeamMemberV2; onClic
   );
 }
 
+// ── Indirect Reports Section ──────────────────────────────────────────────────
+
+function IndirectReportCard({ member }: { member: IndirectReport }) {
+  const lastLogin = member.last_login_at
+    ? formatDate(member.last_login_at)
+    : member.first_login_at ? "Never logged in" : "Not yet enrolled";
+  return (
+    <div
+      className="rounded-[12px] p-3"
+      style={{ background: "rgba(255,255,255,0.65)", border: "1px solid rgba(153,182,218,0.22)" }}
+    >
+      <p className="text-[0.82rem] font-bold leading-tight" style={{ color: "var(--sidebar-text)" }}>{member.full_name}</p>
+      <p className="mt-0.5 text-[0.65rem]" style={{ color: "var(--sidebar-label)" }}>{member.employee_id}</p>
+      {member.department && (
+        <p className="mt-1 text-[0.7rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>{member.department}</p>
+      )}
+      <div className="mt-1.5 flex flex-wrap gap-1">
+        {member.tracks.map((t) => {
+          const color = TRACK_COLORS[t] ?? { bg: "rgba(100,116,139,0.1)", text: "#475569" };
+          return (
+            <span key={t} className="rounded-full px-2 py-0.5 text-[0.62rem] font-semibold" style={{ background: color.bg, color: color.text }}>
+              {TRACK_LABELS[t] ?? t}
+            </span>
+          );
+        })}
+      </div>
+      <p className="mt-2 text-[0.65rem]" style={{ color: "var(--sidebar-label)" }}>
+        Last login: <span style={{ color: "var(--sidebar-text)" }}>{lastLogin}</span>
+      </p>
+    </div>
+  );
+}
+
+function IndirectReportsSection({ manager }: { manager: ManagerTeamMemberV2 }) {
+  const [open, setOpen] = useState(true);
+  const reports = manager.reports ?? [];
+  if (reports.length === 0) return null;
+  return (
+    <div className="mt-3 rounded-[12px] overflow-hidden" style={{ background: "rgba(153,182,218,0.07)", border: "1px solid rgba(153,182,218,0.2)" }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="flex w-full items-center gap-2 px-4 py-2.5 text-left transition-opacity hover:opacity-75"
+      >
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+          className={cn("shrink-0 transition-transform duration-200", open && "rotate-90")}
+          style={{ color: "var(--sidebar-label)" }}>
+          <path d="M3 1.5L7 5L3 8.5" />
+        </svg>
+        <span className="text-[0.72rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>
+          {manager.full_name}&rsquo;s Team
+        </span>
+        <span className="rounded-full px-2 py-0.5 text-[0.62rem] font-semibold" style={{ background: "rgba(153,182,218,0.25)", color: "var(--sidebar-label)" }}>
+          {reports.length}
+        </span>
+      </button>
+      {open && (
+        <div className="grid gap-2.5 px-4 pb-4 sm:grid-cols-2 lg:grid-cols-3">
+          {reports.map(r => <IndirectReportCard key={r.employee_id} member={r} />)}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Team Roster View ──────────────────────────────────────────────────────────
 
 function TeamRosterView({ team, onSelect }: { team: ManagerTeamMemberV2[]; onSelect: (m: ManagerTeamMemberV2) => void }) {
@@ -620,6 +685,8 @@ function TeamRosterView({ team, onSelect }: { team: ManagerTeamMemberV2[]; onSel
     return a.localeCompare(b);
   });
 
+  const managersWithReports = team.filter(m => m.is_manager && (m.reports?.length ?? 0) > 0);
+
   return (
     <div className="space-y-6">
       {sorted.map(([dept, members]) => (
@@ -636,6 +703,20 @@ function TeamRosterView({ team, onSelect }: { team: ManagerTeamMemberV2[]; onSel
           </div>
         </div>
       ))}
+      {managersWithReports.length > 0 && (
+        <div>
+          <div className="mb-3 flex items-center gap-3">
+            <h2 className="text-[0.82rem] font-bold" style={{ color: "var(--sidebar-text)" }}>Indirect Reports</h2>
+            <span className="rounded-full px-2 py-0.5 text-[0.64rem] font-semibold" style={{ background: "rgba(153,182,218,0.18)", color: "var(--sidebar-label)" }}>
+              {managersWithReports.reduce((s, m) => s + (m.reports?.length ?? 0), 0)}
+            </span>
+            <div className="h-px flex-1" style={{ background: "rgba(153,182,218,0.25)" }} />
+          </div>
+          <div className="space-y-3">
+            {managersWithReports.map(m => <IndirectReportsSection key={m.employee_id} manager={m} />)}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

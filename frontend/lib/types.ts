@@ -103,6 +103,16 @@ export interface ManagerHoursSummaryV2 extends ManagerHoursSummary {
   protected_hours: number;
 }
 
+export interface IndirectReport {
+  employee_id: string;
+  full_name: string;
+  tracks: string[];
+  department: string | null;
+  last_login_at: string | null;
+  first_login_at: string | null;
+  modules_completed: number;
+}
+
 export interface ManagerTeamMember {
   employee_id: string;
   full_name: string;
@@ -111,6 +121,8 @@ export interface ManagerTeamMember {
   last_login_at: string | null;
   first_login_at: string | null;
   modules_completed: number;
+  is_manager?: boolean;
+  reports?: IndirectReport[];
 }
 
 export type AttendanceThreshold = "verbal" | "written" | "final" | "termination" | null;
