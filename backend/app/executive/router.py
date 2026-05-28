@@ -259,6 +259,17 @@ def executive_dashboard(
     # so historical hours from terminated employees still count toward totals.
     employees = db.query(Employee).filter(Employee.terminated_date.is_(None)).all()
 
+    # Attrition window: count employees terminated in the last 30 days
+    thirty_days_ago = (date.today() - timedelta(days=30)).isoformat()
+    terminations_last_30 = (
+        db.query(sa_func.count(Employee.id))
+        .filter(
+            Employee.terminated_date.isnot(None),
+            Employee.terminated_date >= thirty_days_ago,
+        )
+        .scalar() or 0
+    )
+
     total = len(employees)
     by_dept: dict[str, int] = {}
     by_track: dict[str, int] = {}
@@ -348,6 +359,7 @@ def executive_dashboard(
             "managers":      managers,
             "admins":        admins,
             "executives":    executives,
+            "terminations_last_30_days": int(terminations_last_30),
         },
         "hours_by_department": sorted(hours_by_dept, key=lambda x: x["department"]),
         "hours_date_range":    hours_date_range,

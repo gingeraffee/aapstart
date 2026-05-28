@@ -449,6 +449,7 @@ export interface ExecutiveDashboardData {
     managers: number;
     admins: number;
     executives: number;
+    terminations_last_30_days?: number;
   };
   hours_by_department: {
     department: string;

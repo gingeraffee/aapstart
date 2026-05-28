@@ -1531,7 +1531,7 @@ export default function ExecutivePage() {
       {activeTab === "overview" && (
         <>
           {/* Hero KPIs — clickable, jump to relevant tab */}
-          <div className="mb-5 grid grid-cols-2 md:grid-cols-4 gap-2">
+          <div className="mb-5 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
             <button
               onClick={() => setActiveTab("hours")}
               className="group rounded-[14px] px-4 py-4 text-left transition-all hover:shadow-md"
@@ -1603,6 +1603,26 @@ export default function ExecutivePage() {
                 {adherenceData?.top_manager ?? "No data"}
               </p>
             </button>
+
+            {(() => {
+              const terms = dashData?.headcount.terminations_last_30_days ?? 0;
+              const accent = terms === 0 ? "#16a34a" : terms <= 2 ? "#d97706" : "#dc2626";
+              return (
+                <div
+                  className="rounded-[14px] px-4 py-4 text-left"
+                  style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}
+                >
+                  <span className="mb-2 inline-block h-1 w-8 rounded-full" style={{ background: accent }} />
+                  <p className="text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>Terminated (30d)</p>
+                  <p className="mt-1 text-[1.6rem] font-bold leading-none" style={{ color: "var(--heading-color)" }}>
+                    {fmtNum(terms)}
+                  </p>
+                  <p className="mt-1.5 text-[0.7rem]" style={{ color: "var(--card-desc)" }}>
+                    {terms === 0 ? "No attrition this month" : `Last 30 days · ${dashData?.headcount.total ?? 0} active`}
+                  </p>
+                </div>
+              );
+            })()}
           </div>
 
           {/* Hour allocations — where the company's hours are going */}
