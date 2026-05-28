@@ -149,6 +149,119 @@ function WoshTrendChart({
   );
 }
 
+// ── Hour allocations chart (stacked horizontal bars) ──────────────────────────
+
+type HourAllocationRow = {
+  location: string;
+  department: string;
+  regular: number;
+  ot: number;
+  total: number;
+};
+
+function HourAllocationsChart({
+  rows,
+  subtitle,
+}: {
+  rows: HourAllocationRow[];
+  subtitle?: string;
+}) {
+  if (rows.length === 0) {
+    return (
+      <div
+        className="mb-5 rounded-[14px] py-8 text-center"
+        style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}
+      >
+        <p className="text-[0.85rem] font-semibold" style={{ color: "var(--heading-color)" }}>No hours data for this period</p>
+        <p className="mt-1 text-[0.78rem]" style={{ color: "var(--card-desc)" }}>Upload weekly Payclock hours to see allocations.</p>
+      </div>
+    );
+  }
+
+  const chartData = rows.map(r => ({
+    ...r,
+    name: `${r.location} · ${r.department}`,
+  }));
+
+  const totalRegular = rows.reduce((s, r) => s + r.regular, 0);
+  const totalOt      = rows.reduce((s, r) => s + r.ot, 0);
+  const grandTotal   = totalRegular + totalOt;
+
+  // Dynamic height — ~28px per row, with floor and ceiling
+  const chartHeight = Math.min(Math.max(rows.length * 30 + 40, 200), 520);
+
+  return (
+    <div
+      className="mb-5 rounded-[14px] px-5 pt-4 pb-3"
+      style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}
+    >
+      <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <p className="text-[0.75rem] font-semibold uppercase tracking-wide" style={{ color: "var(--module-context)" }}>
+            Hour Allocations
+          </p>
+          {subtitle && (
+            <p className="mt-0.5 text-[0.7rem]" style={{ color: "var(--card-desc)" }}>{subtitle}</p>
+          )}
+        </div>
+        <div className="flex items-center gap-3 text-[0.7rem]" style={{ color: "var(--card-desc)" }}>
+          <span><span style={{ color: "#2563eb" }}>■</span> Regular {fmtHrs(totalRegular)}</span>
+          <span><span style={{ color: "#d97706" }}>■</span> OT {fmtHrs(totalOt)}</span>
+          <span className="font-semibold" style={{ color: "var(--heading-color)" }}>Total {fmtHrs(grandTotal)}</span>
+        </div>
+      </div>
+      <ResponsiveContainer width="100%" height={chartHeight}>
+        <BarChart
+          data={chartData}
+          layout="vertical"
+          margin={{ top: 4, right: 16, bottom: 4, left: 0 }}
+        >
+          <XAxis
+            type="number"
+            tick={{ fontSize: 10, fill: "var(--card-desc)" }}
+            axisLine={false}
+            tickLine={false}
+            tickFormatter={(v: number) => v.toLocaleString("en-US", { maximumFractionDigits: 0 })}
+          />
+          <YAxis
+            type="category"
+            dataKey="name"
+            tick={{ fontSize: 10, fill: "var(--card-desc)" }}
+            axisLine={false}
+            tickLine={false}
+            width={180}
+          />
+          <Tooltip
+            cursor={{ fill: "var(--tab-group-bg)" }}
+            content={({ active, payload }) => {
+              if (!active || !payload?.length) return null;
+              const d = payload[0].payload as typeof chartData[0];
+              const pct = grandTotal > 0 ? ((d.total / grandTotal) * 100).toFixed(1) : "0.0";
+              return (
+                <div
+                  className="rounded-[10px] px-3 py-2 shadow-lg text-[0.72rem]"
+                  style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}
+                >
+                  <p className="font-semibold mb-0.5" style={{ color: "var(--heading-color)" }}>
+                    {d.location} · {d.department}
+                  </p>
+                  <p><span style={{ color: "#2563eb" }}>Regular:</span> {fmtHrs(d.regular)} hrs</p>
+                  <p><span style={{ color: "#d97706" }}>OT:</span> {fmtHrs(d.ot)} hrs</p>
+                  <p className="mt-1 font-semibold" style={{ color: "var(--heading-color)" }}>
+                    Total: {fmtHrs(d.total)} hrs ({pct}%)
+                  </p>
+                </div>
+              );
+            }}
+          />
+          <Bar dataKey="regular" stackId="a" fill="#2563eb" radius={[3, 0, 0, 3]} />
+          <Bar dataKey="ot" stackId="a" fill="#d97706" radius={[0, 3, 3, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
 // ── KPI card ─────────────────────────────────────────────────────────────────
 
 function KpiCard({
@@ -1223,6 +1336,24 @@ export default function ExecutivePage() {
     return sum / adherenceData.managers.length;
   }, [adherenceData]);
 
+  // Flatten location × department into rows for the Overview hour-allocations chart
+  const hourAllocationRows = useMemo(() => {
+    if (!hoursLocData) return [];
+    const rows: HourAllocationRow[] = [];
+    for (const loc of hoursLocData.locations) {
+      for (const dept of loc.departments) {
+        rows.push({
+          location: loc.location,
+          department: dept.department,
+          regular: dept.regular_hours,
+          ot: dept.ot_hours,
+          total: dept.regular_hours + dept.ot_hours,
+        });
+      }
+    }
+    return rows.sort((a, b) => b.total - a.total);
+  }, [hoursLocData]);
+
   if (user && !user.is_executive && !user.is_admin) {
     router.replace("/overview");
     return null;
@@ -1474,14 +1605,17 @@ export default function ExecutivePage() {
             </button>
           </div>
 
-          {/* Trend chart */}
-          {weeks.length >= 2 && (
-            <WoshTrendChart
-              history={weeks}
-              activeId={effectiveReportId}
-              onSelect={setSelectedId}
-            />
-          )}
+          {/* Hour allocations — where the company's hours are going */}
+          <HourAllocationsChart
+            rows={hourAllocationRows}
+            subtitle={
+              hoursMode === "range" && (validFrom || validTo)
+                ? `${validFrom || "…"} – ${validTo || "…"}`
+                : report?.week_label
+                ? report.week_label
+                : dashData?.hours_date_range ?? undefined
+            }
+          />
 
           {/* Two-column spotlight */}
           <div className="grid gap-4 md:grid-cols-2">
