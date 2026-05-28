@@ -431,6 +431,59 @@ export interface ExecutiveDashboardData {
   };
 }
 
+export interface HeadcountLocation {
+  location: string;
+  total: number;
+  departments: { department: string; count: number }[];
+}
+
+export interface HeadcountData {
+  total: number;
+  by_location: HeadcountLocation[];
+}
+
+export interface PTODepartment {
+  department: string;
+  vacation_hours: number;
+  personal_hours: number;
+  protected_hours: number;
+  total_pto: number;
+  employee_count: number;
+}
+
+export interface PTOLocation {
+  location: string;
+  vacation_hours: number;
+  personal_hours: number;
+  protected_hours: number;
+  total_pto: number;
+  departments: PTODepartment[];
+}
+
+export interface PTOAnalyticsData {
+  total_pto: number;
+  locations: PTOLocation[];
+}
+
+export interface ManagerAdherence {
+  manager_id: string;
+  manager_name: string;
+  department: string | null;
+  location: string;
+  team_size: number;
+  regular_hours: number;
+  ot_hours: number;
+  ot_rate: number;
+  absent_w_point_hours: number;
+  adherence_score: number;
+}
+
+export interface ShiftAdherenceData {
+  managers: ManagerAdherence[];
+  top_manager: string | null;
+  top_score: number | null;
+}
+
 export interface TotpSetupData {
   secret: string;
   qr_code: string;

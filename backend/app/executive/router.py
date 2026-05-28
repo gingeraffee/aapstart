@@ -410,6 +410,195 @@ def hours_by_location(
     return {"locations": result}
 
 
+# ── Location normalizer (shared by headcount / pto / adherence) ───────────────
+
+def _normalize_location(loc: str | None, div: str | None) -> str:
+    """Map raw Employee.location to one of the 3 canonical display buckets."""
+    if not loc or loc == "Remote":
+        return "AAP"
+    if loc == "AAP Scottsboro":
+        return "AAP"
+    if loc == "API Scottsboro":
+        return "API Scottsboro"
+    if loc == "API Memphis":
+        return "API Memphis"
+    return loc
+
+
+# ── Headcount by location ─────────────────────────────────────────────────────
+
+@router.get("/headcount")
+def headcount_by_location(
+    user: dict = Depends(require_executive),
+    db: Session = Depends(get_db),
+):
+    """Active employee headcount grouped by display location → department."""
+    rows = (
+        db.query(
+            Employee.location,
+            Employee.division,
+            Employee.department,
+            sa_func.count(Employee.id).label("count"),
+        )
+        .group_by(Employee.location, Employee.division, Employee.department)
+        .all()
+    )
+
+    groups: dict[str, dict[str, int]] = {}
+    grand_total = 0
+    for row in rows:
+        display = _normalize_location(row.location, row.division)
+        dept = row.department or "Unassigned"
+        if display not in groups:
+            groups[display] = {}
+        groups[display][dept] = groups[display].get(dept, 0) + (row.count or 0)
+        grand_total += row.count or 0
+
+    ORDER = ["AAP", "API Scottsboro", "API Memphis"]
+    result = []
+    for loc in ORDER:
+        if loc not in groups:
+            continue
+        depts = [{"department": d, "count": c} for d, c in sorted(groups[loc].items())]
+        result.append({"location": loc, "total": sum(d["count"] for d in depts), "departments": depts})
+    for loc, dept_map in groups.items():
+        if loc not in ORDER:
+            depts = [{"department": d, "count": c} for d, c in sorted(dept_map.items())]
+            result.append({"location": loc, "total": sum(d["count"] for d in depts), "departments": depts})
+
+    return {"total": grand_total, "by_location": result}
+
+
+# ── PTO analytics ─────────────────────────────────────────────────────────────
+
+@router.get("/pto-analytics")
+def pto_analytics(
+    user: dict = Depends(require_executive),
+    db: Session = Depends(get_db),
+):
+    """Vacation + personal hours by display location and department."""
+    rows = (
+        db.query(
+            Employee.location,
+            Employee.division,
+            Employee.department,
+            sa_func.sum(TimeRecord.vacation_hours).label("vacation"),
+            sa_func.sum(TimeRecord.personal_hours).label("personal"),
+            sa_func.sum(TimeRecord.protected_hours).label("protected"),
+            sa_func.count(sa_func.distinct(TimeRecord.employee_id)).label("emp_count"),
+        )
+        .join(TimeRecord, Employee.employee_id == TimeRecord.employee_id)
+        .group_by(Employee.location, Employee.division, Employee.department)
+        .all()
+    )
+
+    groups: dict[str, dict[str, dict]] = {}
+    for row in rows:
+        display = _normalize_location(row.location, row.division)
+        dept = row.department or "Unassigned"
+        if display not in groups:
+            groups[display] = {}
+        if dept not in groups[display]:
+            groups[display][dept] = {"vacation": 0.0, "personal": 0.0, "protected": 0.0, "emp_count": 0}
+        groups[display][dept]["vacation"]  += row.vacation  or 0
+        groups[display][dept]["personal"]  += row.personal  or 0
+        groups[display][dept]["protected"] += row.protected or 0
+        groups[display][dept]["emp_count"] += row.emp_count or 0
+
+    ORDER = ["AAP", "API Scottsboro", "API Memphis"]
+
+    def _build(loc: str, dept_map: dict) -> dict:
+        depts = [
+            {
+                "department":      d,
+                "vacation_hours":  round(v["vacation"],  2),
+                "personal_hours":  round(v["personal"],  2),
+                "protected_hours": round(v["protected"], 2),
+                "total_pto":       round(v["vacation"] + v["personal"], 2),
+                "employee_count":  v["emp_count"],
+            }
+            for d, v in sorted(dept_map.items())
+        ]
+        vac = round(sum(d["vacation_hours"]  for d in depts), 2)
+        per = round(sum(d["personal_hours"]  for d in depts), 2)
+        pro = round(sum(d["protected_hours"] for d in depts), 2)
+        return {
+            "location":        loc,
+            "vacation_hours":  vac,
+            "personal_hours":  per,
+            "protected_hours": pro,
+            "total_pto":       round(vac + per, 2),
+            "departments":     depts,
+        }
+
+    result = [_build(loc, groups[loc]) for loc in ORDER if loc in groups]
+    for loc, dept_map in groups.items():
+        if loc not in ORDER:
+            result.append(_build(loc, dept_map))
+
+    return {"total_pto": round(sum(l["total_pto"] for l in result), 2), "locations": result}
+
+
+# ── Shift adherence ───────────────────────────────────────────────────────────
+
+@router.get("/shift-adherence")
+def shift_adherence(
+    user: dict = Depends(require_executive),
+    db: Session = Depends(get_db),
+):
+    """Per-manager team adherence ranked by OT rate + unexcused absence rate."""
+    managers = db.query(Employee).filter(Employee.is_manager == True).all()
+    if not managers:
+        return {"managers": [], "top_manager": None, "top_score": None}
+
+    result = []
+    for mgr in managers:
+        time_data = (
+            db.query(
+                sa_func.sum(TimeRecord.regular_hours).label("regular"),
+                sa_func.sum(TimeRecord.ot_hours).label("ot"),
+                sa_func.sum(TimeRecord.absent_w_point_hours).label("absent_pts"),
+                sa_func.count(sa_func.distinct(TimeRecord.employee_id)).label("team_size"),
+            )
+            .join(Employee, TimeRecord.employee_id == Employee.employee_id)
+            .filter(Employee.manager_employee_id == mgr.employee_id)
+            .first()
+        )
+        if not time_data or not time_data.team_size:
+            continue
+
+        regular = float(time_data.regular or 0)
+        ot      = float(time_data.ot      or 0)
+        absent  = float(time_data.absent_pts or 0)
+        total   = regular + ot
+        if total == 0:
+            continue
+
+        ot_rate     = ot / total
+        absent_rate = min(absent / total, 1.0)
+        score       = round((1 - ot_rate) * (1 - absent_rate) * 100, 1)
+
+        result.append({
+            "manager_id":           mgr.employee_id,
+            "manager_name":         f"{mgr.first_name} {mgr.last_name}",
+            "department":           mgr.department,
+            "location":             _normalize_location(mgr.location, mgr.division),
+            "team_size":            time_data.team_size,
+            "regular_hours":        round(regular, 2),
+            "ot_hours":             round(ot, 2),
+            "ot_rate":              round(ot_rate * 100, 1),
+            "absent_w_point_hours": round(absent, 2),
+            "adherence_score":      score,
+        })
+
+    result.sort(key=lambda x: x["adherence_score"], reverse=True)
+    return {
+        "managers":    result,
+        "top_manager": result[0]["manager_name"]    if result else None,
+        "top_score":   result[0]["adherence_score"] if result else None,
+    }
+
+
 def _classify_threshold(total: float | None) -> str | None:
     if total is None:
         return None
