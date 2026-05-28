@@ -519,10 +519,11 @@ function HoursByLocation({ locations }: { locations: LocationHours[] }) {
       <p className="mb-2 text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
         Hours by Location
       </p>
-      <div className="mb-3">
-        <OtDonutChart locations={locations} />
-      </div>
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="flex flex-col gap-3 md:flex-row md:items-start">
+        <div className="shrink-0">
+          <OtDonutChart locations={locations} />
+        </div>
+        <div className="grid flex-1 gap-3 grid-cols-1">
         {locations.map((loc) => {
           const isOpen = open === loc.location;
           const total = loc.regular_hours + loc.ot_hours;
@@ -585,6 +586,7 @@ function HoursByLocation({ locations }: { locations: LocationHours[] }) {
             </div>
           );
         })}
+        </div>
       </div>
     </div>
   );
