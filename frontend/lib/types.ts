@@ -498,6 +498,9 @@ export interface ManagerAdherence {
   ot_hours: number;
   ot_rate: number;
   absent_w_point_hours: number;
+  reviews_total?: number;
+  reviews_past_due?: number;
+  review_compliance?: number;
   adherence_score: number;
 }
 

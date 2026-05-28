@@ -13,6 +13,7 @@ from app.database.models import (
     ATTENDANCE_THRESHOLDS,
     AttendancePoint,
     Employee,
+    PerformanceReview,
     TimeRecord,
     WoshReport,
 )
@@ -576,10 +577,12 @@ def shift_adherence(
     user: dict = Depends(require_executive),
     db: Session = Depends(get_db),
 ):
-    """Per-manager team adherence ranked by OT rate + unexcused absence rate."""
+    """Per-manager compliance ranked by OT rate, absences, and review past-due rate."""
     managers = db.query(Employee).filter(Employee.is_manager == True).all()
     if not managers:
         return {"managers": [], "top_manager": None, "top_score": None}
+
+    today_str = date.today().isoformat()
 
     result = []
     for mgr in managers:
@@ -604,9 +607,37 @@ def shift_adherence(
         if total == 0:
             continue
 
+        # Review compliance: count this team's reviews and how many are past due
+        team_ids = [
+            r[0] for r in db.query(Employee.employee_id)
+                .filter(Employee.manager_employee_id == mgr.employee_id)
+                .all()
+        ]
+
+        reviews_total = 0
+        reviews_past_due = 0
+        if team_ids:
+            reviews_total = (
+                db.query(sa_func.count(PerformanceReview.id))
+                .filter(PerformanceReview.employee_id.in_(team_ids))
+                .scalar() or 0
+            )
+            reviews_past_due = (
+                db.query(sa_func.count(PerformanceReview.id))
+                .filter(PerformanceReview.employee_id.in_(team_ids))
+                .filter(PerformanceReview.completed == False)  # noqa: E712
+                .filter(PerformanceReview.due_date < today_str)
+                .scalar() or 0
+            )
+
+        review_compliance = (
+            (reviews_total - reviews_past_due) / reviews_total
+            if reviews_total > 0 else 1.0
+        )
+
         ot_rate     = ot / total
         absent_rate = min(absent / total, 1.0)
-        score       = round((1 - ot_rate) * (1 - absent_rate) * 100, 1)
+        score       = round((1 - ot_rate) * (1 - absent_rate) * review_compliance * 100, 1)
 
         result.append({
             "manager_id":           mgr.employee_id,
@@ -618,6 +649,9 @@ def shift_adherence(
             "ot_hours":             round(ot, 2),
             "ot_rate":              round(ot_rate * 100, 1),
             "absent_w_point_hours": round(absent, 2),
+            "reviews_total":        reviews_total,
+            "reviews_past_due":     reviews_past_due,
+            "review_compliance":    round(review_compliance * 100, 1),
             "adherence_score":      score,
         })
 

@@ -963,7 +963,7 @@ const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
   },
   {
     id: "managers",
-    label: "Manager Performance",
+    label: "Manager Compliance",
     icon: (
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -1026,10 +1026,10 @@ function ManagerAdherenceTable({ managers }: { managers: ManagerAdherence[] }) {
     <div className="overflow-hidden rounded-[14px]" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}>
       <div className="border-b px-5 py-4" style={{ borderColor: "var(--card-border)" }}>
         <h3 className="text-[0.9rem] font-bold" style={{ color: "var(--heading-color)" }}>
-          Manager Adherence Ranking
+          Manager Compliance Ranking
         </h3>
         <p className="mt-1 text-[0.72rem]" style={{ color: "var(--card-desc)" }}>
-          Combined score from OT rate and unexcused absence rate. Higher is better.
+          Combined score from OT rate, unexcused absences, and review past-due rate. Higher is better.
         </p>
       </div>
       <div className="overflow-x-auto">
@@ -1043,12 +1043,15 @@ function ManagerAdherenceTable({ managers }: { managers: ManagerAdherence[] }) {
               <th className="px-4 py-3 text-center font-semibold" style={{ color: "var(--module-context)" }}>Team</th>
               <th className="px-4 py-3 text-right font-semibold" style={{ color: "var(--module-context)" }}>OT Rate</th>
               <th className="px-4 py-3 text-right font-semibold" style={{ color: "var(--module-context)" }}>Absent Hrs</th>
+              <th className="px-4 py-3 text-center font-semibold" style={{ color: "var(--module-context)" }}>Reviews Past Due</th>
               <th className="px-5 py-3 text-right font-semibold" style={{ color: "var(--module-context)" }}>Score</th>
             </tr>
           </thead>
           <tbody>
             {managers.map((m, i) => {
               const color = scoreColor(m.adherence_score);
+              const reviewsTotal = m.reviews_total ?? 0;
+              const reviewsPastDue = m.reviews_past_due ?? 0;
               return (
                 <tr key={m.manager_id} style={{ borderBottom: i < managers.length - 1 ? "1px solid var(--card-border)" : "none" }}>
                   <td className="px-4 py-3 font-bold" style={{ color: "var(--module-context)" }}>{i + 1}</td>
@@ -1061,6 +1064,21 @@ function ManagerAdherenceTable({ managers }: { managers: ManagerAdherence[] }) {
                   </td>
                   <td className="px-4 py-3 text-right" style={{ color: m.absent_w_point_hours > 0 ? "#dc2626" : "var(--card-desc)" }}>
                     {fmtHrs(m.absent_w_point_hours)}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    {reviewsTotal === 0 ? (
+                      <span style={{ color: "var(--card-desc)" }}>—</span>
+                    ) : (
+                      <span
+                        className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[0.72rem] font-bold"
+                        style={{
+                          background: reviewsPastDue > 0 ? "rgba(239,68,68,0.12)" : "rgba(34,197,94,0.12)",
+                          color: reviewsPastDue > 0 ? "#dc2626" : "#16a34a",
+                        }}
+                      >
+                        {reviewsPastDue} / {reviewsTotal}
+                      </span>
+                    )}
                   </td>
                   <td className="px-5 py-3 text-right">
                     <div className="inline-flex items-center gap-2">
@@ -1679,7 +1697,7 @@ export default function ExecutivePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {activeTab === "managers" && (
         <>
-          <SectionLabel>Manager Performance</SectionLabel>
+          <SectionLabel>Manager Compliance</SectionLabel>
 
           {/* Stats row */}
           <div className="mb-5 grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -1706,7 +1724,7 @@ export default function ExecutivePage() {
           {adherenceData && <ManagerAdherenceTable managers={adherenceData.managers} />}
 
           <p className="mt-3 text-[0.68rem]" style={{ color: "var(--card-desc)" }}>
-            Score = (1 − OT rate) × (1 − absence rate) × 100. Based on cumulative hours data.
+            Score = (1 − OT rate) × (1 − absence rate) × (review compliance) × 100. Based on cumulative hours and review past-due status.
           </p>
         </>
       )}
