@@ -685,6 +685,17 @@ async def upload_wosh(
     }
 
 
+@router.delete("/wosh", status_code=status.HTTP_200_OK)
+def clear_wosh_reports(
+    user: dict = Depends(require_hr_and_admin),
+    db: Session = Depends(get_db),
+):
+    """Delete all WOSH reports so HR can re-upload a fresh set."""
+    deleted = db.query(WoshReport).delete()
+    db.commit()
+    return {"deleted": deleted}
+
+
 @router.get("/wosh/latest")
 def get_wosh_latest(
     user: dict = Depends(require_executive),

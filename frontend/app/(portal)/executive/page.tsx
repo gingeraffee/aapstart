@@ -517,9 +517,26 @@ function HoursByLocation({ locations }: { locations: LocationHours[] }) {
 function UploadBar({ onUploaded }: { onUploaded: () => void }) {
   const [weekLabel, setWeekLabel] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [clearing, setClearing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  async function handleClearAll() {
+    if (!confirm("Delete all WOSH reports? This cannot be undone.")) return;
+    setClearing(true);
+    setError(null);
+    setSuccess(null);
+    try {
+      const res = await executiveApi.clearWosh();
+      setSuccess(`Cleared ${res.deleted} report${res.deleted !== 1 ? "s" : ""}. Ready for fresh uploads.`);
+      onUploaded();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Clear failed.");
+    } finally {
+      setClearing(false);
+    }
+  }
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -572,6 +589,14 @@ function UploadBar({ onUploaded }: { onUploaded: () => void }) {
               </svg>
               {uploading ? "Uploading…" : "Choose File"}
             </label>
+            <button
+              onClick={handleClearAll}
+              disabled={clearing || uploading}
+              className="inline-flex items-center gap-1.5 rounded-[10px] px-3 py-2 text-[0.75rem] font-semibold transition-all disabled:opacity-50"
+              style={{ background: "var(--tab-group-bg)", border: "1px solid var(--card-border)", color: "var(--module-context)" }}
+            >
+              {clearing ? "Clearing…" : "Clear All Reports"}
+            </button>
           </div>
         </div>
       </div>

@@ -172,6 +172,7 @@ export const executiveApi = {
     }
     return res.json();
   },
+  clearWosh: () => request<{ deleted: number }>("/executive/wosh", { method: "DELETE" }),
 };
 
 export const resourcesApi = {
