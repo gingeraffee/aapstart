@@ -260,6 +260,7 @@ export interface EmployeeImportRowInput {
   is_admin?: boolean;
   department?: string;
   manager_employee_id?: string;
+  location?: string;
 }
 
 export interface EmployeeImportError {

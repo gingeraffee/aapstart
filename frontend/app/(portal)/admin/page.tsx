@@ -25,6 +25,7 @@ type ParsedImportRow = {
   is_admin: boolean;
   department: string;
   manager_employee_id: string;
+  location: string;
   error?: string;
 };
 
@@ -33,11 +34,11 @@ type ToastState = {
   tone?: "success" | "error";
 };
 
-const IMPORT_TEMPLATE = `name,employee_id,track,is_admin,department,manager_employee_id
-Jane Doe,EMP-100,hr,false,Inside Sales,EMP-050
-Marcus Lane,EMP-101,warehouse,false,,
-Olivia Grant,EMP-102,administrative,true,Compliance,
-Alex Kim,EMP-103,hr|warehouse,false,,
+const IMPORT_TEMPLATE = `name,employee_id,track,is_admin,department,manager_employee_id,location
+Jane Doe,EMP-100,hr,false,Inside Sales,EMP-050,AAP Scottsboro
+Marcus Lane,EMP-101,warehouse,false,,,API Memphis
+Olivia Grant,EMP-102,administrative,true,Compliance,,AAP Scottsboro
+Alex Kim,EMP-103,hr|warehouse,false,,,
 `;
 
 function normalizeHeader(value: string) {
@@ -108,6 +109,7 @@ function parseImportFile(text: string): { rows: ParsedImportRow[]; fileError?: s
   const isAdminIndex = headers.indexOf("is_admin");
   const deptIndex = headers.findIndex((h) => h === "department" || h === "dept");
   const managerIndex = headers.findIndex((h) => h === "manager_employee_id" || h === "manager_id" || h === "reports_to");
+  const locationIndex = headers.indexOf("location");
 
   if (nameIndex === -1 || employeeIdIndex === -1 || trackIndex === -1) {
     return { rows: [], fileError: "Template columns must include name, employee_id, and track." };
@@ -121,6 +123,7 @@ function parseImportFile(text: string): { rows: ParsedImportRow[]; fileError?: s
       const is_admin = coerceBoolean(row[isAdminIndex]);
       const department = deptIndex >= 0 ? (row[deptIndex]?.trim() ?? "") : "";
       const manager_employee_id = managerIndex >= 0 ? (row[managerIndex]?.trim() ?? "") : "";
+      const location = locationIndex >= 0 ? (row[locationIndex]?.trim() ?? "") : "";
 
       let error: string | undefined;
       if (!name) error = "Name is required.";
@@ -129,7 +132,7 @@ function parseImportFile(text: string): { rows: ParsedImportRow[]; fileError?: s
       else if (!track.split(/[|,]/).map((t) => t.trim()).some((t) => TRACKS.includes(t as (typeof TRACKS)[number]))) error = `Track must include at least one of: ${TRACKS.join(", ")}.`;
       else if (name.trim().split(/\s+/).length < 2) error = "Name must include first and last name.";
 
-      return { row: index + 2, name, employee_id, track, is_admin, department, manager_employee_id, error };
+      return { row: index + 2, name, employee_id, track, is_admin, department, manager_employee_id, location, error };
     }),
   };
 }
@@ -689,6 +692,7 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
         is_admin: row.is_admin,
         department: row.department || undefined,
         manager_employee_id: row.manager_employee_id || undefined,
+        location: row.location || undefined,
       }));
       const importResult = (await adminApi.importEmployees(payload)) as EmployeeImportResult;
       setResult(importResult);
@@ -736,7 +740,7 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
                   Download Template
                 </button>
                 <div className="rounded-[12px] px-4 py-2 text-[0.74rem] font-medium" style={{ background: "rgba(27,44,86,0.06)", color: "var(--welcome-label-text)" }}>
-                  Required: name, employee_id, track · Optional: department, manager_employee_id
+                  Required: name, employee_id, track · Optional: department, manager_employee_id, location
                 </div>
               </div>
 
@@ -1322,7 +1326,7 @@ export default function AdminPage() {
             <div className="mt-5 rounded-[18px] px-4 py-4" style={{ background: "rgba(17,41,74,0.04)", border: "1px solid rgba(17,41,74,0.08)" }}>
               <p className="text-[0.72rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>What to include</p>
               <p className="mt-2 text-[0.8rem] leading-[1.6]" style={{ color: "var(--welcome-label-text)" }}>
-                Required: <span className="font-semibold">name</span>, <span className="font-semibold">employee_id</span>, <span className="font-semibold">track</span>. Optional: <span className="font-semibold">is_admin</span>, <span className="font-semibold">department</span>, <span className="font-semibold">manager_employee_id</span>.
+                Required: <span className="font-semibold">name</span>, <span className="font-semibold">employee_id</span>, <span className="font-semibold">track</span>. Optional: <span className="font-semibold">is_admin</span>, <span className="font-semibold">department</span>, <span className="font-semibold">manager_employee_id</span>, <span className="font-semibold">location</span>.
               </p>
             </div>
 

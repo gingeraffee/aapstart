@@ -51,6 +51,7 @@ class EmployeeImportRow(BaseModel):
     is_admin: bool = False
     department: str | None = None
     manager_employee_id: str | None = None
+    location: str | None = None
 
 
 class EmployeeImportRequest(BaseModel):
@@ -223,6 +224,7 @@ def import_employees(
             is_admin=row.is_admin,
             department=row.department.strip() if row.department else None,
             manager_employee_id=row.manager_employee_id.strip() if row.manager_employee_id else None,
+            location=row.location.strip() if row.location else None,
             created_at=datetime.now(timezone.utc),
         )
         db.add(employee)
@@ -643,9 +645,14 @@ def clear_attendance_points(
 def _parse_employee_directory(contents: bytes) -> list[dict]:
     """Parse BambooHR Employee Division and Department export.
     Expected columns: Last name First name, Employee #, Location, Division, Department, Job Title, Reporting to
-    Skips rows where Location == 'Memphis, TN'.
+    Normalizes known location aliases (e.g. 'Memphis, TN' -> 'API Memphis').
     """
     import openpyxl
+
+    LOCATION_ALIASES: dict[str, str] = {
+        "memphis, tn": "API Memphis",
+    }
+
     wb = openpyxl.load_workbook(io.BytesIO(contents), read_only=True, data_only=True)
     ws = wb.active
     rows = list(ws.iter_rows(values_only=True))
@@ -669,8 +676,9 @@ def _parse_employee_directory(contents: bytes) -> list[dict]:
 
         if not emp_num:
             continue
-        if location == "Memphis, TN":
-            continue
+
+        # Normalize known typos/aliases to canonical location names
+        location = LOCATION_ALIASES.get(location.lower(), location)
 
         results.append({
             "employee_id": str(int(emp_num)) if isinstance(emp_num, (int, float)) else str(emp_num).strip(),
