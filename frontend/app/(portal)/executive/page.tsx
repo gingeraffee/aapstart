@@ -96,12 +96,12 @@ function WoshTrendChart({
         >
           <XAxis
             dataKey="shortLabel"
-            tick={{ fontSize: 10, fill: "var(--card-desc)" } as React.CSSProperties}
+            tick={{ fontSize: 10, fill: "var(--card-desc)" }}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
-            tick={{ fontSize: 10, fill: "var(--card-desc)" } as React.CSSProperties}
+            tick={{ fontSize: 10, fill: "var(--card-desc)" }}
             axisLine={false}
             tickLine={false}
             width={32}
