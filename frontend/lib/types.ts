@@ -274,6 +274,7 @@ export interface EmployeeImportResult {
   added: number;
   skipped: number;
   errors: EmployeeImportError[];
+  manager_linked?: number;
 }
 
 export interface BambooImportResult {

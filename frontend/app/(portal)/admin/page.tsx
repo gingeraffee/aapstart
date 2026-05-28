@@ -913,9 +913,10 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
                     {result ? (
                       <div className="rounded-[16px] px-4 py-3" style={{ background: "rgba(14,165,233,0.04)", border: "1px solid rgba(14,165,233,0.12)" }}>
                         <p className="text-[0.78rem] font-semibold" style={{ color: "var(--heading-color)" }}>Import complete</p>
-                        <div className="mt-2 grid grid-cols-2 gap-2">
+                        <div className="mt-2 grid grid-cols-3 gap-2">
                           <div><p className="text-[1.1rem] font-extrabold" style={{ color: "var(--heading-color)" }}>{result.added}</p><p className="text-[0.68rem]" style={{ color: "var(--card-desc)" }}>Added</p></div>
                           <div><p className="text-[1.1rem] font-extrabold" style={{ color: "var(--heading-color)" }}>{result.skipped}</p><p className="text-[0.68rem]" style={{ color: "var(--card-desc)" }}>Skipped</p></div>
+                          <div><p className="text-[1.1rem] font-extrabold" style={{ color: "var(--heading-color)" }}>{result.manager_linked ?? 0}</p><p className="text-[0.68rem]" style={{ color: "var(--card-desc)" }}>Managers linked</p></div>
                         </div>
                         {result.errors.length > 0 && (
                           <div className="mt-2 space-y-1">

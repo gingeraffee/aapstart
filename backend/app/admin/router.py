@@ -52,6 +52,7 @@ class EmployeeImportRow(BaseModel):
     department: str | None = None
     manager_employee_id: str | None = None
     location: str | None = None
+    division: str | None = None
 
 
 class EmployeeImportRequest(BaseModel):
@@ -379,6 +380,7 @@ def import_employees(
             department=row.department.strip() if row.department else None,
             manager_employee_id=row.manager_employee_id.strip() if row.manager_employee_id else None,
             location=row.location.strip() if row.location else None,
+            division=row.division.strip() if row.division else None,
             created_at=datetime.now(timezone.utc),
         )
         db.add(employee)
@@ -404,10 +406,12 @@ async def import_employees_xlsx(
     """Import employees from a standard xlsx using the same column layout as the CSV template.
 
     Expected columns: name, employee_id, track, is_admin (optional), department (optional),
-                      manager_employee_id (optional), location (optional)
+                      manager_employee_id (optional), location (optional), division (optional)
+    Also accepts a "Reporting to" column with manager full names — resolved to employee IDs
+    after all rows are created so same-batch managers are found too.
     """
-    name = file.filename or ""
-    if not name.lower().endswith(".xlsx"):
+    fname = file.filename or ""
+    if not fname.lower().endswith(".xlsx"):
         raise HTTPException(status_code=400, detail="File must be a .xlsx file.")
 
     contents = await file.read()
@@ -423,6 +427,9 @@ async def import_employees_xlsx(
         return h.strip().lower().replace(" ", "_")
 
     employees: list[EmployeeImportRow] = []
+    # emp_id -> lowercased manager full name, for second-pass resolution
+    reporting_to_map: dict[str, str] = {}
+
     for row in raw_rows:
         r = {_norm(k): str(v or "").strip() for k, v in row.items()}
         name_val = r.get("name") or r.get("full_name") or ""
@@ -433,19 +440,48 @@ async def import_employees_xlsx(
         is_admin_raw = r.get("is_admin", "false").lower()
         is_admin_val = is_admin_raw in ("true", "yes", "y", "1")
         dept = r.get("department") or r.get("dept") or ""
-        mgr = r.get("manager_employee_id") or r.get("manager_id") or r.get("reports_to") or ""
         loc = r.get("location") or ""
+        division = r.get("division") or ""
+        # Accept both ID-based and name-based manager columns
+        mgr_id = r.get("manager_employee_id") or r.get("manager_id") or r.get("reports_to") or ""
+        mgr_name = r.get("reporting_to") or ""  # name-based — resolved after import
+        if mgr_name and emp_id:
+            reporting_to_map[emp_id] = mgr_name.lower()
         employees.append(EmployeeImportRow(
             name=name_val or None,
             employee_id=emp_id,
             track=track,
             is_admin=is_admin_val,
             department=dept or None,
-            manager_employee_id=mgr or None,
+            manager_employee_id=mgr_id or None,
             location=loc or None,
+            division=division or None,
         ))
 
-    return import_employees(EmployeeImportRequest(employees=employees), admin, db)
+    # First pass: create all employees
+    result = import_employees(EmployeeImportRequest(employees=employees), admin, db)
+
+    # Second pass: resolve "Reporting to" names now that all employees exist
+    manager_linked = 0
+    if reporting_to_map:
+        all_emps = db.query(Employee).all()
+        name_to_id: dict[str, str] = {
+            f"{e.first_name} {e.last_name}".lower(): e.employee_id
+            for e in all_emps
+        }
+        for emp_id_str, mgr_name_lower in reporting_to_map.items():
+            mgr_id_resolved = name_to_id.get(mgr_name_lower)
+            if not mgr_id_resolved:
+                continue
+            emp = db.query(Employee).filter_by(employee_id=emp_id_str).first()
+            if emp and not emp.manager_employee_id:
+                emp.manager_employee_id = mgr_id_resolved
+                manager_linked += 1
+        if manager_linked:
+            db.commit()
+
+    result["manager_linked"] = manager_linked
+    return result
 
 
 @router.patch("/employees/{employee_id}")
