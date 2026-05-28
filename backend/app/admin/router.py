@@ -904,19 +904,21 @@ def _parse_employee_directory(contents: bytes) -> list[dict]:
 
     headers = [str(h).strip().lower() if h is not None else "" for h in rows[0]]
 
-    def _col(row: tuple, name: str):
-        try:
-            return row[headers.index(name)]
-        except ValueError:
-            return None
+    def _col(row: tuple, *names: str):
+        for name in names:
+            try:
+                return row[headers.index(name)]
+            except ValueError:
+                continue
+        return None
 
     results = []
     for row in rows[1:]:
-        emp_num = _col(row, "employee #")
+        emp_num = _col(row, "employee #", "employee_id", "employee id", "emp #", "emp_id")
         location = str(_col(row, "location") or "").strip()
         division = str(_col(row, "division") or "").strip()
         department = str(_col(row, "department") or "").strip()
-        reporting_to = str(_col(row, "reporting to") or "").strip() or None
+        reporting_to = str(_col(row, "reporting to", "manager", "reports to") or "").strip() or None
 
         if not emp_num:
             continue
