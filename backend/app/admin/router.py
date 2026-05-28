@@ -955,8 +955,21 @@ async def import_employee_directory(
     if not rows:
         raise HTTPException(status_code=400, detail="No valid rows found in file.")
 
-    # Build a full-name → employee_id lookup for manager resolution
     all_emps = db.query(Employee).all()
+
+    # Build lookup indexed by both the raw stored ID and its int-normalized form
+    # so "001234" in the file matches "1234" in the DB and vice-versa.
+    def _norm(v: str) -> str:
+        try:
+            return str(int(v))
+        except (ValueError, TypeError):
+            return v.strip()
+
+    emp_by_id: dict[str, Employee] = {}
+    for e in all_emps:
+        emp_by_id[e.employee_id] = e
+        emp_by_id[_norm(e.employee_id)] = e
+
     name_to_id: dict[str, str] = {
         f"{e.first_name} {e.last_name}".lower(): e.employee_id
         for e in all_emps
@@ -968,17 +981,17 @@ async def import_employee_directory(
     errors: list[dict] = []
 
     for i, row in enumerate(rows, start=2):
-        emp = db.query(Employee).filter_by(employee_id=row["employee_id"]).first()
+        file_id = row["employee_id"]
+        emp = emp_by_id.get(file_id) or emp_by_id.get(_norm(file_id))
         if not emp:
             skipped += 1
-            errors.append({"row": i, "employee_id": row["employee_id"], "detail": "Employee not found in system"})
+            errors.append({"row": i, "employee_id": file_id, "detail": "Employee not found in system"})
             continue
 
         emp.location   = row["location"]
         emp.division   = row["division"]
         emp.department = row["department"]
 
-        # Resolve manager by full name (case-insensitive)
         if row.get("reporting_to"):
             mgr_id = name_to_id.get(row["reporting_to"].lower())
             if mgr_id and mgr_id != emp.employee_id:
@@ -989,10 +1002,12 @@ async def import_employee_directory(
 
     db.commit()
     return {
-        "inserted":       updated,
+        "updated":        updated,
         "skipped":        skipped,
         "manager_linked": manager_linked,
         "errors":         errors[:20],
+        # First 5 IDs from the file — helpful for diagnosing format mismatches
+        "sample_file_ids": [r["employee_id"] for r in rows[:5]],
     }
 
 
