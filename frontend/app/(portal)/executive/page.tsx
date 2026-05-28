@@ -834,31 +834,6 @@ export default function ExecutivePage() {
       {/* Upload bar — HR admins only (must be both HR track and admin) */}
       {(user?.is_admin && user?.tracks?.includes("hr")) && <UploadBar onUploaded={handleUploaded} />}
 
-      {/* Hours by location */}
-      {hoursLocData && hoursLocData.locations.length > 0 && (
-        <HoursByLocation locations={hoursLocData.locations} />
-      )}
-
-      {/* KPI row — WOSH violations */}
-      {summary ? (
-        <>
-          <p className="mb-2 text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
-            Shift Exceptions
-          </p>
-          <div className="mb-3 flex flex-wrap gap-2">
-            <KpiCard id="violations" label="Total Irregularities" value={fmtNum(summary.total_violations)} active={activeKpi === "violations"} onClick={handleKpi} />
-            <KpiCard id="employees" label="Employees Affected" value={fmtNum(summary.employees_affected)} active={activeKpi === "employees"} onClick={handleKpi} />
-            <KpiCard id="early" label="Early Arrivals" value={fmtNum(summary.early_arrivals)} active={activeKpi === "early"} onClick={handleKpi} accent="linear-gradient(135deg,#1e40af 0%,#3b82f6 82%)" />
-            <KpiCard id="late" label="Late Departures" value={fmtNum(summary.late_departures)} active={activeKpi === "late"} onClick={handleKpi} accent="linear-gradient(135deg,#92400e 0%,#f59e0b 82%)" />
-          </div>
-        </>
-      ) : (
-        <div className="mb-3 rounded-[14px] py-8 text-center" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}>
-          <p className="text-[0.85rem] font-semibold" style={{ color: "var(--heading-color)" }}>No WOSH report uploaded yet</p>
-          <p className="mt-1 text-[0.78rem]" style={{ color: "var(--card-desc)" }}>Upload a Shift_Exception_Report.xlsx above to see violation data.</p>
-        </div>
-      )}
-
       {/* KPI row — company-wide */}
       <p className="mb-2 text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
         Company Overview
@@ -894,6 +869,31 @@ export default function ExecutivePage() {
           accent="linear-gradient(135deg,#92400e 0%,#d97706 82%)"
         />
       </div>
+
+      {/* Hours by location */}
+      {hoursLocData && hoursLocData.locations.length > 0 && (
+        <HoursByLocation locations={hoursLocData.locations} />
+      )}
+
+      {/* KPI row — WOSH violations */}
+      {summary ? (
+        <>
+          <p className="mb-2 text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
+            Shift Exceptions
+          </p>
+          <div className="mb-3 flex flex-wrap gap-2">
+            <KpiCard id="violations" label="Total Irregularities" value={fmtNum(summary.total_violations)} active={activeKpi === "violations"} onClick={handleKpi} />
+            <KpiCard id="employees" label="Employees Affected" value={fmtNum(summary.employees_affected)} active={activeKpi === "employees"} onClick={handleKpi} />
+            <KpiCard id="early" label="Early Arrivals" value={fmtNum(summary.early_arrivals)} active={activeKpi === "early"} onClick={handleKpi} accent="linear-gradient(135deg,#1e40af 0%,#3b82f6 82%)" />
+            <KpiCard id="late" label="Late Departures" value={fmtNum(summary.late_departures)} active={activeKpi === "late"} onClick={handleKpi} accent="linear-gradient(135deg,#92400e 0%,#f59e0b 82%)" />
+          </div>
+        </>
+      ) : (
+        <div className="mb-3 rounded-[14px] py-8 text-center" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}>
+          <p className="text-[0.85rem] font-semibold" style={{ color: "var(--heading-color)" }}>No WOSH report uploaded yet</p>
+          <p className="mt-1 text-[0.78rem]" style={{ color: "var(--card-desc)" }}>Upload a Shift_Exception_Report.xlsx above to see violation data.</p>
+        </div>
+      )}
 
       {/* Drill-down panel */}
       {renderDrillDown()}
