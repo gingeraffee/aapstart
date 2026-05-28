@@ -234,6 +234,7 @@ export interface EmployeeDetailData {
 
 export interface ImportResult {
   inserted: number;
+  updated?: number;
   skipped: number;
   errors: { row: number; employee_id?: string; detail: string }[];
   hours_upserted?: number;
