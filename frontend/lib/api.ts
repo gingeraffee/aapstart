@@ -188,6 +188,8 @@ export const executiveApi = {
     return res.json();
   },
   clearWosh: () => request<{ deleted: number }>("/executive/wosh", { method: "DELETE" }),
+  deleteWoshById: (id: number) =>
+    request<{ deleted: number; id: number }>(`/executive/wosh/${id}`, { method: "DELETE" }),
 };
 
 export const resourcesApi = {

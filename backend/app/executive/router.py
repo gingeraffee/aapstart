@@ -790,3 +790,18 @@ def get_wosh_report(
     if not report:
         raise HTTPException(status_code=404, detail="WOSH report not found.")
     return _serialize_report(report)
+
+
+@router.delete("/wosh/{report_id}", status_code=status.HTTP_200_OK)
+def delete_wosh_report(
+    report_id: int,
+    user: dict = Depends(require_hr_and_admin),
+    db: Session = Depends(get_db),
+):
+    """Delete a single WOSH report by ID — for fixing a wrong upload without nuking the rest."""
+    report = db.query(WoshReport).filter_by(id=report_id).first()
+    if not report:
+        raise HTTPException(status_code=404, detail="WOSH report not found.")
+    db.delete(report)
+    db.commit()
+    return {"deleted": 1, "id": report_id}

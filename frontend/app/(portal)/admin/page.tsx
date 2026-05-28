@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/context/AuthContext";
 import { adminApi, executiveApi, managerApi, modulesApi } from "@/lib/api";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
-import type { BambooImportResult, EmployeeImportResult, EmployeeImportRowInput, EmployeeRecord, ImportDataset, ImportResult, ImportStatus, ModuleSummary } from "@/lib/types";
+import type { BambooImportResult, EmployeeImportResult, EmployeeImportRowInput, EmployeeRecord, ImportDataset, ImportResult, ImportStatus, ModuleSummary, WoshReportMeta } from "@/lib/types";
 
 const TRACKS = ["hr", "warehouse", "administrative", "management"] as const;
 const TRACK_LABELS: Record<string, string> = {
@@ -1388,18 +1388,84 @@ function daysAgo(iso: string | null | undefined): number | null {
   return Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 86400000));
 }
 
+function WoshWeeksManager({ onChanged }: { onChanged: () => void }) {
+  const { data, isLoading, mutate } = useSWR<WoshReportMeta[]>(
+    "admin-wosh-history",
+    () => executiveApi.woshHistory()
+  );
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+
+  async function handleDelete(id: number, label: string) {
+    if (!confirm(`Delete "${label}"? This cannot be undone.`)) return;
+    setDeletingId(id);
+    try {
+      await executiveApi.deleteWoshById(id);
+      await mutate();
+      onChanged();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Delete failed.");
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
+  if (isLoading) {
+    return <div className="flex justify-center py-2"><Spinner /></div>;
+  }
+  if (!data || data.length === 0) {
+    return <p className="text-[0.7rem] italic" style={{ color: "var(--card-desc)" }}>No reports loaded.</p>;
+  }
+
+  // Sort by week_start descending (newest first)
+  const sorted = [...data].sort((a, b) =>
+    (b.week_start ?? "").localeCompare(a.week_start ?? "")
+  );
+
+  return (
+    <div className="mt-2 space-y-1">
+      {sorted.map((r) => {
+        const label = r.week_label ?? `Report #${r.id}`;
+        const isDeleting = deletingId === r.id;
+        return (
+          <div
+            key={r.id}
+            className="flex items-center justify-between gap-2 rounded-[8px] px-2.5 py-1.5"
+            style={{ background: "var(--tab-group-bg)", border: "1px solid var(--card-border)" }}
+          >
+            <span className="min-w-0 truncate text-[0.72rem] font-medium" style={{ color: "var(--heading-color)" }}>
+              {label}
+            </span>
+            <button
+              onClick={() => handleDelete(r.id, label)}
+              disabled={isDeleting}
+              className="shrink-0 rounded-[6px] px-2 py-0.5 text-[0.65rem] font-semibold transition-all disabled:opacity-50"
+              style={{ background: "rgba(223,0,48,0.07)", color: "#9f1239", border: "1px solid rgba(223,0,48,0.18)" }}
+            >
+              {isDeleting ? "…" : "Delete"}
+            </button>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function DataImportCard({
   ds,
   onClear,
   clearing,
+  onChanged,
 }: {
   ds: ImportDataset;
   onClear: (ds: ImportDataset) => void;
   clearing: boolean;
+  onChanged: () => void;
 }) {
+  const [expanded, setExpanded] = useState(false);
   const fresh = daysAgo(ds.last_imported_at);
   const hasData = ds.count > 0;
   const canClear = Boolean(CLEAR_HANDLERS[ds.key]);
+  const supportsPerItemDelete = ds.key === "wosh";
 
   const extras: { label: string; value: string; color?: string }[] = [];
   if (ds.earliest && ds.latest) {
@@ -1470,19 +1536,38 @@ function DataImportCard({
         </p>
       )}
 
-      {canClear && hasData && (
-        <button
-          onClick={() => onClear(ds)}
-          disabled={clearing}
-          className="mt-3 self-start rounded-[10px] px-3 py-1.5 text-[0.7rem] font-semibold transition-all disabled:opacity-50"
-          style={{
-            background: "rgba(223,0,48,0.07)",
-            color: "#9f1239",
-            border: "1px solid rgba(223,0,48,0.18)",
-          }}
-        >
-          {clearing ? "Clearing…" : "Clear data"}
-        </button>
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        {canClear && hasData && (
+          <button
+            onClick={() => onClear(ds)}
+            disabled={clearing}
+            className="rounded-[10px] px-3 py-1.5 text-[0.7rem] font-semibold transition-all disabled:opacity-50"
+            style={{
+              background: "rgba(223,0,48,0.07)",
+              color: "#9f1239",
+              border: "1px solid rgba(223,0,48,0.18)",
+            }}
+          >
+            {clearing ? "Clearing…" : "Clear all"}
+          </button>
+        )}
+        {supportsPerItemDelete && hasData && (
+          <button
+            onClick={() => setExpanded((e) => !e)}
+            className="rounded-[10px] px-3 py-1.5 text-[0.7rem] font-semibold transition-all hover:opacity-80"
+            style={{
+              background: "var(--tab-group-bg)",
+              color: "var(--module-context)",
+              border: "1px solid var(--card-border)",
+            }}
+          >
+            {expanded ? "▾ Hide weeks" : "▸ Manage weeks"}
+          </button>
+        )}
+      </div>
+
+      {supportsPerItemDelete && expanded && hasData && (
+        <WoshWeeksManager onChanged={onChanged} />
       )}
     </div>
   );
@@ -1557,6 +1642,7 @@ function DataImportsPanel({ onToast }: { onToast: (msg: string, tone?: "success"
                 ds={ds}
                 onClear={handleClear}
                 clearing={clearingKey === ds.key}
+                onChanged={() => { void mutate(); }}
               />
             ))}
           </div>
