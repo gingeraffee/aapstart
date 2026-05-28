@@ -1535,16 +1535,6 @@ export default function AdminPage() {
             )}
           </div>
 
-          <div className="rounded-[24px] p-6" style={cardStyle()}>
-            <p className="inline-flex rounded-full px-2.5 py-1 text-[0.64rem] font-bold uppercase tracking-[0.16em]" style={{ background: "rgba(223,0,48,0.08)", color: "#9f1239" }}>
-              Admin Notes
-            </p>
-            <ul className="mt-4 space-y-3 text-[0.8rem] leading-[1.6]" style={{ color: "var(--welcome-label-text)" }}>
-              <li>Use bulk import for new-hire groups or track-based setup waves.</li>
-              <li>Use the add form for one-off hires, edits, and urgent same-day access.</li>
-              <li>Removing an employee keeps their progress history intact.</li>
-            </ul>
-          </div>
         </div>
       </div>
 
