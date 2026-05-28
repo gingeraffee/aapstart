@@ -427,6 +427,81 @@ function ExceptionsTable({ exceptions }: { exceptions: WoshException[] }) {
   );
 }
 
+// ── OT donut chart ────────────────────────────────────────────────────────────
+
+const LOCATION_COLORS: Record<string, string> = {
+  "AAP":            "#2563eb",
+  "API Scottsboro": "#0891b2",
+  "API Memphis":    "#d97706",
+};
+
+function OtDonutChart({ locations }: { locations: { location: string; ot_hours: number }[] }) {
+  const totalOt = locations.reduce((s, l) => s + l.ot_hours, 0);
+  if (totalOt === 0) return null;
+
+  const CX = 70, CY = 70, R = 50, SW = 20;
+  const circumference = 2 * Math.PI * R;
+  const GAP = 3;
+
+  let accumulated = 0;
+  const segments = locations
+    .filter(l => l.ot_hours > 0)
+    .map(l => {
+      const len = Math.max((l.ot_hours / totalOt) * circumference - GAP, 1);
+      const startAngle = -90 + (accumulated / circumference) * 360;
+      accumulated += (l.ot_hours / totalOt) * circumference;
+      return { ...l, len, startAngle, color: LOCATION_COLORS[l.location] ?? "#6b7280" };
+    });
+
+  return (
+    <div className="rounded-[16px] px-5 py-4" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}>
+      <p className="mb-3 text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
+        OT Hours by Location
+      </p>
+      <div className="flex items-center gap-5">
+        <div className="relative shrink-0">
+          <svg width="140" height="140" viewBox="0 0 140 140">
+            <circle cx={CX} cy={CY} r={R} fill="none" stroke="var(--tab-group-bg)" strokeWidth={SW} />
+            {segments.map(seg => (
+              <circle
+                key={seg.location}
+                cx={CX} cy={CY} r={R}
+                fill="none"
+                stroke={seg.color}
+                strokeWidth={SW}
+                strokeDasharray={`${seg.len} ${circumference}`}
+                strokeDashoffset={0}
+                strokeLinecap="round"
+                transform={`rotate(${seg.startAngle} ${CX} ${CY})`}
+              />
+            ))}
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+            <p className="text-[1.15rem] font-extrabold leading-none" style={{ color: "var(--heading-color)" }}>
+              {totalOt.toLocaleString("en-US", { maximumFractionDigits: 0 })}
+            </p>
+            <p className="mt-0.5 text-[0.6rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>OT hrs</p>
+          </div>
+        </div>
+        <div className="space-y-3">
+          {segments.map(seg => (
+            <div key={seg.location} className="flex items-start gap-2.5">
+              <div className="mt-[3px] h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: seg.color }} />
+              <div>
+                <p className="text-[0.8rem] font-semibold leading-tight" style={{ color: "var(--heading-color)" }}>{seg.location}</p>
+                <p className="text-[0.72rem]" style={{ color: "var(--card-desc)" }}>
+                  {seg.ot_hours.toLocaleString("en-US", { maximumFractionDigits: 1 })} hrs
+                  {" · "}{((seg.ot_hours / totalOt) * 100).toFixed(1)}%
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── hours by location ─────────────────────────────────────────────────────────
 
 type LocationHours = {
@@ -444,6 +519,9 @@ function HoursByLocation({ locations }: { locations: LocationHours[] }) {
       <p className="mb-2 text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
         Hours by Location
       </p>
+      <div className="mb-3">
+        <OtDonutChart locations={locations} />
+      </div>
       <div className="grid gap-3 sm:grid-cols-3">
         {locations.map((loc) => {
           const isOpen = open === loc.location;
