@@ -333,6 +333,8 @@ def executive_dashboard(
 @router.get("/hours-by-location")
 def hours_by_location(
     week_start: str | None = Query(None),
+    from_date: str | None = Query(None),
+    to_date: str | None = Query(None),
     user: dict = Depends(require_executive),
     db: Session = Depends(get_db),
 ):
@@ -349,6 +351,11 @@ def hours_by_location(
     )
     if week_start:
         q = q.filter(TimeRecord.week_start == week_start)
+    elif from_date or to_date:
+        if from_date:
+            q = q.filter(TimeRecord.week_start >= from_date)
+        if to_date:
+            q = q.filter(TimeRecord.week_start <= to_date)
     rows = q.group_by(Employee.location, Employee.division, Employee.department).all()
 
     # Normalize location into 3 display buckets

@@ -511,26 +511,20 @@ type LocationHours = {
   departments: { department: string; regular_hours: number; ot_hours: number }[];
 };
 
-function HoursByLocation({ locations, weekLabel }: { locations: LocationHours[]; weekLabel?: string }) {
+function HoursByLocation({ locations }: { locations: LocationHours[] }) {
   const [open, setOpen] = useState<string | null>(null);
 
-  return (
-    <div className="mb-5">
-      <div className="mb-2 flex items-baseline gap-2">
-        <p className="text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
-          Hours by Location
-        </p>
-        {weekLabel && (
-          <span className="text-[0.68rem]" style={{ color: "var(--card-desc)" }}>{weekLabel}</span>
-        )}
+  if (locations.length === 0) {
+    return (
+      <div className="rounded-[14px] py-6 text-center" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}>
+        <p className="text-[0.82rem] font-semibold" style={{ color: "var(--heading-color)" }}>No hours data for this period</p>
+        <p className="mt-1 text-[0.75rem]" style={{ color: "var(--card-desc)" }}>Hours may not have been imported for this pay period.</p>
       </div>
-      {locations.length === 0 && (
-        <div className="rounded-[14px] py-6 text-center" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}>
-          <p className="text-[0.82rem] font-semibold" style={{ color: "var(--heading-color)" }}>No hours data for this week</p>
-          <p className="mt-1 text-[0.75rem]" style={{ color: "var(--card-desc)" }}>Hours may not have been imported for this pay period.</p>
-        </div>
-      )}
-      {locations.length > 0 && <div className="flex flex-col gap-3 md:flex-row md:items-start">
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-3 md:flex-row md:items-start">
         <div className="shrink-0">
           <OtDonutChart locations={locations} />
         </div>
@@ -598,7 +592,6 @@ function HoursByLocation({ locations, weekLabel }: { locations: LocationHours[];
           );
         })}
         </div>
-      </div>}
     </div>
   );
 }
@@ -704,6 +697,9 @@ export default function ExecutivePage() {
   const router = useRouter();
   const [activeKpi, setActiveKpi] = useState<KpiId | null>(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [hoursMode, setHoursMode] = useState<"week" | "range">("week");
+  const [hoursFrom, setHoursFrom] = useState("");
+  const [hoursTo, setHoursTo] = useState("");
 
   const { data: dashData } = useSWR<ExecutiveDashboardData>(
     "executive-dashboard",
@@ -739,14 +735,23 @@ export default function ExecutivePage() {
   }
 
   const weekStartForHours = useMemo(() => {
-    if (!history || history.length === 0) return null;
+    if (hoursMode !== "week" || !history || history.length === 0) return null;
     if (selectedId === null) return history[0]?.week_start ?? null;
     return history.find(r => r.id === selectedId)?.week_start ?? null;
-  }, [history, selectedId]);
+  }, [hoursMode, history, selectedId]);
+
+  const validFrom = /^\d{4}-\d{2}-\d{2}$/.test(hoursFrom) ? hoursFrom : "";
+  const validTo   = /^\d{4}-\d{2}-\d{2}$/.test(hoursTo)   ? hoursTo   : "";
+
+  const hoursSwrKey = hoursMode === "range"
+    ? `executive-hours-by-location-range-${validFrom || "any"}-${validTo || "any"}`
+    : `executive-hours-by-location-week-${weekStartForHours ?? "all"}`;
 
   const { data: hoursLocData } = useSWR(
-    `executive-hours-by-location${weekStartForHours ? `-${weekStartForHours}` : ""}`,
-    () => executiveApi.hoursByLocation(weekStartForHours ?? undefined)
+    hoursSwrKey,
+    () => hoursMode === "range"
+      ? executiveApi.hoursByLocation({ fromDate: validFrom || undefined, toDate: validTo || undefined })
+      : executiveApi.hoursByLocation({ weekStart: weekStartForHours ?? undefined })
   );
 
   if (user && !user.is_executive && !user.is_admin) {
@@ -929,12 +934,51 @@ export default function ExecutivePage() {
       </div>
 
       {/* Hours by location */}
-      {hoursLocData && (
-        <HoursByLocation
-          locations={hoursLocData.locations}
-          weekLabel={weekStartForHours ? (report?.week_label ?? undefined) : undefined}
-        />
-      )}
+      <div className="mb-5">
+        <div className="mb-2 flex flex-wrap items-center gap-2">
+          <p className="text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
+            Hours by Location
+          </p>
+          <div className="flex overflow-hidden rounded-[8px]" style={{ border: "1px solid var(--tab-group-border)" }}>
+            {(["week", "range"] as const).map(m => (
+              <button
+                key={m}
+                onClick={() => setHoursMode(m)}
+                className="px-2.5 py-1 text-[0.7rem] font-semibold transition-all"
+                style={{
+                  background: hoursMode === m ? "linear-gradient(135deg,#1e3a5f 0%,#2563eb 82%)" : "var(--tab-group-bg)",
+                  color: hoursMode === m ? "#fff" : "var(--card-desc)",
+                }}
+              >
+                {m === "week" ? "By Week" : "Date Range"}
+              </button>
+            ))}
+          </div>
+          {hoursMode === "week" && report?.week_label && (
+            <span className="text-[0.68rem]" style={{ color: "var(--card-desc)" }}>{report.week_label}</span>
+          )}
+          {hoursMode === "range" && (
+            <>
+              <input
+                type="date"
+                value={hoursFrom}
+                onChange={e => setHoursFrom(e.target.value)}
+                className="rounded-[8px] px-2 py-1 text-[0.75rem]"
+                style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)", outline: "none" }}
+              />
+              <span className="text-[0.72rem] font-semibold" style={{ color: "var(--card-desc)" }}>–</span>
+              <input
+                type="date"
+                value={hoursTo}
+                onChange={e => setHoursTo(e.target.value)}
+                className="rounded-[8px] px-2 py-1 text-[0.75rem]"
+                style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)", outline: "none" }}
+              />
+            </>
+          )}
+        </div>
+        {hoursLocData && <HoursByLocation locations={hoursLocData.locations} />}
+      </div>
 
       {/* KPI row — WOSH violations */}
       {summary ? (

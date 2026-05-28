@@ -157,7 +157,14 @@ export const executiveApi = {
   woshLatest: () => request<import("./types").WoshReport | null>("/executive/wosh/latest"),
   woshHistory: () => request<import("./types").WoshReportMeta[]>("/executive/wosh/history"),
   woshById: (id: number) => request<import("./types").WoshReport>(`/executive/wosh/${id}`),
-  hoursByLocation: (weekStart?: string) => request<{ locations: Array<{ location: string; regular_hours: number; ot_hours: number; departments: Array<{ department: string; regular_hours: number; ot_hours: number }> }> }>(`/executive/hours-by-location${weekStart ? `?week_start=${encodeURIComponent(weekStart)}` : ""}`),
+  hoursByLocation: (params?: { weekStart?: string; fromDate?: string; toDate?: string }) => {
+    const p = new URLSearchParams();
+    if (params?.weekStart) p.set("week_start", params.weekStart);
+    if (params?.fromDate) p.set("from_date", params.fromDate);
+    if (params?.toDate) p.set("to_date", params.toDate);
+    const qs = p.toString();
+    return request<{ locations: Array<{ location: string; regular_hours: number; ot_hours: number; departments: Array<{ department: string; regular_hours: number; ot_hours: number }> }> }>(`/executive/hours-by-location${qs ? `?${qs}` : ""}`);
+  },
   headcount: () => request<import("./types").HeadcountData>("/executive/headcount"),
   ptoAnalytics: () => request<import("./types").PTOAnalyticsData>("/executive/pto-analytics"),
   shiftAdherence: () => request<import("./types").ShiftAdherenceData>("/executive/shift-adherence"),
