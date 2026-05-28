@@ -14,7 +14,7 @@ import type {
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-// ── helpers ──────────────────────────────────────────────────────────────────
+// ── helpers ────────────────────────────────────────────────────────────────────
 
 function fmtNum(n: number) {
   return n.toLocaleString("en-US");
@@ -32,13 +32,49 @@ type KpiId =
   | "violations" | "employees" | "early" | "late"
   | "total_emp" | "reg_hours" | "ot_hours";
 
+// ── Trend mini-chart ─────────────────────────────────────────────────────────
+
+function TrendMiniChart({ history, activeId }: { history: WoshReportMeta[]; activeId: number | null }) {
+  if (history.length < 2) return null;
+  const sorted = [...history].reverse(); // oldest → newest
+  const max = Math.max(...sorted.map(h => h.parsed_data?.summary?.total_violations ?? 0), 1);
+  const effectiveId = activeId ?? history[0]?.id ?? null;
+
+  return (
+    <div
+      className="flex items-end gap-0.5 h-9 self-end shrink-0"
+      style={{ width: `${Math.min(sorted.length * 14, 168)}px` }}
+    >
+      {sorted.map(h => {
+        const val = h.parsed_data?.summary?.total_violations ?? 0;
+        const isActive = h.id === effectiveId;
+        return (
+          <div
+            key={h.id}
+            title={`${h.week_label ?? "Week"}: ${val} irregularities`}
+            className="flex-1 rounded-t-[2px] transition-colors cursor-pointer"
+            style={{
+              height: `${Math.max((val / max) * 100, 8)}%`,
+              background: isActive ? "#2563eb" : "var(--tab-group-bg)",
+              border: `1px solid ${isActive ? "#1d4ed8" : "var(--card-border)"}`,
+              borderBottom: "none",
+              minWidth: "6px",
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
 // ── KPI card ─────────────────────────────────────────────────────────────────
 
 function KpiCard({
-  id, label, value, sub, active, onClick, accent,
+  id, label, value, sub, active, onClick, accent, delta,
 }: {
   id: KpiId; label: string; value: string | number; sub?: string;
   active: boolean; onClick: (id: KpiId) => void; accent?: string;
+  delta?: number;
 }) {
   return (
     <button
@@ -57,9 +93,26 @@ function KpiCard({
       >
         {label}
       </p>
-      <p className="text-[1.5rem] font-bold leading-none" style={{ color: active ? "#fff" : "var(--heading-color)" }}>
-        {value}
-      </p>
+      <div className="flex items-baseline gap-1.5 flex-wrap">
+        <p className="text-[1.5rem] font-bold leading-none" style={{ color: active ? "#fff" : "var(--heading-color)" }}>
+          {value}
+        </p>
+        {delta !== undefined && delta !== 0 && (
+          <span
+            className="rounded-full px-1.5 py-0.5 text-[0.6rem] font-bold"
+            style={{
+              background: delta > 0
+                ? (active ? "rgba(255,255,255,0.15)" : "rgba(239,68,68,0.12)")
+                : (active ? "rgba(255,255,255,0.15)" : "rgba(34,197,94,0.12)"),
+              color: delta > 0
+                ? (active ? "#fca5a5" : "#dc2626")
+                : (active ? "#86efac" : "#16a34a"),
+            }}
+          >
+            {delta > 0 ? "▲" : "▼"}{Math.abs(delta)}
+          </span>
+        )}
+      </div>
       {sub && (
         <p className="mt-1 text-[0.7rem]" style={{ color: active ? "rgba(255,255,255,0.65)" : "var(--card-desc)" }}>
           {sub}
@@ -74,6 +127,60 @@ function KpiCard({
         </svg>
       </div>
     </button>
+  );
+}
+
+// ── Data status bar ───────────────────────────────────────────────────────────
+
+function DataStatusBar({
+  historyCount,
+  latestUploadedAt,
+  hoursDateRange,
+}: {
+  historyCount: number;
+  latestUploadedAt: string | null;
+  hoursDateRange: string | null;
+}) {
+  const woshDaysAgo = latestUploadedAt
+    ? Math.floor((Date.now() - new Date(latestUploadedAt).getTime()) / 86400000)
+    : null;
+
+  type Color = "blue" | "green" | "amber" | "gray" | "red";
+  const chips: { label: string; color: Color }[] = [
+    { label: `${historyCount} WOSH ${historyCount === 1 ? "report" : "reports"}`, color: historyCount > 0 ? "blue" : "gray" },
+    ...(woshDaysAgo !== null ? [{
+      label: woshDaysAgo === 0 ? "Uploaded today" : woshDaysAgo === 1 ? "Uploaded yesterday" : `WOSH: ${woshDaysAgo}d ago`,
+      color: (woshDaysAgo <= 7 ? "green" : "amber") as Color,
+    }] : []),
+    ...(hoursDateRange
+      ? [{ label: `Hours: ${hoursDateRange}`, color: "green" as Color }]
+      : [{ label: "No hours imported", color: "red" as Color }]
+    ),
+  ];
+
+  const COLORS: Record<Color, { bg: string; text: string }> = {
+    blue:  { bg: "rgba(37,99,235,0.1)",   text: "#1d4ed8" },
+    green: { bg: "rgba(22,163,74,0.1)",   text: "#15803d" },
+    amber: { bg: "rgba(217,119,6,0.1)",   text: "#b45309" },
+    gray:  { bg: "var(--tab-group-bg)",   text: "var(--card-desc)" },
+    red:   { bg: "rgba(239,68,68,0.1)",   text: "#dc2626" },
+  };
+
+  return (
+    <div className="flex flex-wrap gap-1.5 mt-2">
+      {chips.map((chip, i) => {
+        const c = COLORS[chip.color];
+        return (
+          <span
+            key={i}
+            className="rounded-full px-2.5 py-0.5 text-[0.68rem] font-semibold"
+            style={{ background: c.bg, color: c.text }}
+          >
+            {chip.label}
+          </span>
+        );
+      })}
+    </div>
   );
 }
 
@@ -220,7 +327,7 @@ function DrillHeadcount({ rows }: { rows: { department: string; count: number }[
   );
 }
 
-// ── violations by manager summary table ──────────────────────────────────────
+// ── Manager summary table ─────────────────────────────────────────────────────
 
 function ManagerSummaryTable({ data }: { data: WoshByManagerChart[] }) {
   const maxTotal = Math.max(...data.map(d => d.total), 1);
@@ -265,7 +372,7 @@ function ManagerSummaryTable({ data }: { data: WoshByManagerChart[] }) {
   );
 }
 
-// ── all exceptions table ─────────────────────────────────────────────────────
+// ── All exceptions table ──────────────────────────────────────────────────────
 
 const EXCEPTION_TYPE_COLORS: Record<string, string> = {
   "Early": "bg-blue-50 text-blue-700",
@@ -274,6 +381,7 @@ const EXCEPTION_TYPE_COLORS: Record<string, string> = {
 };
 
 function ExceptionsTable({ exceptions }: { exceptions: WoshException[] }) {
+  const [collapsed, setCollapsed] = useState(true);
   const [filterManager, setFilterManager] = useState("");
   const [filterType, setFilterType] = useState("");
   const [search, setSearch] = useState("");
@@ -320,108 +428,141 @@ function ExceptionsTable({ exceptions }: { exceptions: WoshException[] }) {
 
   return (
     <div className="overflow-hidden rounded-[14px]" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}>
-      {/* header + filters */}
-      <div className="border-b px-5 py-4" style={{ borderColor: "var(--card-border)" }}>
-        <div className="flex flex-wrap items-center gap-3">
-          <h3 className="mr-2 text-[0.9rem] font-bold" style={{ color: "var(--heading-color)" }}>
+      {/* header row — always visible, click to toggle */}
+      <button
+        onClick={() => setCollapsed(c => !c)}
+        className="flex w-full items-center justify-between gap-3 border-b px-5 py-4 text-left transition-colors hover:bg-black/[0.02]"
+        style={{ borderColor: "var(--card-border)" }}
+      >
+        <div className="flex items-center gap-3">
+          <h3 className="text-[0.9rem] font-bold" style={{ color: "var(--heading-color)" }}>
             All Exceptions
-            <span className="ml-2 text-[0.75rem] font-normal" style={{ color: "var(--card-desc)" }}>
-              {filtered.length} of {exceptions.length}
-            </span>
           </h3>
-          <input
-            type="text"
-            placeholder="Search employee…"
-            value={search}
-            onChange={e => { setSearch(e.target.value); setPage(0); }}
-            className="flex-1 min-w-[140px]"
-            style={{ ...selectStyle, flex: "1 1 140px" }}
-          />
-          <select value={filterManager} onChange={e => { setFilterManager(e.target.value); setPage(0); }} style={selectStyle}>
-            <option value="">All Managers</option>
-            {managers.map(m => <option key={m} value={m}>{m}</option>)}
-          </select>
-          <select value={filterType} onChange={e => { setFilterType(e.target.value); setPage(0); }} style={selectStyle}>
-            <option value="">All Types</option>
-            {types.map(t => <option key={t} value={t}>{t}</option>)}
-          </select>
-          {(filterManager || filterType || search) && (
-            <button
-              onClick={() => { setFilterManager(""); setFilterType(""); setSearch(""); setPage(0); }}
-              className="rounded-[8px] px-2.5 py-1.5 text-[0.72rem] font-semibold transition-all hover:opacity-80"
-              style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", color: "var(--tab-text)" }}
-            >
-              Clear
-            </button>
+          <span
+            className="rounded-full px-2 py-0.5 text-[0.7rem] font-semibold"
+            style={{ background: "var(--tab-group-bg)", color: "var(--module-context)" }}
+          >
+            {exceptions.length}
+          </span>
+          {!collapsed && (filtered.length !== exceptions.length) && (
+            <span className="text-[0.72rem]" style={{ color: "var(--card-desc)" }}>
+              {filtered.length} shown
+            </span>
           )}
         </div>
-      </div>
-
-      {/* table */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-[0.77rem]">
-          <thead>
-            <tr style={{ background: "var(--tab-group-bg)", borderBottom: "1px solid var(--card-border)" }}>
-              {["Employee", "Emp #", "Manager", "Department", "Date", "Sched Start", "Sched End", "Clock In", "Clock Out", "Time Early", "Time Late", "Type"].map(h => (
-                <th key={h} className="whitespace-nowrap px-3 py-2.5 text-left font-semibold" style={{ color: "var(--module-context)" }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {paged.length === 0 ? (
-              <tr><td colSpan={12} className="px-5 py-8 text-center text-[0.8rem]" style={{ color: "var(--card-desc)" }}>No exceptions match the current filters.</td></tr>
-            ) : paged.map((row, i) => {
-              const typeColor = EXCEPTION_TYPE_COLORS[row["Exception Type"] ?? ""] ?? "";
-              return (
-                <tr key={i} style={{ borderBottom: i < paged.length - 1 ? "1px solid var(--card-border)" : "none", background: i % 2 === 0 ? "transparent" : "var(--tab-group-bg)" }}>
-                  <td className="px-3 py-2 font-medium whitespace-nowrap" style={{ color: "var(--heading-color)" }}>{row["Employee Name"] ?? "—"}</td>
-                  <td className="px-3 py-2" style={{ color: "var(--card-desc)" }}>{row["Employee #"] ?? "—"}</td>
-                  <td className="px-3 py-2 whitespace-nowrap" style={{ color: "var(--heading-color)" }}>{row.Manager ?? "—"}</td>
-                  <td className="px-3 py-2 whitespace-nowrap" style={{ color: "var(--card-desc)" }}>{row.Department ?? "—"}</td>
-                  <td className="px-3 py-2 whitespace-nowrap" style={{ color: "var(--heading-color)" }}>{row.Date ? fmtDate(row.Date) : "—"}</td>
-                  <td className="px-3 py-2" style={{ color: "var(--card-desc)" }}>{row["Scheduled Start"] ?? "—"}</td>
-                  <td className="px-3 py-2" style={{ color: "var(--card-desc)" }}>{row["Scheduled End"] ?? "—"}</td>
-                  <td className="px-3 py-2" style={{ color: row["Time Early"] ? "#2563eb" : "var(--card-desc)" }}>{row["Actual Clock In"] ?? "—"}</td>
-                  <td className="px-3 py-2" style={{ color: row["Time Late"] ? "#b45309" : "var(--card-desc)" }}>{row["Actual Clock Out"] ?? "—"}</td>
-                  <td className="px-3 py-2 font-medium" style={{ color: "#2563eb" }}>{row["Time Early"] ?? "—"}</td>
-                  <td className="px-3 py-2 font-medium" style={{ color: "#b45309" }}>{row["Time Late"] ?? "—"}</td>
-                  <td className="px-3 py-2">
-                    <span className={cn("rounded-full px-2 py-0.5 text-[0.68rem] font-semibold", typeColor)}>
-                      {row["Exception Type"] ?? "—"}
-                    </span>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-
-      {/* pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between border-t px-5 py-3" style={{ borderColor: "var(--card-border)" }}>
-          <span className="text-[0.75rem]" style={{ color: "var(--card-desc)" }}>
-            Page {page + 1} of {totalPages}
+        <div className="flex items-center gap-2">
+          <span className="text-[0.72rem]" style={{ color: "var(--card-desc)" }}>
+            {collapsed ? "Show details" : "Collapse"}
           </span>
-          <div className="flex gap-2">
-            <button
-              disabled={page === 0}
-              onClick={() => setPage(p => p - 1)}
-              className="rounded-[8px] px-3 py-1.5 text-[0.75rem] font-semibold transition-all disabled:opacity-40"
-              style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", color: "var(--tab-text)" }}
-            >
-              Prev
-            </button>
-            <button
-              disabled={page >= totalPages - 1}
-              onClick={() => setPage(p => p + 1)}
-              className="rounded-[8px] px-3 py-1.5 text-[0.75rem] font-semibold transition-all disabled:opacity-40"
-              style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", color: "var(--tab-text)" }}
-            >
-              Next
-            </button>
-          </div>
+          <svg
+            width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+            className={cn("transition-transform duration-200", !collapsed && "rotate-180")}
+            style={{ color: "var(--card-desc)" }}
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
         </div>
+      </button>
+
+      {!collapsed && (
+        <>
+          {/* filters */}
+          <div className="flex flex-wrap items-center gap-3 border-b px-5 py-3" style={{ borderColor: "var(--card-border)" }}>
+            <input
+              type="text"
+              placeholder="Search employee…"
+              value={search}
+              onChange={e => { setSearch(e.target.value); setPage(0); }}
+              className="flex-1 min-w-[140px]"
+              style={{ ...selectStyle, flex: "1 1 140px" }}
+            />
+            <select value={filterManager} onChange={e => { setFilterManager(e.target.value); setPage(0); }} style={selectStyle}>
+              <option value="">All Managers</option>
+              {managers.map(m => <option key={m} value={m}>{m}</option>)}
+            </select>
+            <select value={filterType} onChange={e => { setFilterType(e.target.value); setPage(0); }} style={selectStyle}>
+              <option value="">All Types</option>
+              {types.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+            {(filterManager || filterType || search) && (
+              <button
+                onClick={() => { setFilterManager(""); setFilterType(""); setSearch(""); setPage(0); }}
+                className="rounded-[8px] px-2.5 py-1.5 text-[0.72rem] font-semibold transition-all hover:opacity-80"
+                style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", color: "var(--tab-text)" }}
+              >
+                Clear
+              </button>
+            )}
+          </div>
+
+          {/* table */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-[0.77rem]">
+              <thead>
+                <tr style={{ background: "var(--tab-group-bg)", borderBottom: "1px solid var(--card-border)" }}>
+                  {["Employee", "Emp #", "Manager", "Department", "Date", "Sched Start", "Sched End", "Clock In", "Clock Out", "Time Early", "Time Late", "Type"].map(h => (
+                    <th key={h} className="whitespace-nowrap px-3 py-2.5 text-left font-semibold" style={{ color: "var(--module-context)" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {paged.length === 0 ? (
+                  <tr><td colSpan={12} className="px-5 py-8 text-center text-[0.8rem]" style={{ color: "var(--card-desc)" }}>No exceptions match the current filters.</td></tr>
+                ) : paged.map((row, i) => {
+                  const typeColor = EXCEPTION_TYPE_COLORS[row["Exception Type"] ?? ""] ?? "";
+                  return (
+                    <tr key={i} style={{ borderBottom: i < paged.length - 1 ? "1px solid var(--card-border)" : "none", background: i % 2 === 0 ? "transparent" : "var(--tab-group-bg)" }}>
+                      <td className="px-3 py-2 font-medium whitespace-nowrap" style={{ color: "var(--heading-color)" }}>{row["Employee Name"] ?? "—"}</td>
+                      <td className="px-3 py-2" style={{ color: "var(--card-desc)" }}>{row["Employee #"] ?? "—"}</td>
+                      <td className="px-3 py-2 whitespace-nowrap" style={{ color: "var(--heading-color)" }}>{row.Manager ?? "—"}</td>
+                      <td className="px-3 py-2 whitespace-nowrap" style={{ color: "var(--card-desc)" }}>{row.Department ?? "—"}</td>
+                      <td className="px-3 py-2 whitespace-nowrap" style={{ color: "var(--heading-color)" }}>{row.Date ? fmtDate(row.Date) : "—"}</td>
+                      <td className="px-3 py-2" style={{ color: "var(--card-desc)" }}>{row["Scheduled Start"] ?? "—"}</td>
+                      <td className="px-3 py-2" style={{ color: "var(--card-desc)" }}>{row["Scheduled End"] ?? "—"}</td>
+                      <td className="px-3 py-2" style={{ color: row["Time Early"] ? "#2563eb" : "var(--card-desc)" }}>{row["Actual Clock In"] ?? "—"}</td>
+                      <td className="px-3 py-2" style={{ color: row["Time Late"] ? "#b45309" : "var(--card-desc)" }}>{row["Actual Clock Out"] ?? "—"}</td>
+                      <td className="px-3 py-2 font-medium" style={{ color: "#2563eb" }}>{row["Time Early"] ?? "—"}</td>
+                      <td className="px-3 py-2 font-medium" style={{ color: "#b45309" }}>{row["Time Late"] ?? "—"}</td>
+                      <td className="px-3 py-2">
+                        <span className={cn("rounded-full px-2 py-0.5 text-[0.68rem] font-semibold", typeColor)}>
+                          {row["Exception Type"] ?? "—"}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between border-t px-5 py-3" style={{ borderColor: "var(--card-border)" }}>
+              <span className="text-[0.75rem]" style={{ color: "var(--card-desc)" }}>
+                Page {page + 1} of {totalPages}
+              </span>
+              <div className="flex gap-2">
+                <button
+                  disabled={page === 0}
+                  onClick={() => setPage(p => p - 1)}
+                  className="rounded-[8px] px-3 py-1.5 text-[0.75rem] font-semibold transition-all disabled:opacity-40"
+                  style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", color: "var(--tab-text)" }}
+                >
+                  Prev
+                </button>
+                <button
+                  disabled={page >= totalPages - 1}
+                  onClick={() => setPage(p => p + 1)}
+                  className="rounded-[8px] px-3 py-1.5 text-[0.75rem] font-semibold transition-all disabled:opacity-40"
+                  style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", color: "var(--tab-text)" }}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
@@ -502,7 +643,7 @@ function OtDonutChart({ locations }: { locations: { location: string; ot_hours: 
   );
 }
 
-// ── hours by location ─────────────────────────────────────────────────────────
+// ── Hours by location ─────────────────────────────────────────────────────────
 
 type LocationHours = {
   location: string;
@@ -525,10 +666,10 @@ function HoursByLocation({ locations }: { locations: LocationHours[] }) {
 
   return (
     <div className="flex flex-col gap-3 md:flex-row md:items-start">
-        <div className="shrink-0">
-          <OtDonutChart locations={locations} />
-        </div>
-        <div className="grid flex-1 gap-3 grid-cols-1">
+      <div className="shrink-0">
+        <OtDonutChart locations={locations} />
+      </div>
+      <div className="grid flex-1 gap-3 grid-cols-1">
         {locations.map((loc) => {
           const isOpen = open === loc.location;
           const total = loc.regular_hours + loc.ot_hours;
@@ -591,12 +732,12 @@ function HoursByLocation({ locations }: { locations: LocationHours[] }) {
             </div>
           );
         })}
-        </div>
+      </div>
     </div>
   );
 }
 
-// ── upload bar ────────────────────────────────────────────────────────────────
+// ── Upload bar ────────────────────────────────────────────────────────────────
 
 function UploadBar({ onUploaded }: { onUploaded: () => void }) {
   const [weekLabel, setWeekLabel] = useState("");
@@ -690,6 +831,16 @@ function UploadBar({ onUploaded }: { onUploaded: () => void }) {
   );
 }
 
+// ── Section divider ───────────────────────────────────────────────────────────
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="mb-2 text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
+      {children}
+    </p>
+  );
+}
+
 // ── main page ─────────────────────────────────────────────────────────────────
 
 export default function ExecutivePage() {
@@ -713,6 +864,7 @@ export default function ExecutivePage() {
     selectedId !== null ? `wosh-${selectedId}` : null,
     () => executiveApi.woshById(selectedId!)
   );
+
   const currentIndex = useMemo(() => {
     if (!history || history.length === 0) return 0;
     if (selectedId === null) return 0;
@@ -764,6 +916,20 @@ export default function ExecutivePage() {
   const pd = report?.parsed_data ?? null;
   const summary = pd?.summary;
 
+  // Previous week's summary for delta computation (history is newest-first)
+  const prevSummary = history && currentIndex < history.length - 1
+    ? history[currentIndex + 1]?.parsed_data?.summary ?? null
+    : null;
+
+  const woshDelta = summary && prevSummary
+    ? {
+        violations: summary.total_violations - prevSummary.total_violations,
+        employees:  summary.employees_affected - prevSummary.employees_affected,
+        early:      summary.early_arrivals - prevSummary.early_arrivals,
+        late:       summary.late_departures - prevSummary.late_departures,
+      }
+    : null;
+
   function handleKpi(id: KpiId) {
     setActiveKpi(prev => prev === id ? null : id);
   }
@@ -775,8 +941,11 @@ export default function ExecutivePage() {
 
   // ── drill-down content ──────────────────────────────────────────────────────
 
-  function renderDrillDown() {
-    if (!activeKpi) return null;
+  const WOSH_KPIS: KpiId[] = ["violations", "employees", "early", "late"];
+  const OVERVIEW_KPIS: KpiId[] = ["total_emp", "reg_hours", "ot_hours"];
+
+  function renderDrillDown(forKpis: KpiId[]) {
+    if (!activeKpi || !forKpis.includes(activeKpi)) return null;
 
     let content: React.ReactNode = null;
 
@@ -834,74 +1003,146 @@ export default function ExecutivePage() {
   return (
     <div className="mx-auto max-w-[1200px] px-4 py-8 md:px-8">
 
-      {/* Page header */}
-      <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-[1.5rem] font-bold leading-tight" style={{ color: "var(--heading-color)" }}>
-            Executive Summary
-          </h1>
-          {summary && (
-            <p className="mt-1 text-[0.8rem]" style={{ color: "var(--card-desc)" }}>
-              {report?.week_label && <span className="font-semibold" style={{ color: "var(--heading-color)" }}>{report.week_label} · </span>}
-              {summary.generated_text && (
-                <span>{summary.total_violations} irregularities · {summary.employees_affected} employees · {summary.managers} managers</span>
-              )}
-            </p>
+      {/* ── Page header ──────────────────────────────────────────────────────── */}
+      <div className="mb-5">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="text-[1.5rem] font-bold leading-tight" style={{ color: "var(--heading-color)" }}>
+              Executive Summary
+            </h1>
+            <DataStatusBar
+              historyCount={history?.length ?? 0}
+              latestUploadedAt={history?.[0]?.uploaded_at ?? null}
+              hoursDateRange={dashData?.hours_date_range ?? null}
+            />
+          </div>
+
+          {/* Week selector with trend chart */}
+          {history && history.length >= 1 && (
+            <div className="flex flex-col items-end gap-1.5">
+              <div className="flex items-end gap-2">
+                <TrendMiniChart history={history} activeId={selectedId} />
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={goOlder}
+                    disabled={currentIndex >= (history?.length ?? 0) - 1}
+                    title="Previous week"
+                    className="rounded-[8px] px-2.5 py-1.5 text-[0.78rem] font-bold transition-all disabled:opacity-25 hover:opacity-70"
+                    style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", color: "var(--tab-text)" }}
+                  >
+                    ←
+                  </button>
+                  <select
+                    value={selectedId ?? ""}
+                    onChange={e => setSelectedId(e.target.value === "" ? null : Number(e.target.value))}
+                    className="rounded-[10px] px-3 py-1.5 text-[0.78rem]"
+                    style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)", outline: "none", minWidth: "200px" }}
+                  >
+                    <option value="">Latest</option>
+                    {history.map(r => (
+                      <option key={r.id} value={r.id}>
+                        {r.week_label ?? `Report #${r.id}`}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={goNewer}
+                    disabled={currentIndex <= 0}
+                    title="Next week"
+                    className="rounded-[8px] px-2.5 py-1.5 text-[0.78rem] font-bold transition-all disabled:opacity-25 hover:opacity-70"
+                    style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", color: "var(--tab-text)" }}
+                  >
+                    →
+                  </button>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                {history.length > 1 && (
+                  <span className="text-[0.68rem]" style={{ color: "var(--card-desc)" }}>
+                    {currentIndex + 1} of {history.length} weeks
+                  </span>
+                )}
+                {woshDelta !== null && (
+                  <span className="text-[0.68rem]" style={{ color: "var(--card-desc)" }}>
+                    · vs prior week
+                  </span>
+                )}
+              </div>
+            </div>
           )}
         </div>
-
-        {/* Week selector */}
-        {history && history.length >= 1 && (
-          <div className="flex flex-col items-end gap-1">
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={goOlder}
-                disabled={currentIndex >= (history?.length ?? 0) - 1}
-                title="Previous week"
-                className="rounded-[8px] px-2.5 py-1.5 text-[0.78rem] font-bold transition-all disabled:opacity-25 hover:opacity-70"
-                style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", color: "var(--tab-text)" }}
-              >
-                ←
-              </button>
-              <select
-                value={selectedId ?? ""}
-                onChange={e => setSelectedId(e.target.value === "" ? null : Number(e.target.value))}
-                className="rounded-[10px] px-3 py-1.5 text-[0.78rem]"
-                style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)", outline: "none", minWidth: "200px" }}
-              >
-                <option value="">Latest</option>
-                {history.map(r => (
-                  <option key={r.id} value={r.id}>
-                    {r.week_label ?? `Report #${r.id}`}
-                  </option>
-                ))}
-              </select>
-              <button
-                onClick={goNewer}
-                disabled={currentIndex <= 0}
-                title="Next week"
-                className="rounded-[8px] px-2.5 py-1.5 text-[0.78rem] font-bold transition-all disabled:opacity-25 hover:opacity-70"
-                style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", color: "var(--tab-text)" }}
-              >
-                →
-              </button>
-            </div>
-            {history.length > 1 && (
-              <span className="text-[0.68rem]" style={{ color: "var(--card-desc)" }}>
-                {currentIndex + 1} of {history.length} weeks
-              </span>
-            )}
-          </div>
-        )}
       </div>
 
-      {/* Upload bar — HR admins only (must be both HR track and admin) */}
+      {/* Upload bar — HR admins only */}
       {(user?.is_admin && user?.tracks?.includes("hr")) && <UploadBar onUploaded={handleUploaded} />}
 
-      {/* KPI row — company-wide */}
-      <p className="mb-2 text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
-        Company Overview
-      </p>
+      {/* ── Shift Exceptions ─────────────────────────────────────────────────── */}
+      {summary ? (
+        <>
+          <SectionLabel>Shift Exceptions{report?.week_label ? ` · ${report.week_label}` : ""}</SectionLabel>
+          <div className="mb-3 flex flex-wrap gap-2">
+            <KpiCard
+              id="violations"
+              label="Total Irregularities"
+              value={fmtNum(summary.total_violations)}
+              active={activeKpi === "violations"}
+              onClick={handleKpi}
+              delta={woshDelta?.violations}
+            />
+            <KpiCard
+              id="employees"
+              label="Employees Affected"
+              value={fmtNum(summary.employees_affected)}
+              active={activeKpi === "employees"}
+              onClick={handleKpi}
+              delta={woshDelta?.employees}
+            />
+            <KpiCard
+              id="early"
+              label="Early Arrivals"
+              value={fmtNum(summary.early_arrivals)}
+              active={activeKpi === "early"}
+              onClick={handleKpi}
+              accent="linear-gradient(135deg,#1e40af 0%,#3b82f6 82%)"
+              delta={woshDelta?.early}
+            />
+            <KpiCard
+              id="late"
+              label="Late Departures"
+              value={fmtNum(summary.late_departures)}
+              active={activeKpi === "late"}
+              onClick={handleKpi}
+              accent="linear-gradient(135deg,#92400e 0%,#f59e0b 82%)"
+              delta={woshDelta?.late}
+            />
+          </div>
+        </>
+      ) : (
+        <div className="mb-3 rounded-[14px] py-8 text-center" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}>
+          <p className="text-[0.85rem] font-semibold" style={{ color: "var(--heading-color)" }}>No WOSH report uploaded yet</p>
+          <p className="mt-1 text-[0.78rem]" style={{ color: "var(--card-desc)" }}>Upload a Shift_Exception_Report.xlsx above to see exception data.</p>
+        </div>
+      )}
+
+      {/* Drill-down panel for WOSH KPIs */}
+      {renderDrillDown(WOSH_KPIS)}
+
+      {/* Irregularities by manager */}
+      {pd?.chart.by_manager && pd.chart.by_manager.length > 0 && (
+        <div className="mb-5">
+          <ManagerSummaryTable data={pd.chart.by_manager} />
+        </div>
+      )}
+
+      {/* All exceptions (collapsed by default) */}
+      {pd?.exceptions && pd.exceptions.length > 0 && (
+        <div className="mb-8">
+          <ExceptionsTable exceptions={pd.exceptions as WoshException[]} />
+        </div>
+      )}
+
+      {/* ── Company Overview ─────────────────────────────────────────────────── */}
+      <SectionLabel>Company Overview</SectionLabel>
       <div className="mb-5 flex flex-wrap gap-2">
         <KpiCard
           id="total_emp"
@@ -933,6 +1174,9 @@ export default function ExecutivePage() {
           accent="linear-gradient(135deg,#92400e 0%,#d97706 82%)"
         />
       </div>
+
+      {/* Drill-down panel for Company Overview KPIs */}
+      {renderDrillDown(OVERVIEW_KPIS)}
 
       {/* Hours by location */}
       <div className="mb-5">
@@ -981,40 +1225,6 @@ export default function ExecutivePage() {
         {hoursLocData && <HoursByLocation locations={hoursLocData.locations} />}
       </div>
 
-      {/* KPI row — WOSH violations */}
-      {summary ? (
-        <>
-          <p className="mb-2 text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
-            Shift Exceptions
-          </p>
-          <div className="mb-3 flex flex-wrap gap-2">
-            <KpiCard id="violations" label="Total Irregularities" value={fmtNum(summary.total_violations)} active={activeKpi === "violations"} onClick={handleKpi} />
-            <KpiCard id="employees" label="Employees Affected" value={fmtNum(summary.employees_affected)} active={activeKpi === "employees"} onClick={handleKpi} />
-            <KpiCard id="early" label="Early Arrivals" value={fmtNum(summary.early_arrivals)} active={activeKpi === "early"} onClick={handleKpi} accent="linear-gradient(135deg,#1e40af 0%,#3b82f6 82%)" />
-            <KpiCard id="late" label="Late Departures" value={fmtNum(summary.late_departures)} active={activeKpi === "late"} onClick={handleKpi} accent="linear-gradient(135deg,#92400e 0%,#f59e0b 82%)" />
-          </div>
-        </>
-      ) : (
-        <div className="mb-3 rounded-[14px] py-8 text-center" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}>
-          <p className="text-[0.85rem] font-semibold" style={{ color: "var(--heading-color)" }}>No WOSH report uploaded yet</p>
-          <p className="mt-1 text-[0.78rem]" style={{ color: "var(--card-desc)" }}>Upload a Shift_Exception_Report.xlsx above to see violation data.</p>
-        </div>
-      )}
-
-      {/* Drill-down panel */}
-      {renderDrillDown()}
-
-      {/* Violations by manager */}
-      {pd?.chart.by_manager && pd.chart.by_manager.length > 0 && (
-        <div className="mb-5">
-          <ManagerSummaryTable data={pd.chart.by_manager} />
-        </div>
-      )}
-
-      {/* All exceptions */}
-      {pd?.exceptions && pd.exceptions.length > 0 && (
-        <ExceptionsTable exceptions={pd.exceptions as WoshException[]} />
-      )}
     </div>
   );
 }
