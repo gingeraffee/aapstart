@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useMemo } from "react";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { useAuth } from "@/lib/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { executiveApi } from "@/lib/api";
@@ -11,16 +11,11 @@ import type {
   WoshReportMeta,
   WoshByManagerChart,
   WoshException,
-  HeadcountData,
-  PTOAnalyticsData,
-  ShiftAdherenceData,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-// ── view type ─────────────────────────────────────────────────────────────────
-type View = "overview" | "headcount" | "hours" | "wosh" | "pto" | "adherence";
+// ── helpers ──────────────────────────────────────────────────────────────────
 
-// ── helpers ───────────────────────────────────────────────────────────────────
 function fmtNum(n: number) {
   return n.toLocaleString("en-US");
 }
@@ -33,53 +28,57 @@ function fmtDate(iso: string | null) {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-// ── SubPageHeader ─────────────────────────────────────────────────────────────
-function SubPageHeader({ title, onBack }: { title: string; onBack: () => void }) {
-  return (
-    <div className="mb-6 flex items-center gap-3">
-      <button
-        onClick={onBack}
-        className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[0.74rem] font-semibold transition-all hover:opacity-80"
-        style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", color: "var(--tab-text)" }}
-      >
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="15 18 9 12 15 6" />
-        </svg>
-        Overview
-      </button>
-      <h2 className="text-[1.2rem] font-bold" style={{ color: "var(--heading-color)" }}>{title}</h2>
-    </div>
-  );
-}
+type KpiId =
+  | "violations" | "employees" | "early" | "late"
+  | "total_emp" | "reg_hours" | "ot_hours";
 
-// ── SectionNavCard ────────────────────────────────────────────────────────────
-function SectionNavCard({
-  title, kpi, sub, note, gradient, onClick,
+// ── KPI card ─────────────────────────────────────────────────────────────────
+
+function KpiCard({
+  id, label, value, sub, active, onClick, accent,
 }: {
-  title: string; kpi: string; sub?: string; note?: string;
-  gradient: string; onClick: () => void;
+  id: KpiId; label: string; value: string | number; sub?: string;
+  active: boolean; onClick: (id: KpiId) => void; accent?: string;
 }) {
   return (
     <button
-      onClick={onClick}
-      className="group relative flex flex-col rounded-[20px] px-5 py-5 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl"
-      style={{ background: gradient, color: "#fff", boxShadow: "0 4px 18px rgba(0,0,0,0.14)" }}
+      onClick={() => onClick(id)}
+      className="group relative flex-1 min-w-[130px] rounded-[14px] px-4 py-4 text-left transition-all duration-150 hover:shadow-md"
+      style={{
+        background: active ? (accent ?? "linear-gradient(135deg,#1e3a5f 0%,#2563eb 82%)") : "var(--card-bg)",
+        border: active ? "1px solid transparent" : "1px solid var(--card-border)",
+        boxShadow: active ? "0 4px 14px rgba(37,99,235,0.25)" : "var(--card-shadow)",
+        color: active ? "#fff" : "inherit",
+      }}
     >
-      <p className="text-[0.63rem] font-bold uppercase tracking-[0.15em]" style={{ opacity: 0.72 }}>{title}</p>
-      <p className="mt-2 text-[2rem] font-extrabold leading-none tracking-tight">{kpi}</p>
-      {sub && <p className="mt-1 text-[0.78rem] font-medium" style={{ opacity: 0.82 }}>{sub}</p>}
-      {note && <p className="mt-1 text-[0.7rem]" style={{ opacity: 0.62 }}>{note}</p>}
-      <div className="mt-auto pt-4 flex items-center gap-1 text-[0.72rem] font-semibold" style={{ opacity: 0.75 }}>
-        <span className="group-hover:underline">View details</span>
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-          <polyline points="9 18 15 12 9 6" />
+      <p
+        className="mb-1 text-[0.68rem] font-bold uppercase tracking-widest"
+        style={{ color: active ? "rgba(255,255,255,0.75)" : "var(--module-context)" }}
+      >
+        {label}
+      </p>
+      <p className="text-[1.5rem] font-bold leading-none" style={{ color: active ? "#fff" : "var(--heading-color)" }}>
+        {value}
+      </p>
+      {sub && (
+        <p className="mt-1 text-[0.7rem]" style={{ color: active ? "rgba(255,255,255,0.65)" : "var(--card-desc)" }}>
+          {sub}
+        </p>
+      )}
+      <div
+        className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-opacity"
+        style={{ color: active ? "rgba(255,255,255,0.6)" : "var(--module-context)" }}
+      >
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <polyline points="6 9 12 15 18 9" />
         </svg>
       </div>
     </button>
   );
 }
 
-// ── DrillByManager ────────────────────────────────────────────────────────────
+// ── drill-down panels ─────────────────────────────────────────────────────────
+
 function DrillByManager({ data }: { data: WoshByManagerChart[] }) {
   const max = Math.max(...data.map(d => d.total), 1);
   return (
@@ -115,7 +114,6 @@ function DrillByManager({ data }: { data: WoshByManagerChart[] }) {
   );
 }
 
-// ── DrillByDay ────────────────────────────────────────────────────────────────
 function DrillByDay({ data }: { data: { day: string; count: number }[] }) {
   const max = Math.max(...data.map(d => d.count), 1);
   return (
@@ -136,7 +134,6 @@ function DrillByDay({ data }: { data: { day: string; count: number }[] }) {
   );
 }
 
-// ── DrillTopEmployees ─────────────────────────────────────────────────────────
 function DrillTopEmployees({ data }: { data: { employee_name: string; manager: string | null; total: number; early: number; late: number }[] }) {
   return (
     <div>
@@ -169,7 +166,62 @@ function DrillTopEmployees({ data }: { data: { employee_name: string; manager: s
   );
 }
 
-// ── ManagerSummaryTable ───────────────────────────────────────────────────────
+function DrillHours({ rows }: { rows: ExecutiveDashboardData["hours_by_department"] }) {
+  if (!rows.length) return <p className="text-[0.8rem]" style={{ color: "var(--card-desc)" }}>No hours data imported.</p>;
+  return (
+    <div className="overflow-x-auto rounded-[10px]" style={{ border: "1px solid var(--card-border)" }}>
+      <table className="w-full text-[0.78rem]">
+        <thead>
+          <tr style={{ background: "var(--tab-group-bg)", borderBottom: "1px solid var(--card-border)" }}>
+            {["Department", "Employees", "Regular Hrs", "OT Hrs", "OT %"].map(h => (
+              <th key={h} className="px-3 py-2 text-left font-semibold whitespace-nowrap" style={{ color: "var(--module-context)" }}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, i) => {
+            const otPct = row.regular_hours + row.ot_hours > 0
+              ? ((row.ot_hours / (row.regular_hours + row.ot_hours)) * 100).toFixed(1) : "0.0";
+            return (
+              <tr key={row.department} style={{ borderBottom: i < rows.length - 1 ? "1px solid var(--card-border)" : "none" }}>
+                <td className="px-3 py-2 font-medium" style={{ color: "var(--heading-color)" }}>{row.department}</td>
+                <td className="px-3 py-2 text-center" style={{ color: "var(--heading-color)" }}>{row.employee_count}</td>
+                <td className="px-3 py-2 text-right" style={{ color: "var(--heading-color)" }}>{fmtHrs(row.regular_hours)}</td>
+                <td className="px-3 py-2 text-right" style={{ color: row.ot_hours > 0 ? "#b45309" : "var(--heading-color)" }}>{fmtHrs(row.ot_hours)}</td>
+                <td className="px-3 py-2 text-right" style={{ color: "var(--module-context)" }}>{otPct}%</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function DrillHeadcount({ rows }: { rows: { department: string; count: number }[] }) {
+  const total = rows.reduce((s, r) => s + r.count, 0) || 1;
+  return (
+    <div className="space-y-2">
+      <p className="mb-3 text-[0.75rem] font-semibold uppercase tracking-wide" style={{ color: "var(--module-context)" }}>
+        Headcount by Department
+      </p>
+      {rows.map(row => (
+        <div key={row.department}>
+          <div className="mb-1 flex justify-between">
+            <span className="text-[0.8rem] font-medium" style={{ color: "var(--heading-color)" }}>{row.department}</span>
+            <span className="text-[0.8rem] font-bold" style={{ color: "var(--heading-color)" }}>{row.count}</span>
+          </div>
+          <div className="h-2 overflow-hidden rounded-full" style={{ background: "var(--tab-group-bg)" }}>
+            <div className="h-full rounded-full" style={{ width: `${(row.count / total) * 100}%`, background: "linear-gradient(90deg,#1e3a5f,#2563eb)" }} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── violations by manager summary table ──────────────────────────────────────
+
 function ManagerSummaryTable({ data }: { data: WoshByManagerChart[] }) {
   const maxTotal = Math.max(...data.map(d => d.total), 1);
   return (
@@ -213,7 +265,8 @@ function ManagerSummaryTable({ data }: { data: WoshByManagerChart[] }) {
   );
 }
 
-// ── ExceptionsTable ───────────────────────────────────────────────────────────
+// ── all exceptions table ─────────────────────────────────────────────────────
+
 const EXCEPTION_TYPE_COLORS: Record<string, string> = {
   "Early": "bg-blue-50 text-blue-700",
   "Late": "bg-amber-50 text-amber-700",
@@ -267,6 +320,7 @@ function ExceptionsTable({ exceptions }: { exceptions: WoshException[] }) {
 
   return (
     <div className="overflow-hidden rounded-[14px]" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}>
+      {/* header + filters */}
       <div className="border-b px-5 py-4" style={{ borderColor: "var(--card-border)" }}>
         <div className="flex flex-wrap items-center gap-3">
           <h3 className="mr-2 text-[0.9rem] font-bold" style={{ color: "var(--heading-color)" }}>
@@ -302,6 +356,8 @@ function ExceptionsTable({ exceptions }: { exceptions: WoshException[] }) {
           )}
         </div>
       </div>
+
+      {/* table */}
       <div className="overflow-x-auto">
         <table className="w-full text-[0.77rem]">
           <thead>
@@ -340,18 +396,28 @@ function ExceptionsTable({ exceptions }: { exceptions: WoshException[] }) {
           </tbody>
         </table>
       </div>
+
+      {/* pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between border-t px-5 py-3" style={{ borderColor: "var(--card-border)" }}>
-          <span className="text-[0.75rem]" style={{ color: "var(--card-desc)" }}>Page {page + 1} of {totalPages}</span>
+          <span className="text-[0.75rem]" style={{ color: "var(--card-desc)" }}>
+            Page {page + 1} of {totalPages}
+          </span>
           <div className="flex gap-2">
-            <button disabled={page === 0} onClick={() => setPage(p => p - 1)}
+            <button
+              disabled={page === 0}
+              onClick={() => setPage(p => p - 1)}
               className="rounded-[8px] px-3 py-1.5 text-[0.75rem] font-semibold transition-all disabled:opacity-40"
-              style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", color: "var(--tab-text)" }}>
+              style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", color: "var(--tab-text)" }}
+            >
               Prev
             </button>
-            <button disabled={page >= totalPages - 1} onClick={() => setPage(p => p + 1)}
+            <button
+              disabled={page >= totalPages - 1}
+              onClick={() => setPage(p => p + 1)}
               className="rounded-[8px] px-3 py-1.5 text-[0.75rem] font-semibold transition-all disabled:opacity-40"
-              style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", color: "var(--tab-text)" }}>
+              style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", color: "var(--tab-text)" }}
+            >
               Next
             </button>
           </div>
@@ -361,7 +427,8 @@ function ExceptionsTable({ exceptions }: { exceptions: WoshException[] }) {
   );
 }
 
-// ── HoursByLocation ───────────────────────────────────────────────────────────
+// ── hours by location ─────────────────────────────────────────────────────────
+
 type LocationHours = {
   location: string;
   regular_hours: number;
@@ -371,72 +438,82 @@ type LocationHours = {
 
 function HoursByLocation({ locations }: { locations: LocationHours[] }) {
   const [open, setOpen] = useState<string | null>(null);
+
   return (
-    <div className="grid gap-4 sm:grid-cols-3">
-      {locations.map((loc) => {
-        const isOpen = open === loc.location;
-        const total = loc.regular_hours + loc.ot_hours;
-        const otPct = total > 0 ? ((loc.ot_hours / total) * 100).toFixed(1) : "0.0";
-        return (
-          <div key={loc.location} className="overflow-hidden rounded-[18px]"
-            style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}>
-            <button
-              onClick={() => setOpen(isOpen ? null : loc.location)}
-              className="flex w-full items-start justify-between gap-3 px-5 py-4 text-left transition-all hover:bg-black/[0.02]"
+    <div className="mb-5">
+      <p className="mb-2 text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
+        Hours by Location
+      </p>
+      <div className="grid gap-3 sm:grid-cols-3">
+        {locations.map((loc) => {
+          const isOpen = open === loc.location;
+          const total = loc.regular_hours + loc.ot_hours;
+          const otPct = total > 0 ? ((loc.ot_hours / total) * 100).toFixed(1) : "0.0";
+          return (
+            <div
+              key={loc.location}
+              className="overflow-hidden rounded-[16px]"
+              style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}
             >
-              <div>
-                <p className="text-[0.65rem] font-bold uppercase tracking-[0.12em]" style={{ color: "var(--module-context)" }}>Location</p>
-                <p className="mt-0.5 text-[0.95rem] font-bold" style={{ color: "var(--heading-color)" }}>{loc.location}</p>
-                <div className="mt-2 flex gap-4">
-                  <div>
-                    <p className="text-[0.58rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>Regular</p>
-                    <p className="text-[1.2rem] font-extrabold leading-tight" style={{ color: "var(--heading-color)" }}>{loc.regular_hours.toLocaleString("en-US", { maximumFractionDigits: 1 })}</p>
-                  </div>
-                  <div>
-                    <p className="text-[0.58rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>OT</p>
-                    <p className="text-[1.2rem] font-extrabold leading-tight" style={{ color: "#b45309" }}>{loc.ot_hours.toLocaleString("en-US", { maximumFractionDigits: 1 })}</p>
-                  </div>
-                  <div>
-                    <p className="text-[0.58rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>OT %</p>
-                    <p className="text-[1.2rem] font-extrabold leading-tight" style={{ color: "var(--heading-color)" }}>{otPct}%</p>
+              <button
+                onClick={() => setOpen(isOpen ? null : loc.location)}
+                className="flex w-full items-start justify-between gap-3 px-4 py-4 text-left transition-all hover:bg-black/[0.02]"
+              >
+                <div>
+                  <p className="text-[0.8rem] font-bold" style={{ color: "var(--heading-color)" }}>{loc.location}</p>
+                  <div className="mt-2 flex gap-4">
+                    <div>
+                      <p className="text-[0.6rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>Regular</p>
+                      <p className="text-[1.1rem] font-extrabold leading-tight" style={{ color: "var(--heading-color)" }}>{loc.regular_hours.toLocaleString("en-US", { maximumFractionDigits: 1 })}</p>
+                    </div>
+                    <div>
+                      <p className="text-[0.6rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>OT</p>
+                      <p className="text-[1.1rem] font-extrabold leading-tight" style={{ color: "#b45309" }}>{loc.ot_hours.toLocaleString("en-US", { maximumFractionDigits: 1 })}</p>
+                    </div>
+                    <div>
+                      <p className="text-[0.6rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>OT %</p>
+                      <p className="text-[1.1rem] font-extrabold leading-tight" style={{ color: "var(--heading-color)" }}>{otPct}%</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"
-                className={cn("mt-1 shrink-0 transition-transform duration-200", isOpen && "rotate-90")} style={{ color: "var(--card-desc)" }}>
-                <path d="M3 1.5L7 5L3 8.5" />
-              </svg>
-            </button>
-            {isOpen && (
-              <div className="border-t px-5 pb-3 pt-2" style={{ borderColor: "var(--card-border)" }}>
-                <table className="w-full text-[0.74rem]">
-                  <thead>
-                    <tr>
-                      <th className="pb-1.5 text-left font-bold uppercase tracking-[0.08em]" style={{ color: "var(--module-context)", fontSize: "0.6rem" }}>Department</th>
-                      <th className="pb-1.5 text-right font-bold uppercase tracking-[0.08em]" style={{ color: "var(--module-context)", fontSize: "0.6rem" }}>Regular</th>
-                      <th className="pb-1.5 text-right font-bold uppercase tracking-[0.08em]" style={{ color: "var(--module-context)", fontSize: "0.6rem" }}>OT</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {loc.departments.map((d) => (
-                      <tr key={d.department} className="border-t" style={{ borderColor: "var(--card-border)" }}>
-                        <td className="py-1.5 font-medium" style={{ color: "var(--heading-color)" }}>{d.department}</td>
-                        <td className="py-1.5 text-right" style={{ color: "var(--heading-color)" }}>{d.regular_hours.toLocaleString("en-US", { maximumFractionDigits: 1 })}</td>
-                        <td className="py-1.5 text-right font-semibold" style={{ color: d.ot_hours > 0 ? "#b45309" : "var(--card-desc)" }}>{d.ot_hours.toLocaleString("en-US", { maximumFractionDigits: 1 })}</td>
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+                  className={cn("mt-1 shrink-0 transition-transform duration-200", isOpen && "rotate-90")} style={{ color: "var(--card-desc)" }}>
+                  <path d="M3 1.5L7 5L3 8.5" />
+                </svg>
+              </button>
+
+              {isOpen && (
+                <div className="border-t px-4 pb-3 pt-2" style={{ borderColor: "var(--card-border)" }}>
+                  <table className="w-full text-[0.74rem]">
+                    <thead>
+                      <tr>
+                        <th className="pb-1.5 text-left font-bold uppercase tracking-[0.08em]" style={{ color: "var(--module-context)", fontSize: "0.6rem" }}>Department</th>
+                        <th className="pb-1.5 text-right font-bold uppercase tracking-[0.08em]" style={{ color: "var(--module-context)", fontSize: "0.6rem" }}>Reg</th>
+                        <th className="pb-1.5 text-right font-bold uppercase tracking-[0.08em]" style={{ color: "var(--module-context)", fontSize: "0.6rem" }}>OT</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        );
-      })}
+                    </thead>
+                    <tbody>
+                      {loc.departments.map((d) => (
+                        <tr key={d.department} className="border-t" style={{ borderColor: "var(--card-border)" }}>
+                          <td className="py-1.5 font-medium" style={{ color: "var(--heading-color)" }}>{d.department}</td>
+                          <td className="py-1.5 text-right" style={{ color: "var(--heading-color)" }}>{d.regular_hours.toLocaleString("en-US", { maximumFractionDigits: 1 })}</td>
+                          <td className="py-1.5 text-right font-semibold" style={{ color: d.ot_hours > 0 ? "#b45309" : "var(--card-desc)" }}>{d.ot_hours.toLocaleString("en-US", { maximumFractionDigits: 1 })}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
 
-// ── UploadBar ─────────────────────────────────────────────────────────────────
+// ── upload bar ────────────────────────────────────────────────────────────────
+
 function UploadBar({ onUploaded }: { onUploaded: () => void }) {
   const [weekLabel, setWeekLabel] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -464,7 +541,10 @@ function UploadBar({ onUploaded }: { onUploaded: () => void }) {
   }
 
   return (
-    <div className="mb-5 rounded-[14px] px-5 py-4" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}>
+    <div
+      className="mb-5 rounded-[14px] px-5 py-4"
+      style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}
+    >
       <div className="flex flex-wrap items-end gap-3">
         <div>
           <p className="mb-1.5 text-[0.72rem] font-bold uppercase tracking-wide" style={{ color: "var(--module-context)" }}>
@@ -501,480 +581,33 @@ function UploadBar({ onUploaded }: { onUploaded: () => void }) {
   );
 }
 
-// ── HeadcountView ─────────────────────────────────────────────────────────────
-function HeadcountView({ data, onBack }: { data: HeadcountData; onBack: () => void }) {
-  const [open, setOpen] = useState<string | null>(null);
-  const maxTotal = Math.max(...data.by_location.map(l => l.total), 1);
-
-  return (
-    <div>
-      <SubPageHeader title="Employee Headcount" onBack={onBack} />
-      <div className="mb-5 rounded-[18px] px-6 py-5" style={{ background: "linear-gradient(135deg,#134e26 0%,#16a34a 82%)", color: "#fff" }}>
-        <p className="text-[0.63rem] font-bold uppercase tracking-[0.15em]" style={{ opacity: 0.72 }}>Total Active Employees</p>
-        <p className="mt-1 text-[3rem] font-extrabold leading-none">{fmtNum(data.total)}</p>
-        <p className="mt-1 text-[0.8rem]" style={{ opacity: 0.8 }}>{data.by_location.length} locations</p>
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {data.by_location.map(loc => {
-          const isOpen = open === loc.location;
-          const maxDept = Math.max(...loc.departments.map(d => d.count), 1);
-          return (
-            <div key={loc.location} className="overflow-hidden rounded-[18px]"
-              style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}>
-              <button
-                onClick={() => setOpen(isOpen ? null : loc.location)}
-                className="w-full px-5 py-4 text-left hover:bg-black/[0.02] transition-colors"
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-[0.63rem] font-bold uppercase tracking-[0.12em]" style={{ color: "var(--module-context)" }}>Location</p>
-                    <p className="mt-0.5 text-[0.95rem] font-bold" style={{ color: "var(--heading-color)" }}>{loc.location}</p>
-                    <p className="text-[2rem] font-extrabold leading-tight" style={{ color: "var(--heading-color)" }}>{fmtNum(loc.total)}</p>
-                    <p className="text-[0.7rem]" style={{ color: "var(--card-desc)" }}>
-                      {((loc.total / data.total) * 100).toFixed(1)}% of workforce · {loc.departments.length} dept{loc.departments.length !== 1 ? "s" : ""}
-                    </p>
-                  </div>
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8"
-                    className={cn("mt-2 shrink-0 transition-transform duration-200", isOpen && "rotate-90")} style={{ color: "var(--card-desc)" }}>
-                    <path d="M3 1.5L7 5L3 8.5" />
-                  </svg>
-                </div>
-                <div className="mt-3 h-1.5 overflow-hidden rounded-full" style={{ background: "var(--tab-group-bg)" }}>
-                  <div className="h-full rounded-full" style={{ width: `${(loc.total / maxTotal) * 100}%`, background: "linear-gradient(90deg,#134e26,#16a34a)" }} />
-                </div>
-              </button>
-              {isOpen && (
-                <div className="border-t px-5 pb-4 pt-3" style={{ borderColor: "var(--card-border)" }}>
-                  <p className="mb-2.5 text-[0.62rem] font-bold uppercase tracking-[0.12em]" style={{ color: "var(--module-context)" }}>By Department</p>
-                  <div className="space-y-2.5">
-                    {loc.departments.map(dept => (
-                      <div key={dept.department}>
-                        <div className="mb-1 flex justify-between">
-                          <span className="text-[0.78rem] font-medium" style={{ color: "var(--heading-color)" }}>{dept.department}</span>
-                          <span className="text-[0.78rem] font-bold" style={{ color: "var(--heading-color)" }}>{dept.count}</span>
-                        </div>
-                        <div className="h-1.5 overflow-hidden rounded-full" style={{ background: "var(--tab-group-bg)" }}>
-                          <div className="h-full rounded-full" style={{ width: `${(dept.count / maxDept) * 100}%`, background: "linear-gradient(90deg,#134e26,#16a34a)" }} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-// ── HoursView ─────────────────────────────────────────────────────────────────
-function HoursView({ locations, onBack }: { locations: LocationHours[]; onBack: () => void }) {
-  const totalReg = locations.reduce((s, l) => s + l.regular_hours, 0);
-  const totalOT  = locations.reduce((s, l) => s + l.ot_hours, 0);
-  const total    = totalReg + totalOT;
-  const otPct    = total > 0 ? ((totalOT / total) * 100).toFixed(1) : "0.0";
-
-  return (
-    <div>
-      <SubPageHeader title="Hours by Location" onBack={onBack} />
-      <div className="mb-5 rounded-[18px] px-6 py-5" style={{ background: "linear-gradient(135deg,#1e3a5f 0%,#2563eb 82%)", color: "#fff" }}>
-        <p className="text-[0.63rem] font-bold uppercase tracking-[0.15em]" style={{ opacity: 0.72 }}>Total Hours</p>
-        <p className="mt-1 text-[3rem] font-extrabold leading-none">{fmtHrs(total)}</p>
-        <div className="mt-1 flex gap-4 text-[0.8rem]" style={{ opacity: 0.85 }}>
-          <span>Regular: {fmtHrs(totalReg)}</span>
-          <span>OT: {fmtHrs(totalOT)} ({otPct}%)</span>
-        </div>
-      </div>
-      <HoursByLocation locations={locations} />
-    </div>
-  );
-}
-
-// ── WOSHView ──────────────────────────────────────────────────────────────────
-function WOSHView({
-  report, history, selectedId, onSelectId, onUploaded, showUpload, onBack,
-}: {
-  report: WoshReport | null | undefined;
-  history: WoshReportMeta[] | undefined;
-  selectedId: number | null;
-  onSelectId: (id: number | null) => void;
-  onUploaded: () => void;
-  showUpload: boolean;
-  onBack: () => void;
-}) {
-  const summary = report?.parsed_data?.summary ?? null;
-  const pd = report?.parsed_data ?? null;
-
-  return (
-    <div>
-      <SubPageHeader title="WOSH Report" onBack={onBack} />
-
-      {showUpload && <UploadBar onUploaded={onUploaded} />}
-
-      {history && history.length > 1 && (
-        <div className="mb-4 flex items-center gap-2">
-          <label className="text-[0.72rem] font-semibold" style={{ color: "var(--module-context)" }}>Week:</label>
-          <select
-            value={selectedId ?? ""}
-            onChange={e => onSelectId(e.target.value === "" ? null : Number(e.target.value))}
-            className="rounded-[10px] px-3 py-1.5 text-[0.78rem]"
-            style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)", outline: "none" }}
-          >
-            <option value="">Latest</option>
-            {history.map(r => <option key={r.id} value={r.id}>{r.week_label ?? `Report #${r.id}`}</option>)}
-          </select>
-        </div>
-      )}
-
-      {summary ? (
-        <>
-          <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {[
-              { label: "Total Irregularities", value: fmtNum(summary.total_violations) },
-              { label: "Employees Affected",   value: fmtNum(summary.employees_affected) },
-              { label: "Early Arrivals",        value: fmtNum(summary.early_arrivals) },
-              { label: "Late Departures",       value: fmtNum(summary.late_departures) },
-            ].map(k => (
-              <div key={k.label} className="rounded-[14px] px-4 py-3" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}>
-                <p className="text-[0.62rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>{k.label}</p>
-                <p className="mt-1 text-[1.6rem] font-extrabold leading-none" style={{ color: "var(--heading-color)" }}>{k.value}</p>
-              </div>
-            ))}
-          </div>
-
-          {report?.week_label && (
-            <p className="mb-4 text-[0.78rem]" style={{ color: "var(--card-desc)" }}>
-              <span className="font-semibold" style={{ color: "var(--heading-color)" }}>{report.week_label}</span>
-              {report.week_start && report.week_end && ` · ${fmtDate(report.week_start)} – ${fmtDate(report.week_end)}`}
-            </p>
-          )}
-
-          <div className="mb-5 grid gap-5 md:grid-cols-2">
-            <div className="rounded-[14px] p-5" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}>
-              <DrillByManager data={pd?.chart.by_manager ?? []} />
-            </div>
-            <div className="rounded-[14px] p-5" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}>
-              <DrillByDay data={pd?.chart.by_day ?? []} />
-            </div>
-          </div>
-
-          {pd?.top_employees && pd.top_employees.length > 0 && (
-            <div className="mb-5 rounded-[14px] p-5" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}>
-              <DrillTopEmployees data={pd.top_employees} />
-            </div>
-          )}
-
-          {pd?.chart.by_manager && pd.chart.by_manager.length > 0 && (
-            <div className="mb-5"><ManagerSummaryTable data={pd.chart.by_manager} /></div>
-          )}
-
-          {pd?.exceptions && pd.exceptions.length > 0 && (
-            <ExceptionsTable exceptions={pd.exceptions as WoshException[]} />
-          )}
-        </>
-      ) : (
-        <div className="rounded-[14px] py-12 text-center" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}>
-          <p className="text-[0.85rem] font-semibold" style={{ color: "var(--heading-color)" }}>No WOSH report uploaded yet</p>
-          <p className="mt-1 text-[0.78rem]" style={{ color: "var(--card-desc)" }}>
-            {showUpload
-              ? "Use the upload area above to import a Shift_Exception_Report.xlsx."
-              : "Contact your HR administrator to upload a WOSH report."}
-          </p>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ── PTOView ───────────────────────────────────────────────────────────────────
-function PTOView({ data, onBack }: { data: PTOAnalyticsData; onBack: () => void }) {
-  const [open, setOpen] = useState<string | null>(null);
-  const maxPTO = Math.max(...data.locations.map(l => l.total_pto), 1);
-
-  return (
-    <div>
-      <SubPageHeader title="PTO Analytics" onBack={onBack} />
-      <div className="mb-5 rounded-[18px] px-6 py-5" style={{ background: "linear-gradient(135deg,#0e4966 0%,#0ea5e9 82%)", color: "#fff" }}>
-        <p className="text-[0.63rem] font-bold uppercase tracking-[0.15em]" style={{ opacity: 0.72 }}>Total PTO Hours Used</p>
-        <p className="mt-1 text-[3rem] font-extrabold leading-none">{fmtHrs(data.total_pto)}</p>
-        <p className="mt-1 text-[0.8rem]" style={{ opacity: 0.8 }}>Vacation + personal time across all locations</p>
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {data.locations.map(loc => {
-          const isOpen = open === loc.location;
-          const locTotal = loc.vacation_hours + loc.personal_hours;
-          const maxDept = Math.max(...loc.departments.map(d => d.total_pto), 1);
-          return (
-            <div key={loc.location} className="overflow-hidden rounded-[18px]"
-              style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}>
-              <button
-                onClick={() => setOpen(isOpen ? null : loc.location)}
-                className="w-full px-5 py-4 text-left hover:bg-black/[0.02] transition-colors"
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-[0.63rem] font-bold uppercase tracking-[0.12em]" style={{ color: "var(--module-context)" }}>Location</p>
-                    <p className="mt-0.5 text-[0.95rem] font-bold" style={{ color: "var(--heading-color)" }}>{loc.location}</p>
-                    <p className="text-[2rem] font-extrabold leading-tight" style={{ color: "var(--heading-color)" }}>{fmtHrs(locTotal)}</p>
-                    <p className="text-[0.7rem]" style={{ color: "var(--card-desc)" }}>PTO hours</p>
-                    <div className="mt-1.5 flex gap-3 text-[0.68rem]">
-                      <span style={{ color: "#0ea5e9" }}>Vacation: {fmtHrs(loc.vacation_hours)}</span>
-                      <span style={{ color: "#818cf8" }}>Personal: {fmtHrs(loc.personal_hours)}</span>
-                    </div>
-                  </div>
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8"
-                    className={cn("mt-2 shrink-0 transition-transform duration-200", isOpen && "rotate-90")} style={{ color: "var(--card-desc)" }}>
-                    <path d="M3 1.5L7 5L3 8.5" />
-                  </svg>
-                </div>
-                <div className="mt-3 h-1.5 overflow-hidden rounded-full" style={{ background: "var(--tab-group-bg)" }}>
-                  <div className="h-full rounded-full" style={{ width: `${(locTotal / maxPTO) * 100}%`, background: "linear-gradient(90deg,#0e4966,#0ea5e9)" }} />
-                </div>
-              </button>
-              {isOpen && (
-                <div className="border-t px-5 pb-4 pt-3" style={{ borderColor: "var(--card-border)" }}>
-                  <p className="mb-2.5 text-[0.62rem] font-bold uppercase tracking-[0.12em]" style={{ color: "var(--module-context)" }}>By Department</p>
-                  <div className="space-y-3">
-                    {loc.departments.map(dept => (
-                      <div key={dept.department}>
-                        <div className="mb-0.5 flex justify-between">
-                          <span className="text-[0.78rem] font-medium" style={{ color: "var(--heading-color)" }}>{dept.department}</span>
-                          <span className="text-[0.78rem] font-bold" style={{ color: "var(--heading-color)" }}>{fmtHrs(dept.total_pto)}</span>
-                        </div>
-                        <div className="flex gap-2 text-[0.65rem] mb-1">
-                          <span style={{ color: "#0ea5e9" }}>V: {fmtHrs(dept.vacation_hours)}</span>
-                          <span style={{ color: "var(--card-desc)" }}>·</span>
-                          <span style={{ color: "#818cf8" }}>P: {fmtHrs(dept.personal_hours)}</span>
-                        </div>
-                        <div className="h-1.5 overflow-hidden rounded-full" style={{ background: "var(--tab-group-bg)" }}>
-                          <div className="h-full rounded-full" style={{ width: `${(dept.total_pto / maxDept) * 100}%`, background: "linear-gradient(90deg,#0e4966,#0ea5e9)" }} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-// ── AdherenceView ─────────────────────────────────────────────────────────────
-function AdherenceView({ data, onBack }: { data: ShiftAdherenceData; onBack: () => void }) {
-  const MEDAL = ["🥇", "🥈", "🥉"];
-
-  return (
-    <div>
-      <SubPageHeader title="Shift Adherence" onBack={onBack} />
-
-      {data.top_manager && data.top_score != null && (
-        <div className="mb-5 rounded-[18px] px-6 py-5" style={{ background: "linear-gradient(135deg,#4c1d95 0%,#7c3aed 82%)", color: "#fff" }}>
-          <p className="text-[0.63rem] font-bold uppercase tracking-[0.15em]" style={{ opacity: 0.72 }}>Top Performing Team</p>
-          <p className="mt-1 text-[1.9rem] font-extrabold leading-tight">{data.top_manager}</p>
-          <p className="mt-0.5 text-[0.85rem]" style={{ opacity: 0.85 }}>{data.top_score}% adherence score</p>
-        </div>
-      )}
-
-      <div className="overflow-hidden rounded-[18px]" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}>
-        <div className="px-5 py-3 border-b" style={{ borderColor: "var(--card-border)" }}>
-          <p className="text-[0.68rem] font-bold uppercase tracking-[0.12em]" style={{ color: "var(--module-context)" }}>
-            All Managers — Ranked by Adherence Score
-          </p>
-        </div>
-        <div className="divide-y" style={{ borderColor: "var(--card-border)" }}>
-          {data.managers.length === 0 ? (
-            <div className="px-5 py-10 text-center">
-              <p className="text-[0.84rem]" style={{ color: "var(--card-desc)" }}>No manager data yet. Import time records to see adherence rankings.</p>
-            </div>
-          ) : data.managers.map((mgr, i) => {
-            const scoreColor = mgr.adherence_score >= 85 ? "#16a34a" : mgr.adherence_score >= 70 ? "#d97706" : "#dc2626";
-            const barGrad = mgr.adherence_score >= 85
-              ? "linear-gradient(90deg,#134e26,#16a34a)"
-              : mgr.adherence_score >= 70
-              ? "linear-gradient(90deg,#92400e,#d97706)"
-              : "linear-gradient(90deg,#7f1d1d,#dc2626)";
-            return (
-              <div key={mgr.manager_id} className="px-5 py-4">
-                <div className="flex items-start gap-3 mb-2">
-                  <span className="mt-0.5 w-7 shrink-0 text-center text-[0.95rem]">
-                    {MEDAL[i] ?? <span className="text-[0.72rem] font-bold" style={{ color: "var(--module-context)" }}>#{i + 1}</span>}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-baseline justify-between gap-2">
-                      <span className="text-[0.88rem] font-bold truncate" style={{ color: "var(--heading-color)" }}>{mgr.manager_name}</span>
-                      <span className="shrink-0 text-[1.15rem] font-extrabold" style={{ color: scoreColor }}>{mgr.adherence_score}%</span>
-                    </div>
-                    <p className="text-[0.7rem]" style={{ color: "var(--card-desc)" }}>
-                      {mgr.location}{mgr.department ? ` · ${mgr.department}` : ""} · {mgr.team_size} team member{mgr.team_size !== 1 ? "s" : ""}
-                    </p>
-                  </div>
-                </div>
-                <div className="ml-10">
-                  <div className="h-2 overflow-hidden rounded-full" style={{ background: "var(--tab-group-bg)" }}>
-                    <div className="h-full rounded-full" style={{ width: `${mgr.adherence_score}%`, background: barGrad }} />
-                  </div>
-                  <div className="mt-1.5 flex gap-4 text-[0.67rem]" style={{ color: "var(--card-desc)" }}>
-                    <span>OT Rate: <strong style={{ color: "var(--heading-color)" }}>{mgr.ot_rate}%</strong></span>
-                    <span>Unexcused Absent: <strong style={{ color: "var(--heading-color)" }}>{fmtHrs(mgr.absent_w_point_hours)} hrs</strong></span>
-                    <span>Reg Hrs: <strong style={{ color: "var(--heading-color)" }}>{fmtHrs(mgr.regular_hours)}</strong></span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ── OverviewView ──────────────────────────────────────────────────────────────
-function OverviewView({
-  headcountData,
-  hoursData,
-  latestReport,
-  ptoData,
-  adherenceData,
-  onNavigate,
-}: {
-  headcountData: HeadcountData | undefined;
-  hoursData: { locations: LocationHours[] } | undefined;
-  latestReport: WoshReport | null | undefined;
-  ptoData: PTOAnalyticsData | undefined;
-  adherenceData: ShiftAdherenceData | undefined;
-  onNavigate: (view: View) => void;
-}) {
-  const LOCATIONS = ["AAP", "API Scottsboro", "API Memphis"];
-
-  const locationSnap = useMemo(() => {
-    return LOCATIONS.map(loc => {
-      const hc = headcountData?.by_location.find(l => l.location === loc);
-      const hr = hoursData?.locations.find(l => l.location === loc);
-      return {
-        location: loc,
-        headcount: hc?.total ?? 0,
-        reg_hours: hr?.regular_hours ?? 0,
-        ot_hours: hr?.ot_hours ?? 0,
-      };
-    }).filter(l => l.headcount > 0 || l.reg_hours > 0);
-  }, [headcountData, hoursData]);
-
-  const totalReg = hoursData?.locations.reduce((s, l) => s + l.regular_hours, 0) ?? 0;
-  const totalOT  = hoursData?.locations.reduce((s, l) => s + l.ot_hours, 0) ?? 0;
-  const otPct    = totalReg + totalOT > 0 ? `${((totalOT / (totalReg + totalOT)) * 100).toFixed(1)}%` : "—";
-
-  const woshSummary = latestReport?.parsed_data?.summary ?? null;
-
-  return (
-    <div>
-      {/* Location snapshot */}
-      {locationSnap.length > 0 && (
-        <div className="mb-6 grid gap-3 sm:grid-cols-3">
-          {locationSnap.map(loc => {
-            const total = loc.reg_hours + loc.ot_hours;
-            const otP = total > 0 ? `${((loc.ot_hours / total) * 100).toFixed(1)}%` : "—";
-            return (
-              <div key={loc.location} className="rounded-[16px] px-4 py-4"
-                style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}>
-                <p className="text-[0.65rem] font-bold uppercase tracking-[0.12em]" style={{ color: "var(--module-context)" }}>{loc.location}</p>
-                <div className="mt-2 grid grid-cols-3 gap-1">
-                  {[
-                    { label: "Employees", value: fmtNum(loc.headcount) },
-                    { label: "Reg Hrs",   value: fmtHrs(loc.reg_hours) },
-                    { label: "OT %",      value: otP },
-                  ].map(stat => (
-                    <div key={stat.label}>
-                      <p className="text-[0.56rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>{stat.label}</p>
-                      <p className="text-[1rem] font-extrabold leading-tight" style={{ color: "var(--heading-color)" }}>{stat.value}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Section nav cards */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <SectionNavCard
-          title="Headcount"
-          kpi={headcountData ? fmtNum(headcountData.total) : "—"}
-          sub={headcountData ? `${headcountData.by_location.length} locations · department drill-down` : "Loading…"}
-          gradient="linear-gradient(135deg,#134e26 0%,#16a34a 82%)"
-          onClick={() => onNavigate("headcount")}
-        />
-        <SectionNavCard
-          title="Hours by Location"
-          kpi={hoursData ? fmtHrs(totalReg + totalOT) : "—"}
-          sub={`${otPct} overtime · department drill-down`}
-          gradient="linear-gradient(135deg,#1e3a5f 0%,#2563eb 82%)"
-          onClick={() => onNavigate("hours")}
-        />
-        <SectionNavCard
-          title="WOSH Report"
-          kpi={woshSummary ? fmtNum(woshSummary.total_violations) : "—"}
-          sub={woshSummary
-            ? `${woshSummary.employees_affected} employees · ${latestReport?.week_label ?? ""}`
-            : "No report uploaded"}
-          note={woshSummary ? `${woshSummary.early_arrivals} early arrivals · ${woshSummary.late_departures} late departures` : undefined}
-          gradient="linear-gradient(135deg,#7f1d1d 0%,#dc2626 82%)"
-          onClick={() => onNavigate("wosh")}
-        />
-        <SectionNavCard
-          title="PTO Analytics"
-          kpi={ptoData ? fmtHrs(ptoData.total_pto) : "—"}
-          sub="Vacation + personal time · by location"
-          gradient="linear-gradient(135deg,#0e4966 0%,#0ea5e9 82%)"
-          onClick={() => onNavigate("pto")}
-        />
-        <SectionNavCard
-          title="Shift Adherence"
-          kpi={adherenceData?.top_score != null ? `${adherenceData.top_score}%` : "—"}
-          sub={adherenceData?.top_manager ? `Best: ${adherenceData.top_manager}` : "Manager team rankings"}
-          note={adherenceData && adherenceData.managers.length > 0 ? `${adherenceData.managers.length} managers ranked` : undefined}
-          gradient="linear-gradient(135deg,#4c1d95 0%,#7c3aed 82%)"
-          onClick={() => onNavigate("adherence")}
-        />
-      </div>
-    </div>
-  );
-}
-
 // ── main page ─────────────────────────────────────────────────────────────────
+
 export default function ExecutivePage() {
   const { user } = useAuth();
   const router = useRouter();
-  const [view, setView] = useState<View>("overview");
+  const [activeKpi, setActiveKpi] = useState<KpiId | null>(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
-  // All data fetched upfront for instant sub-page loads
-  const { data: latestReport, mutate: mutateLatest } = useSWR<WoshReport | null>(
-    "wosh-latest", () => executiveApi.woshLatest()
+  const { data: dashData } = useSWR<ExecutiveDashboardData>(
+    "executive-dashboard",
+    () => executiveApi.dashboard()
   );
   const { data: history, mutate: mutateHistory } = useSWR<WoshReportMeta[]>(
-    "wosh-history", () => executiveApi.woshHistory()
+    "wosh-history",
+    () => executiveApi.woshHistory()
+  );
+  const { data: latestReport, mutate: mutateLatest } = useSWR<WoshReport | null>(
+    "wosh-latest",
+    () => executiveApi.woshLatest()
   );
   const { data: selectedReport } = useSWR<WoshReport>(
     selectedId !== null ? `wosh-${selectedId}` : null,
     () => executiveApi.woshById(selectedId!)
   );
-  const { data: hoursData } = useSWR(
-    "executive-hours-by-location", () => executiveApi.hoursByLocation()
-  );
-  const { data: headcountData } = useSWR<HeadcountData>(
-    "executive-headcount", () => executiveApi.headcount()
-  );
-  const { data: ptoData } = useSWR<PTOAnalyticsData>(
-    "executive-pto", () => executiveApi.ptoAnalytics()
-  );
-  const { data: adherenceData } = useSWR<ShiftAdherenceData>(
-    "executive-adherence", () => executiveApi.shiftAdherence()
+  const { data: hoursLocData } = useSWR(
+    "executive-hours-by-location",
+    () => executiveApi.hoursByLocation()
   );
 
   if (user && !user.is_executive && !user.is_admin) {
@@ -982,83 +615,194 @@ export default function ExecutivePage() {
     return null;
   }
 
-  const activeReport = selectedId !== null ? selectedReport : latestReport;
-  const showUpload = !!(user?.is_admin && user?.tracks?.includes("hr"));
+  const report = selectedId !== null ? selectedReport : latestReport;
+  const pd = report?.parsed_data ?? null;
+  const summary = pd?.summary;
+
+  function handleKpi(id: KpiId) {
+    setActiveKpi(prev => prev === id ? null : id);
+  }
 
   function handleUploaded() {
     mutateHistory();
     mutateLatest();
-    setSelectedId(null);
   }
 
-  function navigate(v: View) {
-    setView(v);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  // ── drill-down content ──────────────────────────────────────────────────────
+
+  function renderDrillDown() {
+    if (!activeKpi) return null;
+
+    let content: React.ReactNode = null;
+
+    switch (activeKpi) {
+      case "violations":
+        content = (
+          <div className="grid gap-6 md:grid-cols-2">
+            <DrillByManager data={pd?.chart.by_manager ?? []} />
+            <DrillByDay data={pd?.chart.by_day ?? []} />
+          </div>
+        );
+        break;
+      case "employees":
+        content = <DrillTopEmployees data={pd?.top_employees ?? []} />;
+        break;
+      case "early":
+        content = (
+          <div>
+            <p className="mb-3 text-[0.75rem] font-semibold uppercase tracking-wide" style={{ color: "var(--module-context)" }}>
+              Early Arrivals by Manager
+            </p>
+            <DrillByManager data={(pd?.chart.by_manager ?? []).filter(m => m.early_only + m.both > 0).map(m => ({ ...m, late_only: 0, both: 0, total: m.early_only + m.both }))} />
+          </div>
+        );
+        break;
+      case "late":
+        content = (
+          <div>
+            <p className="mb-3 text-[0.75rem] font-semibold uppercase tracking-wide" style={{ color: "var(--module-context)" }}>
+              Late Departures by Manager
+            </p>
+            <DrillByManager data={(pd?.chart.by_manager ?? []).filter(m => m.late_only + m.both > 0).map(m => ({ ...m, early_only: 0, both: 0, total: m.late_only + m.both }))} />
+          </div>
+        );
+        break;
+      case "total_emp":
+        content = <DrillHeadcount rows={dashData?.headcount.by_department ?? []} />;
+        break;
+      case "reg_hours":
+      case "ot_hours":
+        content = <DrillHours rows={dashData?.hours_by_department ?? []} />;
+        break;
+    }
+
+    return (
+      <div
+        className="mb-5 rounded-[14px] p-5"
+        style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}
+      >
+        {content}
+      </div>
+    );
   }
 
   return (
     <div className="mx-auto max-w-[1200px] px-4 py-8 md:px-8">
+
       {/* Page header */}
-      <div className="mb-6">
-        <h1 className="text-[1.5rem] font-bold leading-tight" style={{ color: "var(--heading-color)" }}>
-          Executive Summary
-        </h1>
-        <p className="mt-1 text-[0.8rem]" style={{ color: "var(--card-desc)" }}>
-          Company-wide analytics · Click any card to drill in
-        </p>
+      <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-[1.5rem] font-bold leading-tight" style={{ color: "var(--heading-color)" }}>
+            Executive Dashboard
+          </h1>
+          {summary && (
+            <p className="mt-1 text-[0.8rem]" style={{ color: "var(--card-desc)" }}>
+              {report?.week_label && <span className="font-semibold" style={{ color: "var(--heading-color)" }}>{report.week_label} · </span>}
+              {summary.generated_text && (
+                <span>{summary.total_violations} irregularities · {summary.employees_affected} employees · {summary.managers} managers</span>
+              )}
+            </p>
+          )}
+        </div>
+
+        {/* Week selector */}
+        {history && history.length > 1 && (
+          <div className="flex items-center gap-2">
+            <label className="text-[0.72rem] font-semibold" style={{ color: "var(--module-context)" }}>Week:</label>
+            <select
+              value={selectedId ?? ""}
+              onChange={e => setSelectedId(e.target.value === "" ? null : Number(e.target.value))}
+              className="rounded-[10px] px-3 py-1.5 text-[0.78rem]"
+              style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)", outline: "none" }}
+            >
+              <option value="">Latest</option>
+              {history.map(r => (
+                <option key={r.id} value={r.id}>
+                  {r.week_label ?? `Report #${r.id}`}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
-      {view === "overview" && (
-        <OverviewView
-          headcountData={headcountData}
-          hoursData={hoursData}
-          latestReport={latestReport}
-          ptoData={ptoData}
-          adherenceData={adherenceData}
-          onNavigate={navigate}
+      {/* Upload bar — HR admins only (must be both HR track and admin) */}
+      {(user?.is_admin && user?.tracks?.includes("hr")) && <UploadBar onUploaded={handleUploaded} />}
+
+      {/* Hours by location */}
+      {hoursLocData && hoursLocData.locations.length > 0 && (
+        <HoursByLocation locations={hoursLocData.locations} />
+      )}
+
+      {/* KPI row — WOSH violations */}
+      {summary ? (
+        <>
+          <p className="mb-2 text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
+            Shift Exceptions
+          </p>
+          <div className="mb-3 flex flex-wrap gap-2">
+            <KpiCard id="violations" label="Total Irregularities" value={fmtNum(summary.total_violations)} active={activeKpi === "violations"} onClick={handleKpi} />
+            <KpiCard id="employees" label="Employees Affected" value={fmtNum(summary.employees_affected)} active={activeKpi === "employees"} onClick={handleKpi} />
+            <KpiCard id="early" label="Early Arrivals" value={fmtNum(summary.early_arrivals)} active={activeKpi === "early"} onClick={handleKpi} accent="linear-gradient(135deg,#1e40af 0%,#3b82f6 82%)" />
+            <KpiCard id="late" label="Late Departures" value={fmtNum(summary.late_departures)} active={activeKpi === "late"} onClick={handleKpi} accent="linear-gradient(135deg,#92400e 0%,#f59e0b 82%)" />
+          </div>
+        </>
+      ) : (
+        <div className="mb-3 rounded-[14px] py-8 text-center" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}>
+          <p className="text-[0.85rem] font-semibold" style={{ color: "var(--heading-color)" }}>No WOSH report uploaded yet</p>
+          <p className="mt-1 text-[0.78rem]" style={{ color: "var(--card-desc)" }}>Upload a Shift_Exception_Report.xlsx above to see violation data.</p>
+        </div>
+      )}
+
+      {/* KPI row — company-wide */}
+      <p className="mb-2 text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
+        Company Overview
+      </p>
+      <div className="mb-5 flex flex-wrap gap-2">
+        <KpiCard
+          id="total_emp"
+          label="Total Employees"
+          value={fmtNum(dashData?.headcount.total ?? 0)}
+          sub={dashData ? `${dashData.headcount.managers} managers` : undefined}
+          active={activeKpi === "total_emp"}
+          onClick={handleKpi}
+          accent="linear-gradient(135deg,#134e26 0%,#16a34a 82%)"
         />
-      )}
-
-      {view === "headcount" && headcountData && (
-        <HeadcountView data={headcountData} onBack={() => navigate("overview")} />
-      )}
-
-      {view === "hours" && hoursData && (
-        <HoursView locations={hoursData.locations} onBack={() => navigate("overview")} />
-      )}
-
-      {view === "wosh" && (
-        <WOSHView
-          report={activeReport}
-          history={history}
-          selectedId={selectedId}
-          onSelectId={setSelectedId}
-          onUploaded={handleUploaded}
-          showUpload={showUpload}
-          onBack={() => navigate("overview")}
+        <KpiCard
+          id="reg_hours"
+          label="Regular Hours"
+          value={fmtHrs(dashData?.totals.regular_hours ?? 0)}
+          sub={dashData?.hours_date_range ?? undefined}
+          active={activeKpi === "reg_hours"}
+          onClick={handleKpi}
+          accent="linear-gradient(135deg,#134e26 0%,#16a34a 82%)"
         />
+        <KpiCard
+          id="ot_hours"
+          label="OT Hours"
+          value={fmtHrs(dashData?.totals.ot_hours ?? 0)}
+          sub={dashData && dashData.totals.regular_hours > 0
+            ? `${((dashData.totals.ot_hours / (dashData.totals.regular_hours + dashData.totals.ot_hours)) * 100).toFixed(1)}% of total`
+            : undefined}
+          active={activeKpi === "ot_hours"}
+          onClick={handleKpi}
+          accent="linear-gradient(135deg,#92400e 0%,#d97706 82%)"
+        />
+      </div>
+
+      {/* Drill-down panel */}
+      {renderDrillDown()}
+
+      {/* Violations by manager */}
+      {pd?.chart.by_manager && pd.chart.by_manager.length > 0 && (
+        <div className="mb-5">
+          <ManagerSummaryTable data={pd.chart.by_manager} />
+        </div>
       )}
 
-      {view === "pto" && ptoData && (
-        <PTOView data={ptoData} onBack={() => navigate("overview")} />
-      )}
-
-      {view === "adherence" && adherenceData && (
-        <AdherenceView data={adherenceData} onBack={() => navigate("overview")} />
-      )}
-
-      {/* Loading states for sub-pages */}
-      {view === "headcount" && !headcountData && (
-        <div><SubPageHeader title="Employee Headcount" onBack={() => navigate("overview")} /><p className="text-[0.84rem]" style={{ color: "var(--card-desc)" }}>Loading…</p></div>
-      )}
-      {view === "hours" && !hoursData && (
-        <div><SubPageHeader title="Hours by Location" onBack={() => navigate("overview")} /><p className="text-[0.84rem]" style={{ color: "var(--card-desc)" }}>Loading…</p></div>
-      )}
-      {view === "pto" && !ptoData && (
-        <div><SubPageHeader title="PTO Analytics" onBack={() => navigate("overview")} /><p className="text-[0.84rem]" style={{ color: "var(--card-desc)" }}>Loading…</p></div>
-      )}
-      {view === "adherence" && !adherenceData && (
-        <div><SubPageHeader title="Shift Adherence" onBack={() => navigate("overview")} /><p className="text-[0.84rem]" style={{ color: "var(--card-desc)" }}>Loading…</p></div>
+      {/* All exceptions */}
+      {pd?.exceptions && pd.exceptions.length > 0 && (
+        <ExceptionsTable exceptions={pd.exceptions as WoshException[]} />
       )}
     </div>
   );
