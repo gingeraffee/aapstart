@@ -693,7 +693,7 @@ export default function ExecutivePage() {
       <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-[1.5rem] font-bold leading-tight" style={{ color: "var(--heading-color)" }}>
-            Executive Dashboard
+            Executive Summary
           </h1>
           {summary && (
             <p className="mt-1 text-[0.8rem]" style={{ color: "var(--card-desc)" }}>

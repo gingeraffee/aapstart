@@ -95,6 +95,7 @@ export const adminApi = {
   clearPoints: () => request<{ deleted: number }>("/admin/import/points", { method: "DELETE" }),
   importPoints: (file: File) => uploadFile<import("./types").ImportResult>("/admin/import/points", file),
   importEmployeeDirectory: (file: File) => uploadFile<import("./types").ImportResult>("/admin/import/employee-directory", file),
+  importXlsx: (file: File) => uploadFile<import("./types").EmployeeImportResult>("/admin/employees/import-xlsx", file),
   importBamboo: async (file: File, defaultTrack: string): Promise<import("./types").BambooImportResult> => {
     const url = `${API_BASE}/admin/employees/import-bamboo?default_track=${encodeURIComponent(defaultTrack)}`;
     const formData = new FormData();

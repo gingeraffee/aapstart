@@ -395,6 +395,59 @@ def import_employees(
     }
 
 
+@router.post("/employees/import-xlsx")
+async def import_employees_xlsx(
+    file: UploadFile = File(...),
+    admin: dict = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Import employees from a standard xlsx using the same column layout as the CSV template.
+
+    Expected columns: name, employee_id, track, is_admin (optional), department (optional),
+                      manager_employee_id (optional), location (optional)
+    """
+    name = file.filename or ""
+    if not name.lower().endswith(".xlsx"):
+        raise HTTPException(status_code=400, detail="File must be a .xlsx file.")
+
+    contents = await file.read()
+    try:
+        raw_rows = _read_xlsx_admin(contents)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Could not parse file.")
+
+    if not raw_rows:
+        raise HTTPException(status_code=400, detail="No rows found in file.")
+
+    def _norm(h: str) -> str:
+        return h.strip().lower().replace(" ", "_")
+
+    employees: list[EmployeeImportRow] = []
+    for row in raw_rows:
+        r = {_norm(k): str(v or "").strip() for k, v in row.items()}
+        name_val = r.get("name") or r.get("full_name") or ""
+        emp_id = r.get("employee_id") or ""
+        if emp_id.endswith(".0"):
+            emp_id = emp_id[:-2]
+        track = r.get("track") or ""
+        is_admin_raw = r.get("is_admin", "false").lower()
+        is_admin_val = is_admin_raw in ("true", "yes", "y", "1")
+        dept = r.get("department") or r.get("dept") or ""
+        mgr = r.get("manager_employee_id") or r.get("manager_id") or r.get("reports_to") or ""
+        loc = r.get("location") or ""
+        employees.append(EmployeeImportRow(
+            name=name_val or None,
+            employee_id=emp_id,
+            track=track,
+            is_admin=is_admin_val,
+            department=dept or None,
+            manager_employee_id=mgr or None,
+            location=loc or None,
+        ))
+
+    return import_employees(EmployeeImportRequest(employees=employees), admin, db)
+
+
 @router.patch("/employees/{employee_id}")
 def update_employee(
     employee_id: str,

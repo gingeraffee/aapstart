@@ -517,7 +517,7 @@ export function AppShell({ children }: AppShellProps) {
           {user?.is_executive && (
             <Link
               href="/executive"
-              title="Executive Dashboard"
+              title="Executive Summary"
               className={cn(
                 "flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] transition-all duration-200",
                 isExecutiveActive
@@ -665,7 +665,7 @@ export function AppShell({ children }: AppShellProps) {
                 borderBottom: isExecutiveActive ? "2px solid var(--sidebar-text)" : "2px solid transparent",
               }}
             >
-              Company Dashboard
+              Executive Summary
             </button>
           )}
           {user?.is_manager && (
@@ -688,7 +688,7 @@ export function AppShell({ children }: AppShellProps) {
               borderBottom: isJourneyActive ? "2px solid var(--sidebar-text)" : "2px solid transparent",
             }}
           >
-            {isManagement ? "Training" : isLearningProgramPage ? "Learning Program" : "Home Base"}
+            {isManagement ? "Training" : isLearningProgramPage ? "Learning Program" : "Overview"}
           </button>
           <button
             onClick={() => router.push("/resources")}

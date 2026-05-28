@@ -655,6 +655,7 @@ function GroupedRoster({
 function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; onImported: (result: EmployeeImportResult) => void }) {
   const [fileName, setFileName] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [isXlsx, setIsXlsx] = useState(false);
   const [isBamboo, setIsBamboo] = useState(false);
   const [bambooTrack, setBambooTrack] = useState("warehouse");
   const [rows, setRows] = useState<ParsedImportRow[]>([]);
@@ -675,6 +676,7 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
     if (!picked) {
       setFileName(null);
       setFile(null);
+      setIsXlsx(false);
       setIsBamboo(false);
       setRows([]);
       return;
@@ -684,9 +686,11 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
     setFile(picked);
 
     if (picked.name.toLowerCase().endsWith(".xlsx")) {
-      setIsBamboo(true);
+      setIsXlsx(true);
+      setIsBamboo(false);
       setRows([]);
     } else {
+      setIsXlsx(false);
       setIsBamboo(false);
       const parsed = parseImportFile(await picked.text());
       setRows(parsed.rows);
@@ -718,6 +722,21 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
     }
   }
 
+  async function handleXlsxImport() {
+    if (!file) return;
+    setImporting(true);
+    setFileError(null);
+    try {
+      const importResult = await adminApi.importXlsx(file);
+      setResult(importResult as EmployeeImportResult);
+      onImported(importResult as EmployeeImportResult);
+    } catch (err) {
+      setFileError(err instanceof Error ? err.message : "Import failed.");
+    } finally {
+      setImporting(false);
+    }
+  }
+
   async function handleBambooImport() {
     if (!file) return;
     setImporting(true);
@@ -734,7 +753,7 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
     }
   }
 
-  const canImport = isBamboo ? !!file : readyRows.length > 0;
+  const canImport = isBamboo ? !!file : isXlsx ? !!file : readyRows.length > 0;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(7,18,37,0.54)] px-4 py-8 backdrop-blur-sm">
@@ -751,8 +770,10 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
               </h2>
               <p className="mt-1 text-[0.84rem] leading-[1.6]" style={{ color: "var(--card-desc)" }}>
                 {isBamboo
-                  ? "BambooHR format detected. New employees will be created with the track you select; existing employees will be updated."
-                  : "Upload a CSV exported from Excel with employee name, employee number, and track."}
+                  ? "BambooHR format. New employees will be created with the track you select; existing employees will be updated."
+                  : isXlsx
+                  ? "Standard xlsx import. Each row needs a track column — one per employee."
+                  : "Upload a CSV or xlsx with employee name, employee number, and track per row."}
               </p>
             </div>
             <button onClick={onClose} className="rounded-full p-2 transition-colors hover:bg-black/5" aria-label="Close import modal">
@@ -767,10 +788,31 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
               <label className="mt-3 flex cursor-pointer flex-col items-center justify-center rounded-[18px] border border-dashed px-5 py-10 text-center transition-all hover:-translate-y-px" style={{ borderColor: "rgba(14,165,233,0.35)", background: "rgba(14,165,233,0.05)" }}>
                 <span className="text-[0.86rem] font-semibold" style={{ color: "var(--heading-color)" }}>{fileName ?? "Choose a file"}</span>
                 <span className="mt-1 text-[0.76rem]" style={{ color: "var(--card-desc)" }}>
-                  {isBamboo ? "BambooHR Employee Division & Department .xlsx" : "CSV template or BambooHR .xlsx"}
+                  {isBamboo ? "BambooHR Employee Division & Department .xlsx" : "CSV or xlsx with a track column per row"}
                 </span>
                 <input type="file" accept=".csv,.xlsx,text/csv" className="hidden" onChange={handleFileChange} />
               </label>
+
+              {isXlsx && (
+                <div className="mt-4 flex items-center gap-2">
+                  <span className="text-[0.72rem] font-semibold" style={{ color: "var(--module-context)" }}>File format:</span>
+                  {(["standard", "bamboo"] as const).map((mode) => (
+                    <button
+                      key={mode}
+                      type="button"
+                      onClick={() => { setIsBamboo(mode === "bamboo"); setResult(null); setBambooResult(null); }}
+                      className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold transition-all"
+                      style={{
+                        background: (mode === "bamboo") === isBamboo ? "linear-gradient(135deg,#11264a,#0f7fb3)" : "var(--card-bg)",
+                        color: (mode === "bamboo") === isBamboo ? "#fff" : "var(--heading-color)",
+                        border: (mode === "bamboo") === isBamboo ? "1px solid transparent" : "1px solid var(--card-border)",
+                      }}
+                    >
+                      {mode === "standard" ? "Standard (track per row)" : "BambooHR export"}
+                    </button>
+                  ))}
+                </div>
+              )}
 
               {!isBamboo && (
                 <div className="mt-4 flex flex-wrap gap-3">
@@ -816,7 +858,7 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
               )}
             </div>
 
-            {/* Right panel: preview (CSV) or summary (BambooHR) */}
+            {/* Right panel: preview (CSV/xlsx) or summary (BambooHR) */}
             <div className="rounded-[20px] border p-5" style={{ background: "var(--welcome-stat-bg)", borderColor: "var(--welcome-stat-border)" }}>
               {isBamboo ? (
                 <>
@@ -851,6 +893,41 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
                     {!bambooResult && (
                       <p className="text-[0.8rem] leading-[1.6]" style={{ color: "var(--card-desc)" }}>
                         {file ? "Ready to import. Choose a default track and click Import." : "Select a BambooHR .xlsx file to continue."}
+                      </p>
+                    )}
+                  </div>
+                </>
+              ) : isXlsx ? (
+                <>
+                  <p className="text-[0.7rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>Standard xlsx Import</p>
+                  <div className="mt-4 space-y-3">
+                    <div className="rounded-[16px] px-4 py-3" style={{ background: "rgba(14,165,233,0.06)" }}>
+                      <p className="text-[0.78rem] font-semibold" style={{ color: "var(--heading-color)" }}>Expected columns</p>
+                      <ul className="mt-2 space-y-1 text-[0.74rem]" style={{ color: "var(--card-desc)" }}>
+                        <li>· <strong>name</strong>, <strong>employee_id</strong>, <strong>track</strong> — required</li>
+                        <li>· department, manager_employee_id, location — optional</li>
+                        <li>· Track per row: hr, warehouse, administrative, management</li>
+                        <li>· Multiple tracks per row: separate with <code>|</code> (e.g. hr|warehouse)</li>
+                      </ul>
+                    </div>
+                    {result ? (
+                      <div className="rounded-[16px] px-4 py-3" style={{ background: "rgba(14,165,233,0.04)", border: "1px solid rgba(14,165,233,0.12)" }}>
+                        <p className="text-[0.78rem] font-semibold" style={{ color: "var(--heading-color)" }}>Import complete</p>
+                        <div className="mt-2 grid grid-cols-2 gap-2">
+                          <div><p className="text-[1.1rem] font-extrabold" style={{ color: "var(--heading-color)" }}>{result.added}</p><p className="text-[0.68rem]" style={{ color: "var(--card-desc)" }}>Added</p></div>
+                          <div><p className="text-[1.1rem] font-extrabold" style={{ color: "var(--heading-color)" }}>{result.skipped}</p><p className="text-[0.68rem]" style={{ color: "var(--card-desc)" }}>Skipped</p></div>
+                        </div>
+                        {result.errors.length > 0 && (
+                          <div className="mt-2 space-y-1">
+                            {result.errors.slice(0, 5).map((e) => (
+                              <p key={`${e.row}-${e.employee_id ?? "missing"}`} className="text-[0.72rem]" style={{ color: "#9f1239" }}>Row {e.row}: {e.detail}</p>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-[0.8rem] leading-[1.6]" style={{ color: "var(--card-desc)" }}>
+                        {file ? "Ready to import. Click Import to process your file." : "Select a .xlsx file to continue."}
                       </p>
                     )}
                   </div>
@@ -916,12 +993,12 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
             </button>
             <button
               type="button"
-              onClick={isBamboo ? handleBambooImport : handleCsvImport}
+              onClick={isBamboo ? handleBambooImport : isXlsx ? handleXlsxImport : handleCsvImport}
               disabled={!canImport || importing}
               className="rounded-[12px] px-4 py-2 text-[0.78rem] font-semibold text-white transition-all hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
               style={{ background: "linear-gradient(135deg, #11264a 0%, #0f7fb3 82%)" }}
             >
-              {importing ? "Importing…" : isBamboo ? "Import BambooHR File" : `Import ${readyRows.length || ""}`.trim()}
+              {importing ? "Importing…" : isBamboo ? "Import BambooHR File" : isXlsx ? "Import xlsx" : `Import ${readyRows.length || ""}`.trim()}
             </button>
           </div>
         </div>
