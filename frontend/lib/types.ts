@@ -225,6 +225,7 @@ export interface ImportResult {
   skipped: number;
   errors: { row: number; employee_id?: string; detail: string }[];
   hours_upserted?: number;
+  manager_linked?: number;
 }
 
 export interface EmployeeRecord {
@@ -273,6 +274,14 @@ export interface EmployeeImportResult {
   added: number;
   skipped: number;
   errors: EmployeeImportError[];
+}
+
+export interface BambooImportResult {
+  created: number;
+  updated: number;
+  skipped: number;
+  manager_linked: number;
+  errors: { row: number; employee_id?: string; detail: string }[];
 }
 
 export interface DashboardData {

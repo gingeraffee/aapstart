@@ -159,6 +159,160 @@ def create_employee(
     return _serialize(emp, db)
 
 
+@router.post("/employees/import-bamboo")
+async def import_bamboo_employees(
+    file: UploadFile = File(...),
+    default_track: str = "warehouse",
+    admin: dict = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Import BambooHR Employee Division & Department xlsx.
+
+    Creates missing employees (using *default_track*) and updates existing ones
+    with location, division, department, and manager.
+
+    Expected columns: Last name, First name | Employee # | Location |
+                      Division | Department | Job Title | Reporting to
+    """
+    name = file.filename or ""
+    if not name.lower().endswith(".xlsx"):
+        raise HTTPException(status_code=400, detail="File must be a .xlsx file.")
+
+    raw_tracks = [t.strip().lower() for t in default_track.replace("|", ",").split(",")]
+    tracks = normalize_tracks(raw_tracks)
+    if not tracks:
+        raise HTTPException(
+            status_code=400,
+            detail=f"default_track must be one of: {', '.join(sorted(VALID_TRACKS))}",
+        )
+
+    contents = await file.read()
+    try:
+        rows = _read_xlsx_admin(contents)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Could not parse file.")
+
+    if not rows:
+        raise HTTPException(status_code=400, detail="No rows found in file.")
+
+    LOCATION_ALIASES_BAMBOO: dict[str, str] = {
+        "memphis, tn": "API Memphis",
+    }
+
+    # Build full-name → employee_id lookup for manager resolution
+    all_emps = db.query(Employee).all()
+    name_to_id: dict[str, str] = {
+        f"{e.first_name} {e.last_name}".lower(): e.employee_id
+        for e in all_emps
+    }
+    existing_by_id: dict[str, Employee] = {e.employee_id: e for e in all_emps}
+
+    created_count = 0
+    updated_count = 0
+    skipped = 0
+    manager_linked = 0
+    errors: list[dict] = []
+
+    for i, raw_row in enumerate(rows, start=2):
+        # Normalise header keys for lookup
+        row: dict[str, str] = {k.strip().lower(): str(v or "").strip() for k, v in raw_row.items()}
+
+        # Employee number — column "employee #"
+        emp_num_raw = row.get("employee #") or row.get("employee#") or ""
+        # openpyxl may return floats like "12345.0" for numeric cells
+        if emp_num_raw.endswith(".0"):
+            emp_num_raw = emp_num_raw[:-2]
+        emp_id = emp_num_raw.strip()
+        if not emp_id:
+            skipped += 1
+            continue
+
+        # Name — column header is literally "last name, first name"; value "Doe, Jane"
+        name_raw = (
+            row.get("last name, first name")
+            or row.get("last name first name")
+            or row.get("name")
+            or ""
+        )
+        first_name: str | None = None
+        last_name: str | None = None
+        if name_raw:
+            if "," in name_raw:
+                parts = name_raw.split(",", 1)
+                last_name = parts[0].strip()
+                first_name = parts[1].strip()
+            else:
+                parts = name_raw.split()
+                if len(parts) >= 2:
+                    first_name = parts[0]
+                    last_name = " ".join(parts[1:])
+
+        location_raw = row.get("location", "")
+        location: str | None = LOCATION_ALIASES_BAMBOO.get(location_raw.lower(), location_raw) or None
+        division: str | None = row.get("division") or None
+        department: str | None = row.get("department") or None
+        reporting_to: str | None = row.get("reporting to") or None
+
+        emp = existing_by_id.get(emp_id)
+
+        if emp:
+            # Update existing employee
+            emp.location = location
+            emp.division = division
+            emp.department = department
+
+            if reporting_to:
+                mgr_id = name_to_id.get(reporting_to.lower())
+                if mgr_id and mgr_id != emp.employee_id:
+                    emp.manager_employee_id = mgr_id
+                    manager_linked += 1
+
+            updated_count += 1
+        else:
+            # Create new employee
+            if not first_name or not last_name:
+                errors.append({
+                    "row": i,
+                    "employee_id": emp_id,
+                    "detail": "Cannot parse name — skipped.",
+                })
+                skipped += 1
+                continue
+
+            new_emp = Employee(
+                employee_id=emp_id,
+                first_name=first_name,
+                last_name=last_name,
+                track=tracks,
+                is_admin=False,
+                location=location,
+                division=division,
+                department=department,
+                created_at=datetime.now(timezone.utc),
+            )
+
+            if reporting_to:
+                mgr_id = name_to_id.get(reporting_to.lower())
+                if mgr_id and mgr_id != emp_id:
+                    new_emp.manager_employee_id = mgr_id
+                    manager_linked += 1
+
+            db.add(new_emp)
+            # Keep in-memory lookups consistent for rest of file
+            existing_by_id[emp_id] = new_emp
+            name_to_id[f"{first_name} {last_name}".lower()] = emp_id
+            created_count += 1
+
+    db.commit()
+    return {
+        "created": created_count,
+        "updated": updated_count,
+        "skipped": skipped,
+        "manager_linked": manager_linked,
+        "errors": errors[:20],
+    }
+
+
 @router.post("/employees/import")
 def import_employees(
     payload: EmployeeImportRequest,

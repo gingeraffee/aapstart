@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/context/AuthContext";
 import { adminApi, managerApi, modulesApi } from "@/lib/api";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
-import type { EmployeeImportResult, EmployeeImportRowInput, EmployeeRecord, ImportResult, ModuleSummary } from "@/lib/types";
+import type { BambooImportResult, EmployeeImportResult, EmployeeImportRowInput, EmployeeRecord, ImportResult, ModuleSummary } from "@/lib/types";
 
 const TRACKS = ["hr", "warehouse", "administrative", "management"] as const;
 const TRACK_LABELS: Record<string, string> = {
@@ -654,34 +654,48 @@ function GroupedRoster({
 
 function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; onImported: (result: EmployeeImportResult) => void }) {
   const [fileName, setFileName] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [isBamboo, setIsBamboo] = useState(false);
+  const [bambooTrack, setBambooTrack] = useState("warehouse");
   const [rows, setRows] = useState<ParsedImportRow[]>([]);
   const [fileError, setFileError] = useState<string | null>(null);
   const [result, setResult] = useState<EmployeeImportResult | null>(null);
+  const [bambooResult, setBambooResult] = useState<BambooImportResult | null>(null);
   const [importing, setImporting] = useState(false);
 
   const readyRows = rows.filter((row) => !row.error);
   const flaggedRows = rows.filter((row) => row.error);
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
+    const picked = event.target.files?.[0];
     setResult(null);
+    setBambooResult(null);
+    setFileError(null);
 
-    if (!file) {
+    if (!picked) {
       setFileName(null);
+      setFile(null);
+      setIsBamboo(false);
       setRows([]);
-      setFileError(null);
       return;
     }
 
-    setFileName(file.name);
-    const parsed = parseImportFile(await file.text());
-    setRows(parsed.rows);
-    setFileError(parsed.fileError ?? null);
+    setFileName(picked.name);
+    setFile(picked);
+
+    if (picked.name.toLowerCase().endsWith(".xlsx")) {
+      setIsBamboo(true);
+      setRows([]);
+    } else {
+      setIsBamboo(false);
+      const parsed = parseImportFile(await picked.text());
+      setRows(parsed.rows);
+      setFileError(parsed.fileError ?? null);
+    }
   }
 
-  async function handleImport() {
+  async function handleCsvImport() {
     if (readyRows.length === 0) return;
-
     setImporting(true);
     setFileError(null);
     try {
@@ -704,6 +718,24 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
     }
   }
 
+  async function handleBambooImport() {
+    if (!file) return;
+    setImporting(true);
+    setFileError(null);
+    try {
+      const importResult = await adminApi.importBamboo(file, bambooTrack);
+      setBambooResult(importResult);
+      // Notify parent so employee list refreshes
+      onImported({ added: importResult.created, skipped: importResult.skipped, errors: importResult.errors.map((e) => ({ ...e, employee_id: e.employee_id ?? null })) });
+    } catch (err) {
+      setFileError(err instanceof Error ? err.message : "Import failed.");
+    } finally {
+      setImporting(false);
+    }
+  }
+
+  const canImport = isBamboo ? !!file : readyRows.length > 0;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(7,18,37,0.54)] px-4 py-8 backdrop-blur-sm">
       <div className="w-full max-w-3xl overflow-hidden rounded-[28px]" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "0 32px 60px rgba(7,18,37,0.28)" }}>
@@ -718,7 +750,9 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
                 Add a batch in one upload
               </h2>
               <p className="mt-1 text-[0.84rem] leading-[1.6]" style={{ color: "var(--card-desc)" }}>
-                Upload a CSV exported from Excel with employee name, employee number, and track.
+                {isBamboo
+                  ? "BambooHR format detected. New employees will be created with the track you select; existing employees will be updated."
+                  : "Upload a CSV exported from Excel with employee name, employee number, and track."}
               </p>
             </div>
             <button onClick={onClose} className="rounded-full p-2 transition-colors hover:bg-black/5" aria-label="Close import modal">
@@ -727,22 +761,53 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
           </div>
 
           <div className="mt-6 grid gap-5 lg:grid-cols-[1.08fr,0.92fr]">
+            {/* Upload panel */}
             <div className="rounded-[20px] border p-5" style={{ background: "var(--welcome-stat-bg)", borderColor: "var(--welcome-stat-border)" }}>
               <p className="text-[0.7rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>Upload</p>
               <label className="mt-3 flex cursor-pointer flex-col items-center justify-center rounded-[18px] border border-dashed px-5 py-10 text-center transition-all hover:-translate-y-px" style={{ borderColor: "rgba(14,165,233,0.35)", background: "rgba(14,165,233,0.05)" }}>
-                <span className="text-[0.86rem] font-semibold" style={{ color: "var(--heading-color)" }}>{fileName ?? "Choose a CSV file"}</span>
-                <span className="mt-1 text-[0.76rem]" style={{ color: "var(--card-desc)" }}>Use the template if you want a clean starting point.</span>
-                <input type="file" accept=".csv,text/csv" className="hidden" onChange={handleFileChange} />
+                <span className="text-[0.86rem] font-semibold" style={{ color: "var(--heading-color)" }}>{fileName ?? "Choose a file"}</span>
+                <span className="mt-1 text-[0.76rem]" style={{ color: "var(--card-desc)" }}>
+                  {isBamboo ? "BambooHR Employee Division & Department .xlsx" : "CSV template or BambooHR .xlsx"}
+                </span>
+                <input type="file" accept=".csv,.xlsx,text/csv" className="hidden" onChange={handleFileChange} />
               </label>
 
-              <div className="mt-4 flex flex-wrap gap-3">
-                <button type="button" onClick={downloadImportTemplate} className="rounded-[12px] px-4 py-2 text-[0.76rem] font-semibold transition-all hover:-translate-y-px" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", color: "var(--heading-color)" }}>
-                  Download Template
-                </button>
-                <div className="rounded-[12px] px-4 py-2 text-[0.74rem] font-medium" style={{ background: "rgba(27,44,86,0.06)", color: "var(--welcome-label-text)" }}>
-                  Required: name, employee_id, track · Optional: department, manager_employee_id, location
+              {!isBamboo && (
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <button type="button" onClick={downloadImportTemplate} className="rounded-[12px] px-4 py-2 text-[0.76rem] font-semibold transition-all hover:-translate-y-px" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", color: "var(--heading-color)" }}>
+                    Download Template
+                  </button>
+                  <div className="rounded-[12px] px-4 py-2 text-[0.74rem] font-medium" style={{ background: "rgba(27,44,86,0.06)", color: "var(--welcome-label-text)" }}>
+                    Required: name, employee_id, track · Optional: department, manager_employee_id, location
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {isBamboo && (
+                <div className="mt-4 space-y-3">
+                  <p className="text-[0.72rem] font-semibold" style={{ color: "var(--module-context)" }}>Default track for new employees</p>
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                    {TRACKS.map((t) => (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => setBambooTrack(t)}
+                        className="rounded-[10px] px-3 py-2 text-[0.72rem] font-semibold transition-all"
+                        style={{
+                          background: bambooTrack === t ? "linear-gradient(135deg,#11264a,#0f7fb3)" : "var(--card-bg)",
+                          color: bambooTrack === t ? "#fff" : "var(--heading-color)",
+                          border: bambooTrack === t ? "1px solid transparent" : "1px solid var(--card-border)",
+                        }}
+                      >
+                        {TRACK_LABELS[t]}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-[0.7rem]" style={{ color: "var(--card-desc)" }}>
+                    Only applied to employees not yet in the system. Existing employees are updated without changing their track.
+                  </p>
+                </div>
+              )}
 
               {fileError && (
                 <div className="mt-4 rounded-[14px] px-4 py-3 text-[0.8rem]" style={{ background: "rgba(223,0,48,0.08)", border: "1px solid rgba(223,0,48,0.16)", color: "#9f1239" }}>
@@ -751,64 +816,112 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
               )}
             </div>
 
+            {/* Right panel: preview (CSV) or summary (BambooHR) */}
             <div className="rounded-[20px] border p-5" style={{ background: "var(--welcome-stat-bg)", borderColor: "var(--welcome-stat-border)" }}>
-              <p className="text-[0.7rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>Validation Preview</p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-[16px] px-4 py-3" style={{ background: "rgba(14,165,233,0.06)" }}>
-                  <p className="text-[1.5rem] font-extrabold" style={{ color: "var(--heading-color)" }}>{readyRows.length}</p>
-                  <p className="text-[0.74rem] font-medium" style={{ color: "var(--card-desc)" }}>Ready to import</p>
-                </div>
-                <div className="rounded-[16px] px-4 py-3" style={{ background: "rgba(223,0,48,0.06)" }}>
-                  <p className="text-[1.5rem] font-extrabold" style={{ color: "var(--heading-color)" }}>{flaggedRows.length}</p>
-                  <p className="text-[0.74rem] font-medium" style={{ color: "var(--card-desc)" }}>Need review</p>
-                </div>
-              </div>
-
-              <div className="mt-4 max-h-[260px] space-y-2 overflow-y-auto pr-1">
-                {rows.length === 0 ? (
-                  <p className="text-[0.8rem] leading-[1.6]" style={{ color: "var(--card-desc)" }}>Your preview will appear here after upload.</p>
-                ) : (
-                  rows.slice(0, 8).map((row) => (
-                    <div key={`${row.row}-${row.employee_id}`} className="rounded-[14px] border px-3.5 py-3" style={{ background: row.error ? "rgba(223,0,48,0.04)" : "rgba(14,165,233,0.04)", borderColor: row.error ? "rgba(223,0,48,0.16)" : "rgba(14,165,233,0.12)" }}>
-                      <div className="flex items-center justify-between gap-3">
-                        <p className="text-[0.8rem] font-semibold" style={{ color: "var(--heading-color)" }}>{row.name || "Unnamed employee"}</p>
-                        <span className="text-[0.68rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--module-context)" }}>Row {row.row}</span>
-                      </div>
-                      <p className="mt-1 text-[0.74rem]" style={{ color: "var(--card-desc)" }}>
-                        {row.employee_id || "Missing employee number"} · {row.track.split(/[|,]/).map((t) => TRACK_LABELS[t.trim()] ?? t.trim()).join(", ")}
-                        {row.is_admin ? " · Admin" : ""}
-                        {row.department ? ` · ${row.department}` : ""}
-                        {row.manager_employee_id ? ` · Reports to ${row.manager_employee_id}` : ""}
-                      </p>
-                      {row.error && <p className="mt-1.5 text-[0.74rem] font-medium" style={{ color: "#9f1239" }}>{row.error}</p>}
+              {isBamboo ? (
+                <>
+                  <p className="text-[0.7rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>BambooHR Import</p>
+                  <div className="mt-4 space-y-3">
+                    <div className="rounded-[16px] px-4 py-3" style={{ background: "rgba(14,165,233,0.06)" }}>
+                      <p className="text-[0.78rem] font-semibold" style={{ color: "var(--heading-color)" }}>What this does</p>
+                      <ul className="mt-2 space-y-1 text-[0.74rem]" style={{ color: "var(--card-desc)" }}>
+                        <li>· Creates employees that aren&apos;t in the system yet</li>
+                        <li>· Updates location, division, and department for all</li>
+                        <li>· Links managers from the &ldquo;Reporting to&rdquo; column</li>
+                      </ul>
                     </div>
-                  ))
-                )}
-              </div>
-            </div>
-          </div>
+                    {bambooResult && (
+                      <div className="rounded-[16px] px-4 py-3" style={{ background: "rgba(14,165,233,0.04)", border: "1px solid rgba(14,165,233,0.12)" }}>
+                        <p className="text-[0.78rem] font-semibold" style={{ color: "var(--heading-color)" }}>Import complete</p>
+                        <div className="mt-2 grid grid-cols-2 gap-2">
+                          <div><p className="text-[1.1rem] font-extrabold" style={{ color: "var(--heading-color)" }}>{bambooResult.created}</p><p className="text-[0.68rem]" style={{ color: "var(--card-desc)" }}>Created</p></div>
+                          <div><p className="text-[1.1rem] font-extrabold" style={{ color: "var(--heading-color)" }}>{bambooResult.updated}</p><p className="text-[0.68rem]" style={{ color: "var(--card-desc)" }}>Updated</p></div>
+                          <div><p className="text-[1.1rem] font-extrabold" style={{ color: "var(--heading-color)" }}>{bambooResult.manager_linked}</p><p className="text-[0.68rem]" style={{ color: "var(--card-desc)" }}>Managers linked</p></div>
+                          <div><p className="text-[1.1rem] font-extrabold" style={{ color: "var(--heading-color)" }}>{bambooResult.skipped}</p><p className="text-[0.68rem]" style={{ color: "var(--card-desc)" }}>Skipped</p></div>
+                        </div>
+                        {bambooResult.errors.length > 0 && (
+                          <div className="mt-2 space-y-1">
+                            {bambooResult.errors.slice(0, 5).map((e, idx) => (
+                              <p key={idx} className="text-[0.72rem]" style={{ color: "#9f1239" }}>Row {e.row}: {e.detail}</p>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {!bambooResult && (
+                      <p className="text-[0.8rem] leading-[1.6]" style={{ color: "var(--card-desc)" }}>
+                        {file ? "Ready to import. Choose a default track and click Import." : "Select a BambooHR .xlsx file to continue."}
+                      </p>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="text-[0.7rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>Validation Preview</p>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-[16px] px-4 py-3" style={{ background: "rgba(14,165,233,0.06)" }}>
+                      <p className="text-[1.5rem] font-extrabold" style={{ color: "var(--heading-color)" }}>{readyRows.length}</p>
+                      <p className="text-[0.74rem] font-medium" style={{ color: "var(--card-desc)" }}>Ready to import</p>
+                    </div>
+                    <div className="rounded-[16px] px-4 py-3" style={{ background: "rgba(223,0,48,0.06)" }}>
+                      <p className="text-[1.5rem] font-extrabold" style={{ color: "var(--heading-color)" }}>{flaggedRows.length}</p>
+                      <p className="text-[0.74rem] font-medium" style={{ color: "var(--card-desc)" }}>Need review</p>
+                    </div>
+                  </div>
 
-          {result && (
-            <div className="mt-5 rounded-[18px] border px-5 py-4" style={{ background: "rgba(17,41,74,0.04)", borderColor: "rgba(17,41,74,0.1)" }}>
-              <p className="text-[0.9rem] font-semibold" style={{ color: "var(--heading-color)" }}>{result.added} imported, {result.skipped} skipped</p>
-              {result.errors.length > 0 && (
-                <div className="mt-2 space-y-1">
-                  {result.errors.slice(0, 5).map((error) => (
-                    <p key={`${error.row}-${error.employee_id ?? "missing"}`} className="text-[0.76rem]" style={{ color: "var(--card-desc)" }}>
-                      Row {error.row}: {error.detail}
-                    </p>
-                  ))}
-                </div>
+                  <div className="mt-4 max-h-[260px] space-y-2 overflow-y-auto pr-1">
+                    {rows.length === 0 ? (
+                      <p className="text-[0.8rem] leading-[1.6]" style={{ color: "var(--card-desc)" }}>Your preview will appear here after upload.</p>
+                    ) : (
+                      rows.slice(0, 8).map((row) => (
+                        <div key={`${row.row}-${row.employee_id}`} className="rounded-[14px] border px-3.5 py-3" style={{ background: row.error ? "rgba(223,0,48,0.04)" : "rgba(14,165,233,0.04)", borderColor: row.error ? "rgba(223,0,48,0.16)" : "rgba(14,165,233,0.12)" }}>
+                          <div className="flex items-center justify-between gap-3">
+                            <p className="text-[0.8rem] font-semibold" style={{ color: "var(--heading-color)" }}>{row.name || "Unnamed employee"}</p>
+                            <span className="text-[0.68rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--module-context)" }}>Row {row.row}</span>
+                          </div>
+                          <p className="mt-1 text-[0.74rem]" style={{ color: "var(--card-desc)" }}>
+                            {row.employee_id || "Missing employee number"} · {row.track.split(/[|,]/).map((t) => TRACK_LABELS[t.trim()] ?? t.trim()).join(", ")}
+                            {row.is_admin ? " · Admin" : ""}
+                            {row.department ? ` · ${row.department}` : ""}
+                            {row.manager_employee_id ? ` · Reports to ${row.manager_employee_id}` : ""}
+                          </p>
+                          {row.error && <p className="mt-1.5 text-[0.74rem] font-medium" style={{ color: "#9f1239" }}>{row.error}</p>}
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  {result && (
+                    <div className="mt-4 rounded-[14px] border px-4 py-3" style={{ background: "rgba(17,41,74,0.04)", borderColor: "rgba(17,41,74,0.1)" }}>
+                      <p className="text-[0.84rem] font-semibold" style={{ color: "var(--heading-color)" }}>{result.added} imported, {result.skipped} skipped</p>
+                      {result.errors.length > 0 && (
+                        <div className="mt-2 space-y-1">
+                          {result.errors.slice(0, 5).map((error) => (
+                            <p key={`${error.row}-${error.employee_id ?? "missing"}`} className="text-[0.76rem]" style={{ color: "var(--card-desc)" }}>
+                              Row {error.row}: {error.detail}
+                            </p>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </>
               )}
             </div>
-          )}
+          </div>
 
           <div className="mt-6 flex flex-wrap items-center justify-end gap-3">
             <button type="button" onClick={onClose} className="rounded-[12px] px-4 py-2 text-[0.78rem] font-semibold transition-all hover:-translate-y-px" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", color: "var(--heading-color)" }}>
               Close
             </button>
-            <button type="button" onClick={handleImport} disabled={readyRows.length === 0 || importing} className="rounded-[12px] px-4 py-2 text-[0.78rem] font-semibold text-white transition-all hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60" style={{ background: "linear-gradient(135deg, #11264a 0%, #0f7fb3 82%)" }}>
-              {importing ? "Importing..." : `Import ${readyRows.length || ""}`.trim()}
+            <button
+              type="button"
+              onClick={isBamboo ? handleBambooImport : handleCsvImport}
+              disabled={!canImport || importing}
+              className="rounded-[12px] px-4 py-2 text-[0.78rem] font-semibold text-white transition-all hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
+              style={{ background: "linear-gradient(135deg, #11264a 0%, #0f7fb3 82%)" }}
+            >
+              {importing ? "Importing…" : isBamboo ? "Import BambooHR File" : `Import ${readyRows.length || ""}`.trim()}
             </button>
           </div>
         </div>

@@ -95,6 +95,17 @@ export const adminApi = {
   clearPoints: () => request<{ deleted: number }>("/admin/import/points", { method: "DELETE" }),
   importPoints: (file: File) => uploadFile<import("./types").ImportResult>("/admin/import/points", file),
   importEmployeeDirectory: (file: File) => uploadFile<import("./types").ImportResult>("/admin/import/employee-directory", file),
+  importBamboo: async (file: File, defaultTrack: string): Promise<import("./types").BambooImportResult> => {
+    const url = `${API_BASE}/admin/employees/import-bamboo?default_track=${encodeURIComponent(defaultTrack)}`;
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await fetch(url, { method: "POST", credentials: "include", body: formData });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new ApiError(body.detail ?? res.statusText, res.status);
+    }
+    return res.json();
+  },
   managersList: () =>
     request<{ employee_id: string; full_name: string; department: string | null }[]>("/admin/managers"),
 };
