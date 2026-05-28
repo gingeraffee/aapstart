@@ -756,10 +756,10 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
   const canImport = isBamboo ? !!file : isXlsx ? !!file : readyRows.length > 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(7,18,37,0.54)] px-4 py-8 backdrop-blur-sm">
-      <div className="w-full max-w-3xl overflow-hidden rounded-[28px]" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "0 32px 60px rgba(7,18,37,0.28)" }}>
-        <div className="h-[4px] w-full bg-[linear-gradient(90deg,#0ea5d9_0%,#22d3ee_52%,#df0030_100%)]" />
-        <div className="p-6 lg:p-7">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(7,18,37,0.54)] px-4 py-6 backdrop-blur-sm">
+      <div className="flex w-full max-w-3xl flex-col overflow-hidden rounded-[28px] max-h-[calc(100vh-3rem)]" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "0 32px 60px rgba(7,18,37,0.28)" }}>
+        <div className="h-[4px] w-full shrink-0 bg-[linear-gradient(90deg,#0ea5d9_0%,#22d3ee_52%,#df0030_100%)]" />
+        <div className="overflow-y-auto p-6 lg:p-7">
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="inline-flex rounded-full px-2.5 py-1 text-[0.64rem] font-bold uppercase tracking-[0.16em]" style={{ background: "var(--welcome-label-bg)", color: "var(--welcome-label-text)" }}>
