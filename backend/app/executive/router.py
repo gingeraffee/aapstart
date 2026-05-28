@@ -1,6 +1,6 @@
 import io
 import re
-from datetime import datetime, date, timezone
+from datetime import datetime, date, timedelta, timezone
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 from openpyxl import load_workbook
@@ -217,6 +217,29 @@ def _parse_wosh_workbook(wb):
     }, week_start, week_end
 
 
+# ── Shared time-record filter ─────────────────────────────────────────────────
+
+def _apply_time_filter(q, week_start: str | None, from_date: str | None, to_date: str | None):
+    """Filter a TimeRecord query by week.
+
+    week_start uses ±1 day tolerance so a WOSH Monday aligns with a
+    Payclock Sunday week_start (and vice-versa).
+    """
+    if week_start:
+        try:
+            ws = date.fromisoformat(week_start)
+            lo = (ws - timedelta(days=1)).isoformat()
+            hi = (ws + timedelta(days=1)).isoformat()
+            return q.filter(TimeRecord.week_start >= lo, TimeRecord.week_start <= hi)
+        except ValueError:
+            return q.filter(TimeRecord.week_start == week_start)
+    if from_date:
+        q = q.filter(TimeRecord.week_start >= from_date)
+    if to_date:
+        q = q.filter(TimeRecord.week_start <= to_date)
+    return q
+
+
 # ── Dashboard endpoint ────────────────────────────────────────────────────────
 
 @router.get("/dashboard")
@@ -229,13 +252,7 @@ def executive_dashboard(
 ):
     """Org-wide headcount and hours-by-department summary."""
     def _time_filter(q):
-        if week_start:
-            return q.filter(TimeRecord.week_start == week_start)
-        if from_date:
-            q = q.filter(TimeRecord.week_start >= from_date)
-        if to_date:
-            q = q.filter(TimeRecord.week_start <= to_date)
-        return q
+        return _apply_time_filter(q, week_start, from_date, to_date)
 
     employees = db.query(Employee).all()
 
@@ -359,13 +376,7 @@ def hours_by_location(
         )
         .join(TimeRecord, Employee.employee_id == TimeRecord.employee_id)
     )
-    if week_start:
-        q = q.filter(TimeRecord.week_start == week_start)
-    elif from_date or to_date:
-        if from_date:
-            q = q.filter(TimeRecord.week_start >= from_date)
-        if to_date:
-            q = q.filter(TimeRecord.week_start <= to_date)
+    q = _apply_time_filter(q, week_start, from_date, to_date)
     rows = q.group_by(Employee.location, Employee.division, Employee.department).all()
 
     # Normalize location into 3 display buckets
