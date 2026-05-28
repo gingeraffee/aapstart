@@ -94,6 +94,7 @@ def _serialize(emp: Employee, db: Session) -> dict:
         "created_at": emp.created_at.isoformat() if emp.created_at else None,
         "first_login_at": emp.first_login_at.isoformat() if emp.first_login_at else None,
         "last_login_at": emp.last_login_at.isoformat() if emp.last_login_at else None,
+        "terminated_date": emp.terminated_date,
         "progress": _progress_summary(emp.employee_id, db),
     }
 
@@ -532,6 +533,63 @@ def delete_employee(
         raise HTTPException(status_code=400, detail="You cannot delete your own account.")
     db.delete(emp)
     db.commit()
+
+
+class TerminateRequest(BaseModel):
+    terminated_date: str | None = None  # ISO date "YYYY-MM-DD"; default = today
+
+
+@router.post("/employees/{employee_id}/terminate", status_code=status.HTTP_200_OK)
+def terminate_employee(
+    employee_id: str,
+    payload: TerminateRequest,
+    admin: dict = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Soft-delete: mark an employee as terminated on a given date.
+    Their historical data (hours, absences, points, reviews) is preserved, but
+    they are excluded from current/active queries like headcount and team rosters.
+    """
+    from datetime import date as _date
+
+    emp = db.query(Employee).filter_by(employee_id=employee_id).first()
+    if not emp:
+        raise HTTPException(status_code=404, detail="Employee not found.")
+    if employee_id == admin.get("sub"):
+        raise HTTPException(status_code=400, detail="You cannot terminate your own account.")
+
+    term_date = payload.terminated_date or _date.today().isoformat()
+    # Validate the date format
+    try:
+        _date.fromisoformat(term_date)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="terminated_date must be YYYY-MM-DD.")
+
+    emp.terminated_date = term_date
+    db.commit()
+    return {
+        "employee_id": employee_id,
+        "terminated_date": term_date,
+        "detail": f"{emp.first_name} {emp.last_name} marked as terminated effective {term_date}.",
+    }
+
+
+@router.post("/employees/{employee_id}/reactivate", status_code=status.HTTP_200_OK)
+def reactivate_employee(
+    employee_id: str,
+    admin: dict = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Undo a termination — clear the terminated_date and restore the employee to active."""
+    emp = db.query(Employee).filter_by(employee_id=employee_id).first()
+    if not emp:
+        raise HTTPException(status_code=404, detail="Employee not found.")
+    emp.terminated_date = None
+    db.commit()
+    return {
+        "employee_id": employee_id,
+        "detail": f"{emp.first_name} {emp.last_name} reactivated.",
+    }
 
 
 @router.post("/employees/{employee_id}/reset-progress", status_code=status.HTTP_200_OK)
@@ -1020,10 +1078,10 @@ def list_managers(
     admin: dict = Depends(require_executive),
     db: Session = Depends(get_db),
 ):
-    """Return all employees with is_manager=True, for the view-as-manager dropdown."""
+    """Return all active employees with is_manager=True, for the view-as-manager dropdown."""
     managers = (
         db.query(Employee)
-        .filter_by(is_manager=True)
+        .filter(Employee.is_manager == True, Employee.terminated_date.is_(None))  # noqa: E712
         .order_by(Employee.last_name, Employee.first_name)
         .all()
     )

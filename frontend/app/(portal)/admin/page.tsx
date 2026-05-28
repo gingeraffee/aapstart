@@ -336,7 +336,12 @@ function EmployeeCard({ emp, currentUserId, modules, allEmployees, onAction }: {
   const [expanded, setExpanded] = useState(false);
   const [moduleProgress, setModuleProgress] = useState<ModuleProgress[] | null>(null);
   const [loadingProgress, setLoadingProgress] = useState(false);
+  const [terminating, setTerminating] = useState(false);
+  const [confirmingTerminate, setConfirmingTerminate] = useState(false);
+  const [terminateDate, setTerminateDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [reactivating, setReactivating] = useState(false);
   const isSelf = emp.employee_id === currentUserId;
+  const isTerminated = Boolean(emp.terminated_date);
   const lastLogin = emp.last_login_at
     ? new Date(emp.last_login_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
     : "Not yet";
@@ -416,8 +421,36 @@ function EmployeeCard({ emp, currentUserId, modules, allEmployees, onAction }: {
     }
   }
 
+  async function handleTerminate() {
+    setTerminating(true);
+    try {
+      const result = await adminApi.terminateEmployee(emp.employee_id, terminateDate);
+      setConfirmingTerminate(false);
+      onAction(`${emp.full_name} marked as terminated effective ${result.terminated_date}.`);
+    } catch (err) {
+      onAction(err instanceof Error ? err.message : "Failed to terminate.", "error");
+    } finally {
+      setTerminating(false);
+    }
+  }
+
+  async function handleReactivate() {
+    setReactivating(true);
+    try {
+      await adminApi.reactivateEmployee(emp.employee_id);
+      onAction(`${emp.full_name} reactivated.`);
+    } catch (err) {
+      onAction(err instanceof Error ? err.message : "Failed to reactivate.", "error");
+    } finally {
+      setReactivating(false);
+    }
+  }
+
   return (
-    <div className={cn("rounded-[14px] transition-all", expanded && "outline outline-1 outline-black/5")}>
+    <div
+      className={cn("rounded-[14px] transition-all", expanded && "outline outline-1 outline-black/5")}
+      style={isTerminated ? { background: "rgba(127,127,127,0.06)", opacity: 0.85 } : undefined}
+    >
       <button
         onClick={handleExpand}
         className="flex w-full items-center gap-3 rounded-[14px] px-4 py-3 text-left transition-all hover:bg-black/[0.025]"
@@ -448,6 +481,11 @@ function EmployeeCard({ emp, currentUserId, modules, allEmployees, onAction }: {
           {emp.is_admin && <span className="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[0.64rem] font-semibold text-slate-600">Admin</span>}
           {emp.is_manager && <span className="inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-[0.64rem] font-semibold text-emerald-700">Mgr</span>}
           {emp.is_executive && <span className="inline-flex rounded-full bg-blue-50 px-2 py-0.5 text-[0.64rem] font-semibold text-blue-700">Exec</span>}
+          {isTerminated && (
+            <span className="inline-flex rounded-full bg-rose-50 px-2 py-0.5 text-[0.64rem] font-semibold text-rose-700">
+              Terminated {emp.terminated_date}
+            </span>
+          )}
         </div>
         <p className="ml-2 shrink-0 text-[0.7rem]" style={{ color: "var(--card-desc)" }}>{lastLogin}</p>
       </button>
@@ -546,7 +584,7 @@ function EmployeeCard({ emp, currentUserId, modules, allEmployees, onAction }: {
           {!editing && (
             confirmingDelete ? (
               <div className="flex items-center gap-2">
-                <span className="flex-1 text-[0.74rem]" style={{ color: "var(--card-desc)" }}>Remove {emp.full_name}?</span>
+                <span className="flex-1 text-[0.74rem]" style={{ color: "var(--card-desc)" }}>Permanently remove {emp.full_name} from the system?</span>
                 <button onClick={() => setConfirmingDelete(false)} disabled={deleting} className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold transition-all hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-50" style={{ color: "var(--card-desc)" }}>Cancel</button>
                 <button onClick={handleDelete} disabled={deleting} className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50" style={{ background: "linear-gradient(135deg, #b91c1c 0%, #df0030 100%)" }}>{deleting ? "Removing..." : "Confirm"}</button>
               </div>
@@ -556,11 +594,40 @@ function EmployeeCard({ emp, currentUserId, modules, allEmployees, onAction }: {
                 <button onClick={() => setConfirmingReset(false)} disabled={resetting} className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold transition-all hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-50" style={{ color: "var(--card-desc)" }}>Cancel</button>
                 <button onClick={handleResetProgress} disabled={resetting} className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50" style={{ background: "linear-gradient(135deg, #d97706 0%, #b45309 100%)" }}>{resetting ? "Resetting..." : "Confirm Reset"}</button>
               </div>
+            ) : confirmingTerminate ? (
+              <div className="flex flex-wrap items-center gap-2 rounded-[12px] p-3" style={{ background: "rgba(244,63,94,0.05)", border: "1px solid rgba(244,63,94,0.18)" }}>
+                <span className="flex-1 min-w-[200px] text-[0.74rem]" style={{ color: "var(--card-desc)" }}>
+                  Effective date for {emp.full_name}:
+                </span>
+                <input
+                  type="date"
+                  value={terminateDate}
+                  onChange={(e) => setTerminateDate(e.target.value)}
+                  className="rounded-[10px] px-2.5 py-1.5 text-[0.74rem]"
+                  style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)" }}
+                />
+                <button onClick={() => setConfirmingTerminate(false)} disabled={terminating} className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold transition-all hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-50" style={{ color: "var(--card-desc)" }}>Cancel</button>
+                <button onClick={handleTerminate} disabled={terminating} className="rounded-[10px] px-3 py-1.5 text-[0.72rem] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50" style={{ background: "linear-gradient(135deg, #be123c 0%, #9f1239 100%)" }}>
+                  {terminating ? "Saving..." : "Mark Terminated"}
+                </button>
+              </div>
             ) : (
               <div className="flex flex-wrap gap-2">
                 <button onClick={() => setEditing(true)} className="rounded-[10px] px-3 py-1.5 text-[0.74rem] font-semibold transition-all hover:bg-blue-50" style={{ color: "#0369a1" }}>Edit</button>
-                <button onClick={() => setConfirmingReset(true)} className="rounded-[10px] px-3 py-1.5 text-[0.74rem] font-semibold transition-all hover:bg-amber-50" style={{ color: "#b45309" }}>Reset</button>
+                {!isTerminated && (
+                  <button onClick={() => setConfirmingReset(true)} className="rounded-[10px] px-3 py-1.5 text-[0.74rem] font-semibold transition-all hover:bg-amber-50" style={{ color: "#b45309" }}>Reset</button>
+                )}
                 {emp.totp_enabled && <button onClick={handleResetTotp} disabled={resettingTotp} className="rounded-[10px] px-3 py-1.5 text-[0.74rem] font-semibold transition-all hover:bg-purple-50 disabled:cursor-not-allowed disabled:opacity-50" style={{ color: "#7c3aed" }}>{resettingTotp ? "Resetting..." : "Reset 2FA"}</button>}
+                {!isSelf && !isTerminated && (
+                  <button onClick={() => setConfirmingTerminate(true)} className="rounded-[10px] px-3 py-1.5 text-[0.74rem] font-semibold transition-all hover:bg-rose-50" style={{ color: "#be123c" }}>
+                    Mark Terminated
+                  </button>
+                )}
+                {isTerminated && (
+                  <button onClick={handleReactivate} disabled={reactivating} className="rounded-[10px] px-3 py-1.5 text-[0.74rem] font-semibold transition-all hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50" style={{ color: "#15803d" }}>
+                    {reactivating ? "Reactivating..." : "Reactivate"}
+                  </button>
+                )}
                 {!isSelf && <button onClick={() => setConfirmingDelete(true)} disabled={deleting} className="rounded-[10px] px-3 py-1.5 text-[0.74rem] font-semibold transition-all hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50" style={{ color: "#be123c" }}>Remove</button>}
               </div>
             )
@@ -1770,6 +1837,7 @@ export default function AdminPage() {
   if (!user.is_admin) return null;
 
   const total = employees?.length ?? 0;
+  const activeCount = employees?.filter((e) => !e.terminated_date).length ?? 0;
   const loggedIn = employees?.filter((employee) => employee.first_login_at).length ?? 0;
   const started = employees?.filter((employee) => employee.progress.total_modules_seen > 0).length ?? 0;
   const adminCount = employees?.filter((employee) => employee.is_admin).length ?? 0;
@@ -1961,7 +2029,7 @@ export default function AdminPage() {
           <div>
             <p className="text-[0.64rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--module-context)" }}>Employee Roster</p>
             <h2 className="mt-1 text-[1rem] font-bold" style={{ color: "var(--heading-color)" }}>
-              Current employees{total > 0 && <span className="ml-1.5 font-normal text-[0.9rem]" style={{ color: "var(--card-desc)" }}>({total})</span>}
+              Current employees{activeCount > 0 && <span className="ml-1.5 font-normal text-[0.9rem]" style={{ color: "var(--card-desc)" }}>({activeCount})</span>}
             </h2>
           </div>
           <div className="relative">
@@ -2009,9 +2077,87 @@ export default function AdminPage() {
             )}
           </div>
         ) : (
-          <GroupedRoster rows={allEmployees} currentUserId={user.employee_id} modules={publishedModules} allEmployees={allEmployees} onAction={handleRosterAction} />
+          <>
+            <GroupedRoster
+              rows={allEmployees.filter((e) => !e.terminated_date)}
+              currentUserId={user.employee_id}
+              modules={publishedModules}
+              allEmployees={allEmployees}
+              onAction={handleRosterAction}
+            />
+            <TerminatedSection
+              rows={allEmployees.filter((e) => e.terminated_date)}
+              currentUserId={user.employee_id}
+              modules={publishedModules}
+              allEmployees={allEmployees}
+              onAction={handleRosterAction}
+            />
+          </>
         )}
       </div>
+    </div>
+  );
+}
+
+function TerminatedSection({
+  rows,
+  currentUserId,
+  modules,
+  allEmployees,
+  onAction,
+}: {
+  rows: EmployeeRecord[];
+  currentUserId: string;
+  modules: ModuleSummary[];
+  allEmployees: EmployeeRecord[];
+  onAction: (message: string, tone?: "success" | "error") => void;
+}) {
+  const [open, setOpen] = useState(false);
+  if (rows.length === 0) return null;
+
+  // Sort by most-recently-terminated first
+  const sorted = [...rows].sort((a, b) =>
+    (b.terminated_date ?? "").localeCompare(a.terminated_date ?? "")
+  );
+
+  return (
+    <div className="overflow-hidden rounded-[24px]" style={cardStyle()}>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="flex w-full items-center justify-between gap-2 border-b px-6 py-3 text-left transition-colors hover:bg-black/[0.02]"
+        style={{ borderColor: open ? "var(--card-border)" : "transparent" }}
+      >
+        <div className="flex items-center gap-3">
+          <p className="text-[0.76rem] font-semibold" style={{ color: "var(--heading-color)" }}>
+            Terminated employees
+          </p>
+          <span className="rounded-full px-2 py-0.5 text-[0.66rem] font-bold" style={{ background: "rgba(127,127,127,0.12)", color: "var(--card-desc)" }}>
+            {rows.length}
+          </span>
+        </div>
+        <svg
+          width="12" height="12" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+          className={cn("transition-transform duration-200", open && "rotate-180")}
+          style={{ color: "var(--card-desc)" }}
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      {open && (
+        <div className="space-y-1 p-4">
+          {sorted.map((emp) => (
+            <EmployeeCard
+              key={emp.employee_id}
+              emp={emp}
+              currentUserId={currentUserId}
+              modules={modules}
+              allEmployees={allEmployees}
+              onAction={onAction}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

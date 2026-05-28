@@ -82,6 +82,16 @@ export const adminApi = {
     request(`/admin/employees/${employee_id}`, { method: "PATCH", body: JSON.stringify(data) }),
   deleteEmployee: (employee_id: string) =>
     request(`/admin/employees/${employee_id}`, { method: "DELETE" }),
+  terminateEmployee: (employee_id: string, terminated_date?: string) =>
+    request<{ employee_id: string; terminated_date: string; detail: string }>(
+      `/admin/employees/${employee_id}/terminate`,
+      { method: "POST", body: JSON.stringify({ terminated_date: terminated_date ?? null }) }
+    ),
+  reactivateEmployee: (employee_id: string) =>
+    request<{ employee_id: string; detail: string }>(
+      `/admin/employees/${employee_id}/reactivate`,
+      { method: "POST", body: JSON.stringify({}) }
+    ),
   resetProgress: (employee_id: string) =>
     request(`/admin/employees/${employee_id}/reset-progress`, { method: "POST" }),
   dashboard: () => request("/admin/dashboard"),

@@ -257,6 +257,7 @@ export interface EmployeeRecord {
   created_at: string | null;
   first_login_at: string | null;
   last_login_at: string | null;
+  terminated_date: string | null;
   progress: {
     modules_completed: number;
     total_modules_seen: number;

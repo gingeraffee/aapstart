@@ -255,7 +255,9 @@ def executive_dashboard(
     def _time_filter(q):
         return _apply_time_filter(q, week_start, from_date, to_date)
 
-    employees = db.query(Employee).all()
+    # Headcount = active employees only. Hours queries below remain unfiltered
+    # so historical hours from terminated employees still count toward totals.
+    employees = db.query(Employee).filter(Employee.terminated_date.is_(None)).all()
 
     total = len(employees)
     by_dept: dict[str, int] = {}
@@ -471,6 +473,7 @@ def headcount_by_location(
             Employee.department,
             sa_func.count(Employee.id).label("count"),
         )
+        .filter(Employee.terminated_date.is_(None))
         .group_by(Employee.location, Employee.division, Employee.department)
         .all()
     )
@@ -578,7 +581,11 @@ def shift_adherence(
     db: Session = Depends(get_db),
 ):
     """Per-manager compliance ranked by OT rate, absences, and review past-due rate."""
-    managers = db.query(Employee).filter(Employee.is_manager == True).all()
+    managers = (
+        db.query(Employee)
+        .filter(Employee.is_manager == True, Employee.terminated_date.is_(None))  # noqa: E712
+        .all()
+    )
     if not managers:
         return {"managers": [], "top_manager": None, "top_score": None}
 

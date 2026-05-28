@@ -23,6 +23,7 @@ class Employee(Base):
     created_at = Column(DateTime, default=func.now())
     first_login_at = Column(DateTime, nullable=True)
     last_login_at = Column(DateTime, nullable=True)
+    terminated_date = Column(String, nullable=True)  # ISO date "YYYY-MM-DD"; NULL = active
 
 
 class UserProgress(Base):

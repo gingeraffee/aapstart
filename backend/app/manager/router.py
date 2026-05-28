@@ -938,7 +938,10 @@ def _build_snapshot(
     if manager_ids_on_team:
         sub_emps = (
             db.query(Employee)
-            .filter(Employee.manager_employee_id.in_(manager_ids_on_team))
+            .filter(
+                Employee.manager_employee_id.in_(manager_ids_on_team),
+                Employee.terminated_date.is_(None),
+            )
             .order_by(Employee.last_name, Employee.first_name)
             .all()
         )
@@ -1064,7 +1067,12 @@ def get_manager_dashboard(
     else:
         manager_id = manager["sub"]
 
-    team = db.query(Employee).filter_by(manager_employee_id=manager_id).all()
+    # Active team members only — terminated employees are excluded from current view
+    team = (
+        db.query(Employee)
+        .filter(Employee.manager_employee_id == manager_id, Employee.terminated_date.is_(None))
+        .all()
+    )
     team_ids = {e.employee_id for e in team}
     team_by_id = {e.employee_id: e for e in team}
 
