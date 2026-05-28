@@ -715,6 +715,23 @@ export default function ExecutivePage() {
     () => executiveApi.hoursByLocation()
   );
 
+  const currentIndex = useMemo(() => {
+    if (!history || history.length === 0) return 0;
+    if (selectedId === null) return 0;
+    const idx = history.findIndex(r => r.id === selectedId);
+    return idx === -1 ? 0 : idx;
+  }, [history, selectedId]);
+
+  function goOlder() {
+    if (!history || currentIndex >= history.length - 1) return;
+    setSelectedId(history[currentIndex + 1].id);
+  }
+
+  function goNewer() {
+    if (!history || currentIndex <= 0) return;
+    setSelectedId(history[currentIndex - 1].id);
+  }
+
   if (user && !user.is_executive && !user.is_admin) {
     router.replace("/overview");
     return null;
@@ -811,22 +828,46 @@ export default function ExecutivePage() {
         </div>
 
         {/* Week selector */}
-        {history && history.length > 1 && (
-          <div className="flex items-center gap-2">
-            <label className="text-[0.72rem] font-semibold" style={{ color: "var(--module-context)" }}>Week:</label>
-            <select
-              value={selectedId ?? ""}
-              onChange={e => setSelectedId(e.target.value === "" ? null : Number(e.target.value))}
-              className="rounded-[10px] px-3 py-1.5 text-[0.78rem]"
-              style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)", outline: "none" }}
-            >
-              <option value="">Latest</option>
-              {history.map(r => (
-                <option key={r.id} value={r.id}>
-                  {r.week_label ?? `Report #${r.id}`}
-                </option>
-              ))}
-            </select>
+        {history && history.length >= 1 && (
+          <div className="flex flex-col items-end gap-1">
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={goOlder}
+                disabled={currentIndex >= (history?.length ?? 0) - 1}
+                title="Previous week"
+                className="rounded-[8px] px-2.5 py-1.5 text-[0.78rem] font-bold transition-all disabled:opacity-25 hover:opacity-70"
+                style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", color: "var(--tab-text)" }}
+              >
+                ←
+              </button>
+              <select
+                value={selectedId ?? ""}
+                onChange={e => setSelectedId(e.target.value === "" ? null : Number(e.target.value))}
+                className="rounded-[10px] px-3 py-1.5 text-[0.78rem]"
+                style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)", outline: "none", minWidth: "200px" }}
+              >
+                <option value="">Latest</option>
+                {history.map(r => (
+                  <option key={r.id} value={r.id}>
+                    {r.week_label ?? `Report #${r.id}`}
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={goNewer}
+                disabled={currentIndex <= 0}
+                title="Next week"
+                className="rounded-[8px] px-2.5 py-1.5 text-[0.78rem] font-bold transition-all disabled:opacity-25 hover:opacity-70"
+                style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", color: "var(--tab-text)" }}
+              >
+                →
+              </button>
+            </div>
+            {history.length > 1 && (
+              <span className="text-[0.68rem]" style={{ color: "var(--card-desc)" }}>
+                {currentIndex + 1} of {history.length} weeks
+              </span>
+            )}
           </div>
         )}
       </div>
