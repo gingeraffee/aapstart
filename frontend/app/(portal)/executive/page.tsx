@@ -701,10 +701,6 @@ export default function ExecutivePage() {
   const [hoursFrom, setHoursFrom] = useState("");
   const [hoursTo, setHoursTo] = useState("");
 
-  const { data: dashData } = useSWR<ExecutiveDashboardData>(
-    "executive-dashboard",
-    () => executiveApi.dashboard()
-  );
   const { data: history, mutate: mutateHistory } = useSWR<WoshReportMeta[]>(
     "wosh-history",
     () => executiveApi.woshHistory()
@@ -743,15 +739,20 @@ export default function ExecutivePage() {
   const validFrom = /^\d{4}-\d{2}-\d{2}$/.test(hoursFrom) ? hoursFrom : "";
   const validTo   = /^\d{4}-\d{2}-\d{2}$/.test(hoursTo)   ? hoursTo   : "";
 
-  const hoursSwrKey = hoursMode === "range"
-    ? `executive-hours-by-location-range-${validFrom || "any"}-${validTo || "any"}`
-    : `executive-hours-by-location-week-${weekStartForHours ?? "all"}`;
+  const timeFilterKey = hoursMode === "range"
+    ? `range-${validFrom || "any"}-${validTo || "any"}`
+    : `week-${weekStartForHours ?? "all"}`;
+  const timeFilterParams = hoursMode === "range"
+    ? { fromDate: validFrom || undefined, toDate: validTo || undefined }
+    : { weekStart: weekStartForHours ?? undefined };
 
+  const { data: dashData } = useSWR<ExecutiveDashboardData>(
+    `executive-dashboard-${timeFilterKey}`,
+    () => executiveApi.dashboard(timeFilterParams)
+  );
   const { data: hoursLocData } = useSWR(
-    hoursSwrKey,
-    () => hoursMode === "range"
-      ? executiveApi.hoursByLocation({ fromDate: validFrom || undefined, toDate: validTo || undefined })
-      : executiveApi.hoursByLocation({ weekStart: weekStartForHours ?? undefined })
+    `executive-hours-by-location-${timeFilterKey}`,
+    () => executiveApi.hoursByLocation(timeFilterParams)
   );
 
   if (user && !user.is_executive && !user.is_admin) {

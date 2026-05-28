@@ -153,7 +153,14 @@ export const searchApi = {
 };
 
 export const executiveApi = {
-  dashboard: () => request<import("./types").ExecutiveDashboardData>("/executive/dashboard"),
+  dashboard: (params?: { weekStart?: string; fromDate?: string; toDate?: string }) => {
+    const p = new URLSearchParams();
+    if (params?.weekStart) p.set("week_start", params.weekStart);
+    if (params?.fromDate) p.set("from_date", params.fromDate);
+    if (params?.toDate) p.set("to_date", params.toDate);
+    const qs = p.toString();
+    return request<import("./types").ExecutiveDashboardData>(`/executive/dashboard${qs ? `?${qs}` : ""}`);
+  },
   woshLatest: () => request<import("./types").WoshReport | null>("/executive/wosh/latest"),
   woshHistory: () => request<import("./types").WoshReportMeta[]>("/executive/wosh/history"),
   woshById: (id: number) => request<import("./types").WoshReport>(`/executive/wosh/${id}`),

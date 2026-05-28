@@ -221,10 +221,22 @@ def _parse_wosh_workbook(wb):
 
 @router.get("/dashboard")
 def executive_dashboard(
+    week_start: str | None = Query(None),
+    from_date: str | None = Query(None),
+    to_date: str | None = Query(None),
     user: dict = Depends(require_executive),
     db: Session = Depends(get_db),
 ):
     """Org-wide headcount and hours-by-department summary."""
+    def _time_filter(q):
+        if week_start:
+            return q.filter(TimeRecord.week_start == week_start)
+        if from_date:
+            q = q.filter(TimeRecord.week_start >= from_date)
+        if to_date:
+            q = q.filter(TimeRecord.week_start <= to_date)
+        return q
+
     employees = db.query(Employee).all()
 
     total = len(employees)
@@ -244,7 +256,7 @@ def executive_dashboard(
         if emp.is_executive: executives += 1
 
     # Hours by department
-    time_rows = (
+    time_rows = _time_filter(
         db.query(
             Employee.department,
             sa_func.sum(TimeRecord.regular_hours).label("regular"),
@@ -257,9 +269,7 @@ def executive_dashboard(
             sa_func.count(sa_func.distinct(TimeRecord.employee_id)).label("emp_count"),
         )
         .join(TimeRecord, Employee.employee_id == TimeRecord.employee_id)
-        .group_by(Employee.department)
-        .all()
-    )
+    ).group_by(Employee.department).all()
 
     hours_by_dept = [
         {
@@ -276,11 +286,11 @@ def executive_dashboard(
         for row in time_rows
     ]
 
-    date_range_row = db.query(
+    date_range_row = _time_filter(db.query(
         sa_func.min(TimeRecord.week_start).label("earliest"),
         sa_func.max(TimeRecord.week_start).label("latest"),
         sa_func.max(TimeRecord.imported_at).label("imported"),
-    ).first()
+    )).first()
 
     hours_date_range = None
     last_updated = None
@@ -305,10 +315,10 @@ def executive_dashboard(
             threshold_counts[t] += 1
 
     # Company-wide totals for KPI row
-    totals_row = db.query(
+    totals_row = _time_filter(db.query(
         sa_func.sum(TimeRecord.regular_hours).label("total_reg"),
         sa_func.sum(TimeRecord.ot_hours).label("total_ot"),
-    ).first()
+    )).first()
 
     return {
         "headcount": {
