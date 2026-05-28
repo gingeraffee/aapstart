@@ -511,15 +511,26 @@ type LocationHours = {
   departments: { department: string; regular_hours: number; ot_hours: number }[];
 };
 
-function HoursByLocation({ locations }: { locations: LocationHours[] }) {
+function HoursByLocation({ locations, weekLabel }: { locations: LocationHours[]; weekLabel?: string }) {
   const [open, setOpen] = useState<string | null>(null);
 
   return (
     <div className="mb-5">
-      <p className="mb-2 text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
-        Hours by Location
-      </p>
-      <div className="flex flex-col gap-3 md:flex-row md:items-start">
+      <div className="mb-2 flex items-baseline gap-2">
+        <p className="text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
+          Hours by Location
+        </p>
+        {weekLabel && (
+          <span className="text-[0.68rem]" style={{ color: "var(--card-desc)" }}>{weekLabel}</span>
+        )}
+      </div>
+      {locations.length === 0 && (
+        <div className="rounded-[14px] py-6 text-center" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}>
+          <p className="text-[0.82rem] font-semibold" style={{ color: "var(--heading-color)" }}>No hours data for this week</p>
+          <p className="mt-1 text-[0.75rem]" style={{ color: "var(--card-desc)" }}>Hours may not have been imported for this pay period.</p>
+        </div>
+      )}
+      {locations.length > 0 && <div className="flex flex-col gap-3 md:flex-row md:items-start">
         <div className="shrink-0">
           <OtDonutChart locations={locations} />
         </div>
@@ -587,7 +598,7 @@ function HoursByLocation({ locations }: { locations: LocationHours[] }) {
           );
         })}
         </div>
-      </div>
+      </div>}
     </div>
   );
 }
@@ -710,11 +721,6 @@ export default function ExecutivePage() {
     selectedId !== null ? `wosh-${selectedId}` : null,
     () => executiveApi.woshById(selectedId!)
   );
-  const { data: hoursLocData } = useSWR(
-    "executive-hours-by-location",
-    () => executiveApi.hoursByLocation()
-  );
-
   const currentIndex = useMemo(() => {
     if (!history || history.length === 0) return 0;
     if (selectedId === null) return 0;
@@ -731,6 +737,17 @@ export default function ExecutivePage() {
     if (!history || currentIndex <= 0) return;
     setSelectedId(history[currentIndex - 1].id);
   }
+
+  const weekStartForHours = useMemo(() => {
+    if (!history || history.length === 0) return null;
+    if (selectedId === null) return history[0]?.week_start ?? null;
+    return history.find(r => r.id === selectedId)?.week_start ?? null;
+  }, [history, selectedId]);
+
+  const { data: hoursLocData } = useSWR(
+    `executive-hours-by-location${weekStartForHours ? `-${weekStartForHours}` : ""}`,
+    () => executiveApi.hoursByLocation(weekStartForHours ?? undefined)
+  );
 
   if (user && !user.is_executive && !user.is_admin) {
     router.replace("/overview");
@@ -912,8 +929,11 @@ export default function ExecutivePage() {
       </div>
 
       {/* Hours by location */}
-      {hoursLocData && hoursLocData.locations.length > 0 && (
-        <HoursByLocation locations={hoursLocData.locations} />
+      {hoursLocData && (
+        <HoursByLocation
+          locations={hoursLocData.locations}
+          weekLabel={weekStartForHours ? (report?.week_label ?? undefined) : undefined}
+        />
       )}
 
       {/* KPI row — WOSH violations */}

@@ -2,7 +2,7 @@ import io
 import re
 from datetime import datetime, date, timezone
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 from openpyxl import load_workbook
 from sqlalchemy import func as sa_func
 from sqlalchemy.orm import Session
@@ -332,11 +332,12 @@ def executive_dashboard(
 
 @router.get("/hours-by-location")
 def hours_by_location(
+    week_start: str | None = Query(None),
     user: dict = Depends(require_executive),
     db: Session = Depends(get_db),
 ):
     """Hours (regular + OT) grouped by display location and department."""
-    rows = (
+    q = (
         db.query(
             Employee.location,
             Employee.division,
@@ -345,9 +346,10 @@ def hours_by_location(
             sa_func.sum(TimeRecord.ot_hours).label("ot"),
         )
         .join(TimeRecord, Employee.employee_id == TimeRecord.employee_id)
-        .group_by(Employee.location, Employee.division, Employee.department)
-        .all()
     )
+    if week_start:
+        q = q.filter(TimeRecord.week_start == week_start)
+    rows = q.group_by(Employee.location, Employee.division, Employee.department).all()
 
     # Normalize location into 3 display buckets
     def _display_location(loc: str | None, div: str | None) -> str:

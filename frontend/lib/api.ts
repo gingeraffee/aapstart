@@ -157,7 +157,7 @@ export const executiveApi = {
   woshLatest: () => request<import("./types").WoshReport | null>("/executive/wosh/latest"),
   woshHistory: () => request<import("./types").WoshReportMeta[]>("/executive/wosh/history"),
   woshById: (id: number) => request<import("./types").WoshReport>(`/executive/wosh/${id}`),
-  hoursByLocation: () => request<{ locations: Array<{ location: string; regular_hours: number; ot_hours: number; departments: Array<{ department: string; regular_hours: number; ot_hours: number }> }> }>("/executive/hours-by-location"),
+  hoursByLocation: (weekStart?: string) => request<{ locations: Array<{ location: string; regular_hours: number; ot_hours: number; departments: Array<{ department: string; regular_hours: number; ot_hours: number }> }> }>(`/executive/hours-by-location${weekStart ? `?week_start=${encodeURIComponent(weekStart)}` : ""}`),
   headcount: () => request<import("./types").HeadcountData>("/executive/headcount"),
   ptoAnalytics: () => request<import("./types").PTOAnalyticsData>("/executive/pto-analytics"),
   shiftAdherence: () => request<import("./types").ShiftAdherenceData>("/executive/shift-adherence"),
