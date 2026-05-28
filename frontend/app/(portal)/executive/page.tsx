@@ -13,6 +13,9 @@ import type {
   WoshException,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
+} from "recharts";
 
 // ── helpers ────────────────────────────────────────────────────────────────────
 
@@ -32,37 +35,110 @@ type KpiId =
   | "violations" | "employees" | "early" | "late"
   | "total_emp" | "reg_hours" | "ot_hours";
 
-// ── Trend mini-chart ─────────────────────────────────────────────────────────
+// ── helpers ──────────────────────────────────────────────────────────────────
 
-function TrendMiniChart({ history, activeId }: { history: WoshReportMeta[]; activeId: number | null }) {
+function shortWeekLabel(label: string | null): string {
+  if (!label) return "?";
+  // "Week of May 11–15, 2026" → "May 11"
+  const m = label.match(/([A-Za-z]+ \d+)/);
+  return m ? m[1] : label.slice(0, 8);
+}
+
+// ── WOSH trend chart (Recharts) ───────────────────────────────────────────────
+
+function WoshTrendChart({
+  history,
+  activeId,
+  onSelect,
+}: {
+  history: WoshReportMeta[];
+  activeId: number | null;
+  onSelect: (id: number | null) => void;
+}) {
   if (history.length < 2) return null;
+
   const sorted = [...history].reverse(); // oldest → newest
-  const max = Math.max(...sorted.map(h => h.parsed_data?.summary?.total_violations ?? 0), 1);
   const effectiveId = activeId ?? history[0]?.id ?? null;
+
+  const data = sorted.map(h => ({
+    id: h.id,
+    label: h.week_label ?? `Report #${h.id}`,
+    shortLabel: shortWeekLabel(h.week_label),
+    violations: h.parsed_data?.summary?.total_violations ?? 0,
+    early: h.parsed_data?.summary?.early_arrivals ?? 0,
+    late: h.parsed_data?.summary?.late_departures ?? 0,
+    isActive: h.id === effectiveId,
+  }));
 
   return (
     <div
-      className="flex items-end gap-0.5 h-9 self-end shrink-0"
-      style={{ width: `${Math.min(sorted.length * 14, 168)}px` }}
+      className="mb-5 rounded-[14px] px-5 pt-4 pb-2"
+      style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}
     >
-      {sorted.map(h => {
-        const val = h.parsed_data?.summary?.total_violations ?? 0;
-        const isActive = h.id === effectiveId;
-        return (
-          <div
-            key={h.id}
-            title={`${h.week_label ?? "Week"}: ${val} irregularities`}
-            className="flex-1 rounded-t-[2px] transition-colors cursor-pointer"
-            style={{
-              height: `${Math.max((val / max) * 100, 8)}%`,
-              background: isActive ? "#2563eb" : "var(--tab-group-bg)",
-              border: `1px solid ${isActive ? "#1d4ed8" : "var(--card-border)"}`,
-              borderBottom: "none",
-              minWidth: "6px",
+      <div className="mb-2 flex items-center justify-between">
+        <p className="text-[0.75rem] font-semibold uppercase tracking-wide" style={{ color: "var(--module-context)" }}>
+          Irregularities Trend
+        </p>
+        <span className="text-[0.7rem]" style={{ color: "var(--card-desc)" }}>
+          {history.length} week{history.length !== 1 ? "s" : ""} · click a bar to select
+        </span>
+      </div>
+      <ResponsiveContainer width="100%" height={130}>
+        <BarChart
+          data={data}
+          margin={{ top: 4, right: 8, bottom: 0, left: -16 }}
+          onClick={(e) => {
+            if (e?.activePayload?.[0]) {
+              const id = e.activePayload[0].payload.id as number;
+              onSelect(id === (history[0]?.id ?? -1) ? null : id);
+            }
+          }}
+        >
+          <XAxis
+            dataKey="shortLabel"
+            tick={{ fontSize: 10, fill: "var(--card-desc)" } as React.CSSProperties}
+            axisLine={false}
+            tickLine={false}
+          />
+          <YAxis
+            tick={{ fontSize: 10, fill: "var(--card-desc)" } as React.CSSProperties}
+            axisLine={false}
+            tickLine={false}
+            width={32}
+          />
+          <Tooltip
+            cursor={{ fill: "var(--tab-group-bg)" }}
+            content={({ active, payload }) => {
+              if (!active || !payload?.length) return null;
+              const d = payload[0].payload as typeof data[0];
+              return (
+                <div
+                  className="rounded-[10px] px-3 py-2 shadow-lg text-[0.72rem]"
+                  style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}
+                >
+                  <p className="font-semibold mb-0.5" style={{ color: "var(--heading-color)" }}>{d.label}</p>
+                  <p style={{ color: "var(--module-context)" }}>{d.violations} irregularities</p>
+                  <p className="mt-0.5">
+                    <span style={{ color: "#3b82f6" }}>Early {d.early}</span>
+                    {" · "}
+                    <span style={{ color: "#f59e0b" }}>Late {d.late}</span>
+                  </p>
+                </div>
+              );
             }}
           />
-        );
-      })}
+          <Bar dataKey="violations" radius={[4, 4, 0, 0]} cursor="pointer" maxBarSize={48}>
+            {data.map((entry) => (
+              <Cell
+                key={entry.id}
+                fill={entry.isActive ? "#2563eb" : "var(--tab-group-bg)"}
+                stroke={entry.isActive ? "#1d4ed8" : "var(--card-border)"}
+                strokeWidth={1}
+              />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   );
 }
@@ -1017,11 +1093,10 @@ export default function ExecutivePage() {
             />
           </div>
 
-          {/* Week selector with trend chart */}
+          {/* Week selector */}
           {history && history.length >= 1 && (
             <div className="flex flex-col items-end gap-1.5">
               <div className="flex items-end gap-2">
-                <TrendMiniChart history={history} activeId={selectedId} />
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={goOlder}
@@ -1077,6 +1152,15 @@ export default function ExecutivePage() {
       {(user?.is_admin && user?.tracks?.includes("hr")) && <UploadBar onUploaded={handleUploaded} />}
 
       {/* ── Shift Exceptions ─────────────────────────────────────────────────── */}
+      {/* Trend chart — shown when 2+ weeks uploaded */}
+      {history && history.length >= 2 && (
+        <WoshTrendChart
+          history={history}
+          activeId={selectedId}
+          onSelect={setSelectedId}
+        />
+      )}
+
       {summary ? (
         <>
           <SectionLabel>Shift Exceptions{report?.week_label ? ` · ${report.week_label}` : ""}</SectionLabel>
