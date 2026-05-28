@@ -1272,7 +1272,7 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
     try {
       const result = await adminApi.importEmployeeDirectory(directoryFile);
       setDirectoryResult(result);
-      onToast(`Employee directory synced — ${result.inserted} employees updated, ${result.manager_linked ?? 0} managers linked.`);
+      onToast(`Employee directory synced — ${result.updated ?? result.inserted ?? 0} employees updated, ${result.manager_linked ?? 0} managers linked.`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Upload failed.";
       setDirectoryError(msg);
