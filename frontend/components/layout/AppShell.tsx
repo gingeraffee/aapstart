@@ -549,8 +549,8 @@ export function AppShell({ children }: AppShellProps) {
             </Link>
           )}
 
-          {/* Manager Dashboard button — managers only */}
-          {user?.is_manager && (
+          {/* Manager Dashboard button — managers only (not admins/execs who also have is_manager) */}
+          {user?.is_manager && !user?.is_admin && !user?.is_executive && (
             <Link
               href="/manager"
               title="Manager Dashboard"
@@ -668,7 +668,7 @@ export function AppShell({ children }: AppShellProps) {
               Executive Summary
             </button>
           )}
-          {user?.is_manager && (
+          {user?.is_manager && !user?.is_admin && !user?.is_executive && (
             <button
               onClick={() => router.push("/manager")}
               className="pb-0.5 text-[0.85rem] font-semibold transition-colors duration-200"
