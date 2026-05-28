@@ -1026,8 +1026,8 @@ def get_manager_dashboard(
     as_manager_id: str = Query(default=None, description="Admin-only: view dashboard as a specific manager."),
 ):
     """Aggregated manager dashboard. Supports month-based and legacy weeks-based filtering."""
-    # View-as logic — only admins can impersonate another manager
-    if as_manager_id and manager.get("is_admin"):
+    # View-as logic — admins and executives can view any manager's dashboard
+    if as_manager_id and (manager.get("is_admin") or manager.get("is_executive")):
         manager_id = as_manager_id
     else:
         manager_id = manager["sub"]

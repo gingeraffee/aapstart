@@ -170,9 +170,9 @@ def require_admin(request: Request) -> dict:
 
 
 def require_manager(request: Request) -> dict:
-    """FastAPI dependency — requires is_manager=True or is_admin=True."""
+    """FastAPI dependency — requires is_manager=True, is_executive=True, or is_admin=True."""
     user = get_current_user(request)
-    if not user.get("is_manager") and not user.get("is_admin"):
+    if not user.get("is_manager") and not user.get("is_admin") and not user.get("is_executive"):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Manager access required.",

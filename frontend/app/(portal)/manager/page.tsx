@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { useAuth } from "@/lib/context/AuthContext";
-import { managerApi } from "@/lib/api";
+import { managerApi, adminApi } from "@/lib/api";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
 import type {
@@ -1061,7 +1061,8 @@ function AttendancePointsTable({ team, absenceByCategory, filter, onSelectEmploy
 export default function ManagerDashboardPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const canAccess = user?.is_manager || user?.is_admin;
+  const canAccess = user?.is_manager || user?.is_admin || user?.is_executive;
+  const canViewAs  = user?.is_admin || user?.is_executive;
 
   const [activeTab, setActiveTab] = useState<"metrics" | "roster" | "analytics">("metrics");
   const [selectedMonth, setSelectedMonth] = useState(currentMonthStr);
@@ -1073,14 +1074,21 @@ export default function ManagerDashboardPage() {
   const [thresholdFilter, setThresholdFilter] = useState<string[]>([]);
   const [hoursExpanded, setHoursExpanded] = useState(false);
   const [upcomingExpanded, setUpcomingExpanded] = useState(false);
+  const [asManagerId, setAsManagerId] = useState<string>("");
 
   useEffect(() => {
     if (!authLoading && !canAccess) router.replace("/overview");
   }, [authLoading, canAccess, router]);
 
+  const { data: managersList } = useSWR(
+    canViewAs ? "managers-list" : null,
+    () => adminApi.managersList(),
+    { revalidateOnFocus: false }
+  );
+
   const { data: rawData, error, isLoading } = useSWR(
-    canAccess ? ["mgr-dash", selectedMonth, compareMode ? compareMonth : null] : null,
-    () => managerApi.monthDashboard(selectedMonth, compareMode ? compareMonth : undefined),
+    canAccess ? ["mgr-dash", selectedMonth, compareMode ? compareMonth : null, asManagerId] : null,
+    () => managerApi.monthDashboard(selectedMonth, compareMode ? compareMonth : undefined, asManagerId || undefined),
     { revalidateOnFocus: false }
   );
 
@@ -1167,21 +1175,50 @@ export default function ManagerDashboardPage() {
     <div className="mx-auto max-w-5xl space-y-6 px-4 py-8 md:px-8">
 
       {/* ── Header ── */}
-      <div>
-        <h1 className="text-[1.35rem] font-bold" style={{ color: "var(--sidebar-text)" }}>Manager Dashboard</h1>
-        {dashboard?.last_updated ? (
-          <p className="mt-1 text-[0.72rem]" style={{ color: "var(--sidebar-label)" }}>
-            Last updated: {formatDateTime(dashboard.last_updated)}
-          </p>
-        ) : (
-          <p className="mt-1 text-[0.72rem]" style={{ color: "var(--sidebar-label)" }}>
-            No data uploaded yet — ask HR to upload the data files.
-          </p>
-        )}
-        {dashboard && dashboard.team_size === 0 && (
-          <div className="mt-3 rounded-[12px] px-4 py-3 text-[0.78rem]"
-            style={{ background: "rgba(217,119,6,0.08)", border: "1px solid rgba(217,119,6,0.22)", color: "#92400e" }}>
-            No employees are assigned to you yet. Ask an admin to set your employees' "Reports To" field to your account.
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-[1.35rem] font-bold" style={{ color: "var(--sidebar-text)" }}>
+            Manager Dashboard
+            {asManagerId && managersList && (
+              <span className="ml-2 text-[1rem] font-normal" style={{ color: "var(--sidebar-label)" }}>
+                — {managersList.find(m => m.employee_id === asManagerId)?.full_name ?? asManagerId}
+              </span>
+            )}
+          </h1>
+          {dashboard?.last_updated ? (
+            <p className="mt-1 text-[0.72rem]" style={{ color: "var(--sidebar-label)" }}>
+              Last updated: {formatDateTime(dashboard.last_updated)}
+            </p>
+          ) : (
+            <p className="mt-1 text-[0.72rem]" style={{ color: "var(--sidebar-label)" }}>
+              No data uploaded yet — ask HR to upload the data files.
+            </p>
+          )}
+          {dashboard && dashboard.team_size === 0 && !asManagerId && (
+            <div className="mt-3 rounded-[12px] px-4 py-3 text-[0.78rem]"
+              style={{ background: "rgba(217,119,6,0.08)", border: "1px solid rgba(217,119,6,0.22)", color: "#92400e" }}>
+              No employees are assigned to you yet. Ask an admin to set your employees' "Reports To" field to your account.
+            </div>
+          )}
+        </div>
+        {canViewAs && managersList && managersList.length > 0 && (
+          <div className="shrink-0">
+            <p className="mb-1 text-[0.68rem] font-bold uppercase tracking-wide" style={{ color: "var(--sidebar-label)" }}>
+              View as manager
+            </p>
+            <select
+              value={asManagerId}
+              onChange={e => { setAsManagerId(e.target.value); setSelectedEmployee(null); }}
+              className="rounded-[10px] px-3 py-2 text-[0.8rem]"
+              style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)", outline: "none" }}
+            >
+              <option value="">My dashboard</option>
+              {managersList.map(m => (
+                <option key={m.employee_id} value={m.employee_id}>
+                  {m.full_name}{m.department ? ` — ${m.department}` : ""}
+                </option>
+              ))}
+            </select>
           </div>
         )}
       </div>

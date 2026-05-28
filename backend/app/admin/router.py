@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from sqlalchemy import func as sa_func
 
-from app.auth.service import require_admin, normalize_tracks
+from app.auth.service import require_admin, require_executive, normalize_tracks
 from app.database.connection import get_db
 from app.database.models import (
     AttendancePoint, Employee, UserProgress, UserNote,
@@ -1000,7 +1000,7 @@ async def import_employee_directory(
 
 @router.get("/managers")
 def list_managers(
-    admin: dict = Depends(require_admin),
+    admin: dict = Depends(require_executive),
     db: Session = Depends(get_db),
 ):
     """Return all employees with is_manager=True, for the view-as-manager dropdown."""
