@@ -1492,6 +1492,17 @@ function DataImportsPanel({ onToast }: { onToast: (msg: string, tone?: "success"
   const { data, isLoading, mutate } = useSWR<ImportStatus>("admin-import-status", () => adminApi.importStatus());
   const [clearingKey, setClearingKey] = useState<string | null>(null);
 
+  // Smooth-scroll into view if the URL arrives with #data-inventory
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hash === "#data-inventory") {
+      const el = document.getElementById("data-inventory");
+      if (el) {
+        // Defer until after layout settles
+        setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+      }
+    }
+  }, []);
+
   async function handleClear(ds: ImportDataset) {
     const handler = CLEAR_HANDLERS[ds.key];
     if (!handler) return;
@@ -1509,7 +1520,7 @@ function DataImportsPanel({ onToast }: { onToast: (msg: string, tone?: "success"
   }
 
   return (
-    <div className="relative overflow-hidden rounded-[24px] p-6" style={cardStyle()}>
+    <div id="data-inventory" className="relative overflow-hidden rounded-[24px] p-6 scroll-mt-24" style={cardStyle()}>
       <div className="absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,#0ea5d9_0%,#22d3ee_100%)]" />
 
       <div className="flex flex-wrap items-start justify-between gap-3">

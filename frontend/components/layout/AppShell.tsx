@@ -668,6 +668,24 @@ export function AppShell({ children }: AppShellProps) {
               Executive Summary
             </button>
           )}
+          {user?.is_admin && (
+            <button
+              onClick={() => {
+                if (pathname === "/admin") {
+                  document.getElementById("data-inventory")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                } else {
+                  router.push("/admin#data-inventory");
+                }
+              }}
+              className="pb-0.5 text-[0.85rem] font-semibold transition-colors duration-200"
+              style={{
+                color: "var(--sidebar-label)",
+                borderBottom: "2px solid transparent",
+              }}
+            >
+              Data Inventory
+            </button>
+          )}
           {user?.is_manager && !user?.is_admin && !user?.is_executive && (
             <button
               onClick={() => router.push("/manager")}
