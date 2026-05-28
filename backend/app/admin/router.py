@@ -673,6 +673,7 @@ def _parse_employee_directory(contents: bytes) -> list[dict]:
         location = str(_col(row, "location") or "").strip()
         division = str(_col(row, "division") or "").strip()
         department = str(_col(row, "department") or "").strip()
+        reporting_to = str(_col(row, "reporting to") or "").strip() or None
 
         if not emp_num:
             continue
@@ -682,9 +683,10 @@ def _parse_employee_directory(contents: bytes) -> list[dict]:
 
         results.append({
             "employee_id": str(int(emp_num)) if isinstance(emp_num, (int, float)) else str(emp_num).strip(),
-            "location": location or None,
-            "division": division or None,
-            "department": department or None,
+            "location":     location     or None,
+            "division":     division     or None,
+            "department":   department   or None,
+            "reporting_to": reporting_to,
         })
     return results
 
@@ -695,7 +697,8 @@ async def import_employee_directory(
     admin: dict = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    """Upload BambooHR employee directory to sync location, division, and department on existing employees."""
+    """Upload BambooHR Employee Division & Department export to sync location,
+    division, department, and manager on existing employees."""
     name = file.filename or ""
     if not name.lower().endswith(".xlsx"):
         raise HTTPException(status_code=400, detail="File must be a .xlsx file.")
@@ -709,8 +712,16 @@ async def import_employee_directory(
     if not rows:
         raise HTTPException(status_code=400, detail="No valid rows found in file.")
 
+    # Build a full-name → employee_id lookup for manager resolution
+    all_emps = db.query(Employee).all()
+    name_to_id: dict[str, str] = {
+        f"{e.first_name} {e.last_name}".lower(): e.employee_id
+        for e in all_emps
+    }
+
     updated = 0
     skipped = 0
+    manager_linked = 0
     errors: list[dict] = []
 
     for i, row in enumerate(rows, start=2):
@@ -719,13 +730,27 @@ async def import_employee_directory(
             skipped += 1
             errors.append({"row": i, "employee_id": row["employee_id"], "detail": "Employee not found in system"})
             continue
-        emp.location = row["location"]
-        emp.division = row["division"]
+
+        emp.location   = row["location"]
+        emp.division   = row["division"]
         emp.department = row["department"]
+
+        # Resolve manager by full name (case-insensitive)
+        if row.get("reporting_to"):
+            mgr_id = name_to_id.get(row["reporting_to"].lower())
+            if mgr_id and mgr_id != emp.employee_id:
+                emp.manager_employee_id = mgr_id
+                manager_linked += 1
+
         updated += 1
 
     db.commit()
-    return {"inserted": updated, "skipped": skipped, "errors": errors[:20]}
+    return {
+        "inserted":       updated,
+        "skipped":        skipped,
+        "manager_linked": manager_linked,
+        "errors":         errors[:20],
+    }
 
 
 # -- Managers list --
