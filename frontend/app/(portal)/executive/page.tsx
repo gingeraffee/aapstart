@@ -11,6 +11,8 @@ import type {
   WoshReportMeta,
   WoshByManagerChart,
   WoshException,
+  ShiftAdherenceData,
+  ManagerAdherence,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import {
@@ -921,11 +923,201 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
+// ── Tab navigation ────────────────────────────────────────────────────────────
+
+type TabId = "overview" | "wosh" | "hours" | "managers";
+
+const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
+  {
+    id: "overview",
+    label: "Overview",
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="3" width="7" height="9" rx="1" />
+        <rect x="14" y="3" width="7" height="5" rx="1" />
+        <rect x="14" y="12" width="7" height="9" rx="1" />
+        <rect x="3" y="16" width="7" height="5" rx="1" />
+      </svg>
+    ),
+  },
+  {
+    id: "wosh",
+    label: "Shift Exceptions",
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <polyline points="12 6 12 12 16 14" />
+      </svg>
+    ),
+  },
+  {
+    id: "hours",
+    label: "Hours & OT",
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="18" y1="20" x2="18" y2="10" />
+        <line x1="12" y1="20" x2="12" y2="4" />
+        <line x1="6" y1="20" x2="6" y2="14" />
+      </svg>
+    ),
+  },
+  {
+    id: "managers",
+    label: "Manager Performance",
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="8.5" cy="7" r="4" />
+        <polyline points="17 11 19 13 23 9" />
+      </svg>
+    ),
+  },
+];
+
+function TabNav({ active, onChange }: { active: TabId; onChange: (id: TabId) => void }) {
+  return (
+    <div
+      className="mb-5 flex flex-wrap gap-1 overflow-hidden rounded-[14px] p-1"
+      style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}
+    >
+      {TABS.map(tab => {
+        const isActive = tab.id === active;
+        return (
+          <button
+            key={tab.id}
+            onClick={() => onChange(tab.id)}
+            className="flex flex-1 min-w-[120px] items-center justify-center gap-2 rounded-[10px] px-3 py-2 text-[0.78rem] font-semibold transition-all"
+            style={{
+              background: isActive ? "linear-gradient(135deg,#1e3a5f 0%,#2563eb 82%)" : "transparent",
+              color: isActive ? "#fff" : "var(--module-context)",
+              boxShadow: isActive ? "0 2px 8px rgba(37,99,235,0.25)" : "none",
+            }}
+          >
+            {tab.icon}
+            <span>{tab.label}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── Manager adherence table ───────────────────────────────────────────────────
+
+function scoreColor(score: number): string {
+  if (score >= 90) return "#16a34a";
+  if (score >= 75) return "#65a30d";
+  if (score >= 60) return "#ca8a04";
+  if (score >= 40) return "#ea580c";
+  return "#dc2626";
+}
+
+function ManagerAdherenceTable({ managers }: { managers: ManagerAdherence[] }) {
+  if (managers.length === 0) {
+    return (
+      <div className="rounded-[14px] py-8 text-center" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}>
+        <p className="text-[0.85rem] font-semibold" style={{ color: "var(--heading-color)" }}>No manager data available</p>
+        <p className="mt-1 text-[0.78rem]" style={{ color: "var(--card-desc)" }}>Hours data must be imported for adherence scores to be calculated.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="overflow-hidden rounded-[14px]" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}>
+      <div className="border-b px-5 py-4" style={{ borderColor: "var(--card-border)" }}>
+        <h3 className="text-[0.9rem] font-bold" style={{ color: "var(--heading-color)" }}>
+          Manager Adherence Ranking
+        </h3>
+        <p className="mt-1 text-[0.72rem]" style={{ color: "var(--card-desc)" }}>
+          Combined score from OT rate and unexcused absence rate. Higher is better.
+        </p>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full text-[0.78rem]">
+          <thead>
+            <tr style={{ background: "var(--tab-group-bg)", borderBottom: "1px solid var(--card-border)" }}>
+              <th className="px-4 py-3 text-left font-semibold w-10" style={{ color: "var(--module-context)" }}>#</th>
+              <th className="px-4 py-3 text-left font-semibold" style={{ color: "var(--module-context)" }}>Manager</th>
+              <th className="px-4 py-3 text-left font-semibold" style={{ color: "var(--module-context)" }}>Department</th>
+              <th className="px-4 py-3 text-left font-semibold" style={{ color: "var(--module-context)" }}>Location</th>
+              <th className="px-4 py-3 text-center font-semibold" style={{ color: "var(--module-context)" }}>Team</th>
+              <th className="px-4 py-3 text-right font-semibold" style={{ color: "var(--module-context)" }}>OT Rate</th>
+              <th className="px-4 py-3 text-right font-semibold" style={{ color: "var(--module-context)" }}>Absent Hrs</th>
+              <th className="px-5 py-3 text-right font-semibold" style={{ color: "var(--module-context)" }}>Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            {managers.map((m, i) => {
+              const color = scoreColor(m.adherence_score);
+              return (
+                <tr key={m.manager_id} style={{ borderBottom: i < managers.length - 1 ? "1px solid var(--card-border)" : "none" }}>
+                  <td className="px-4 py-3 font-bold" style={{ color: "var(--module-context)" }}>{i + 1}</td>
+                  <td className="px-4 py-3 font-semibold whitespace-nowrap" style={{ color: "var(--heading-color)" }}>{m.manager_name}</td>
+                  <td className="px-4 py-3 whitespace-nowrap" style={{ color: "var(--card-desc)" }}>{m.department ?? "—"}</td>
+                  <td className="px-4 py-3 whitespace-nowrap" style={{ color: "var(--card-desc)" }}>{m.location}</td>
+                  <td className="px-4 py-3 text-center" style={{ color: "var(--heading-color)" }}>{m.team_size}</td>
+                  <td className="px-4 py-3 text-right" style={{ color: m.ot_rate > 5 ? "#b45309" : "var(--card-desc)" }}>
+                    {m.ot_rate.toFixed(1)}%
+                  </td>
+                  <td className="px-4 py-3 text-right" style={{ color: m.absent_w_point_hours > 0 ? "#dc2626" : "var(--card-desc)" }}>
+                    {fmtHrs(m.absent_w_point_hours)}
+                  </td>
+                  <td className="px-5 py-3 text-right">
+                    <div className="inline-flex items-center gap-2">
+                      <div className="h-1.5 w-16 overflow-hidden rounded-full" style={{ background: "var(--tab-group-bg)" }}>
+                        <div className="h-full rounded-full" style={{ width: `${m.adherence_score}%`, background: color }} />
+                      </div>
+                      <span className="font-bold text-[0.85rem]" style={{ color, minWidth: "36px", textAlign: "right" }}>
+                        {m.adherence_score.toFixed(1)}
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+// ── Spotlight card (for Overview) ─────────────────────────────────────────────
+
+function SpotlightCard({
+  title,
+  value,
+  detail,
+  accent,
+}: {
+  title: string;
+  value: string;
+  detail?: string;
+  accent: string;
+}) {
+  return (
+    <div
+      className="rounded-[14px] px-5 py-4"
+      style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}
+    >
+      <div className="mb-1.5 flex items-center gap-2">
+        <span className="h-2 w-2 rounded-full" style={{ background: accent }} />
+        <p className="text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
+          {title}
+        </p>
+      </div>
+      <p className="text-[1.15rem] font-bold leading-tight" style={{ color: "var(--heading-color)" }}>{value}</p>
+      {detail && <p className="mt-0.5 text-[0.75rem]" style={{ color: "var(--card-desc)" }}>{detail}</p>}
+    </div>
+  );
+}
+
 // ── main page ─────────────────────────────────────────────────────────────────
 
 export default function ExecutivePage() {
   const { user } = useAuth();
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState<TabId>("overview");
   const [activeKpi, setActiveKpi] = useState<KpiId | null>(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [hoursMode, setHoursMode] = useState<"week" | "range">("week");
@@ -996,6 +1188,22 @@ export default function ExecutivePage() {
     `executive-hours-by-location-${timeFilterKey}`,
     () => executiveApi.hoursByLocation(timeFilterParams)
   );
+  const { data: adherenceData } = useSWR<ShiftAdherenceData>(
+    "executive-shift-adherence",
+    () => executiveApi.shiftAdherence()
+  );
+
+  // Derived: spotlight data for Overview tab (must be above any conditional return)
+  const topManagerByIrregularities = useMemo(() => {
+    const rows = report?.parsed_data?.chart.by_manager ?? [];
+    return [...rows].sort((a, b) => b.total - a.total).slice(0, 5);
+  }, [report]);
+
+  const avgAdherenceScore = useMemo(() => {
+    if (!adherenceData?.managers.length) return null;
+    const sum = adherenceData.managers.reduce((s, m) => s + m.adherence_score, 0);
+    return sum / adherenceData.managers.length;
+  }, [adherenceData]);
 
   if (user && !user.is_executive && !user.is_admin) {
     router.replace("/overview");
@@ -1089,6 +1297,9 @@ export default function ExecutivePage() {
     );
   }
 
+  // Week selector visibility (overview + wosh tabs only)
+  const showWeekSelector = (activeTab === "overview" || activeTab === "wosh") && weeks.length >= 1;
+
   return (
     <div className="mx-auto max-w-[1200px] px-4 py-8 md:px-8">
 
@@ -1106,8 +1317,7 @@ export default function ExecutivePage() {
             />
           </div>
 
-          {/* Week selector */}
-          {weeks.length >= 1 && (
+          {showWeekSelector && (
             <div className="flex flex-col items-end gap-1.5">
               <div className="flex items-end gap-2">
                 <div className="flex items-center gap-1.5">
@@ -1163,163 +1373,343 @@ export default function ExecutivePage() {
       {/* Upload bar — HR admins only */}
       {(user?.is_admin && user?.tracks?.includes("hr")) && <UploadBar onUploaded={handleUploaded} />}
 
-      {/* ── Shift Exceptions ─────────────────────────────────────────────────── */}
-      {/* Trend chart — shown when 2+ weeks uploaded */}
-      {weeks.length >= 2 && (
-        <WoshTrendChart
-          history={weeks}
-          activeId={effectiveReportId}
-          onSelect={setSelectedId}
-        />
-      )}
+      {/* ── Tab navigation ──────────────────────────────────────────────────── */}
+      <TabNav active={activeTab} onChange={setActiveTab} />
 
-      {summary ? (
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* OVERVIEW TAB                                                           */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {activeTab === "overview" && (
         <>
-          <SectionLabel>Shift Exceptions{report?.week_label ? ` · ${report.week_label}` : ""}</SectionLabel>
-          <div className="mb-3 flex flex-wrap gap-2">
-            <KpiCard
-              id="violations"
-              label="Total Irregularities"
-              value={fmtNum(summary.total_violations)}
-              active={activeKpi === "violations"}
-              onClick={handleKpi}
-              delta={woshDelta?.violations}
+          {/* Hero KPIs — clickable, jump to relevant tab */}
+          <div className="mb-5 grid grid-cols-2 md:grid-cols-4 gap-2">
+            <button
+              onClick={() => setActiveTab("hours")}
+              className="group rounded-[14px] px-4 py-4 text-left transition-all hover:shadow-md"
+              style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}
+            >
+              <span className="mb-2 inline-block h-1 w-8 rounded-full" style={{ background: "#16a34a" }} />
+              <p className="text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>Total Employees</p>
+              <p className="mt-1 text-[1.6rem] font-bold leading-none" style={{ color: "var(--heading-color)" }}>
+                {fmtNum(dashData?.headcount.total ?? 0)}
+              </p>
+              <p className="mt-1.5 text-[0.7rem]" style={{ color: "var(--card-desc)" }}>
+                {dashData?.headcount.managers ?? 0} managers
+              </p>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("hours")}
+              className="group rounded-[14px] px-4 py-4 text-left transition-all hover:shadow-md"
+              style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}
+            >
+              <span className="mb-2 inline-block h-1 w-8 rounded-full" style={{ background: "#d97706" }} />
+              <p className="text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>OT Hours</p>
+              <p className="mt-1 text-[1.6rem] font-bold leading-none" style={{ color: "var(--heading-color)" }}>
+                {fmtHrs(dashData?.totals.ot_hours ?? 0)}
+              </p>
+              <p className="mt-1.5 text-[0.7rem]" style={{ color: "var(--card-desc)" }}>
+                {dashData && dashData.totals.regular_hours > 0
+                  ? `${((dashData.totals.ot_hours / (dashData.totals.regular_hours + dashData.totals.ot_hours)) * 100).toFixed(1)}% of total`
+                  : "—"}
+              </p>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("wosh")}
+              className="group rounded-[14px] px-4 py-4 text-left transition-all hover:shadow-md"
+              style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}
+            >
+              <span className="mb-2 inline-block h-1 w-8 rounded-full" style={{ background: "#ef4444" }} />
+              <p className="text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>Irregularities</p>
+              <div className="mt-1 flex items-baseline gap-1.5">
+                <p className="text-[1.6rem] font-bold leading-none" style={{ color: "var(--heading-color)" }}>
+                  {fmtNum(summary?.total_violations ?? 0)}
+                </p>
+                {woshDelta?.violations !== undefined && woshDelta.violations !== 0 && (
+                  <span className="rounded-full px-1.5 py-0.5 text-[0.6rem] font-bold" style={{
+                    background: woshDelta.violations > 0 ? "rgba(239,68,68,0.12)" : "rgba(34,197,94,0.12)",
+                    color: woshDelta.violations > 0 ? "#dc2626" : "#16a34a",
+                  }}>
+                    {woshDelta.violations > 0 ? "▲" : "▼"}{Math.abs(woshDelta.violations)}
+                  </span>
+                )}
+              </div>
+              <p className="mt-1.5 text-[0.7rem]" style={{ color: "var(--card-desc)" }}>
+                {report?.week_label ?? "No report"}
+              </p>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("managers")}
+              className="group rounded-[14px] px-4 py-4 text-left transition-all hover:shadow-md"
+              style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}
+            >
+              <span className="mb-2 inline-block h-1 w-8 rounded-full" style={{ background: "#2563eb" }} />
+              <p className="text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>Top Manager</p>
+              <p className="mt-1 text-[1.6rem] font-bold leading-none" style={{ color: "var(--heading-color)" }}>
+                {adherenceData?.top_score?.toFixed(1) ?? "—"}
+              </p>
+              <p className="mt-1.5 text-[0.7rem] truncate" style={{ color: "var(--card-desc)" }}>
+                {adherenceData?.top_manager ?? "No data"}
+              </p>
+            </button>
+          </div>
+
+          {/* Trend chart */}
+          {weeks.length >= 2 && (
+            <WoshTrendChart
+              history={weeks}
+              activeId={effectiveReportId}
+              onSelect={setSelectedId}
             />
-            <KpiCard
-              id="employees"
-              label="Employees Affected"
-              value={fmtNum(summary.employees_affected)}
-              active={activeKpi === "employees"}
-              onClick={handleKpi}
-              delta={woshDelta?.employees}
-            />
-            <KpiCard
-              id="early"
-              label="Early Arrivals"
-              value={fmtNum(summary.early_arrivals)}
-              active={activeKpi === "early"}
-              onClick={handleKpi}
-              accent="linear-gradient(135deg,#1e40af 0%,#3b82f6 82%)"
-              delta={woshDelta?.early}
-            />
-            <KpiCard
-              id="late"
-              label="Late Departures"
-              value={fmtNum(summary.late_departures)}
-              active={activeKpi === "late"}
-              onClick={handleKpi}
-              accent="linear-gradient(135deg,#92400e 0%,#f59e0b 82%)"
-              delta={woshDelta?.late}
-            />
+          )}
+
+          {/* Two-column spotlight */}
+          <div className="grid gap-4 md:grid-cols-2">
+            {/* Top managers by irregularities */}
+            <div className="rounded-[14px] px-5 py-4" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}>
+              <div className="mb-3 flex items-center justify-between">
+                <p className="text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
+                  Top Managers · Irregularities
+                </p>
+                <button onClick={() => setActiveTab("wosh")} className="text-[0.7rem] font-semibold hover:underline" style={{ color: "#2563eb" }}>
+                  View all →
+                </button>
+              </div>
+              {topManagerByIrregularities.length === 0 ? (
+                <p className="text-[0.78rem]" style={{ color: "var(--card-desc)" }}>No data for this week.</p>
+              ) : (
+                <DrillByManager data={topManagerByIrregularities} />
+              )}
+            </div>
+
+            {/* OT by Location */}
+            <div className="rounded-[14px] px-5 py-4" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)" }}>
+              <div className="mb-3 flex items-center justify-between">
+                <p className="text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
+                  OT by Location
+                </p>
+                <button onClick={() => setActiveTab("hours")} className="text-[0.7rem] font-semibold hover:underline" style={{ color: "#2563eb" }}>
+                  View all →
+                </button>
+              </div>
+              {hoursLocData && hoursLocData.locations.length > 0 ? (
+                <OtDonutChart locations={hoursLocData.locations} />
+              ) : (
+                <p className="text-[0.78rem]" style={{ color: "var(--card-desc)" }}>No hours data for this week.</p>
+              )}
+            </div>
           </div>
         </>
-      ) : (
-        <div className="mb-3 rounded-[14px] py-8 text-center" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}>
-          <p className="text-[0.85rem] font-semibold" style={{ color: "var(--heading-color)" }}>No WOSH report uploaded yet</p>
-          <p className="mt-1 text-[0.78rem]" style={{ color: "var(--card-desc)" }}>Upload a Shift_Exception_Report.xlsx above to see exception data.</p>
-        </div>
       )}
 
-      {/* Drill-down panel for WOSH KPIs */}
-      {renderDrillDown(WOSH_KPIS)}
-
-      {/* Irregularities by manager */}
-      {pd?.chart.by_manager && pd.chart.by_manager.length > 0 && (
-        <div className="mb-5">
-          <ManagerSummaryTable data={pd.chart.by_manager} />
-        </div>
-      )}
-
-      {/* All exceptions (collapsed by default) */}
-      {pd?.exceptions && pd.exceptions.length > 0 && (
-        <div className="mb-8">
-          <ExceptionsTable exceptions={pd.exceptions as WoshException[]} />
-        </div>
-      )}
-
-      {/* ── Company Overview ─────────────────────────────────────────────────── */}
-      <SectionLabel>Company Overview</SectionLabel>
-      <div className="mb-5 flex flex-wrap gap-2">
-        <KpiCard
-          id="total_emp"
-          label="Total Employees"
-          value={fmtNum(dashData?.headcount.total ?? 0)}
-          sub={dashData ? `${dashData.headcount.managers} managers` : undefined}
-          active={activeKpi === "total_emp"}
-          onClick={handleKpi}
-          accent="linear-gradient(135deg,#134e26 0%,#16a34a 82%)"
-        />
-        <KpiCard
-          id="reg_hours"
-          label="Regular Hours"
-          value={fmtHrs(dashData?.totals.regular_hours ?? 0)}
-          sub={dashData?.hours_date_range ?? undefined}
-          active={activeKpi === "reg_hours"}
-          onClick={handleKpi}
-          accent="linear-gradient(135deg,#134e26 0%,#16a34a 82%)"
-        />
-        <KpiCard
-          id="ot_hours"
-          label="OT Hours"
-          value={fmtHrs(dashData?.totals.ot_hours ?? 0)}
-          sub={dashData && dashData.totals.regular_hours > 0
-            ? `${((dashData.totals.ot_hours / (dashData.totals.regular_hours + dashData.totals.ot_hours)) * 100).toFixed(1)}% of total`
-            : undefined}
-          active={activeKpi === "ot_hours"}
-          onClick={handleKpi}
-          accent="linear-gradient(135deg,#92400e 0%,#d97706 82%)"
-        />
-      </div>
-
-      {/* Drill-down panel for Company Overview KPIs */}
-      {renderDrillDown(OVERVIEW_KPIS)}
-
-      {/* Hours by location */}
-      <div className="mb-5">
-        <div className="mb-2 flex flex-wrap items-center gap-2">
-          <p className="text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
-            Hours by Location
-          </p>
-          <div className="flex overflow-hidden rounded-[8px]" style={{ border: "1px solid var(--tab-group-border)" }}>
-            {(["week", "range"] as const).map(m => (
-              <button
-                key={m}
-                onClick={() => setHoursMode(m)}
-                className="px-2.5 py-1 text-[0.7rem] font-semibold transition-all"
-                style={{
-                  background: hoursMode === m ? "linear-gradient(135deg,#1e3a5f 0%,#2563eb 82%)" : "var(--tab-group-bg)",
-                  color: hoursMode === m ? "#fff" : "var(--card-desc)",
-                }}
-              >
-                {m === "week" ? "By Week" : "Date Range"}
-              </button>
-            ))}
-          </div>
-          {hoursMode === "week" && report?.week_label && (
-            <span className="text-[0.68rem]" style={{ color: "var(--card-desc)" }}>{report.week_label}</span>
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* SHIFT EXCEPTIONS TAB                                                   */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {activeTab === "wosh" && (
+        <>
+          {/* Trend chart — shown when 2+ weeks uploaded */}
+          {weeks.length >= 2 && (
+            <WoshTrendChart
+              history={weeks}
+              activeId={effectiveReportId}
+              onSelect={setSelectedId}
+            />
           )}
-          {hoursMode === "range" && (
+
+          {summary ? (
             <>
-              <input
-                type="date"
-                value={hoursFrom}
-                onChange={e => setHoursFrom(e.target.value)}
-                className="rounded-[8px] px-2 py-1 text-[0.75rem]"
-                style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)", outline: "none" }}
-              />
-              <span className="text-[0.72rem] font-semibold" style={{ color: "var(--card-desc)" }}>–</span>
-              <input
-                type="date"
-                value={hoursTo}
-                onChange={e => setHoursTo(e.target.value)}
-                className="rounded-[8px] px-2 py-1 text-[0.75rem]"
-                style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)", outline: "none" }}
-              />
+              <SectionLabel>Shift Exceptions{report?.week_label ? ` · ${report.week_label}` : ""}</SectionLabel>
+              <div className="mb-3 flex flex-wrap gap-2">
+                <KpiCard
+                  id="violations"
+                  label="Total Irregularities"
+                  value={fmtNum(summary.total_violations)}
+                  active={activeKpi === "violations"}
+                  onClick={handleKpi}
+                  delta={woshDelta?.violations}
+                />
+                <KpiCard
+                  id="employees"
+                  label="Employees Affected"
+                  value={fmtNum(summary.employees_affected)}
+                  active={activeKpi === "employees"}
+                  onClick={handleKpi}
+                  delta={woshDelta?.employees}
+                />
+                <KpiCard
+                  id="early"
+                  label="Early Arrivals"
+                  value={fmtNum(summary.early_arrivals)}
+                  active={activeKpi === "early"}
+                  onClick={handleKpi}
+                  accent="linear-gradient(135deg,#1e40af 0%,#3b82f6 82%)"
+                  delta={woshDelta?.early}
+                />
+                <KpiCard
+                  id="late"
+                  label="Late Departures"
+                  value={fmtNum(summary.late_departures)}
+                  active={activeKpi === "late"}
+                  onClick={handleKpi}
+                  accent="linear-gradient(135deg,#92400e 0%,#f59e0b 82%)"
+                  delta={woshDelta?.late}
+                />
+              </div>
             </>
+          ) : (
+            <div className="mb-3 rounded-[14px] py-8 text-center" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}>
+              <p className="text-[0.85rem] font-semibold" style={{ color: "var(--heading-color)" }}>No WOSH report uploaded yet</p>
+              <p className="mt-1 text-[0.78rem]" style={{ color: "var(--card-desc)" }}>Upload a Shift_Exception_Report.xlsx above to see exception data.</p>
+            </div>
           )}
-        </div>
-        {hoursLocData && <HoursByLocation locations={hoursLocData.locations} />}
-      </div>
+
+          {/* Drill-down panel for WOSH KPIs */}
+          {renderDrillDown(WOSH_KPIS)}
+
+          {/* Irregularities by manager */}
+          {pd?.chart.by_manager && pd.chart.by_manager.length > 0 && (
+            <div className="mb-5">
+              <ManagerSummaryTable data={pd.chart.by_manager} />
+            </div>
+          )}
+
+          {/* All exceptions (collapsed by default) */}
+          {pd?.exceptions && pd.exceptions.length > 0 && (
+            <div className="mb-8">
+              <ExceptionsTable exceptions={pd.exceptions as WoshException[]} />
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* HOURS & OT TAB                                                         */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {activeTab === "hours" && (
+        <>
+          <SectionLabel>Company Overview</SectionLabel>
+          <div className="mb-5 flex flex-wrap gap-2">
+            <KpiCard
+              id="total_emp"
+              label="Total Employees"
+              value={fmtNum(dashData?.headcount.total ?? 0)}
+              sub={dashData ? `${dashData.headcount.managers} managers` : undefined}
+              active={activeKpi === "total_emp"}
+              onClick={handleKpi}
+              accent="linear-gradient(135deg,#134e26 0%,#16a34a 82%)"
+            />
+            <KpiCard
+              id="reg_hours"
+              label="Regular Hours"
+              value={fmtHrs(dashData?.totals.regular_hours ?? 0)}
+              sub={dashData?.hours_date_range ?? undefined}
+              active={activeKpi === "reg_hours"}
+              onClick={handleKpi}
+              accent="linear-gradient(135deg,#134e26 0%,#16a34a 82%)"
+            />
+            <KpiCard
+              id="ot_hours"
+              label="OT Hours"
+              value={fmtHrs(dashData?.totals.ot_hours ?? 0)}
+              sub={dashData && dashData.totals.regular_hours > 0
+                ? `${((dashData.totals.ot_hours / (dashData.totals.regular_hours + dashData.totals.ot_hours)) * 100).toFixed(1)}% of total`
+                : undefined}
+              active={activeKpi === "ot_hours"}
+              onClick={handleKpi}
+              accent="linear-gradient(135deg,#92400e 0%,#d97706 82%)"
+            />
+          </div>
+
+          {/* Drill-down panel for Company Overview KPIs */}
+          {renderDrillDown(OVERVIEW_KPIS)}
+
+          {/* Hours by location */}
+          <div className="mb-5">
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              <p className="text-[0.68rem] font-bold uppercase tracking-widest" style={{ color: "var(--module-context)" }}>
+                Hours by Location
+              </p>
+              <div className="flex overflow-hidden rounded-[8px]" style={{ border: "1px solid var(--tab-group-border)" }}>
+                {(["week", "range"] as const).map(m => (
+                  <button
+                    key={m}
+                    onClick={() => setHoursMode(m)}
+                    className="px-2.5 py-1 text-[0.7rem] font-semibold transition-all"
+                    style={{
+                      background: hoursMode === m ? "linear-gradient(135deg,#1e3a5f 0%,#2563eb 82%)" : "var(--tab-group-bg)",
+                      color: hoursMode === m ? "#fff" : "var(--card-desc)",
+                    }}
+                  >
+                    {m === "week" ? "By Week" : "Date Range"}
+                  </button>
+                ))}
+              </div>
+              {hoursMode === "week" && report?.week_label && (
+                <span className="text-[0.68rem]" style={{ color: "var(--card-desc)" }}>{report.week_label}</span>
+              )}
+              {hoursMode === "range" && (
+                <>
+                  <input
+                    type="date"
+                    value={hoursFrom}
+                    onChange={e => setHoursFrom(e.target.value)}
+                    className="rounded-[8px] px-2 py-1 text-[0.75rem]"
+                    style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)", outline: "none" }}
+                  />
+                  <span className="text-[0.72rem] font-semibold" style={{ color: "var(--card-desc)" }}>–</span>
+                  <input
+                    type="date"
+                    value={hoursTo}
+                    onChange={e => setHoursTo(e.target.value)}
+                    className="rounded-[8px] px-2 py-1 text-[0.75rem]"
+                    style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)", outline: "none" }}
+                  />
+                </>
+              )}
+            </div>
+            {hoursLocData && <HoursByLocation locations={hoursLocData.locations} />}
+          </div>
+        </>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* MANAGER PERFORMANCE TAB                                                */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {activeTab === "managers" && (
+        <>
+          <SectionLabel>Manager Performance</SectionLabel>
+
+          {/* Stats row */}
+          <div className="mb-5 grid grid-cols-2 md:grid-cols-3 gap-2">
+            <SpotlightCard
+              title="Total Managers"
+              value={fmtNum(adherenceData?.managers.length ?? 0)}
+              accent="#2563eb"
+            />
+            <SpotlightCard
+              title="Average Score"
+              value={avgAdherenceScore !== null ? avgAdherenceScore.toFixed(1) : "—"}
+              detail={avgAdherenceScore !== null ? `Across ${adherenceData?.managers.length ?? 0} managers` : undefined}
+              accent={avgAdherenceScore !== null ? scoreColor(avgAdherenceScore) : "#94a3b8"}
+            />
+            <SpotlightCard
+              title="Top Performer"
+              value={adherenceData?.top_score?.toFixed(1) ?? "—"}
+              detail={adherenceData?.top_manager ?? undefined}
+              accent="#16a34a"
+            />
+          </div>
+
+          {/* Adherence table */}
+          {adherenceData && <ManagerAdherenceTable managers={adherenceData.managers} />}
+
+          <p className="mt-3 text-[0.68rem]" style={{ color: "var(--card-desc)" }}>
+            Score = (1 − OT rate) × (1 − absence rate) × 100. Based on cumulative hours data.
+          </p>
+        </>
+      )}
 
     </div>
   );
