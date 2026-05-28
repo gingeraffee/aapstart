@@ -85,6 +85,7 @@ export const adminApi = {
   resetProgress: (employee_id: string) =>
     request(`/admin/employees/${employee_id}/reset-progress`, { method: "POST" }),
   dashboard: () => request("/admin/dashboard"),
+  importStatus: () => request<import("./types").ImportStatus>("/admin/import-status"),
   resetTotp: (employee_id: string) =>
     request(`/admin/employees/${employee_id}/reset-totp`, { method: "POST" }),
   employeeProgress: (employee_id: string) =>

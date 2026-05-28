@@ -298,6 +298,26 @@ export interface BambooImportResult {
   errors: { row: number; employee_id?: string; detail: string }[];
 }
 
+export interface ImportDataset {
+  key: "employees" | "time" | "wosh" | "absences" | "points" | "reviews";
+  label: string;
+  description: string;
+  count: number;
+  earliest?: string | null;
+  latest?: string | null;
+  last_imported_at?: string | null;
+  distinct_employees?: number;
+  completed?: number;
+  managers?: number;
+  with_department?: number;
+  with_manager?: number;
+  clear_endpoint?: string | null;
+}
+
+export interface ImportStatus {
+  datasets: ImportDataset[];
+}
+
 export interface DashboardData {
   total_employees: number;
   by_track: Record<string, number>;

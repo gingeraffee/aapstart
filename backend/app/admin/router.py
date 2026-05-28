@@ -10,7 +10,7 @@ from app.auth.service import require_admin, require_executive, normalize_tracks
 from app.database.connection import get_db
 from app.database.models import (
     AttendancePoint, Employee, UserProgress, UserNote,
-    TimeRecord, PerformanceReview, AbsenceRecord,
+    TimeRecord, PerformanceReview, AbsenceRecord, WoshReport,
 )
 from app.content.loader import get_modules_for_tracks
 
@@ -1070,6 +1070,123 @@ def clear_absence_records(
     deleted = db.query(AbsenceRecord).delete()
     db.commit()
     return {"deleted": deleted}
+
+
+# -- Import status --
+
+@router.get("/import-status")
+def import_status(
+    admin: dict = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Snapshot of every imported data type — what's in the database, how fresh it is,
+    and what date range it covers. Used by the admin dashboard so users can see at a
+    glance what's already loaded without re-downloading source reports.
+    """
+
+    def _date_summary(model, date_col):
+        row = db.query(
+            sa_func.count(model.id).label("count"),
+            sa_func.min(date_col).label("earliest"),
+            sa_func.max(date_col).label("latest"),
+            sa_func.max(model.imported_at).label("last_imported"),
+        ).first()
+        return {
+            "count": int(row.count or 0),
+            "earliest": row.earliest,
+            "latest": row.latest,
+            "last_imported_at": row.last_imported.isoformat() if row.last_imported else None,
+        }
+
+    # Time records (Payclock hours)
+    time_summary = _date_summary(TimeRecord, TimeRecord.week_start)
+    time_summary["distinct_employees"] = (
+        db.query(sa_func.count(sa_func.distinct(TimeRecord.employee_id))).scalar() or 0
+    )
+
+    # Performance reviews
+    review_summary = _date_summary(PerformanceReview, PerformanceReview.due_date)
+    review_summary["completed"] = (
+        db.query(sa_func.count(PerformanceReview.id))
+        .filter(PerformanceReview.completed == True)  # noqa: E712
+        .scalar() or 0
+    )
+
+    # Absences
+    absence_summary = _date_summary(AbsenceRecord, AbsenceRecord.from_date)
+
+    # Attendance points
+    points_summary = _date_summary(AttendancePoint, AttendancePoint.point_date)
+
+    # WOSH reports (uses week_start; imported_at is uploaded_at on this model)
+    wosh_row = db.query(
+        sa_func.count(WoshReport.id).label("count"),
+        sa_func.min(WoshReport.week_start).label("earliest"),
+        sa_func.max(WoshReport.week_start).label("latest"),
+        sa_func.max(WoshReport.uploaded_at).label("last_imported"),
+    ).first()
+    wosh_summary = {
+        "count": int(wosh_row.count or 0),
+        "earliest": wosh_row.earliest,
+        "latest": wosh_row.latest,
+        "last_imported_at": wosh_row.last_imported.isoformat() if wosh_row.last_imported else None,
+    }
+
+    # Employee directory
+    emp_row = db.query(sa_func.count(Employee.id)).scalar() or 0
+    employee_summary = {
+        "count": int(emp_row),
+        "managers": db.query(sa_func.count(Employee.id)).filter(Employee.is_manager == True).scalar() or 0,  # noqa: E712
+        "with_department": db.query(sa_func.count(Employee.id)).filter(Employee.department.isnot(None)).scalar() or 0,
+        "with_manager": db.query(sa_func.count(Employee.id)).filter(Employee.manager_employee_id.isnot(None)).scalar() or 0,
+    }
+
+    return {
+        "datasets": [
+            {
+                "key":          "employees",
+                "label":        "Employee Directory",
+                "description":  "Active employees + manager and department assignments.",
+                **employee_summary,
+                "clear_endpoint": None,
+            },
+            {
+                "key":          "time",
+                "label":        "Hours (Payclock)",
+                "description":  "Weekly regular / OT / PTO hours per employee.",
+                **time_summary,
+                "clear_endpoint": "/admin/import/time",
+            },
+            {
+                "key":          "wosh",
+                "label":        "WOSH Shift Exceptions",
+                "description":  "Weekly Shift_Exception_Report uploads.",
+                **wosh_summary,
+                "clear_endpoint": "/executive/wosh",
+            },
+            {
+                "key":          "absences",
+                "label":        "Absences",
+                "description":  "Time-off / absence events from the HRIS report.",
+                **absence_summary,
+                "clear_endpoint": "/admin/import/absences",
+            },
+            {
+                "key":          "points",
+                "label":        "Attendance Points",
+                "description":  "Per-event attendance point ledger.",
+                **points_summary,
+                "clear_endpoint": "/admin/import/points",
+            },
+            {
+                "key":          "reviews",
+                "label":        "Performance Reviews",
+                "description":  "Review due dates and completion status.",
+                **review_summary,
+                "clear_endpoint": "/admin/import/reviews",
+            },
+        ],
+    }
 
 
 # -- Dashboard --

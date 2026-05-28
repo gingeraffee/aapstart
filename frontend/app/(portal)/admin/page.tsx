@@ -4,10 +4,10 @@ import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { useAuth } from "@/lib/context/AuthContext";
-import { adminApi, managerApi, modulesApi } from "@/lib/api";
+import { adminApi, executiveApi, managerApi, modulesApi } from "@/lib/api";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
-import type { BambooImportResult, EmployeeImportResult, EmployeeImportRowInput, EmployeeRecord, ImportResult, ModuleSummary } from "@/lib/types";
+import type { BambooImportResult, EmployeeImportResult, EmployeeImportRowInput, EmployeeRecord, ImportDataset, ImportResult, ImportStatus, ModuleSummary } from "@/lib/types";
 
 const TRACKS = ["hr", "warehouse", "administrative", "management"] as const;
 const TRACK_LABELS: Record<string, string> = {
@@ -1368,6 +1368,193 @@ function WeeklyUploadCard({ onToast }: { onToast: (msg: string, tone?: "success"
   );
 }
 
+// ── Data inventory panel ──────────────────────────────────────────────────────
+
+const CLEAR_HANDLERS: Record<string, (() => Promise<{ deleted: number }>) | undefined> = {
+  time: adminApi.clearTime,
+  wosh: executiveApi.clearWosh,
+  absences: adminApi.clearAbsences,
+  points: adminApi.clearPoints,
+  reviews: adminApi.clearReviews,
+  employees: undefined,
+};
+
+function fmtDateOrDash(s: string | null | undefined): string {
+  return s ?? "—";
+}
+
+function daysAgo(iso: string | null | undefined): number | null {
+  if (!iso) return null;
+  return Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 86400000));
+}
+
+function DataImportCard({
+  ds,
+  onClear,
+  clearing,
+}: {
+  ds: ImportDataset;
+  onClear: (ds: ImportDataset) => void;
+  clearing: boolean;
+}) {
+  const fresh = daysAgo(ds.last_imported_at);
+  const hasData = ds.count > 0;
+  const canClear = Boolean(CLEAR_HANDLERS[ds.key]);
+
+  const extras: { label: string; value: string; color?: string }[] = [];
+  if (ds.earliest && ds.latest) {
+    extras.push({ label: "Range", value: `${fmtDateOrDash(ds.earliest)} → ${fmtDateOrDash(ds.latest)}` });
+  }
+  if (ds.distinct_employees !== undefined && hasData) {
+    extras.push({ label: "Employees", value: ds.distinct_employees.toString() });
+  }
+  if (ds.completed !== undefined && hasData) {
+    extras.push({ label: "Completed", value: `${ds.completed} of ${ds.count}` });
+  }
+  if (ds.managers !== undefined) {
+    extras.push({ label: "Managers", value: ds.managers.toString() });
+  }
+  if (ds.with_department !== undefined) {
+    extras.push({ label: "With dept", value: `${ds.with_department} of ${ds.count}` });
+  }
+  if (ds.with_manager !== undefined) {
+    extras.push({ label: "With manager", value: `${ds.with_manager} of ${ds.count}` });
+  }
+  if (fresh !== null) {
+    extras.push({
+      label: "Uploaded",
+      value: fresh === 0 ? "Today" : fresh === 1 ? "Yesterday" : `${fresh}d ago`,
+      color: fresh > 7 ? "#b45309" : "#15803d",
+    });
+  }
+
+  return (
+    <div
+      className="flex flex-col rounded-[18px] p-4"
+      style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}
+    >
+      <div className="mb-2 flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <p className="text-[0.82rem] font-bold leading-tight" style={{ color: "var(--heading-color)" }}>
+            {ds.label}
+          </p>
+          <p className="mt-0.5 text-[0.7rem] leading-snug" style={{ color: "var(--card-desc)" }}>
+            {ds.description}
+          </p>
+        </div>
+        <span
+          className="shrink-0 rounded-full px-2 py-0.5 text-[0.65rem] font-bold"
+          style={{
+            background: hasData ? "rgba(22,163,74,0.12)" : "rgba(127,127,127,0.12)",
+            color: hasData ? "#15803d" : "var(--card-desc)",
+          }}
+        >
+          {ds.count.toLocaleString()} {ds.count === 1 ? "row" : "rows"}
+        </span>
+      </div>
+
+      {hasData ? (
+        <dl className="mt-1 grid grid-cols-1 gap-y-1 text-[0.72rem]">
+          {extras.map((row) => (
+            <div key={row.label} className="flex items-baseline justify-between gap-2">
+              <dt style={{ color: "var(--card-desc)" }}>{row.label}</dt>
+              <dd className="font-semibold text-right" style={{ color: row.color ?? "var(--heading-color)" }}>
+                {row.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      ) : (
+        <p className="text-[0.72rem] italic" style={{ color: "var(--card-desc)" }}>
+          Not yet imported.
+        </p>
+      )}
+
+      {canClear && hasData && (
+        <button
+          onClick={() => onClear(ds)}
+          disabled={clearing}
+          className="mt-3 self-start rounded-[10px] px-3 py-1.5 text-[0.7rem] font-semibold transition-all disabled:opacity-50"
+          style={{
+            background: "rgba(223,0,48,0.07)",
+            color: "#9f1239",
+            border: "1px solid rgba(223,0,48,0.18)",
+          }}
+        >
+          {clearing ? "Clearing…" : "Clear data"}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function DataImportsPanel({ onToast }: { onToast: (msg: string, tone?: "success" | "error") => void }) {
+  const { data, isLoading, mutate } = useSWR<ImportStatus>("admin-import-status", () => adminApi.importStatus());
+  const [clearingKey, setClearingKey] = useState<string | null>(null);
+
+  async function handleClear(ds: ImportDataset) {
+    const handler = CLEAR_HANDLERS[ds.key];
+    if (!handler) return;
+    if (!confirm(`Delete all ${ds.label}? This cannot be undone.`)) return;
+    setClearingKey(ds.key);
+    try {
+      const result = await handler();
+      onToast(`${ds.label} cleared — ${result.deleted} ${result.deleted === 1 ? "row" : "rows"} deleted.`);
+      await mutate();
+    } catch (err) {
+      onToast(err instanceof Error ? err.message : "Clear failed.", "error");
+    } finally {
+      setClearingKey(null);
+    }
+  }
+
+  return (
+    <div className="relative overflow-hidden rounded-[24px] p-6" style={cardStyle()}>
+      <div className="absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,#0ea5d9_0%,#22d3ee_100%)]" />
+
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="inline-flex rounded-full px-2.5 py-1 text-[0.64rem] font-bold uppercase tracking-[0.16em]" style={{ background: "rgba(14,165,233,0.08)", color: "#0d6b9d" }}>
+            Data Inventory
+          </p>
+          <h2 className="mt-2 text-[1.12rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>
+            What's currently loaded
+          </h2>
+          <p className="mt-1 max-w-[640px] text-[0.82rem] leading-[1.6]" style={{ color: "var(--card-desc)" }}>
+            Check here before re-downloading any source report. Each tile shows row count, date range, and how long ago it was last imported.
+          </p>
+        </div>
+        <button
+          onClick={() => mutate()}
+          className="rounded-[12px] px-3 py-2 text-[0.75rem] font-semibold transition-all hover:opacity-70"
+          style={{ background: "var(--tab-group-bg)", border: "1px solid var(--card-border)", color: "var(--module-context)" }}
+        >
+          ⟳ Refresh
+        </button>
+      </div>
+
+      <div className="mt-5">
+        {isLoading ? (
+          <div className="flex justify-center py-8"><Spinner /></div>
+        ) : !data ? (
+          <p className="text-[0.78rem]" style={{ color: "var(--card-desc)" }}>Couldn't load status.</p>
+        ) : (
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            {data.datasets.map((ds) => (
+              <DataImportCard
+                key={ds.key}
+                ds={ds}
+                onClear={handleClear}
+                clearing={clearingKey === ds.key}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function AdminPage() {
   const { user } = useAuth();
   const router = useRouter();
@@ -1585,6 +1772,10 @@ export default function AdminPage() {
 
       <div className="mt-5">
         <WeeklyUploadCard onToast={(msg, tone) => setToast({ message: msg, tone: tone ?? "success" })} />
+      </div>
+
+      <div className="mt-5">
+        <DataImportsPanel onToast={(msg, tone) => setToast({ message: msg, tone: tone ?? "success" })} />
       </div>
 
       <div className="mt-6 space-y-4">
