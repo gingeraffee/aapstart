@@ -218,7 +218,7 @@ function DataStatusBar({
   hoursDateRange: string | null;
 }) {
   const woshDaysAgo = latestUploadedAt
-    ? Math.floor((Date.now() - new Date(latestUploadedAt).getTime()) / 86400000)
+    ? Math.max(0, Math.floor((Date.now() - new Date(latestUploadedAt).getTime()) / 86400000))
     : null;
 
   type Color = "blue" | "green" | "amber" | "gray" | "red";
