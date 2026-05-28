@@ -757,7 +757,7 @@ function ImportEmployeesModal({ onClose, onImported }: { onClose: () => void; on
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(7,18,37,0.54)] px-4 py-6 backdrop-blur-sm">
-      <div className="flex w-full max-w-3xl flex-col overflow-hidden rounded-[28px] max-h-[calc(100vh-3rem)]" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "0 32px 60px rgba(7,18,37,0.28)" }}>
+      <div className="flex w-full max-w-5xl flex-col overflow-hidden rounded-[28px] max-h-[calc(100vh-3rem)]" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "0 32px 60px rgba(7,18,37,0.28)" }}>
         <div className="h-[4px] w-full shrink-0 bg-[linear-gradient(90deg,#0ea5d9_0%,#22d3ee_52%,#df0030_100%)]" />
         <div className="overflow-y-auto p-6 lg:p-7">
           <div className="flex items-start justify-between gap-4">
