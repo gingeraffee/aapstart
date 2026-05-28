@@ -1379,6 +1379,68 @@ const CLEAR_HANDLERS: Record<string, (() => Promise<{ deleted: number }>) | unde
   employees: undefined,
 };
 
+const IMPORT_TEMPLATES: Record<string, { filename: string; content: string; note?: string }> = {
+  employees: {
+    filename: "employee_directory_template.csv",
+    content: `name,employee_id,track,is_admin,department,manager_employee_id,location
+Jane Doe,EMP-100,hr,false,Inside Sales,EMP-050,AAP Scottsboro
+Marcus Lane,EMP-101,warehouse,false,Warehouse,,API Memphis
+Olivia Grant,EMP-102,administrative,true,Compliance,,AAP Scottsboro
+Daniel Brooks,EMP-103,management,false,Inside Sales,EMP-050,Remote
+`,
+  },
+  time: {
+    filename: "hours_template.csv",
+    content: `employee_id,week_start,regular_hours,ot_hours,vacation_hours,personal_hours,other_hours
+EMP-100,2026-05-18,40,2.5,0,0,0
+EMP-101,2026-05-18,38,0,8,0,0
+EMP-102,2026-05-18,40,0,0,4,0
+`,
+    note: "week_start is the ISO date of the period start (YYYY-MM-DD). The Payclock Period Totals Report XLSX can be uploaded directly without conversion.",
+  },
+  absences: {
+    filename: "absences_template.csv",
+    content: `Employee Number,Name,Category,From,To,Requested,Time Off
+EMP-100,Jane Doe,Vacation,2026-06-01,2026-06-03,2026-05-15,24
+EMP-101,Marcus Lane,Personal,2026-05-20,2026-05-20,2026-05-19,8
+EMP-102,Olivia Grant,Sick,2026-05-22,2026-05-22,2026-05-22,8
+`,
+    note: "Requested is when the request was submitted. If Requested is before From, it's flagged as planned; same-day Requested = unplanned absence.",
+  },
+  points: {
+    filename: "attendance_points_template.csv",
+    content: `Employee #,Location,Point Date,Point,Reason,Note,Flag Code,Point Total
+EMP-100,AAP Scottsboro,2026-05-18,1.0,Late Arrival,Arrived 15 min late,,1.0
+EMP-101,API Memphis,2026-05-19,0.5,Early Departure,,,1.5
+EMP-102,AAP Scottsboro,2026-05-20,1.0,No Call No Show,,M,3.0
+`,
+    note: "Point Total is the running total for that employee after this event. Flag Code M signals a Monday-absence pattern (used by reports).",
+  },
+  reviews: {
+    filename: "performance_reviews_template.csv",
+    content: `employee_id,review_type,due_date
+EMP-100,90-day,2026-07-15
+EMP-101,annual,2026-08-01
+EMP-102,30-day,2026-06-15
+`,
+    note: "due_date is when the review should be completed. Already-completed reviews are skipped on import.",
+  },
+};
+
+function downloadImportTemplateFor(key: string) {
+  const tpl = IMPORT_TEMPLATES[key];
+  if (!tpl) return;
+  const blob = new Blob([tpl.content], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = tpl.filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 function fmtDateOrDash(s: string | null | undefined): string {
   return s ?? "—";
 }
@@ -1537,6 +1599,25 @@ function DataImportCard({
       )}
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
+        {IMPORT_TEMPLATES[ds.key] && (
+          <button
+            onClick={() => downloadImportTemplateFor(ds.key)}
+            title={IMPORT_TEMPLATES[ds.key].note ?? "Download CSV template"}
+            className="inline-flex items-center gap-1 rounded-[10px] px-3 py-1.5 text-[0.7rem] font-semibold transition-all hover:opacity-80"
+            style={{
+              background: "rgba(14,165,233,0.08)",
+              color: "#0d6b9d",
+              border: "1px solid rgba(14,165,233,0.18)",
+            }}
+          >
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Template
+          </button>
+        )}
         {canClear && hasData && (
           <button
             onClick={() => onClear(ds)}
