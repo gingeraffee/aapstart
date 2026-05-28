@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useMemo } from "react";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 import { useAuth } from "@/lib/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { executiveApi } from "@/lib/api";
@@ -57,8 +57,10 @@ function WoshTrendChart({
 }) {
   if (history.length < 2) return null;
 
-  const sorted = [...history].reverse(); // oldest → newest
-  const effectiveId = activeId ?? history[0]?.id ?? null;
+  // Sort by week_start ASCENDING so oldest is leftmost on the chart
+  const sorted = [...history].sort((a, b) =>
+    (a.week_start ?? "").localeCompare(b.week_start ?? "")
+  );
 
   const data = sorted.map(h => ({
     id: h.id,
@@ -67,7 +69,7 @@ function WoshTrendChart({
     violations: h.parsed_data?.summary?.total_violations ?? 0,
     early: h.parsed_data?.summary?.early_arrivals ?? 0,
     late: h.parsed_data?.summary?.late_departures ?? 0,
-    isActive: h.id === effectiveId,
+    isActive: h.id === activeId,
   }));
 
   return (
@@ -83,14 +85,14 @@ function WoshTrendChart({
           {history.length} week{history.length !== 1 ? "s" : ""} · click a bar to select
         </span>
       </div>
-      <ResponsiveContainer width="100%" height={130}>
+      <ResponsiveContainer width="100%" height={150}>
         <BarChart
           data={data}
-          margin={{ top: 4, right: 8, bottom: 0, left: -16 }}
+          margin={{ top: 8, right: 16, bottom: 4, left: 8 }}
           onClick={(e) => {
             if (e?.activePayload?.[0]) {
               const id = e.activePayload[0].payload.id as number;
-              onSelect(id === (history[0]?.id ?? -1) ? null : id);
+              onSelect(id);
             }
           }}
         >
@@ -104,7 +106,9 @@ function WoshTrendChart({
             tick={{ fontSize: 10, fill: "var(--card-desc)" }}
             axisLine={false}
             tickLine={false}
-            width={32}
+            width={40}
+            allowDecimals={false}
+            tickFormatter={(v: number) => v.toLocaleString("en-US")}
           />
           <Tooltip
             cursor={{ fill: "var(--tab-group-bg)" }}
@@ -127,12 +131,12 @@ function WoshTrendChart({
               );
             }}
           />
-          <Bar dataKey="violations" radius={[4, 4, 0, 0]} cursor="pointer" maxBarSize={48}>
+          <Bar dataKey="violations" radius={[4, 4, 0, 0]} cursor="pointer" maxBarSize={60}>
             {data.map((entry) => (
               <Cell
                 key={entry.id}
-                fill={entry.isActive ? "#2563eb" : "var(--tab-group-bg)"}
-                stroke={entry.isActive ? "#1d4ed8" : "var(--card-border)"}
+                fill={entry.isActive ? "#2563eb" : "#cbd5e1"}
+                stroke={entry.isActive ? "#1d4ed8" : "#94a3b8"}
                 strokeWidth={1}
               />
             ))}
@@ -932,37 +936,47 @@ export default function ExecutivePage() {
     "wosh-history",
     () => executiveApi.woshHistory()
   );
-  const { data: latestReport, mutate: mutateLatest } = useSWR<WoshReport | null>(
-    "wosh-latest",
-    () => executiveApi.woshLatest()
-  );
-  const { data: selectedReport } = useSWR<WoshReport>(
-    selectedId !== null ? `wosh-${selectedId}` : null,
-    () => executiveApi.woshById(selectedId!)
+
+  // Sort by week_start DESCENDING (newest week first) — independent of upload time
+  const weeks = useMemo(() => {
+    if (!history) return [];
+    return [...history].sort((a, b) =>
+      (b.week_start ?? "").localeCompare(a.week_start ?? "")
+    );
+  }, [history]);
+
+  // The report we show: explicitly-selected, or fall back to the newest week
+  const effectiveReportId = selectedId !== null
+    ? selectedId
+    : (weeks[0]?.id ?? null);
+
+  const { data: report, mutate: mutateReport } = useSWR<WoshReport>(
+    effectiveReportId !== null ? `wosh-${effectiveReportId}` : null,
+    () => executiveApi.woshById(effectiveReportId!)
   );
 
   const currentIndex = useMemo(() => {
-    if (!history || history.length === 0) return 0;
+    if (weeks.length === 0) return 0;
     if (selectedId === null) return 0;
-    const idx = history.findIndex(r => r.id === selectedId);
+    const idx = weeks.findIndex(r => r.id === selectedId);
     return idx === -1 ? 0 : idx;
-  }, [history, selectedId]);
+  }, [weeks, selectedId]);
 
   function goOlder() {
-    if (!history || currentIndex >= history.length - 1) return;
-    setSelectedId(history[currentIndex + 1].id);
+    if (currentIndex >= weeks.length - 1) return;
+    setSelectedId(weeks[currentIndex + 1].id);
   }
 
   function goNewer() {
-    if (!history || currentIndex <= 0) return;
-    setSelectedId(history[currentIndex - 1].id);
+    if (currentIndex <= 0) return;
+    setSelectedId(weeks[currentIndex - 1].id);
   }
 
   const weekStartForHours = useMemo(() => {
-    if (hoursMode !== "week" || !history || history.length === 0) return null;
-    if (selectedId === null) return history[0]?.week_start ?? null;
-    return history.find(r => r.id === selectedId)?.week_start ?? null;
-  }, [hoursMode, history, selectedId]);
+    if (hoursMode !== "week" || weeks.length === 0) return null;
+    if (selectedId === null) return weeks[0]?.week_start ?? null;
+    return weeks.find(r => r.id === selectedId)?.week_start ?? null;
+  }, [hoursMode, weeks, selectedId]);
 
   const validFrom = /^\d{4}-\d{2}-\d{2}$/.test(hoursFrom) ? hoursFrom : "";
   const validTo   = /^\d{4}-\d{2}-\d{2}$/.test(hoursTo)   ? hoursTo   : "";
@@ -988,13 +1002,12 @@ export default function ExecutivePage() {
     return null;
   }
 
-  const report = selectedId !== null ? selectedReport : latestReport;
   const pd = report?.parsed_data ?? null;
   const summary = pd?.summary;
 
-  // Previous week's summary for delta computation (history is newest-first)
-  const prevSummary = history && currentIndex < history.length - 1
-    ? history[currentIndex + 1]?.parsed_data?.summary ?? null
+  // Prior week's summary for delta — chronologically prior, sorted by week_start
+  const prevSummary = currentIndex < weeks.length - 1
+    ? weeks[currentIndex + 1]?.parsed_data?.summary ?? null
     : null;
 
   const woshDelta = summary && prevSummary
@@ -1012,7 +1025,7 @@ export default function ExecutivePage() {
 
   function handleUploaded() {
     mutateHistory();
-    mutateLatest();
+    mutateReport();
   }
 
   // ── drill-down content ──────────────────────────────────────────────────────
@@ -1087,20 +1100,20 @@ export default function ExecutivePage() {
               Executive Summary
             </h1>
             <DataStatusBar
-              historyCount={history?.length ?? 0}
+              historyCount={weeks.length}
               latestUploadedAt={history?.[0]?.uploaded_at ?? null}
               hoursDateRange={dashData?.hours_date_range ?? null}
             />
           </div>
 
           {/* Week selector */}
-          {history && history.length >= 1 && (
+          {weeks.length >= 1 && (
             <div className="flex flex-col items-end gap-1.5">
               <div className="flex items-end gap-2">
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={goOlder}
-                    disabled={currentIndex >= (history?.length ?? 0) - 1}
+                    disabled={currentIndex >= weeks.length - 1}
                     title="Previous week"
                     className="rounded-[8px] px-2.5 py-1.5 text-[0.78rem] font-bold transition-all disabled:opacity-25 hover:opacity-70"
                     style={{ background: "var(--tab-group-bg)", border: "1px solid var(--tab-group-border)", color: "var(--tab-text)" }}
@@ -1108,13 +1121,12 @@ export default function ExecutivePage() {
                     ←
                   </button>
                   <select
-                    value={selectedId ?? ""}
+                    value={selectedId ?? (weeks[0]?.id ?? "")}
                     onChange={e => setSelectedId(e.target.value === "" ? null : Number(e.target.value))}
                     className="rounded-[10px] px-3 py-1.5 text-[0.78rem]"
                     style={{ background: "var(--login-input-bg)", border: "1px solid var(--login-input-border)", color: "var(--heading-color)", outline: "none", minWidth: "200px" }}
                   >
-                    <option value="">Latest</option>
-                    {history.map(r => (
+                    {weeks.map(r => (
                       <option key={r.id} value={r.id}>
                         {r.week_label ?? `Report #${r.id}`}
                       </option>
@@ -1132,9 +1144,9 @@ export default function ExecutivePage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {history.length > 1 && (
+                {weeks.length > 1 && (
                   <span className="text-[0.68rem]" style={{ color: "var(--card-desc)" }}>
-                    {currentIndex + 1} of {history.length} weeks
+                    {currentIndex + 1} of {weeks.length} weeks
                   </span>
                 )}
                 {woshDelta !== null && (
@@ -1153,10 +1165,10 @@ export default function ExecutivePage() {
 
       {/* ── Shift Exceptions ─────────────────────────────────────────────────── */}
       {/* Trend chart — shown when 2+ weeks uploaded */}
-      {history && history.length >= 2 && (
+      {weeks.length >= 2 && (
         <WoshTrendChart
-          history={history}
-          activeId={selectedId}
+          history={weeks}
+          activeId={effectiveReportId}
           onSelect={setSelectedId}
         />
       )}
