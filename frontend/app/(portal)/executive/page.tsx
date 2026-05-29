@@ -1020,8 +1020,9 @@ function TabNav({ active, onChange, woshCount }: { active: TabId; onChange: (id:
               borderBottom: isActive ? "2px solid var(--accent)" : "2px solid transparent",
               marginBottom: "-2px",
               background: "transparent",
-              border: "none",
-              borderBottom: isActive ? `2px solid var(--accent)` : "2px solid transparent",
+              borderTop: "none",
+              borderLeft: "none",
+              borderRight: "none",
             }}
           >
             {tab.label}
