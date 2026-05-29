@@ -253,6 +253,8 @@ export interface EmployeeRecord {
   is_executive: boolean;
   manager_employee_id: string | null;
   department: string | null;
+  location: string | null;
+  division: string | null;
   totp_enabled: boolean;
   created_at: string | null;
   first_login_at: string | null;

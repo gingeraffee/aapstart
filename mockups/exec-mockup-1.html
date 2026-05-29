@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mockup 1 — Command Center (Light)</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ── AAP Start design tokens ── */
+  :root {
+    --accent:        #df0030;
+    --brand-ink:     #0b1428;
+    --brand-action:  #0f7fb3;
+    --brand-deep:    #1b2c56;
+    --brand-sky:     #38bdf8;
+    --body-bg:       #edf3fb;
+    --heading-color: #081124;
+    --card-bg:       linear-gradient(180deg,#fffefb 0%,#fefaf4 100%);
+    --card-border:   rgba(214,222,235,0.95);
+    --card-shadow:   0 8px 18px rgba(12,24,47,0.08);
+    --card-desc:     #516a88;
+    --module-context:#4f6787;
+    --sidebar-bg:    linear-gradient(182deg,#d6e2f2 0%,#cad8eb 56%,#bfcee4 100%);
+    --sidebar-border:rgba(126,155,190,0.78);
+    --sidebar-text:  #18395e;
+    --sidebar-label: #406286;
+    --sidebar-hover: rgba(255,255,255,0.74);
+    --sidebar-active-bg: linear-gradient(135deg,#0b1e3d 0%,#132d52 100%);
+    --sidebar-active-border: rgba(56,189,248,0.35);
+    --tab-group-bg:  #e8f0fa;
+    --tab-group-border:#bdd3ec;
+    --tab-text:      #345072;
+    --login-input-bg:#f5f8fc;
+    --login-input-border:#d6deeb;
+  }
+
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--body-bg); color: var(--brand-ink); min-height: 100vh; display: flex; }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 224px; flex-shrink: 0;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--sidebar-border);
+    box-shadow: 10px 0 24px rgba(12,31,58,0.17);
+    display: flex; flex-direction: column;
+  }
+  .sidebar-brand { padding: 20px 20px 16px; border-bottom: 1px solid var(--sidebar-border); }
+  .sidebar-brand .eyebrow { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--brand-action); margin-bottom: 4px; }
+  .sidebar-brand .name { font-size: 15px; font-weight: 700; color: var(--heading-color); }
+  .sidebar-brand .week { font-size: 11px; color: var(--sidebar-label); margin-top: 2px; }
+
+  .nav-section { padding: 16px 12px 8px; }
+  .nav-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--sidebar-label); opacity: .7; padding: 0 8px; margin-bottom: 6px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px;
+    font-size: 13px; font-weight: 500; color: var(--sidebar-text); cursor: pointer; transition: all .15s; margin-bottom: 2px;
+  }
+  .nav-item:hover { background: var(--sidebar-hover); color: var(--heading-color); }
+  .nav-item.active {
+    background: var(--sidebar-active-bg);
+    border: 1px solid var(--sidebar-active-border);
+    box-shadow: 0 10px 18px rgba(16,35,60,0.18);
+    color: #fff; font-weight: 600;
+  }
+  .nav-item svg { width: 15px; height: 15px; flex-shrink: 0; }
+  .nav-badge { margin-left: auto; font-size: 10px; font-weight: 700; background: rgba(223,0,48,0.14); color: var(--accent); border-radius: 20px; padding: 1px 6px; }
+
+  .week-history { padding: 0 12px 8px; }
+  .week-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 7px 10px; border-radius: 8px; font-size: 12px; cursor: pointer;
+    color: var(--sidebar-text); transition: all .15s; margin-bottom: 2px;
+  }
+  .week-item:hover { background: var(--sidebar-hover); }
+  .week-item.active {
+    background: var(--sidebar-active-bg);
+    border: 1px solid var(--sidebar-active-border);
+    color: #fff; font-weight: 600;
+  }
+  .week-item .w-count { font-size: 11px; font-weight: 700; }
+  .week-item.active .w-count { color: var(--brand-sky); }
+
+  .sidebar-footer { margin-top: auto; padding: 16px; border-top: 1px solid var(--sidebar-border); }
+  .upload-btn {
+    width: 100%; padding: 8px 12px;
+    background: linear-gradient(140deg,#17365d 0%,#0f7fb3 74%,#21b8e7 100%);
+    color: #fff; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    box-shadow: 0 8px 16px rgba(16,45,81,0.22);
+  }
+  .upload-btn:hover { opacity: .92; }
+
+  /* ── Main ── */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 28px; border-bottom: 1px solid rgba(159,188,221,0.84);
+    background: linear-gradient(180deg,rgba(247,251,255,0.98) 0%,rgba(239,246,253,0.96) 100%);
+    flex-shrink: 0;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 14px; }
+  .page-title { font-size: 15px; font-weight: 700; color: var(--heading-color); }
+  .live-badge { display: flex; align-items: center; gap: 5px; background: rgba(21,128,61,0.10); border: 1px solid rgba(134,239,172,0.6); border-radius: 20px; padding: 3px 9px; }
+  .live-dot { width: 6px; height: 6px; background: #16a34a; border-radius: 50%; }
+  .live-text { font-size: 11px; color: #15803d; font-weight: 600; }
+
+  /* ── View toggle ── */
+  .view-toggle {
+    display: flex; align-items: center;
+    background: var(--tab-group-bg); border: 1px solid var(--tab-group-border);
+    border-radius: 8px; padding: 3px; gap: 2px;
+  }
+  .vt-btn {
+    padding: 5px 14px; border-radius: 6px; font-size: 12px; font-weight: 600;
+    border: none; cursor: pointer; transition: all .15s; color: var(--tab-text); background: transparent;
+  }
+  .vt-btn.active {
+    background: linear-gradient(180deg,rgba(255,255,255,0.98) 0%,rgba(240,248,255,0.96) 100%);
+    color: var(--heading-color);
+    box-shadow: inset 0 -2px 0 rgba(223,0,48,0.18), 0 1px 8px rgba(15,29,60,0.12);
+  }
+
+  /* period navigator */
+  .period-nav {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--login-input-bg); border: 1px solid var(--login-input-border); border-radius: 8px; padding: 5px 10px;
+  }
+  .period-nav button { background: none; border: none; color: var(--sidebar-label); cursor: pointer; font-size: 14px; line-height: 1; }
+  .period-nav button:hover { color: var(--heading-color); }
+  .period-nav span { font-size: 12px; color: var(--heading-color); font-weight: 600; min-width: 150px; text-align: center; }
+  .topbar-meta { font-size: 12px; color: var(--module-context); }
+
+  .content { flex: 1; overflow-y: auto; padding: 24px 28px; }
+
+  /* ── KPI rows ── */
+  .kpi-row   { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 16px; }
+  .kpi-row-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 24px; }
+
+  .kpi-card {
+    background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px;
+    box-shadow: var(--card-shadow);
+    padding: 18px 20px; position: relative; overflow: hidden; cursor: pointer; transition: all .15s;
+  }
+  .kpi-card:hover { border-color: rgba(56,189,248,0.5); box-shadow: 0 12px 22px rgba(12,24,47,0.12); }
+  .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .kpi-card.blue::before  { background: linear-gradient(90deg,#17365d,#0f7fb3); }
+  .kpi-card.red::before   { background: linear-gradient(90deg,#9b001e,#df0030); }
+  .kpi-card.amber::before { background: linear-gradient(90deg,#b45309,#f59e0b); }
+  .kpi-card.green::before { background: linear-gradient(90deg,#15803d,#22c55e); }
+
+  .kpi-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--module-context); margin-bottom: 10px; }
+  .kpi-value { font-size: 36px; font-weight: 800; color: var(--heading-color); line-height: 1; letter-spacing: -1px; }
+  .kpi-value.red   { color: var(--accent); }
+  .kpi-value.amber { color: #d97706; }
+  .kpi-value.green { color: #16a34a; }
+  .kpi-delta { display: inline-flex; align-items: center; gap: 3px; margin-top: 6px; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 20px; }
+  .kpi-delta.up   { background: rgba(223,0,48,0.10); color: var(--accent); }
+  .kpi-delta.down { background: rgba(22,163,74,0.10); color: #16a34a; }
+  .kpi-delta.flat { background: var(--tab-group-bg); color: var(--module-context); }
+  .kpi-sub { font-size: 11px; color: var(--card-desc); margin-top: 4px; }
+
+  /* monthly note banner */
+  .monthly-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(14,165,233,0.08); border: 1px solid rgba(72,188,246,0.35);
+    border-radius: 20px; padding: 4px 12px;
+    font-size: 11px; font-weight: 600; color: #0d5f91; margin-bottom: 20px;
+  }
+
+  /* ── Two-column layout ── */
+  .two-col { display: grid; grid-template-columns: 1fr 320px; gap: 16px; margin-bottom: 16px; }
+
+  /* ── Chart card ── */
+  .chart-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; box-shadow: var(--card-shadow); padding: 20px; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .card-title { font-size: 13px; font-weight: 700; color: var(--heading-color); }
+  .card-sub { font-size: 11px; color: var(--card-desc); margin-top: 1px; }
+  .pill { background: rgba(223,0,48,0.10); color: var(--accent); border-radius: 20px; padding: 3px 10px; font-size: 11px; font-weight: 700; }
+  .pill.neutral { background: var(--tab-group-bg); color: var(--module-context); }
+  .pill.blue { background: rgba(14,165,233,0.10); color: #0d5f91; }
+
+  /* bar chart */
+  .bar-chart { display: flex; align-items: flex-end; gap: 10px; height: 160px; padding-bottom: 24px; position: relative; }
+  .bar-chart::after { content: ''; position: absolute; bottom: 24px; left: 0; right: 0; height: 1px; background: var(--tab-group-bg); }
+  .bar-col-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; position: relative; }
+  .bar-val { font-size: 10px; color: var(--card-desc); margin-bottom: 3px; font-weight: 600; }
+  .bar-fill { width: 100%; border-radius: 5px 5px 0 0; background: var(--tab-group-bg); min-height: 4px; }
+  .bar-fill.active { background: linear-gradient(180deg,#38bdf8,#0f7fb3); }
+  .bar-label { font-size: 10px; color: var(--card-desc); position: absolute; bottom: 4px; white-space: nowrap; }
+  .bar-label.active-lbl { color: var(--brand-action); font-weight: 700; }
+
+  /* manager list */
+  .mgr-list { display: flex; flex-direction: column; gap: 12px; }
+  .mgr-row { display: flex; align-items: center; gap: 10px; }
+  .mgr-rank { font-size: 11px; font-weight: 700; color: var(--sidebar-label); opacity:.6; width: 16px; flex-shrink: 0; }
+  .mgr-name { font-size: 13px; font-weight: 600; color: var(--heading-color); flex: 1; }
+  .mgr-count { font-size: 13px; font-weight: 800; color: var(--heading-color); min-width: 28px; text-align: right; }
+  .mgr-count.top { color: var(--accent); }
+  .mgr-bar-track { flex: 1; height: 5px; background: var(--tab-group-bg); border-radius: 3px; overflow: hidden; }
+  .mgr-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg,#17365d,#0f7fb3); }
+
+  /* ── Hours by location / department ── */
+  .loc-group { margin-bottom: 14px; }
+  .loc-group:last-child { margin-bottom: 0; }
+  .loc-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 10px; border-radius: 8px; background: var(--tab-group-bg);
+    border: 1px solid var(--tab-group-border); margin-bottom: 4px; cursor: pointer;
+  }
+  .loc-name { font-size: 12px; font-weight: 700; color: var(--brand-deep); display: flex; align-items: center; gap: 6px; }
+  .loc-name-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .loc-total { font-size: 12px; font-weight: 700; color: var(--heading-color); }
+  .loc-ot-badge { font-size: 10px; font-weight: 700; background: rgba(180,83,9,0.10); color: #b45309; border-radius: 20px; padding: 2px 7px; }
+
+  .dept-row { display: flex; align-items: center; gap: 10px; padding: 7px 10px 7px 22px; border-bottom: 1px solid var(--tab-group-bg); }
+  .dept-row:last-child { border-bottom: none; }
+  .dept-name { font-size: 12px; font-weight: 500; color: var(--module-context); flex: 1; }
+  .dept-stack { display: flex; height: 6px; border-radius: 3px; overflow: hidden; width: 90px; flex-shrink: 0; }
+  .dept-reg { background: var(--brand-action); }
+  .dept-ot  { background: #f59e0b; }
+  .dept-total { font-size: 11px; font-weight: 700; color: var(--card-desc); min-width: 52px; text-align: right; }
+  .dept-ot-val { font-size: 11px; color: #d97706; min-width: 38px; text-align: right; font-weight: 600; }
+
+  /* bottom row */
+  .bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* compliance rows */
+  .mgr-compliance-row { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--tab-group-bg); }
+  .mgr-compliance-row:last-child { border-bottom: none; }
+  .score-badge { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; font-size: 13px; font-weight: 800; flex-shrink: 0; }
+  .score-badge.good { background: rgba(22,163,74,0.10); color: #16a34a; border: 2px solid rgba(134,239,172,0.6); }
+  .score-badge.mid  { background: rgba(217,119,6,0.10);  color: #d97706; border: 2px solid rgba(252,211,77,0.6); }
+  .score-badge.low  { background: rgba(223,0,48,0.10);   color: var(--accent); border: 2px solid rgba(253,164,175,0.6); }
+  .mgr-comp-name { font-size: 13px; font-weight: 600; color: var(--heading-color); }
+  .mgr-comp-sub  { font-size: 11px; color: var(--card-desc); margin-top: 1px; }
+</style>
+</head>
+<body>
+
+<!-- ── sidebar ── -->
+<div class="sidebar">
+  <div class="sidebar-brand">
+    <div class="eyebrow">Executive View</div>
+    <div class="name">AAP Operations</div>
+    <div class="week" id="sidebar-period">Week of May 18–22, 2026</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Dashboard</div>
+    <div class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+      Overview
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Shift Exceptions
+      <span class="nav-badge" id="sidebar-badge">47</span>
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Hours &amp; OT
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
+      Manager Compliance
+    </div>
+  </div>
+
+  <div class="week-history" id="history-list">
+    <div class="nav-label" style="padding:0 8px;margin-bottom:6px">Report History</div>
+    <!-- populated by JS -->
+  </div>
+
+  <div class="sidebar-footer">
+    <button class="upload-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Upload WOSH Report
+    </button>
+  </div>
+</div>
+
+<!-- ── main ── -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="page-title">Overview</span>
+      <div class="live-badge">
+        <span class="live-dot"></span>
+        <span class="live-text">Live</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <!-- view toggle -->
+      <div class="view-toggle">
+        <button class="vt-btn active" id="btn-weekly" onclick="setView('weekly')">Weekly</button>
+        <button class="vt-btn" id="btn-monthly" onclick="setView('monthly')">Monthly</button>
+      </div>
+      <!-- period navigator -->
+      <div class="period-nav">
+        <button onclick="shiftPeriod(-1)">‹</button>
+        <span id="period-label">Week of May 18–22, 2026</span>
+        <button onclick="shiftPeriod(1)">›</button>
+      </div>
+      <span class="topbar-meta">248 employees · 3 locations</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- monthly context note (hidden in weekly view) -->
+    <div class="monthly-badge" id="monthly-note" style="display:none">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Monthly rollup — showing aggregated data for <span id="monthly-note-label">May 2026</span>
+    </div>
+
+    <!-- shift exception KPIs -->
+    <div class="kpi-row">
+      <div class="kpi-card red">
+        <div class="kpi-label" id="lbl-irr">Total Irregularities</div>
+        <div class="kpi-value red" id="val-irr">47</div>
+        <div class="kpi-delta up" id="delta-irr">▲ 12 vs prior week</div>
+      </div>
+      <div class="kpi-card amber">
+        <div class="kpi-label">Employees Affected</div>
+        <div class="kpi-value amber" id="val-emp-aff">31</div>
+        <div class="kpi-delta up" id="delta-emp">▲ 8</div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-label">Early Arrivals</div>
+        <div class="kpi-value" id="val-early">19</div>
+        <div class="kpi-delta down" id="delta-early">▼ 3</div>
+      </div>
+      <div class="kpi-card amber">
+        <div class="kpi-label">Late Departures</div>
+        <div class="kpi-value amber" id="val-late">28</div>
+        <div class="kpi-delta up" id="delta-late">▲ 15</div>
+      </div>
+    </div>
+
+    <!-- org KPIs -->
+    <div class="kpi-row-3">
+      <div class="kpi-card green">
+        <div class="kpi-label">Total Employees</div>
+        <div class="kpi-value green">248</div>
+        <div class="kpi-sub">across 3 locations</div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-label" id="lbl-reg">Regular Hours</div>
+        <div class="kpi-value" style="font-size:28px" id="val-reg">9,412</div>
+        <div class="kpi-delta flat" id="delta-reg">this week</div>
+      </div>
+      <div class="kpi-card amber">
+        <div class="kpi-label" id="lbl-ot">Overtime Hours</div>
+        <div class="kpi-value amber" style="font-size:28px" id="val-ot">341.5</div>
+        <div class="kpi-delta up" id="delta-ot">3.5% OT rate</div>
+      </div>
+    </div>
+
+    <!-- trend + top managers -->
+    <div class="two-col">
+      <div class="chart-card">
+        <div class="card-header">
+          <div>
+            <div class="card-title" id="trend-title">Irregularities Trend</div>
+            <div class="card-sub" id="trend-sub">5 weeks · click a bar to select</div>
+          </div>
+          <span class="pill" id="trend-pill">▲ 12 this week</span>
+        </div>
+        <!-- weekly bars -->
+        <div class="bar-chart" id="bars-weekly">
+          <div class="bar-col-wrapper"><div class="bar-val">22</div><div class="bar-fill" style="height:41%"></div><div class="bar-label">Apr 27</div></div>
+          <div class="bar-col-wrapper"><div class="bar-val">35</div><div class="bar-fill" style="height:65%"></div><div class="bar-label">May 4</div></div>
+          <div class="bar-col-wrapper"><div class="bar-val">41</div><div class="bar-fill" style="height:76%"></div><div class="bar-label">May 11</div></div>
+          <div class="bar-col-wrapper"><div class="bar-val">35</div><div class="bar-fill" style="height:65%"></div><div class="bar-label">May 15</div></div>
+          <div class="bar-col-wrapper"><div class="bar-val">47</div><div class="bar-fill active" style="height:87%"></div><div class="bar-label active-lbl">May 18</div></div>
+        </div>
+        <!-- monthly bars -->
+        <div class="bar-chart" id="bars-monthly" style="display:none">
+          <div class="bar-col-wrapper"><div class="bar-val">104</div><div class="bar-fill" style="height:55%"></div><div class="bar-label">Jan</div></div>
+          <div class="bar-col-wrapper"><div class="bar-val">91</div><div class="bar-fill" style="height:48%"></div><div class="bar-label">Feb</div></div>
+          <div class="bar-col-wrapper"><div class="bar-val">118</div><div class="bar-fill" style="height:62%"></div><div class="bar-label">Mar</div></div>
+          <div class="bar-col-wrapper"><div class="bar-val">139</div><div class="bar-fill" style="height:73%"></div><div class="bar-label">Apr</div></div>
+          <div class="bar-col-wrapper"><div class="bar-val">180</div><div class="bar-fill active" style="height:95%"></div><div class="bar-label active-lbl">May</div></div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Top Exceptions by Manager</div>
+            <div class="card-sub" id="mgr-sub">Current week</div>
+          </div>
+        </div>
+        <div class="mgr-list">
+          <div class="mgr-row"><span class="mgr-rank">1</span><span class="mgr-name">J. Martinez</span><div class="mgr-bar-track"><div class="mgr-bar-fill" style="width:100%"></div></div><span class="mgr-count top" id="mgr1">14</span></div>
+          <div class="mgr-row"><span class="mgr-rank">2</span><span class="mgr-name">T. Williams</span><div class="mgr-bar-track"><div class="mgr-bar-fill" style="width:71%"></div></div><span class="mgr-count" id="mgr2">10</span></div>
+          <div class="mgr-row"><span class="mgr-rank">3</span><span class="mgr-name">D. Chen</span><div class="mgr-bar-track"><div class="mgr-bar-fill" style="width:57%"></div></div><span class="mgr-count" id="mgr3">8</span></div>
+          <div class="mgr-row"><span class="mgr-rank">4</span><span class="mgr-name">P. Johnson</span><div class="mgr-bar-track"><div class="mgr-bar-fill" style="width:43%"></div></div><span class="mgr-count" id="mgr4">6</span></div>
+          <div class="mgr-row"><span class="mgr-rank">5</span><span class="mgr-name">R. Thompson</span><div class="mgr-bar-track"><div class="mgr-bar-fill" style="width:36%"></div></div><span class="mgr-count" id="mgr5">5</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- hours by location > department + compliance -->
+    <div class="bottom-row">
+      <div class="chart-card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Hours by Location &amp; Department</div>
+            <div class="card-sub" id="hours-sub">Regular (blue) + OT (amber) · this week</div>
+          </div>
+          <div style="display:flex;gap:10px;font-size:11px;align-items:center">
+            <span style="color:#3b82f6;font-weight:700">■ Reg</span>
+            <span style="color:#f59e0b;font-weight:700">■ OT</span>
+          </div>
+        </div>
+
+        <!-- AAP -->
+        <div class="loc-group">
+          <div class="loc-header">
+            <span class="loc-name"><span class="loc-name-dot" style="background:#2563eb"></span>AAP</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span class="loc-ot-badge" id="aap-ot">OT 200h</span>
+              <span class="loc-total" id="aap-total">5,241 hrs</span>
+            </div>
+          </div>
+          <div class="dept-row"><span class="dept-name">Assembly</span><div class="dept-stack"><div class="dept-reg" style="width:86%"></div><div class="dept-ot" style="width:14%"></div></div><span class="dept-total">2,410 hrs</span><span class="dept-ot-val">+119</span></div>
+          <div class="dept-row"><span class="dept-name">Fabrication</span><div class="dept-stack"><div class="dept-reg" style="width:93%"></div><div class="dept-ot" style="width:7%"></div></div><span class="dept-total">1,680 hrs</span><span class="dept-ot-val">+48</span></div>
+          <div class="dept-row"><span class="dept-name">Maintenance</span><div class="dept-stack"><div class="dept-reg" style="width:88%"></div><div class="dept-ot" style="width:12%"></div></div><span class="dept-total">1,151 hrs</span><span class="dept-ot-val">+33</span></div>
+        </div>
+
+        <!-- API Scottsboro -->
+        <div class="loc-group">
+          <div class="loc-header">
+            <span class="loc-name"><span class="loc-name-dot" style="background:#0891b2"></span>API Scottsboro</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span class="loc-ot-badge" id="api-s-ot">OT 96h</span>
+              <span class="loc-total" id="api-s-total">2,788 hrs</span>
+            </div>
+          </div>
+          <div class="dept-row"><span class="dept-name">Quality Control</span><div class="dept-stack"><div class="dept-reg" style="width:95%"></div><div class="dept-ot" style="width:5%"></div></div><span class="dept-total">1,640 hrs</span><span class="dept-ot-val">+82</span></div>
+          <div class="dept-row"><span class="dept-name">Shipping</span><div class="dept-stack"><div class="dept-reg" style="width:79%"></div><div class="dept-ot" style="width:21%"></div></div><span class="dept-total">1,148 hrs</span><span class="dept-ot-val" style="color:#dc2626">+14</span></div>
+        </div>
+
+        <!-- API Memphis -->
+        <div class="loc-group">
+          <div class="loc-header">
+            <span class="loc-name"><span class="loc-name-dot" style="background:#d97706"></span>API Memphis</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span class="loc-ot-badge" id="api-m-ot">OT 46h</span>
+              <span class="loc-total" id="api-m-total">1,724 hrs</span>
+            </div>
+          </div>
+          <div class="dept-row"><span class="dept-name">Assembly</span><div class="dept-stack"><div class="dept-reg" style="width:91%"></div><div class="dept-ot" style="width:9%"></div></div><span class="dept-total">1,108 hrs</span><span class="dept-ot-val">+71</span></div>
+          <div class="dept-row"><span class="dept-name">Maintenance</span><div class="dept-stack"><div class="dept-reg" style="width:84%"></div><div class="dept-ot" style="width:16%"></div></div><span class="dept-total">616 hrs</span><span class="dept-ot-val">+9</span></div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Manager Compliance Ranking</div>
+            <div class="card-sub">Combined score · higher is better</div>
+          </div>
+        </div>
+        <div class="mgr-compliance-row"><div class="score-badge good">94</div><div><div class="mgr-comp-name">R. Thompson</div><div class="mgr-comp-sub">Assembly · 0.8% OT</div></div></div>
+        <div class="mgr-compliance-row"><div class="score-badge good">87</div><div><div class="mgr-comp-name">D. Chen</div><div class="mgr-comp-sub">Fabrication · 1.2% OT</div></div></div>
+        <div class="mgr-compliance-row"><div class="score-badge mid">72</div><div><div class="mgr-comp-name">P. Johnson</div><div class="mgr-comp-sub">Shipping · 3.4% OT</div></div></div>
+        <div class="mgr-compliance-row"><div class="score-badge low">44</div><div><div class="mgr-comp-name">J. Martinez</div><div class="mgr-comp-sub">Assembly · 7.1% OT · 14 exceptions</div></div></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+  // ── state ──────────────────────────────────────────────────────────────────
+  let view = 'weekly';   // 'weekly' | 'monthly'
+  let weekIdx = 0;       // 0 = latest week
+  let monthIdx = 0;      // 0 = current month
+
+  const WEEKS = [
+    { label: 'Week of May 18–22, 2026', short: 'May 18–22', irr: 47, emp: 31, early: 19, late: 28, reg: '9,412', ot: '341.5', otPct: '3.5%', deltaIrr: '▲ 12 vs prior week', deltaIrrCls: 'up', deltaEmp: '▲ 8', deltaEmpCls: 'up', deltaEarly: '▼ 3', deltaEarlyCls: 'down', deltaLate: '▲ 15', deltaLateCls: 'up', trendPill: '▲ 12 this week', mgr: [14,10,8,6,5], badge: 47 },
+    { label: 'Week of May 11–15, 2026', short: 'May 11–15', irr: 35, emp: 23, early: 22, late: 13, reg: '9,104', ot: '290.0', otPct: '3.1%', deltaIrr: '▼ 6 vs prior week', deltaIrrCls: 'down', deltaEmp: '▼ 4', deltaEmpCls: 'down', deltaEarly: '▲ 5', deltaEarlyCls: 'up', deltaLate: '▼ 11', deltaLateCls: 'down', trendPill: '▼ 6 this week', mgr: [10,8,6,5,6], badge: 35 },
+    { label: 'Week of May 4–8, 2026',   short: 'May 4–8',   irr: 41, emp: 27, early: 17, late: 24, reg: '9,280', ot: '315.5', otPct: '3.3%', deltaIrr: '▲ 19 vs prior week', deltaIrrCls: 'up', deltaEmp: '▲ 12', deltaEmpCls: 'up', deltaEarly: '▼ 5', deltaEarlyCls: 'down', deltaLate: '▲ 24', deltaLateCls: 'up', trendPill: '▲ 19 this week', mgr: [12,9,7,7,6], badge: 41 },
+    { label: 'Week of Apr 27–May 1, 2026', short: 'Apr 27–May 1', irr: 22, emp: 15, early: 22, late: 0, reg: '9,010', ot: '188.0', otPct: '2.0%', deltaIrr: '▼ 8 vs prior week', deltaIrrCls: 'down', deltaEmp: '▼ 5', deltaEmpCls: 'down', deltaEarly: '▲ 8', deltaEarlyCls: 'up', deltaLate: '—', deltaLateCls: 'flat', trendPill: '▼ 8 this week', mgr: [6,5,4,4,3], badge: 22 },
+  ];
+
+  const MONTHS = [
+    { label: 'May 2026',  irr: 180, emp: 88,  early: 72, late: 108, reg: '37,208', ot: '1,290.0', otPct: '3.3%', trendPill: '▲ 41 vs Apr', deltaIrrCls:'up',   deltaEmpCls:'up',   deltaEarlyCls:'up',  deltaLateCls:'up',   mgr: [54,40,32,26,28] },
+    { label: 'Apr 2026',  irr: 139, emp: 70,  early: 65, late: 74,  reg: '36,100', ot: '1,140.5', otPct: '3.1%', trendPill: '▲ 21 vs Mar', deltaIrrCls:'up',   deltaEmpCls:'up',   deltaEarlyCls:'up',  deltaLateCls:'up',   mgr: [42,36,28,20,13] },
+    { label: 'Mar 2026',  irr: 118, emp: 61,  early: 58, late: 60,  reg: '36,840', ot: '1,080.0', otPct: '2.8%', trendPill: '▲ 27 vs Feb', deltaIrrCls:'up',   deltaEmpCls:'up',   deltaEarlyCls:'up',  deltaLateCls:'up',   mgr: [36,30,22,18,12] },
+    { label: 'Feb 2026',  irr: 91,  emp: 50,  early: 44, late: 47,  reg: '33,200', ot: '920.0',   otPct: '2.7%', trendPill: '▼ 13 vs Jan', deltaIrrCls:'down', deltaEmpCls:'down', deltaEarlyCls:'down',deltaLateCls:'down', mgr: [28,24,18,14,7] },
+    { label: 'Jan 2026',  irr: 104, emp: 58,  early: 51, late: 53,  reg: '37,440', ot: '1,010.5', otPct: '2.6%', trendPill: 'baseline month', deltaIrrCls:'flat', deltaEmpCls:'flat', deltaEarlyCls:'flat',deltaLateCls:'flat', mgr: [32,28,20,16,8] },
+  ];
+
+  // ── helpers ────────────────────────────────────────────────────────────────
+  function $(id) { return document.getElementById(id); }
+
+  function setDelta(el, text, cls) {
+    el.textContent = text;
+    el.className = 'kpi-delta ' + cls;
+  }
+
+  function rebuildHistory() {
+    const list = $('history-list');
+    // clear existing week items
+    const existingItems = list.querySelectorAll('.week-item');
+    existingItems.forEach(el => el.remove());
+
+    if (view === 'weekly') {
+      WEEKS.forEach((w, i) => {
+        const div = document.createElement('div');
+        div.className = 'week-item' + (i === weekIdx ? ' active' : '');
+        div.innerHTML = `<span>${w.short}</span><span class="w-count">${w.badge}</span>`;
+        div.onclick = () => { weekIdx = i; rebuildAll(); };
+        list.appendChild(div);
+      });
+    } else {
+      MONTHS.forEach((m, i) => {
+        const div = document.createElement('div');
+        div.className = 'week-item' + (i === monthIdx ? ' active' : '');
+        div.innerHTML = `<span>${m.label}</span><span class="w-count">${m.irr}</span>`;
+        div.onclick = () => { monthIdx = i; rebuildAll(); };
+        list.appendChild(div);
+      });
+    }
+  }
+
+  function rebuildAll() {
+    const isMonthly = view === 'monthly';
+    const d = isMonthly ? MONTHS[monthIdx] : WEEKS[weekIdx];
+
+    // period label
+    const pLabel = isMonthly ? d.label : d.label;
+    $('period-label').textContent = pLabel;
+    $('sidebar-period').textContent = pLabel;
+
+    // toggle buttons
+    $('btn-weekly').className  = 'vt-btn' + (view === 'weekly' ? ' active' : '');
+    $('btn-monthly').className = 'vt-btn' + (view === 'monthly' ? ' active' : '');
+
+    // monthly note
+    $('monthly-note').style.display = isMonthly ? 'inline-flex' : 'none';
+    $('monthly-note-label').textContent = isMonthly ? d.label : '';
+
+    // KPIs
+    $('val-irr').textContent     = d.irr;
+    $('val-emp-aff').textContent = d.emp;
+    $('val-early').textContent   = d.early;
+    $('val-late').textContent    = d.late;
+    $('val-reg').textContent     = d.reg;
+    $('val-ot').textContent      = d.ot;
+    $('delta-ot').textContent    = d.otPct + ' OT rate';
+    $('lbl-reg').textContent     = isMonthly ? 'Regular Hours (mo.)' : 'Regular Hours';
+    $('lbl-ot').textContent      = isMonthly ? 'Overtime Hours (mo.)' : 'Overtime Hours';
+    $('delta-reg').textContent   = isMonthly ? 'this month' : 'this week';
+    $('delta-reg').className     = 'kpi-delta flat';
+
+    setDelta($('delta-irr'),   d.irr + (isMonthly ? ' total' : ''), 'flat');
+    if (!isMonthly) setDelta($('delta-irr'), d.deltaIrr, d.deltaIrrCls);
+    setDelta($('delta-emp'),   d.emp   + ' affected',  'flat');
+    setDelta($('delta-early'), d.early + ' early',     'flat');
+    setDelta($('delta-late'),  d.late  + ' late',      'flat');
+    if (!isMonthly) {
+      setDelta($('delta-emp'),   d.deltaEmp,   d.deltaEmpCls);
+      setDelta($('delta-early'), d.deltaEarly, d.deltaEarlyCls);
+      setDelta($('delta-late'),  d.deltaLate,  d.deltaLateCls);
+    }
+
+    // sidebar badge
+    $('sidebar-badge').textContent = d.badge ?? d.irr;
+
+    // trend chart
+    $('bars-weekly').style.display  = isMonthly ? 'none' : 'flex';
+    $('bars-monthly').style.display = isMonthly ? 'flex' : 'none';
+    $('trend-title').textContent    = isMonthly ? 'Monthly Irregularities Trend' : 'Irregularities Trend';
+    $('trend-sub').textContent      = isMonthly ? '5 months · click a bar to select' : '5 weeks · click a bar to select';
+    $('trend-pill').textContent     = d.trendPill;
+    $('trend-pill').className       = 'pill' + (d.deltaIrrCls === 'down' ? ' blue' : '');
+    $('mgr-sub').textContent        = isMonthly ? d.label : 'Current week';
+    $('hours-sub').textContent      = 'Regular (blue) + OT (amber) · ' + (isMonthly ? 'this month' : 'this week');
+
+    // manager counts
+    const mgr = d.mgr || [14,10,8,6,5];
+    const max = Math.max(...mgr, 1);
+    ['mgr1','mgr2','mgr3','mgr4','mgr5'].forEach((id, i) => {
+      $(id).textContent = mgr[i];
+    });
+    // update bar widths
+    document.querySelectorAll('.mgr-bar-fill').forEach((el, i) => {
+      el.style.width = ((mgr[i] / max) * 100) + '%';
+    });
+
+    rebuildHistory();
+  }
+
+  function setView(v) {
+    view = v;
+    rebuildAll();
+  }
+
+  function shiftPeriod(dir) {
+    if (view === 'weekly') {
+      weekIdx = Math.max(0, Math.min(WEEKS.length - 1, weekIdx - dir));
+    } else {
+      monthIdx = Math.max(0, Math.min(MONTHS.length - 1, monthIdx - dir));
+    }
+    rebuildAll();
+  }
+
+  // init
+  rebuildAll();
+</script>
+</body>
+</html>

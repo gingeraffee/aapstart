@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mockup 3 — Modern SaaS</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif; background: #f8fafc; color: #0f172a; min-height: 100vh; }
+
+  /* ── Top nav ── */
+  .topnav {
+    background: #fff; border-bottom: 1px solid #e2e8f0;
+    display: flex; align-items: center; padding: 0 32px; height: 56px; gap: 0;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; margin-right: 40px; }
+  .brand-dot { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg,#1e40af,#3b82f6); display: flex; align-items: center; justify-content: center; }
+  .brand-dot svg { width: 14px; height: 14px; stroke: #fff; fill: none; }
+  .brand-name { font-size: 14px; font-weight: 700; color: #0f172a; }
+  .brand-role { font-size: 11px; color: #94a3b8; margin-left: 2px; }
+  .nav-pills { display: flex; gap: 2px; flex: 1; }
+  .nav-pill {
+    padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 500;
+    color: #64748b; cursor: pointer; transition: all .15s; display: flex; align-items: center; gap: 6px;
+  }
+  .nav-pill:hover { background: #f1f5f9; color: #0f172a; }
+  .nav-pill.active { background: #eff6ff; color: #1d4ed8; font-weight: 600; }
+  .nav-pill .ct {
+    background: #fef2f2; color: #dc2626; font-size: 10px; font-weight: 700;
+    border-radius: 10px; padding: 1px 6px; line-height: 16px;
+  }
+  .topnav-right { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+  .week-chip {
+    display: flex; align-items: center; gap: 6px; background: #f1f5f9; border: 1px solid #e2e8f0;
+    border-radius: 8px; padding: 5px 12px; font-size: 12px; color: #475569; font-weight: 500;
+  }
+  .week-chip button { background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 13px; padding: 0 2px; }
+  .week-chip span { font-weight: 600; color: #0f172a; }
+  .upload-btn {
+    display: flex; align-items: center; gap: 6px; background: #1d4ed8; color: #fff;
+    border: none; border-radius: 8px; padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer;
+  }
+
+  /* ── Page content ── */
+  .page { padding: 28px 32px; max-width: 1280px; margin: 0 auto; }
+
+  /* ── Page header ── */
+  .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; }
+  .page-title { font-size: 20px; font-weight: 700; color: #0f172a; }
+  .page-sub { font-size: 13px; color: #64748b; margin-top: 3px; }
+  .status-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .chip { display: inline-flex; align-items: center; gap: 5px; border-radius: 20px; padding: 4px 10px; font-size: 11px; font-weight: 600; }
+  .chip.blue { background: #eff6ff; color: #1d4ed8; }
+  .chip.green { background: #f0fdf4; color: #15803d; }
+  .chip.amber { background: #fffbeb; color: #b45309; }
+  .chip.red { background: #fef2f2; color: #dc2626; }
+  .chip-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  /* ── KPI strip ── */
+  .kpi-strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; margin-bottom: 24px; }
+  .kpi-tile {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+    padding: 16px; cursor: pointer; transition: all .15s; position: relative;
+  }
+  .kpi-tile:hover { border-color: #93c5fd; box-shadow: 0 0 0 3px rgba(59,130,246,.08); }
+  .kpi-tile.selected { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.12); }
+  .kpi-tile.selected::after {
+    content: ''; position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%);
+    width: 32px; height: 3px; background: #3b82f6; border-radius: 3px 3px 0 0;
+  }
+  .tile-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: #94a3b8; margin-bottom: 8px; }
+  .tile-value { font-size: 24px; font-weight: 800; color: #0f172a; line-height: 1; }
+  .tile-value.danger { color: #dc2626; }
+  .tile-value.warn { color: #d97706; }
+  .tile-delta { margin-top: 6px; font-size: 11px; font-weight: 600; }
+  .tile-delta.up { color: #dc2626; }
+  .tile-delta.down { color: #16a34a; }
+  .tile-delta.neutral { color: #94a3b8; }
+
+  /* ── Content grid ── */
+  .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .content-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+
+  /* ── Cards ── */
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; }
+  .card-head { padding: 18px 20px 14px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; }
+  .card-title { font-size: 13px; font-weight: 700; color: #0f172a; }
+  .card-hint { font-size: 11px; color: #94a3b8; }
+  .card-body { padding: 16px 20px; }
+
+  /* fake bars */
+  .bars { display: flex; align-items: flex-end; gap: 8px; height: 130px; }
+  .b-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; height: 100%; justify-content: flex-end; }
+  .b-fill { width: 100%; border-radius: 5px 5px 0 0; background: #e2e8f0; }
+  .b-fill.hi { background: linear-gradient(180deg,#60a5fa,#3b82f6); }
+  .b-lbl { font-size: 10px; color: #94a3b8; }
+  .b-num { font-size: 10px; font-weight: 700; color: #64748b; }
+
+  /* manager rows */
+  .mgr-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+  .mgr-item:last-child { border-bottom: none; }
+  .mgr-avatar {
+    width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0;
+  }
+  .mgr-info { flex: 1; }
+  .mgr-name { font-size: 13px; font-weight: 600; color: #0f172a; }
+  .mgr-dept { font-size: 11px; color: #64748b; }
+  .mgr-score { text-align: right; }
+  .score-num { font-size: 14px; font-weight: 800; }
+  .score-num.good { color: #16a34a; }
+  .score-num.mid { color: #d97706; }
+  .score-num.bad { color: #dc2626; }
+  .score-sub { font-size: 10px; color: #94a3b8; }
+
+  /* exception badge rows */
+  .exc-item { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
+  .exc-item:last-child { border-bottom: none; }
+  .exc-name { flex: 1; font-size: 12px; font-weight: 500; color: #0f172a; }
+  .exc-mgr { font-size: 11px; color: #94a3b8; }
+  .exc-tag { font-size: 10px; font-weight: 700; border-radius: 20px; padding: 2px 8px; }
+  .exc-tag.late { background: #fffbeb; color: #b45309; }
+  .exc-tag.early { background: #eff6ff; color: #1d4ed8; }
+  .exc-tag.both { background: #fef2f2; color: #dc2626; }
+
+  /* hours rows */
+  .hr-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid #f1f5f9; }
+  .hr-item:last-child { border-bottom: none; }
+  .hr-dept { flex: 1; font-size: 12px; font-weight: 600; color: #0f172a; }
+  .hr-track { width: 80px; height: 6px; background: #f1f5f9; border-radius: 3px; overflow: hidden; flex-shrink: 0; }
+  .hr-fill-reg { height: 100%; display: inline-block; background: #3b82f6; float: left; }
+  .hr-fill-ot { height: 100%; display: inline-block; background: #f59e0b; float: left; }
+  .hr-total { font-size: 12px; font-weight: 700; color: #0f172a; min-width: 52px; text-align: right; }
+  .hr-ot { font-size: 11px; color: #d97706; min-width: 44px; text-align: right; }
+
+  /* location card */
+  .loc-card { display: flex; flex-direction: column; gap: 12px; }
+  .loc-item { display: flex; align-items: center; gap: 12px; }
+  .loc-color { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .loc-name { font-size: 13px; font-weight: 600; color: #0f172a; flex: 1; }
+  .loc-pct { font-size: 12px; font-weight: 700; color: #64748b; }
+  .loc-bar-track { width: 100px; height: 6px; background: #f1f5f9; border-radius: 3px; overflow: hidden; }
+  .loc-bar-fill { height: 100%; border-radius: 3px; }
+
+  /* full-width card */
+  .card-full { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; margin-bottom: 16px; }
+  table.exc-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table.exc-table th { padding: 10px 16px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #94a3b8; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
+  table.exc-table td { padding: 10px 16px; border-bottom: 1px solid #f1f5f9; color: #0f172a; vertical-align: middle; }
+  table.exc-table tbody tr:last-child td { border-bottom: none; }
+  table.exc-table tbody tr:hover td { background: #f8fafc; }
+</style>
+</head>
+<body>
+
+<!-- top nav -->
+<div class="topnav">
+  <div class="brand">
+    <div class="brand-dot">
+      <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    </div>
+    <div>
+      <span class="brand-name">AAP Start</span>
+      <span class="brand-role">Executive</span>
+    </div>
+  </div>
+  <div class="nav-pills">
+    <div class="nav-pill active">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+      Overview
+    </div>
+    <div class="nav-pill">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Shift Exceptions
+      <span class="ct">47</span>
+    </div>
+    <div class="nav-pill">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Hours &amp; OT
+    </div>
+    <div class="nav-pill">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
+      Manager Compliance
+    </div>
+  </div>
+  <div class="topnav-right">
+    <div class="week-chip">
+      <button>‹</button>
+      <span>May 18–22, 2026</span>
+      <button>›</button>
+    </div>
+    <button class="upload-btn">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Upload WOSH
+    </button>
+  </div>
+</div>
+
+<!-- page -->
+<div class="page">
+
+  <!-- page header -->
+  <div class="page-header">
+    <div>
+      <div class="page-title">Executive Overview</div>
+      <div class="page-sub">Week of May 18–22, 2026 · 248 employees · 3 locations</div>
+      <div class="status-chips">
+        <span class="chip red"><span class="chip-dot"></span>47 exceptions — up 12 from last week</span>
+        <span class="chip amber"><span class="chip-dot"></span>341.5 OT hrs (3.5%)</span>
+        <span class="chip green"><span class="chip-dot"></span>WOSH uploaded today</span>
+        <span class="chip blue"><span class="chip-dot"></span>5 weeks of history</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- kpi strip -->
+  <div class="kpi-strip">
+    <div class="kpi-tile selected">
+      <div class="tile-label">Irregularities</div>
+      <div class="tile-value danger">47</div>
+      <div class="tile-delta up">▲ 12 this week</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="tile-label">Employees Affected</div>
+      <div class="tile-value warn">31</div>
+      <div class="tile-delta up">▲ 8</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="tile-label">Early Arrivals</div>
+      <div class="tile-value">19</div>
+      <div class="tile-delta down">▼ 3</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="tile-label">Late Departures</div>
+      <div class="tile-value warn">28</div>
+      <div class="tile-delta up">▲ 15</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="tile-label">Total Employees</div>
+      <div class="tile-value">248</div>
+      <div class="tile-delta neutral">3 locations</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="tile-label">Regular Hours</div>
+      <div class="tile-value" style="font-size:20px">9,412</div>
+      <div class="tile-delta neutral">this week</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="tile-label">Overtime Hours</div>
+      <div class="tile-value warn" style="font-size:20px">341.5</div>
+      <div class="tile-delta up">3.5% rate</div>
+    </div>
+  </div>
+
+  <!-- row 1: trend + managers -->
+  <div class="content-grid">
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Irregularities Trend</div>
+        <span class="card-hint">5 weeks · click to select</span>
+      </div>
+      <div class="card-body">
+        <div class="bars">
+          <div class="b-col">
+            <div class="b-num">22</div>
+            <div class="b-fill" style="height:38%"></div>
+            <div class="b-lbl">Apr 27</div>
+          </div>
+          <div class="b-col">
+            <div class="b-num">35</div>
+            <div class="b-fill" style="height:60%"></div>
+            <div class="b-lbl">May 4</div>
+          </div>
+          <div class="b-col">
+            <div class="b-num">41</div>
+            <div class="b-fill" style="height:70%"></div>
+            <div class="b-lbl">May 11</div>
+          </div>
+          <div class="b-col">
+            <div class="b-num">35</div>
+            <div class="b-fill" style="height:60%"></div>
+            <div class="b-lbl">May 15</div>
+          </div>
+          <div class="b-col">
+            <div class="b-num">47</div>
+            <div class="b-fill hi" style="height:80%"></div>
+            <div class="b-lbl" style="color:#3b82f6;font-weight:700">May 18</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Manager Compliance</div>
+        <span class="card-hint">Score = OT + absences + reviews</span>
+      </div>
+      <div class="card-body">
+        <div class="mgr-item">
+          <div class="mgr-avatar" style="background:#16a34a">RT</div>
+          <div class="mgr-info"><div class="mgr-name">R. Thompson</div><div class="mgr-dept">Assembly · 0.8% OT</div></div>
+          <div class="mgr-score"><div class="score-num good">94</div><div class="score-sub">score</div></div>
+        </div>
+        <div class="mgr-item">
+          <div class="mgr-avatar" style="background:#2563eb">DC</div>
+          <div class="mgr-info"><div class="mgr-name">D. Chen</div><div class="mgr-dept">Fabrication · 1.2% OT</div></div>
+          <div class="mgr-score"><div class="score-num good">87</div><div class="score-sub">score</div></div>
+        </div>
+        <div class="mgr-item">
+          <div class="mgr-avatar" style="background:#d97706">PJ</div>
+          <div class="mgr-info"><div class="mgr-name">P. Johnson</div><div class="mgr-dept">Shipping · 3.4% OT</div></div>
+          <div class="mgr-score"><div class="score-num mid">72</div><div class="score-sub">score</div></div>
+        </div>
+        <div class="mgr-item">
+          <div class="mgr-avatar" style="background:#dc2626">JM</div>
+          <div class="mgr-info"><div class="mgr-name">J. Martinez</div><div class="mgr-dept">Assembly · 14 exceptions · 7.1% OT</div></div>
+          <div class="mgr-score"><div class="score-num bad">44</div><div class="score-sub">score</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- row 2: hours + locations + top exceptions -->
+  <div class="content-grid-3">
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Hours by Department</div>
+        <div style="display:flex;gap:8px;font-size:11px">
+          <span style="color:#3b82f6;font-weight:600">■ Reg</span>
+          <span style="color:#f59e0b;font-weight:600">■ OT</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="hr-item">
+          <span class="hr-dept">Assembly</span>
+          <div class="hr-track"><div style="width:88%;height:100%;background:#3b82f6;float:left"></div><div style="width:12%;height:100%;background:#f59e0b;float:left"></div></div>
+          <span class="hr-total">3,241</span>
+          <span class="hr-ot">+119</span>
+        </div>
+        <div class="hr-item">
+          <span class="hr-dept">Fabrication</span>
+          <div class="hr-track"><div style="width:92%;height:100%;background:#3b82f6;float:left"></div><div style="width:8%;height:100%;background:#f59e0b;float:left"></div></div>
+          <span class="hr-total">2,788</span>
+          <span class="hr-ot">+48</span>
+        </div>
+        <div class="hr-item">
+          <span class="hr-dept">QC</span>
+          <div class="hr-track"><div style="width:95%;height:100%;background:#3b82f6;float:left"></div><div style="width:5%;height:100%;background:#f59e0b;float:left"></div></div>
+          <span class="hr-total">1,640</span>
+          <span class="hr-ot">+82</span>
+        </div>
+        <div class="hr-item">
+          <span class="hr-dept">Shipping</span>
+          <div class="hr-track"><div style="width:79%;height:100%;background:#3b82f6;float:left"></div><div style="width:21%;height:100%;background:#f59e0b;float:left"></div></div>
+          <span class="hr-total">1,220</span>
+          <span class="hr-ot" style="color:#dc2626;font-weight:700">+255</span>
+        </div>
+        <div class="hr-item">
+          <span class="hr-dept">Maintenance</span>
+          <div class="hr-track"><div style="width:83%;height:100%;background:#3b82f6;float:left"></div><div style="width:17%;height:100%;background:#f59e0b;float:left"></div></div>
+          <span class="hr-total">860</span>
+          <span class="hr-ot">+42</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">OT Hours by Location</div>
+        <span class="card-hint">This week</span>
+      </div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:20px">
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="44" fill="none" stroke="#f1f5f9" stroke-width="18"/>
+            <circle cx="60" cy="60" r="44" fill="none" stroke="#3b82f6" stroke-width="18"
+              stroke-dasharray="138 138" stroke-dashoffset="0" stroke-linecap="round"
+              transform="rotate(-90 60 60)"/>
+            <circle cx="60" cy="60" r="44" fill="none" stroke="#0891b2" stroke-width="18"
+              stroke-dasharray="96 180" stroke-dashoffset="-140" stroke-linecap="round"
+              transform="rotate(-90 60 60)"/>
+            <circle cx="60" cy="60" r="44" fill="none" stroke="#d97706" stroke-width="18"
+              stroke-dasharray="42 234" stroke-dashoffset="-238" stroke-linecap="round"
+              transform="rotate(-90 60 60)"/>
+            <text x="60" y="57" text-anchor="middle" font-size="16" font-weight="800" fill="#0f172a">342</text>
+            <text x="60" y="71" text-anchor="middle" font-size="9" font-weight="600" fill="#94a3b8">OT HRS</text>
+          </svg>
+        </div>
+        <div class="loc-card">
+          <div class="loc-item">
+            <div class="loc-color" style="background:#3b82f6"></div>
+            <span class="loc-name">AAP</span>
+            <div class="loc-bar-track"><div class="loc-bar-fill" style="width:60%;height:100%;background:#3b82f6"></div></div>
+            <span class="loc-pct">200h · 59%</span>
+          </div>
+          <div class="loc-item">
+            <div class="loc-color" style="background:#0891b2"></div>
+            <span class="loc-name">API Scottsboro</span>
+            <div class="loc-bar-track"><div class="loc-bar-fill" style="width:28%;height:100%;background:#0891b2"></div></div>
+            <span class="loc-pct">96h · 28%</span>
+          </div>
+          <div class="loc-item">
+            <div class="loc-color" style="background:#d97706"></div>
+            <span class="loc-name">API Memphis</span>
+            <div class="loc-bar-track"><div class="loc-bar-fill" style="width:12%;height:100%;background:#d97706"></div></div>
+            <span class="loc-pct">46h · 13%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Top Exceptions</div>
+        <span class="card-hint">This week · most flagged employees</span>
+      </div>
+      <div class="card-body">
+        <div class="exc-item">
+          <div style="flex:1">
+            <div class="exc-name">A. Rodriguez</div>
+            <div class="exc-mgr">J. Martinez · Assembly</div>
+          </div>
+          <span class="exc-tag both">Early &amp; Late</span>
+          <span style="font-size:12px;font-weight:800;color:#dc2626;min-width:20px;text-align:right">4</span>
+        </div>
+        <div class="exc-item">
+          <div style="flex:1">
+            <div class="exc-name">B. Washington</div>
+            <div class="exc-mgr">J. Martinez · Assembly</div>
+          </div>
+          <span class="exc-tag late">Late</span>
+          <span style="font-size:12px;font-weight:800;color:#0f172a;min-width:20px;text-align:right">3</span>
+        </div>
+        <div class="exc-item">
+          <div style="flex:1">
+            <div class="exc-name">C. Kim</div>
+            <div class="exc-mgr">P. Johnson · Shipping</div>
+          </div>
+          <span class="exc-tag late">Late</span>
+          <span style="font-size:12px;font-weight:800;color:#0f172a;min-width:20px;text-align:right">3</span>
+        </div>
+        <div class="exc-item">
+          <div style="flex:1">
+            <div class="exc-name">D. Patel</div>
+            <div class="exc-mgr">T. Williams · Fabrication</div>
+          </div>
+          <span class="exc-tag early">Early</span>
+          <span style="font-size:12px;font-weight:800;color:#0f172a;min-width:20px;text-align:right">2</span>
+        </div>
+        <div class="exc-item">
+          <div style="flex:1">
+            <div class="exc-name">E. Nguyen</div>
+            <div class="exc-mgr">D. Chen · QC</div>
+          </div>
+          <span class="exc-tag late">Late</span>
+          <span style="font-size:12px;font-weight:800;color:#0f172a;min-width:20px;text-align:right">2</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+</body>
+</html>

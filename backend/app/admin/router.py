@@ -90,6 +90,8 @@ def _serialize(emp: Employee, db: Session) -> dict:
         "is_executive": bool(emp.is_executive),
         "manager_employee_id": emp.manager_employee_id,
         "department": emp.department,
+        "location": emp.location,
+        "division": emp.division,
         "totp_enabled": bool(emp.totp_enabled),
         "created_at": emp.created_at.isoformat() if emp.created_at else None,
         "first_login_at": emp.first_login_at.isoformat() if emp.first_login_at else None,

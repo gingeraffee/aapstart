@@ -541,9 +541,10 @@ function EmployeeCard({ emp, currentUserId, modules, allEmployees, onAction }: {
               </div>
             </div>
           ) : (
-            (emp.department || emp.manager_employee_id || emp.totp_enabled) && (
+            (emp.department || emp.location || emp.manager_employee_id || emp.totp_enabled) && (
               <div className="flex flex-wrap gap-x-4 gap-y-1 rounded-[12px] px-3 py-2.5 text-[0.74rem]" style={{ background: "rgba(241,245,249,0.4)", border: "1px solid rgba(153,182,218,0.18)" }}>
                 {emp.department && <span style={{ color: "var(--module-context)" }}><span className="font-semibold">Dept:</span> {emp.department}</span>}
+                {emp.location && <span style={{ color: "var(--module-context)" }}><span className="font-semibold">Location:</span> {emp.location}</span>}
                 {emp.manager_employee_id && <span style={{ color: "var(--module-context)" }}><span className="font-semibold">Reports to:</span> {allEmployees.find((e) => e.employee_id === emp.manager_employee_id)?.full_name ?? emp.manager_employee_id}</span>}
                 {emp.totp_enabled && <span className="inline-flex rounded-full bg-purple-50 px-2 py-0.5 text-[0.64rem] font-semibold text-purple-700">2FA enabled</span>}
               </div>

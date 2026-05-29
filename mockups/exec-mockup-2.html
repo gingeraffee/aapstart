@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mockup 2 — Executive Brief</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Georgia", "Times New Roman", serif; background: #f5f4f0; color: #1a1a1a; min-height: 100vh; }
+
+  /* ── Header ── */
+  .masthead {
+    background: #1a1a1a; color: #fff; padding: 0 48px;
+    display: flex; align-items: stretch; justify-content: space-between;
+  }
+  .masthead-left { padding: 18px 0; border-right: 1px solid #333; padding-right: 28px; margin-right: 28px; }
+  .masthead-org { font-size: 22px; font-weight: 700; letter-spacing: -.5px; font-family: -apple-system, sans-serif; }
+  .masthead-role { font-size: 11px; letter-spacing: .15em; text-transform: uppercase; color: #888; margin-top: 2px; font-family: -apple-system, sans-serif; }
+  .masthead-center { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 18px 0; }
+  .masthead-week { font-size: 13px; color: #aaa; font-family: -apple-system, sans-serif; }
+  .masthead-headline { font-size: 15px; font-weight: 600; color: #fff; margin-top: 3px; font-family: -apple-system, sans-serif; }
+  .masthead-right { display: flex; align-items: center; gap: 24px; padding: 18px 0; padding-left: 28px; border-left: 1px solid #333; }
+  .masthead-stat { text-align: center; }
+  .masthead-stat-val { font-size: 20px; font-weight: 800; color: #fff; font-family: -apple-system, sans-serif; }
+  .masthead-stat-label { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: #888; font-family: -apple-system, sans-serif; }
+  .divider-line { width: 1px; height: 32px; background: #333; }
+
+  /* ── Section nav ── */
+  .section-nav {
+    background: #fff; border-bottom: 2px solid #1a1a1a;
+    display: flex; align-items: center; padding: 0 48px; gap: 0;
+  }
+  .nav-tab {
+    padding: 12px 20px; font-size: 12px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; color: #888; cursor: pointer; border-bottom: 3px solid transparent;
+    transition: all .15s; font-family: -apple-system, sans-serif; margin-bottom: -2px;
+  }
+  .nav-tab.active { color: #1a1a1a; border-bottom-color: #1a1a1a; }
+  .nav-tab:hover:not(.active) { color: #1a1a1a; }
+  .nav-tab .badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: #e74c3c; color: #fff; border-radius: 10px; padding: 1px 6px;
+    font-size: 10px; margin-left: 6px;
+  }
+
+  /* ── Layout ── */
+  .layout { display: grid; grid-template-columns: 1fr 280px; gap: 0; max-width: 1200px; margin: 0 auto; padding: 32px 48px; }
+  .main-col { padding-right: 36px; border-right: 1px solid #ddd; }
+  .side-col { padding-left: 32px; }
+
+  /* ── Alert banner ── */
+  .alert-banner {
+    background: #fff8f0; border: 1px solid #f0a500; border-left: 4px solid #f0a500;
+    border-radius: 4px; padding: 12px 16px; margin-bottom: 28px; display: flex; align-items: flex-start; gap: 12px;
+  }
+  .alert-icon { font-size: 16px; flex-shrink: 0; }
+  .alert-text { font-size: 13px; font-family: -apple-system, sans-serif; line-height: 1.5; }
+  .alert-text strong { font-weight: 700; }
+
+  /* ── Section heading ── */
+  .section-heading {
+    font-size: 10px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase;
+    color: #888; padding-bottom: 8px; border-bottom: 1px solid #ddd; margin-bottom: 18px;
+    font-family: -apple-system, sans-serif;
+  }
+
+  /* ── KPI grid ── */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: #ddd; border: 1px solid #ddd; border-radius: 4px; overflow: hidden; margin-bottom: 32px; }
+  .kpi-cell { background: #fff; padding: 16px 18px; }
+  .kpi-cell-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #999; font-family: -apple-system, sans-serif; margin-bottom: 8px; }
+  .kpi-cell-value { font-size: 32px; font-weight: 800; color: #1a1a1a; font-family: -apple-system, sans-serif; letter-spacing: -1px; line-height: 1; }
+  .kpi-cell-value.red { color: #c0392b; }
+  .kpi-cell-value.amber { color: #e67e22; }
+  .kpi-cell-delta { display: flex; align-items: center; gap: 4px; margin-top: 6px; font-size: 11px; font-family: -apple-system, sans-serif; font-weight: 600; }
+  .kpi-cell-delta.worse { color: #c0392b; }
+  .kpi-cell-delta.better { color: #27ae60; }
+
+  /* ── Trend chart (fake) ── */
+  .trend-section { margin-bottom: 32px; }
+  .chart-area { background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 20px; }
+  .fake-bars { display: flex; align-items: flex-end; gap: 8px; height: 120px; margin-top: 12px; }
+  .fake-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+  .fake-bar { width: 100%; background: #ddd; border-radius: 2px 2px 0 0; }
+  .fake-bar.selected { background: #1a1a1a; }
+  .fake-bar-label { font-size: 10px; color: #999; font-family: -apple-system, sans-serif; }
+  .fake-bar-num { font-size: 11px; font-weight: 700; color: #666; font-family: -apple-system, sans-serif; }
+
+  /* ── Data table ── */
+  .data-table { width: 100%; border-collapse: collapse; font-family: -apple-system, sans-serif; font-size: 12.5px; margin-bottom: 32px; }
+  .data-table thead tr { border-bottom: 2px solid #1a1a1a; }
+  .data-table th { padding: 8px 12px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #888; }
+  .data-table td { padding: 9px 12px; border-bottom: 1px solid #eee; color: #1a1a1a; vertical-align: middle; }
+  .data-table tbody tr:hover td { background: #fafafa; }
+  .badge-early { background: #ebf3fb; color: #2980b9; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 3px; }
+  .badge-late { background: #fef9e7; color: #e67e22; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 3px; }
+  .score-bar { display: flex; align-items: center; gap: 8px; }
+  .score-track { flex: 1; height: 4px; background: #eee; border-radius: 2px; overflow: hidden; }
+  .score-fill { height: 100%; border-radius: 2px; }
+  .score-fill.good { background: #27ae60; }
+  .score-fill.mid { background: #e67e22; }
+  .score-fill.bad { background: #c0392b; }
+
+  /* ── Sidebar ── */
+  .side-section { margin-bottom: 28px; }
+  .side-heading { font-size: 10px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: #888; padding-bottom: 8px; border-bottom: 1px solid #ddd; margin-bottom: 14px; font-family: -apple-system, sans-serif; }
+  .side-kpi { display: flex; justify-content: space-between; align-items: baseline; padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-family: -apple-system, sans-serif; }
+  .side-kpi-label { font-size: 12px; color: #555; }
+  .side-kpi-value { font-size: 14px; font-weight: 800; color: #1a1a1a; }
+  .side-kpi-value.red { color: #c0392b; }
+  .side-kpi-value.amber { color: #e67e22; }
+  .week-selector { display: flex; flex-direction: column; gap: 2px; }
+  .week-option { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; border-radius: 4px; font-family: -apple-system, sans-serif; font-size: 12px; cursor: pointer; }
+  .week-option.selected { background: #1a1a1a; color: #fff; }
+  .week-option:not(.selected) { color: #555; }
+  .week-option:not(.selected):hover { background: #f5f5f5; }
+  .week-count { font-size: 11px; font-weight: 700; }
+  .upload-area { border: 2px dashed #ddd; border-radius: 4px; padding: 20px; text-align: center; cursor: pointer; transition: all .15s; }
+  .upload-area:hover { border-color: #1a1a1a; background: #fafafa; }
+  .upload-area p { font-size: 12px; color: #888; font-family: -apple-system, sans-serif; line-height: 1.5; }
+  .upload-area strong { color: #1a1a1a; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- masthead -->
+<div class="masthead">
+  <div style="display:flex;align-items:stretch">
+    <div class="masthead-left">
+      <div class="masthead-org">AAP Operations</div>
+      <div class="masthead-role">Executive Dashboard</div>
+    </div>
+    <div class="masthead-center">
+      <div class="masthead-week">Thursday, May 29, 2026</div>
+      <div class="masthead-headline">Week of May 18–22 · 47 irregularities detected (+12 vs prior week)</div>
+    </div>
+  </div>
+  <div class="masthead-right">
+    <div class="masthead-stat">
+      <div class="masthead-stat-val">248</div>
+      <div class="masthead-stat-label">Employees</div>
+    </div>
+    <div class="divider-line"></div>
+    <div class="masthead-stat">
+      <div class="masthead-stat-val" style="color:#e3a000">341h</div>
+      <div class="masthead-stat-label">Overtime</div>
+    </div>
+    <div class="divider-line"></div>
+    <div class="masthead-stat">
+      <div class="masthead-stat-val" style="color:#e74c3c">47</div>
+      <div class="masthead-stat-label">Exceptions</div>
+    </div>
+  </div>
+</div>
+
+<!-- nav -->
+<div class="section-nav">
+  <div class="nav-tab active">Overview</div>
+  <div class="nav-tab">Shift Exceptions <span class="badge">47</span></div>
+  <div class="nav-tab">Hours &amp; OT</div>
+  <div class="nav-tab">Manager Compliance</div>
+</div>
+
+<!-- layout -->
+<div class="layout">
+  <div class="main-col">
+
+    <!-- alert -->
+    <div class="alert-banner">
+      <div class="alert-icon">⚠</div>
+      <div class="alert-text">
+        <strong>Elevated irregularities this week.</strong> 47 shift exceptions detected — up 12 from last week. J. Martinez leads with 14 exceptions. Late departures account for 60% of irregularities.
+      </div>
+    </div>
+
+    <!-- kpi grid -->
+    <div class="section-heading">Shift Adherence — Week of May 18–22</div>
+    <div class="kpi-grid">
+      <div class="kpi-cell">
+        <div class="kpi-cell-label">Irregularities</div>
+        <div class="kpi-cell-value red">47</div>
+        <div class="kpi-cell-delta worse">▲ 12 vs prior week</div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-cell-label">Employees Affected</div>
+        <div class="kpi-cell-value amber">31</div>
+        <div class="kpi-cell-delta worse">▲ 8</div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-cell-label">Early Arrivals</div>
+        <div class="kpi-cell-value">19</div>
+        <div class="kpi-cell-delta better">▼ 3</div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-cell-label">Late Departures</div>
+        <div class="kpi-cell-value amber">28</div>
+        <div class="kpi-cell-delta worse">▲ 15</div>
+      </div>
+    </div>
+
+    <!-- trend -->
+    <div class="trend-section">
+      <div class="section-heading">5-Week Trend</div>
+      <div class="chart-area">
+        <div class="fake-bars">
+          <div class="fake-bar-wrap">
+            <div class="fake-bar-num">22</div>
+            <div class="fake-bar" style="height:38%"></div>
+            <div class="fake-bar-label">Apr 27</div>
+          </div>
+          <div class="fake-bar-wrap">
+            <div class="fake-bar-num">35</div>
+            <div class="fake-bar" style="height:60%"></div>
+            <div class="fake-bar-label">May 4</div>
+          </div>
+          <div class="fake-bar-wrap">
+            <div class="fake-bar-num">41</div>
+            <div class="fake-bar" style="height:70%"></div>
+            <div class="fake-bar-label">May 11</div>
+          </div>
+          <div class="fake-bar-wrap">
+            <div class="fake-bar-num">35</div>
+            <div class="fake-bar" style="height:60%"></div>
+            <div class="fake-bar-label">May 15</div>
+          </div>
+          <div class="fake-bar-wrap">
+            <div class="fake-bar-num">47</div>
+            <div class="fake-bar selected" style="height:80%"></div>
+            <div class="fake-bar-label" style="font-weight:700;color:#1a1a1a">May 18</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- manager table -->
+    <div class="section-heading">Manager Compliance Ranking</div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Manager</th>
+          <th>Department</th>
+          <th>OT Rate</th>
+          <th>Exceptions</th>
+          <th>Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="color:#999;font-weight:700">1</td>
+          <td style="font-weight:700">R. Thompson</td>
+          <td style="color:#666">Assembly</td>
+          <td>0.8%</td>
+          <td><span class="badge-early">2 early</span></td>
+          <td>
+            <div class="score-bar">
+              <div class="score-track"><div class="score-fill good" style="width:94%"></div></div>
+              <span style="font-weight:800;font-size:13px;min-width:32px">94</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="color:#999;font-weight:700">2</td>
+          <td style="font-weight:700">D. Chen</td>
+          <td style="color:#666">Fabrication</td>
+          <td>1.2%</td>
+          <td><span class="badge-early">3 early</span></td>
+          <td>
+            <div class="score-bar">
+              <div class="score-track"><div class="score-fill good" style="width:87%"></div></div>
+              <span style="font-weight:800;font-size:13px;min-width:32px">87</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="color:#999;font-weight:700">3</td>
+          <td style="font-weight:700">P. Johnson</td>
+          <td style="color:#666">Shipping</td>
+          <td style="color:#e67e22;font-weight:700">3.4%</td>
+          <td><span class="badge-late">6 late</span></td>
+          <td>
+            <div class="score-bar">
+              <div class="score-track"><div class="score-fill mid" style="width:72%"></div></div>
+              <span style="font-weight:800;font-size:13px;min-width:32px;color:#e67e22">72</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="color:#999;font-weight:700">4</td>
+          <td style="font-weight:700;color:#c0392b">J. Martinez</td>
+          <td style="color:#666">Assembly</td>
+          <td style="color:#c0392b;font-weight:700">7.1%</td>
+          <td><span class="badge-late">14 late</span></td>
+          <td>
+            <div class="score-bar">
+              <div class="score-track"><div class="score-fill bad" style="width:44%"></div></div>
+              <span style="font-weight:800;font-size:13px;min-width:32px;color:#c0392b">44</span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- hours table -->
+    <div class="section-heading">Hours by Department — This Week</div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Department</th>
+          <th>Employees</th>
+          <th style="text-align:right">Regular Hrs</th>
+          <th style="text-align:right">OT Hrs</th>
+          <th style="text-align:right">OT %</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:600">Assembly</td>
+          <td style="color:#666">82</td>
+          <td style="text-align:right">3,122</td>
+          <td style="text-align:right;color:#e67e22">119</td>
+          <td style="text-align:right;color:#888">3.7%</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600">Fabrication</td>
+          <td style="color:#666">64</td>
+          <td style="text-align:right">2,560</td>
+          <td style="text-align:right;color:#e67e22">48</td>
+          <td style="text-align:right;color:#888">1.8%</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600">Quality Control</td>
+          <td style="color:#666">41</td>
+          <td style="text-align:right">1,558</td>
+          <td style="text-align:right">82</td>
+          <td style="text-align:right;color:#888">5.0%</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600">Shipping</td>
+          <td style="color:#666">38</td>
+          <td style="text-align:right">965</td>
+          <td style="text-align:right;color:#c0392b;font-weight:700">255</td>
+          <td style="text-align:right;color:#c0392b;font-weight:700">20.9%</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+  <!-- sidebar -->
+  <div class="side-col">
+
+    <div class="side-section">
+      <div class="side-heading">Org Summary</div>
+      <div class="side-kpi">
+        <span class="side-kpi-label">Total employees</span>
+        <span class="side-kpi-value">248</span>
+      </div>
+      <div class="side-kpi">
+        <span class="side-kpi-label">Active managers</span>
+        <span class="side-kpi-value">14</span>
+      </div>
+      <div class="side-kpi">
+        <span class="side-kpi-label">Locations</span>
+        <span class="side-kpi-value">3</span>
+      </div>
+      <div class="side-kpi">
+        <span class="side-kpi-label">Total hours (week)</span>
+        <span class="side-kpi-value">9,753</span>
+      </div>
+      <div class="side-kpi">
+        <span class="side-kpi-label">Overtime hours</span>
+        <span class="side-kpi-value amber">341.5</span>
+      </div>
+      <div class="side-kpi" style="border-bottom:none">
+        <span class="side-kpi-label">OT rate</span>
+        <span class="side-kpi-value amber">3.5%</span>
+      </div>
+    </div>
+
+    <div class="side-section">
+      <div class="side-heading">Report History</div>
+      <div class="week-selector">
+        <div class="week-option selected">
+          <span>May 18–22</span>
+          <span class="week-count" style="color:#ff7f7f">47</span>
+        </div>
+        <div class="week-option">
+          <span>May 11–15</span>
+          <span class="week-count">35</span>
+        </div>
+        <div class="week-option">
+          <span>May 4–8</span>
+          <span class="week-count">41</span>
+        </div>
+        <div class="week-option">
+          <span>Apr 27–May 1</span>
+          <span class="week-count">22</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-section">
+      <div class="side-heading">Upload New Report</div>
+      <div class="upload-area">
+        <p style="font-size:22px;margin-bottom:8px">↑</p>
+        <p><strong>Drop WOSH file here</strong><br/>or click to browse<br/>.xlsx / .xlsm</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

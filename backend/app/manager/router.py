@@ -322,17 +322,26 @@ def _parse_period_totals_xlsx(contents: bytes) -> tuple[list[dict], str]:
     ws = wb.active
     rows_data = list(ws.iter_rows(values_only=True))
 
-    # Extract period start from row 4 col D (index 3): "04/01/26 Wed - 05/23/26 Sat"
+    # Extract period start — scan the first 10 rows for a date range string like
+    # "05/17/26 Sun - 05/23/26 Sat". Different Payclock report layouts put this
+    # in different rows (row 4 for AAP/Memphis, row 5 for Scottsboro), so we
+    # search rather than hardcode the row index.
     period_start = date.today().isoformat()
-    if len(rows_data) >= 4:
-        cell = rows_data[3][3]
-        if cell and isinstance(cell, str):
-            m = re.match(r"(\d{2}/\d{2}/\d{2})", cell.strip())
-            if m:
-                try:
-                    period_start = datetime.strptime(m.group(1), "%m/%d/%y").date().isoformat()
-                except ValueError:
-                    pass
+    _date_re = re.compile(r"(\d{2}/\d{2}/\d{2})")
+    found_date = False
+    for row in rows_data[:10]:
+        if found_date:
+            break
+        for cell in row:
+            if cell and isinstance(cell, str):
+                m = _date_re.match(cell.strip())
+                if m:
+                    try:
+                        period_start = datetime.strptime(m.group(1), "%m/%d/%y").date().isoformat()
+                        found_date = True
+                        break
+                    except ValueError:
+                        pass
 
     # Find the header row dynamically (first column = "Employee Name")
     header_row_idx = None
