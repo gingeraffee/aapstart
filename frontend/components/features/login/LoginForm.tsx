@@ -8,6 +8,26 @@ import { PinInput } from "./PinInput";
 
 const DEV_AUTH_BYPASS = process.env.NEXT_PUBLIC_DEV_AUTH_BYPASS === "true";
 
+const TROUBLE_MAILTO = (() => {
+  const subject = "AAP Start — Login Help Needed";
+  const body = [
+    "Hi HR Team,",
+    "",
+    "I'm having trouble signing in to AAP Start. My details are below:",
+    "",
+    "Full name:",
+    "Employee number:",
+    "Location / store:",
+    "",
+    "What I was trying to do (sign in / set up 2FA / verify code):",
+    "",
+    "What happened (error message, blank screen, etc.):",
+    "",
+    "Thanks!",
+  ].join("\n");
+  return `mailto:hr@rxaap.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+})();
+
 export function LoginForm() {
   const { login, totpPending, completeTotpLogin, cancelTotp, mustSetupTotp, clearMustSetupTotp } = useAuth();
   const router = useRouter();
@@ -244,6 +264,16 @@ export function LoginForm() {
           </button>
         </div>
       )}
+
+      <div className="pt-1 text-center">
+        <a
+          href={TROUBLE_MAILTO}
+          className="text-[0.76rem] font-semibold underline-offset-2 transition-opacity hover:underline hover:opacity-80"
+          style={{ color: "var(--accent, #3077b9)" }}
+        >
+          Having trouble? Email HR
+        </a>
+      </div>
     </form>
   );
 }
