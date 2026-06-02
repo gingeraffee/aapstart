@@ -1356,8 +1356,8 @@ function addDays(iso: string, days: number): string {
 function ReviewCalendarSection({
   upcoming, pastDue, managerName,
 }: {
-  upcoming: { full_name: string; employee_id: string; review_type: string; due_date: string; days_until: number }[];
-  pastDue: { full_name: string; employee_id: string; review_type: string; due_date: string; days_overdue: number }[];
+  upcoming: { full_name: string; employee_id: string; review_type: string; due_date: string; days_until?: number }[];
+  pastDue: { full_name: string; employee_id: string; review_type: string; due_date: string; days_overdue?: number }[];
   managerName: string;
 }) {
   const rows: ReviewCalendarRow[] = [
@@ -1367,15 +1367,15 @@ function ReviewCalendarSection({
       dueDate: r.due_date, reminderDate: addDays(r.due_date, -7),
       manager: managerName,
       status: "overdue" as const,
-      daysOverdue: r.days_overdue,
+      daysOverdue: r.days_overdue ?? 0,
     })),
     ...upcoming.map(r => ({
       employee: r.full_name, employeeId: r.employee_id,
       reviewType: reviewTypeBadge(r.review_type),
       dueDate: r.due_date, reminderDate: addDays(r.due_date, -7),
       manager: managerName,
-      status: (r.days_until <= 7 ? "reminder-sent" : "upcoming") as ReviewCalendarRow["status"],
-      daysUntil: r.days_until,
+      status: ((r.days_until ?? 0) <= 7 ? "reminder-sent" : "upcoming") as ReviewCalendarRow["status"],
+      daysUntil: r.days_until ?? 0,
     })),
   ];
 
