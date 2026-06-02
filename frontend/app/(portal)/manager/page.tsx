@@ -55,6 +55,11 @@ function formatMonth(yyyymm: string): string {
   return new Date(y, m - 1, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
 }
 
+function daysSince(iso: string | null): number | null {
+  if (!iso) return null;
+  return Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);
+}
+
 function daysUntilColor(days: number): string {
   if (days <= 7) return "#dc2626";
   if (days <= 14) return "#d97706";
@@ -1196,24 +1201,42 @@ function DeptTile({
 // ── Resource Link Item ────────────────────────────────────────────────────────
 
 function ResourceLinkItem({ icon, label, desc, href }: { icon: string; label: string; desc?: string; href?: string }) {
-  const inner = (
-    <>
-      <span className="shrink-0 text-[1.1rem]">{icon}</span>
+  if (href) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-3 rounded-[12px] p-3 transition-all hover:opacity-80"
+        style={{ background: "rgba(14,165,233,0.06)", border: "1px solid rgba(14,165,233,0.18)", textDecoration: "none" }}
+      >
+        <span className="shrink-0 text-[1.1rem]">{icon}</span>
+        <div className="min-w-0 flex-1">
+          <p className="text-[0.8rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>{label}</p>
+          {desc && <p className="mt-0.5 text-[0.68rem] leading-tight" style={{ color: "var(--sidebar-label)" }}>{desc}</p>}
+        </div>
+        <svg className="shrink-0" width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--sidebar-label)" }}>
+          <path d="M2 6h8M6 2l4 4-4 4" />
+        </svg>
+      </a>
+    );
+  }
+  return (
+    <div
+      className="flex items-center gap-3 rounded-[12px] p-3"
+      style={{ background: "rgba(153,182,218,0.06)", border: "1px solid rgba(153,182,218,0.18)", cursor: "default" }}
+    >
+      <span className="shrink-0 text-[1.1rem]" style={{ opacity: 0.5 }}>{icon}</span>
       <div className="min-w-0 flex-1">
         <p className="text-[0.8rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>{label}</p>
         {desc && <p className="mt-0.5 text-[0.68rem] leading-tight" style={{ color: "var(--sidebar-label)" }}>{desc}</p>}
       </div>
-      <svg className="shrink-0" width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--sidebar-label)" }}>
-        <path d="M2 6h8M6 2l4 4-4 4" />
-      </svg>
-    </>
+      <span className="shrink-0 rounded-full px-2 py-0.5 text-[0.6rem] font-bold"
+        style={{ background: "rgba(153,182,218,0.2)", color: "var(--sidebar-label)" }}>
+        Coming Soon
+      </span>
+    </div>
   );
-  const cls = "flex items-center gap-3 rounded-[12px] p-3 transition-all hover:opacity-80";
-  const sty = { background: "rgba(14,165,233,0.06)", border: "1px solid rgba(14,165,233,0.18)", textDecoration: "none" as const };
-  if (href) {
-    return <a href={href} target="_blank" rel="noopener noreferrer" className={cls} style={sty}>{inner}</a>;
-  }
-  return <div className={cls} style={{ ...sty, cursor: "default" as const }}>{inner}</div>;
 }
 
 // ── Planning Checklist Item ───────────────────────────────────────────────────
@@ -1489,15 +1512,95 @@ const WORKFORCE_TOOLS = [
   { icon: "📈", label: "Skills Gap Tracking",                  desc: "Identify and log skill development needs" },
   { icon: "🗓", label: "Upcoming Vacancies & Changes",         desc: "Known staffing transitions in your department" },
   { icon: "🧩", label: "Succession Planning",                  desc: "Identify key role backups and high-potential employees" },
-  { icon: "🌱", label: "30/60/90 New Hire Planning",           desc: "Milestone tracking for new team members" },
   { icon: "📐", label: "Department Growth & Restructuring",    desc: "Document planned team structure changes" },
 ];
 
+// ── New Hire 30/60/90 Card ────────────────────────────────────────────────────
+
+const MILESTONE_BANDS = [
+  { label: "30-Day",  min: 0,  max: 30,  color: "#0ea5e9", bg: "rgba(14,165,233,0.08)",  border: "rgba(14,165,233,0.2)"  },
+  { label: "60-Day",  min: 31, max: 60,  color: "#8b5cf6", bg: "rgba(139,92,246,0.08)",  border: "rgba(139,92,246,0.2)"  },
+  { label: "90-Day",  min: 61, max: 90,  color: "#d97706", bg: "rgba(217,119,6,0.08)",   border: "rgba(217,119,6,0.2)"   },
+];
+
+function NewHirePlanningCard({ team }: { team: ManagerTeamMemberV2[] }) {
+  const newHires = team
+    .map(m => ({ ...m, daysIn: daysSince(m.first_login_at) }))
+    .filter(m => m.daysIn !== null && m.daysIn >= 0 && m.daysIn <= 90)
+    .sort((a, b) => (a.daysIn ?? 0) - (b.daysIn ?? 0));
+
+  return (
+    <Card title="30/60/90 Day New Hire Planning">
+      {newHires.length === 0 ? (
+        <div className="px-5 py-8 text-center">
+          <p className="text-[0.8rem]" style={{ color: "var(--sidebar-label)" }}>
+            No team members in their first 90 days. New hires appear here automatically on first login.
+          </p>
+        </div>
+      ) : (
+        <div>
+          {MILESTONE_BANDS.map((band, bi) => {
+            const members = newHires.filter(m => (m.daysIn ?? 0) >= band.min && (m.daysIn ?? 0) <= band.max);
+            if (members.length === 0) return null;
+            return (
+              <div key={band.label} className="px-5 py-4"
+                style={{ borderTop: bi > 0 ? "1px solid rgba(153,182,218,0.12)" : "none" }}>
+                <div className="mb-3 flex items-center gap-2">
+                  <span className="rounded-full px-2.5 py-0.5 text-[0.68rem] font-bold"
+                    style={{ background: band.bg, color: band.color, border: `1px solid ${band.border}` }}>
+                    {band.label} Check-in
+                  </span>
+                  <span className="text-[0.68rem]" style={{ color: "var(--sidebar-label)" }}>
+                    {members.length} employee{members.length !== 1 ? "s" : ""}
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  {members.map(m => {
+                    const total = (m as ManagerTeamMemberV2 & { modules_total?: number }).modules_total ?? 0;
+                    const done  = m.modules_completed;
+                    const pct   = total > 0 ? Math.round((done / total) * 100) : null;
+                    return (
+                      <div key={m.employee_id} className="rounded-[10px] px-3 py-2.5"
+                        style={{ background: band.bg, border: `1px solid ${band.border}` }}>
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="text-[0.82rem] font-semibold leading-tight" style={{ color: "var(--sidebar-text)" }}>{m.full_name}</p>
+                            <p className="text-[0.65rem]" style={{ color: "var(--sidebar-label)" }}>
+                              {m.department ?? "No Department"} · Day {m.daysIn}
+                            </p>
+                          </div>
+                          <div className="shrink-0 text-right">
+                            <p className="text-[0.72rem] font-bold tabular-nums" style={{ color: pct === 100 ? "#16a34a" : band.color }}>
+                              {pct !== null ? `${pct}%` : "—"}
+                            </p>
+                            <p className="text-[0.62rem]" style={{ color: "var(--sidebar-label)" }}>onboarding</p>
+                          </div>
+                        </div>
+                        {pct !== null && (
+                          <div className="mt-2 h-1 w-full overflow-hidden rounded-full" style={{ background: "rgba(255,255,255,0.4)" }}>
+                            <div className="h-full rounded-full transition-all"
+                              style={{ width: `${pct}%`, background: pct === 100 ? "#16a34a" : band.color }} />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </Card>
+  );
+}
+
 function WorkforcePlanningSection({
-  checks, onToggle,
+  checks, onToggle, team,
 }: {
   checks: Record<string, boolean>;
   onToggle: (id: string, val: boolean) => void;
+  team: ManagerTeamMemberV2[];
 }) {
   const checkedCount = PLANNING_CHECKLIST_ITEMS.filter(i => checks[i.id]).length;
   const total = PLANNING_CHECKLIST_ITEMS.length;
@@ -1526,6 +1629,15 @@ function WorkforcePlanningSection({
             <ResourceLinkItem key={t.label} icon={t.icon} label={t.label} desc={t.desc} />
           ))}
         </div>
+      </div>
+
+      {/* 30/60/90 New Hire Planning */}
+      <div>
+        <div className="mb-3 flex items-center gap-3">
+          <span className="text-[0.62rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--sidebar-label)" }}>New Hire Milestones</span>
+          <div className="h-px flex-1" style={{ background: "rgba(153,182,218,0.25)" }} />
+        </div>
+        <NewHirePlanningCard team={team} />
       </div>
 
       {/* Quarterly planning checklist */}
@@ -2156,6 +2268,7 @@ export default function ManagerDashboardPage() {
         <WorkforcePlanningSection
           checks={planningChecks}
           onToggle={(id, val) => setPlanningChecks(prev => ({ ...prev, [id]: val }))}
+          team={dashboard?.team ?? []}
         />
       )}
 
