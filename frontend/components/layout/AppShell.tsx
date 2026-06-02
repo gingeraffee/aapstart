@@ -129,8 +129,9 @@ export function AppShell({ children }: AppShellProps) {
 
   const isJourneyModuleUnlocked = (_index: number) => true;
 
-  // Collapsibility: HR users can collapse, previewed tracks behave like their real track
-  const canCollapse = isRealHR && isEffectiveHR;
+  // Collapsibility: HR admins and executives get menus collapsed by default;
+  // previewed tracks behave like their real track (expanded, like a normal employee).
+  const canCollapse = (isRealHR && isEffectiveHR) || (!isPreviewing && (user?.is_executive ?? false));
 
   const activeNavStyle = {
     background: "var(--sidebar-active-bg)",
@@ -408,7 +409,7 @@ export function AppShell({ children }: AppShellProps) {
 
           {/* ── Management Processes section (management + HR) ── */}
           {showManagementSection && managementModules.length > 0 && (
-            <details open className={cn("group [&_summary::-webkit-details-marker]:hidden", showJourney ? "mt-5 border-t pt-4" : "mt-3")} style={showJourney ? { borderColor: "var(--sidebar-divider)" } : undefined}>
+            <details open={!canCollapse} className={cn("group [&_summary::-webkit-details-marker]:hidden", showJourney ? "mt-5 border-t pt-4" : "mt-3")} style={showJourney ? { borderColor: "var(--sidebar-divider)" } : undefined}>
               <summary
                 className={cn("mb-2.5 flex list-none items-center justify-between px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]", canCollapse ? "cursor-pointer" : "cursor-default")}
                 style={{ color: "var(--sidebar-label)" }}
