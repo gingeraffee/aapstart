@@ -1364,7 +1364,7 @@ export default function ExecutivePage() {
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-[1.4rem] font-bold leading-tight" style={{ color: "var(--heading-color)", letterSpacing: "-0.02em" }}>
-            Executive Summary
+            Executive Reports
           </h1>
           <p className="mt-0.5 text-[0.8rem]" style={{ color: "var(--module-context)" }}>
             {periodLabel}

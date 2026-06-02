@@ -518,7 +518,7 @@ export function AppShell({ children }: AppShellProps) {
           {(user?.is_executive || user?.is_admin) && (
             <Link
               href="/executive"
-              title="Executive Summary"
+              title="Executive Reports"
               className={cn(
                 "flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] transition-all duration-200",
                 isExecutiveActive
@@ -550,8 +550,8 @@ export function AppShell({ children }: AppShellProps) {
             </Link>
           )}
 
-          {/* Manager Dashboard button — managers only (not admins/execs who also have is_manager) */}
-          {user?.is_manager && !user?.is_admin && !user?.is_executive && (
+          {/* Manager Dashboard button */}
+          {user?.is_manager && (
             <Link
               href="/manager"
               title="Manager Dashboard"
@@ -666,7 +666,7 @@ export function AppShell({ children }: AppShellProps) {
                 borderBottom: isExecutiveActive ? "2px solid var(--sidebar-text)" : "2px solid transparent",
               }}
             >
-              Executive Summary
+              Executive Reports
             </button>
           )}
           {user?.is_admin && (
@@ -687,7 +687,7 @@ export function AppShell({ children }: AppShellProps) {
               Data Inventory
             </button>
           )}
-          {user?.is_manager && !user?.is_admin && !user?.is_executive && (
+          {user?.is_manager && (
             <button
               onClick={() => router.push("/manager")}
               className="pb-0.5 text-[0.85rem] font-semibold transition-colors duration-200"

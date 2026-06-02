@@ -1157,6 +1157,426 @@ function AttendancePointsTable({ team, absenceByCategory, filter, onSelectEmploy
   );
 }
 
+// ── Dept Tile ────────────────────────────────────────────────────────────────
+
+function DeptTile({
+  icon, label, value, sub, accent, badge, note,
+}: {
+  icon: string; label: string; value: string | number;
+  sub?: string; accent?: string;
+  badge?: { text: string; color: string };
+  note?: string;
+}) {
+  return (
+    <div
+      className="rounded-[14px] p-4"
+      style={{
+        background: "rgba(255,255,255,0.82)",
+        border: "1px solid rgba(153,182,218,0.28)",
+        boxShadow: "0 2px 8px rgba(12,24,47,0.06)",
+      }}
+    >
+      <div className="mb-2 flex items-start justify-between gap-2">
+        <span className="text-[1.25rem] leading-none">{icon}</span>
+        {badge && (
+          <span className="rounded-full px-2 py-0.5 text-[0.6rem] font-bold"
+            style={{ background: `${badge.color}18`, color: badge.color, border: `1px solid ${badge.color}30` }}>
+            {badge.text}
+          </span>
+        )}
+      </div>
+      <p className="mb-1.5 text-[0.6rem] font-bold uppercase tracking-[0.12em]" style={{ color: "var(--sidebar-label)" }}>{label}</p>
+      <p className="text-[1.35rem] font-bold leading-none" style={{ color: accent ?? "var(--sidebar-text)" }}>{value}</p>
+      {sub && <p className="mt-1 text-[0.66rem]" style={{ color: "var(--sidebar-label)" }}>{sub}</p>}
+      {note && <p className="mt-2 text-[0.63rem] italic leading-tight" style={{ color: "var(--sidebar-label)", opacity: 0.65 }}>{note}</p>}
+    </div>
+  );
+}
+
+// ── Resource Link Item ────────────────────────────────────────────────────────
+
+function ResourceLinkItem({ icon, label, desc, href }: { icon: string; label: string; desc?: string; href?: string }) {
+  const inner = (
+    <>
+      <span className="shrink-0 text-[1.1rem]">{icon}</span>
+      <div className="min-w-0 flex-1">
+        <p className="text-[0.8rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>{label}</p>
+        {desc && <p className="mt-0.5 text-[0.68rem] leading-tight" style={{ color: "var(--sidebar-label)" }}>{desc}</p>}
+      </div>
+      <svg className="shrink-0" width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--sidebar-label)" }}>
+        <path d="M2 6h8M6 2l4 4-4 4" />
+      </svg>
+    </>
+  );
+  const cls = "flex items-center gap-3 rounded-[12px] p-3 transition-all hover:opacity-80";
+  const sty = { background: "rgba(14,165,233,0.06)", border: "1px solid rgba(14,165,233,0.18)", textDecoration: "none" as const };
+  if (href) {
+    return <a href={href} target="_blank" rel="noopener noreferrer" className={cls} style={sty}>{inner}</a>;
+  }
+  return <div className={cls} style={{ ...sty, cursor: "default" as const }}>{inner}</div>;
+}
+
+// ── Planning Checklist Item ───────────────────────────────────────────────────
+
+function PlanningCheckItem({ id, text, checked, onChange }: { id: string; text: string; checked: boolean; onChange: (id: string, val: boolean) => void }) {
+  return (
+    <label
+      className="flex cursor-pointer items-start gap-3 rounded-[12px] p-3.5 transition-all"
+      style={{
+        background: checked ? "rgba(22,163,74,0.06)" : "rgba(153,182,218,0.06)",
+        border: `1px solid ${checked ? "rgba(22,163,74,0.25)" : "rgba(153,182,218,0.2)"}`,
+      }}
+    >
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={e => onChange(id, e.target.checked)}
+        className="mt-0.5 shrink-0"
+        style={{ accentColor: "#16a34a", width: "15px", height: "15px" }}
+      />
+      <span
+        className="text-[0.8rem] leading-snug"
+        style={{
+          color: checked ? "var(--sidebar-label)" : "var(--sidebar-text)",
+          textDecoration: checked ? "line-through" : "none",
+          opacity: checked ? 0.65 : 1,
+        }}
+      >
+        {text}
+      </span>
+    </label>
+  );
+}
+
+// ── Department Dashboard Section ──────────────────────────────────────────────
+
+function DepartmentDashboardSection({
+  teamSize, upcomingReviews, pastDue, onboardingTeam,
+}: {
+  teamSize: number;
+  upcomingReviews: number;
+  pastDue: number;
+  onboardingTeam: ManagerTeamMemberV2[];
+}) {
+  const totalModules   = onboardingTeam.reduce((s, m) => s + (m.modules_total ?? 0), 0);
+  const completedMods  = onboardingTeam.reduce((s, m) => s + m.modules_completed, 0);
+  const onboardingPct  = totalModules > 0 ? Math.round((completedMods / totalModules) * 100) : null;
+  const fullyOnboarded = onboardingTeam.filter(m => m.modules_total && m.modules_completed >= m.modules_total).length;
+
+  return (
+    <div className="space-y-5">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <DeptTile
+          icon="👥" label="Team Size" value={teamSize}
+          sub="Active employees" accent="var(--sidebar-text)"
+        />
+        <DeptTile
+          icon="📋" label="New Hire Onboarding"
+          value={onboardingPct !== null ? `${onboardingPct}%` : "—"}
+          sub={`${fullyOnboarded} of ${onboardingTeam.length} fully complete`}
+          accent={onboardingPct === 100 ? "#16a34a" : onboardingPct !== null && onboardingPct > 50 ? "#0ea5e9" : "var(--sidebar-text)"}
+        />
+        <DeptTile
+          icon="📅" label="Upcoming Reviews"
+          value={upcomingReviews}
+          sub="Due within 30 days"
+          accent={upcomingReviews > 0 ? "#0f6da3" : "var(--sidebar-text)"}
+          badge={pastDue > 0 ? { text: `${pastDue} overdue`, color: "#dc2626" } : undefined}
+        />
+        <DeptTile
+          icon="🎯" label="Open Positions" value="—"
+          sub="Connect to BambooHR"
+          note="Link to recruiting data coming soon"
+        />
+        <DeptTile
+          icon="📚" label="Training Completion"
+          value={onboardingPct !== null ? `${onboardingPct}%` : "—"}
+          sub="Module completion rate"
+          accent={onboardingPct !== null && onboardingPct >= 80 ? "#16a34a" : onboardingPct !== null ? "#d97706" : "var(--sidebar-text)"}
+        />
+        <DeptTile
+          icon="⚡" label="Pending Manager Tasks"
+          value={pastDue + upcomingReviews}
+          sub="Reviews due or overdue"
+          accent={(pastDue + upcomingReviews) > 0 ? "#d97706" : "#16a34a"}
+        />
+        <DeptTile
+          icon="📈" label="Turnover / Changes" value="—"
+          sub="Connect to HRIS"
+          note="Import staffing change data to enable"
+        />
+        <DeptTile
+          icon="🏆" label="Performance Reviews"
+          value={upcomingReviews + pastDue}
+          sub={`${pastDue} overdue · ${upcomingReviews} upcoming`}
+          accent={pastDue > 0 ? "#dc2626" : "var(--sidebar-text)"}
+        />
+      </div>
+
+      <Card title="Related Reports & Guides">
+        <div className="grid gap-2 p-4 sm:grid-cols-2">
+          <ResourceLinkItem icon="📊" label="BambooHR People Analytics" desc="Headcount, turnover, and org chart" href="https://app.bamboohr.com" />
+          <ResourceLinkItem icon="📝" label="Performance Review Guide" desc="Manager guide to conducting reviews" />
+          <ResourceLinkItem icon="🎓" label="LinkedIn Learning" desc="Training resources for your team" href="https://www.linkedin.com/learning/" />
+          <ResourceLinkItem icon="📋" label="Onboarding Checklist" desc="New hire completion status guide" />
+          <ResourceLinkItem icon="👋" label="New Hire 30/60/90 Plan" desc="Template for onboarding milestone planning" />
+          <ResourceLinkItem icon="📞" label="HR Contact" desc="Reach your HR Business Partner" />
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+// ── Review Calendar Section ───────────────────────────────────────────────────
+
+type ReviewCalendarRow = {
+  employee: string;
+  employeeId: string;
+  reviewType: string;
+  dueDate: string;
+  reminderDate: string;
+  manager: string;
+  status: "upcoming" | "reminder-sent" | "overdue";
+  daysUntil?: number;
+  daysOverdue?: number;
+};
+
+const REVIEW_STATUS_STYLES: Record<ReviewCalendarRow["status"], { bg: string; color: string; label: string }> = {
+  "upcoming":      { bg: "rgba(14,165,233,0.1)",  color: "#0369a1",  label: "Upcoming" },
+  "reminder-sent": { bg: "rgba(217,119,6,0.1)",   color: "#92400e",  label: "Reminder Sent" },
+  "overdue":       { bg: "rgba(220,38,38,0.1)",   color: "#dc2626",  label: "Overdue" },
+};
+
+function addDays(iso: string, days: number): string {
+  const d = new Date(iso);
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+function ReviewCalendarSection({
+  upcoming, pastDue, managerName,
+}: {
+  upcoming: { full_name: string; employee_id: string; review_type: string; due_date: string; days_until: number }[];
+  pastDue: { full_name: string; employee_id: string; review_type: string; due_date: string; days_overdue: number }[];
+  managerName: string;
+}) {
+  const rows: ReviewCalendarRow[] = [
+    ...pastDue.map(r => ({
+      employee: r.full_name, employeeId: r.employee_id,
+      reviewType: reviewTypeBadge(r.review_type),
+      dueDate: r.due_date, reminderDate: addDays(r.due_date, -7),
+      manager: managerName,
+      status: "overdue" as const,
+      daysOverdue: r.days_overdue,
+    })),
+    ...upcoming.map(r => ({
+      employee: r.full_name, employeeId: r.employee_id,
+      reviewType: reviewTypeBadge(r.review_type),
+      dueDate: r.due_date, reminderDate: addDays(r.due_date, -7),
+      manager: managerName,
+      status: (r.days_until <= 7 ? "reminder-sent" : "upcoming") as ReviewCalendarRow["status"],
+      daysUntil: r.days_until,
+    })),
+  ];
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-start gap-3 rounded-[12px] px-4 py-3"
+        style={{ background: "rgba(14,165,233,0.06)", border: "1px solid rgba(14,165,233,0.2)" }}>
+        <span className="mt-0.5 shrink-0 text-[1.1rem]">📅</span>
+        <div>
+          <p className="text-[0.8rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>
+            Outlook Calendar Reminders
+          </p>
+          <p className="mt-0.5 text-[0.74rem] leading-relaxed" style={{ color: "var(--sidebar-label)" }}>
+            Supervisors receive automatic Outlook calendar reminders <strong>one week before</strong> each performance review due date to support timely completion. Reviews marked <em>Reminder Sent</em> have a reminder due within 7 days.
+          </p>
+        </div>
+      </div>
+
+      <Card title={`Review Schedule (${rows.length} total)`}>
+        {rows.length === 0 ? (
+          <div className="px-5 py-10 text-center">
+            <p className="text-[0.85rem]" style={{ color: "var(--sidebar-label)" }}>
+              No upcoming or overdue reviews for your team.
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-[0.8rem]">
+              <thead>
+                <tr style={{ background: "rgba(153,182,218,0.06)", borderBottom: "1px solid rgba(153,182,218,0.2)" }}>
+                  {["Employee", "Review Type", "Due Date", "Reminder Date", "Manager", "Status"].map(h => (
+                    <th key={h}
+                      className="px-4 py-3 text-left text-[0.62rem] font-bold uppercase tracking-[0.1em]"
+                      style={{ color: "var(--sidebar-label)" }}>
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row, i) => {
+                  const s = REVIEW_STATUS_STYLES[row.status];
+                  return (
+                    <tr key={`${row.employeeId}-${i}`}
+                      style={{ borderBottom: i < rows.length - 1 ? "1px solid rgba(153,182,218,0.1)" : "none" }}>
+                      <td className="px-4 py-3">
+                        <p className="font-semibold" style={{ color: "var(--sidebar-text)" }}>{row.employee}</p>
+                        <p className="text-[0.65rem]" style={{ color: "var(--sidebar-label)" }}>{row.employeeId}</p>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="rounded-full px-2.5 py-0.5 text-[0.7rem] font-semibold"
+                          style={{ background: "rgba(153,182,218,0.15)", color: "var(--sidebar-text)" }}>
+                          {row.reviewType}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 tabular-nums" style={{ color: "var(--sidebar-text)" }}>
+                        {formatDate(row.dueDate)}
+                        {row.daysOverdue !== undefined && (
+                          <span className="ml-2 text-[0.65rem] font-semibold" style={{ color: "#dc2626" }}>
+                            {row.daysOverdue}d overdue
+                          </span>
+                        )}
+                        {row.daysUntil !== undefined && (
+                          <span className="ml-2 text-[0.65rem]" style={{ color: daysUntilColor(row.daysUntil) }}>
+                            {row.daysUntil === 0 ? "Today" : `in ${row.daysUntil}d`}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 tabular-nums text-[0.78rem]" style={{ color: "var(--sidebar-label)" }}>
+                        {formatDate(row.reminderDate)}
+                      </td>
+                      <td className="px-4 py-3 text-[0.78rem]" style={{ color: "var(--sidebar-text)" }}>
+                        {row.manager}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="rounded-full px-2.5 py-1 text-[0.66rem] font-bold"
+                          style={{ background: s.bg, color: s.color }}>
+                          {s.label}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
+    </div>
+  );
+}
+
+// ── Workforce Planning Section ────────────────────────────────────────────────
+
+const PLANNING_CHECKLIST_ITEMS = [
+  { id: "coverage",      text: "Do we have enough coverage for upcoming workload or schedule changes?" },
+  { id: "transitions",   text: "Are any employees approaching retirement, transfer, promotion, or leave?" },
+  { id: "crosstraining", text: "Are key duties documented and cross-trained with a backup employee?" },
+  { id: "backup",        text: "Do we have backup coverage for all critical roles?" },
+  { id: "skills",        text: "Are there skills or training gaps on our team we need to address?" },
+  { id: "jobdesc",       text: "Are any role descriptions outdated and in need of review or updates?" },
+  { id: "new-hire-plan", text: "Is there a 30/60/90 day plan in place for any current new hires?" },
+  { id: "succession",    text: "Have we identified key role coverage and succession planning needs?" },
+  { id: "growth",        text: "Are there any anticipated department growth or restructuring changes?" },
+];
+
+const WORKFORCE_TOOLS = [
+  { icon: "📋", label: "Staffing Request / Position Planning",  desc: "Submit or track open position requests" },
+  { icon: "👥", label: "Department Headcount Overview",         desc: "View current FTE count and allocation" },
+  { icon: "🔄", label: "Cross-Training Tracker",               desc: "Document backup employees for critical duties" },
+  { icon: "📈", label: "Skills Gap Tracking",                  desc: "Identify and log skill development needs" },
+  { icon: "🗓", label: "Upcoming Vacancies & Changes",         desc: "Known staffing transitions in your department" },
+  { icon: "🧩", label: "Succession Planning",                  desc: "Identify key role backups and high-potential employees" },
+  { icon: "🌱", label: "30/60/90 New Hire Planning",           desc: "Milestone tracking for new team members" },
+  { icon: "📐", label: "Department Growth & Restructuring",    desc: "Document planned team structure changes" },
+];
+
+function WorkforcePlanningSection({
+  checks, onToggle,
+}: {
+  checks: Record<string, boolean>;
+  onToggle: (id: string, val: boolean) => void;
+}) {
+  const checkedCount = PLANNING_CHECKLIST_ITEMS.filter(i => checks[i.id]).length;
+  const total = PLANNING_CHECKLIST_ITEMS.length;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-start gap-3 rounded-[14px] px-5 py-4"
+        style={{ background: "rgba(15,109,163,0.06)", border: "1px solid rgba(15,109,163,0.2)" }}>
+        <span className="mt-0.5 shrink-0 text-[1.4rem]">🗺</span>
+        <div>
+          <p className="text-[0.9rem] font-bold" style={{ color: "var(--sidebar-text)" }}>Workforce Planning Tools</p>
+          <p className="mt-1 text-[0.78rem] leading-relaxed" style={{ color: "var(--sidebar-label)" }}>
+            Use the tools and checklist below to proactively plan for staffing, coverage, and talent needs in your department. These tools are designed to help managers think ahead — not just react.
+          </p>
+        </div>
+      </div>
+
+      {/* Tools grid */}
+      <div>
+        <div className="mb-3 flex items-center gap-3">
+          <span className="text-[0.62rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--sidebar-label)" }}>Planning Tools</span>
+          <div className="h-px flex-1" style={{ background: "rgba(153,182,218,0.25)" }} />
+        </div>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {WORKFORCE_TOOLS.map(t => (
+            <ResourceLinkItem key={t.label} icon={t.icon} label={t.label} desc={t.desc} />
+          ))}
+        </div>
+      </div>
+
+      {/* Quarterly planning checklist */}
+      <div>
+        <div className="mb-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-[0.62rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--sidebar-label)" }}>Quarterly Planning Checklist</span>
+          </div>
+          <span className="tabular-nums text-[0.72rem] font-semibold" style={{ color: checkedCount === total ? "#16a34a" : "var(--sidebar-label)" }}>
+            {checkedCount} / {total} reviewed
+          </span>
+        </div>
+
+        {checkedCount > 0 && (
+          <div className="mb-3 h-1.5 w-full overflow-hidden rounded-full" style={{ background: "rgba(153,182,218,0.2)" }}>
+            <div className="h-full rounded-full transition-all duration-500"
+              style={{ width: `${Math.round((checkedCount / total) * 100)}%`, background: checkedCount === total ? "#16a34a" : "#0f6da3" }} />
+          </div>
+        )}
+
+        <div className="space-y-2">
+          {PLANNING_CHECKLIST_ITEMS.map(item => (
+            <PlanningCheckItem
+              key={item.id} id={item.id} text={item.text}
+              checked={!!checks[item.id]} onChange={onToggle}
+            />
+          ))}
+        </div>
+
+        {checkedCount === total && total > 0 && (
+          <div className="mt-4 rounded-[12px] px-4 py-3 text-center"
+            style={{ background: "rgba(22,163,74,0.08)", border: "1px solid rgba(22,163,74,0.25)" }}>
+            <p className="text-[0.8rem] font-bold" style={{ color: "#15803d" }}>
+              Planning review complete! Great work thinking ahead for your team.
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Future integrations note */}
+      <div className="rounded-[12px] px-4 py-3"
+        style={{ background: "rgba(153,182,218,0.07)", border: "1px solid rgba(153,182,218,0.2)" }}>
+        <p className="mb-1 text-[0.72rem] font-semibold" style={{ color: "var(--sidebar-text)" }}>Coming Soon</p>
+        <p className="text-[0.7rem] leading-relaxed" style={{ color: "var(--sidebar-label)" }}>
+          Workforce planning tools will connect to BambooHR, Google Sheets, and internal HR forms to pull live headcount, vacancy, and skills data. Staffing request submissions will be integrated with the HR ticketing system.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function ManagerDashboardPage() {
@@ -1165,7 +1585,8 @@ export default function ManagerDashboardPage() {
   const canAccess = user?.is_manager || user?.is_admin || user?.is_executive;
   const canViewAs  = user?.is_admin || user?.is_executive;
 
-  const [activeTab, setActiveTab] = useState<"metrics" | "roster" | "analytics">("metrics");
+  const [activeTab, setActiveTab] = useState<"metrics" | "roster" | "analytics" | "resources" | "planning">("metrics");
+  const [planningChecks, setPlanningChecks] = useState<Record<string, boolean>>({});
   const [selectedMonth, setSelectedMonth] = useState(currentMonthStr);
   const [compareMode, setCompareMode] = useState(false);
   const [compareMonth, setCompareMonth] = useState(prevMonthStr);
@@ -1326,7 +1747,7 @@ export default function ManagerDashboardPage() {
 
       {/* ── Sub-tabs ── */}
       <div className="flex items-center gap-7">
-        {(["metrics", "roster", "analytics"] as const).map(tab => (
+        {(["metrics", "roster", "analytics", "resources", "planning"] as const).map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -1336,7 +1757,11 @@ export default function ManagerDashboardPage() {
               borderBottom: activeTab === tab ? "2px solid var(--sidebar-text)" : "2px solid transparent",
             }}
           >
-            {tab === "metrics" ? "Metrics" : tab === "roster" ? "Team Roster" : "Team Analytics"}
+            {tab === "metrics" ? "Metrics"
+              : tab === "roster" ? "Team Roster"
+              : tab === "analytics" ? "Team Analytics"
+              : tab === "resources" ? "Manager Hub"
+              : "Workforce Planning"}
           </button>
         ))}
       </div>
@@ -1699,6 +2124,39 @@ export default function ManagerDashboardPage() {
             </>
           )}
         </>
+      )}
+
+      {/* ════════════════ MANAGER HUB TAB ════════════════ */}
+      {activeTab === "resources" && (
+        <div className="space-y-6">
+          <div className="flex items-center gap-3">
+            <span className="text-[0.62rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--sidebar-label)" }}>Department Overview</span>
+            <div className="h-px flex-1" style={{ background: "rgba(153,182,218,0.25)" }} />
+          </div>
+          <DepartmentDashboardSection
+            teamSize={dashboard?.team_size ?? 0}
+            upcomingReviews={filteredUpcoming.length}
+            pastDue={filteredPastDue.length}
+            onboardingTeam={dashboard?.team ?? []}
+          />
+          <div className="flex items-center gap-3">
+            <span className="text-[0.62rem] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--sidebar-label)" }}>Performance Review Calendar</span>
+            <div className="h-px flex-1" style={{ background: "rgba(153,182,218,0.25)" }} />
+          </div>
+          <ReviewCalendarSection
+            upcoming={filteredUpcoming}
+            pastDue={filteredPastDue}
+            managerName={user?.full_name ?? "Manager"}
+          />
+        </div>
+      )}
+
+      {/* ════════════════ WORKFORCE PLANNING TAB ════════════════ */}
+      {activeTab === "planning" && (
+        <WorkforcePlanningSection
+          checks={planningChecks}
+          onToggle={(id, val) => setPlanningChecks(prev => ({ ...prev, [id]: val }))}
+        />
       )}
 
       {/* ── Employee Detail Panel (all tabs) ── */}
