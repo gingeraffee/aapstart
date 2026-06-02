@@ -9,6 +9,12 @@ settings = get_settings()
 
 db_url = settings.database_url
 
+# Render (and some other hosts) provide DATABASE_URL starting with "postgres://",
+# but SQLAlchemy 2.x requires the "postgresql://" scheme. Normalize defensively;
+# this is a no-op for SQLite URLs or URLs that already use "postgresql://".
+if db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql://", 1)
+
 # SQLite-specific setup
 connect_args = {}
 if db_url.startswith("sqlite"):
