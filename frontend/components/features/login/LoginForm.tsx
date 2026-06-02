@@ -269,7 +269,7 @@ export function LoginForm() {
         <a
           href={TROUBLE_MAILTO}
           className="text-[0.76rem] font-semibold underline-offset-2 transition-opacity hover:underline hover:opacity-80"
-          style={{ color: "var(--accent, #3077b9)" }}
+          style={{ color: "#3077b9" }}
         >
           Having trouble? Email HR
         </a>
