@@ -182,10 +182,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         first_name: payload.first_name,
         last_name: payload.last_name,
         full_name: `${payload.first_name} ${payload.last_name}`.trim(),
-        tracks: ["administrative"],
-        is_admin: false,
-        is_manager: false,
-        is_executive: false,
+        tracks: ["hr"],
+        is_admin: true,
+        is_manager: true,
+        is_executive: true,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(devUser));
       setUser(devUser);
