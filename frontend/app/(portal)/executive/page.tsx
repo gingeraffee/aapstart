@@ -14,6 +14,7 @@ import type {
   WoshException,
   ShiftAdherenceData,
   ManagerAdherence,
+  PTOAnalyticsData,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import {
@@ -859,6 +860,84 @@ function HoursByLocation({ locations }: { locations: LocationHours[] }) {
   );
 }
 
+// ── Time-off by location (PTO tab) ────────────────────────────────────────────
+
+function PtoByLocation({ locations }: { locations: PTOAnalyticsData["locations"] }) {
+  const [open, setOpen] = useState<string | null>(null);
+  if (locations.length === 0) {
+    return (
+      <div className="rounded-[14px] py-6 text-center" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}>
+        <p className="text-[0.82rem] font-semibold" style={{ color: "var(--heading-color)" }}>No time-off data</p>
+        <p className="mt-1 text-[0.75rem]" style={{ color: "var(--card-desc)" }}>Hours must be imported for time-off analytics to appear.</p>
+      </div>
+    );
+  }
+  return (
+    <div className="grid gap-3 grid-cols-1">
+      {locations.map((loc) => {
+        const isOpen = open === loc.location;
+        return (
+          <div key={loc.location} className="overflow-hidden rounded-[16px]" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)" }}>
+            <button onClick={() => setOpen(isOpen ? null : loc.location)}
+              className="flex w-full items-start justify-between gap-3 px-4 py-4 text-left transition-all hover:bg-black/[0.02]">
+              <div>
+                <p className="text-[0.8rem] font-bold" style={{ color: "var(--heading-color)" }}>{loc.location}</p>
+                <div className="mt-2 flex flex-wrap gap-4">
+                  <div>
+                    <p className="text-[0.6rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>Vacation</p>
+                    <p className="text-[1.1rem] font-extrabold leading-tight" style={{ color: "var(--heading-color)" }}>{fmtHrs(loc.vacation_hours)}</p>
+                  </div>
+                  <div>
+                    <p className="text-[0.6rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>Personal</p>
+                    <p className="text-[1.1rem] font-extrabold leading-tight" style={{ color: "var(--heading-color)" }}>{fmtHrs(loc.personal_hours)}</p>
+                  </div>
+                  <div>
+                    <p className="text-[0.6rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>Protected</p>
+                    <p className="text-[1.1rem] font-extrabold leading-tight" style={{ color: "#0f7fb3" }}>{fmtHrs(loc.protected_hours)}</p>
+                  </div>
+                  <div>
+                    <p className="text-[0.6rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--module-context)" }}>Total PTO</p>
+                    <p className="text-[1.1rem] font-extrabold leading-tight" style={{ color: "var(--heading-color)" }}>{fmtHrs(loc.total_pto)}</p>
+                  </div>
+                </div>
+              </div>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+                className={cn("mt-1 shrink-0 transition-transform duration-200", isOpen && "rotate-90")} style={{ color: "var(--card-desc)" }}>
+                <path d="M3 1.5L7 5L3 8.5" />
+              </svg>
+            </button>
+            {isOpen && (
+              <div className="border-t px-4 pb-3 pt-2" style={{ borderColor: "var(--card-border)" }}>
+                <table className="w-full text-[0.74rem]">
+                  <thead>
+                    <tr>
+                      {["Department", "Vac", "Pers", "Prot", "Emp"].map((h, idx) => (
+                        <th key={h} className={cn("pb-1.5 font-bold uppercase tracking-[0.08em]", idx === 0 ? "text-left" : "text-right")}
+                          style={{ color: "var(--module-context)", fontSize: "0.6rem" }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loc.departments.map((d) => (
+                      <tr key={d.department} className="border-t" style={{ borderColor: "var(--card-border)" }}>
+                        <td className="py-1.5 font-medium" style={{ color: "var(--heading-color)" }}>{d.department}</td>
+                        <td className="py-1.5 text-right" style={{ color: "var(--heading-color)" }}>{fmtHrs(d.vacation_hours)}</td>
+                        <td className="py-1.5 text-right" style={{ color: "var(--heading-color)" }}>{fmtHrs(d.personal_hours)}</td>
+                        <td className="py-1.5 text-right" style={{ color: d.protected_hours > 0 ? "#0f7fb3" : "var(--card-desc)" }}>{fmtHrs(d.protected_hours)}</td>
+                        <td className="py-1.5 text-right" style={{ color: "var(--card-desc)" }}>{d.employee_count}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // ── Manager adherence table (managers tab) ────────────────────────────────────
 
 function ManagerAdherenceTable({ managers }: { managers: ManagerAdherence[] }) {
@@ -996,12 +1075,13 @@ function UploadBar({ onUploaded }: { onUploaded: () => void }) {
 
 // ── Tab navigation ────────────────────────────────────────────────────────────
 
-type TabId = "overview" | "wosh" | "hours" | "managers";
+type TabId = "overview" | "wosh" | "hours" | "pto" | "managers";
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "overview",  label: "Overview" },
   { id: "wosh",      label: "Shift Exceptions" },
   { id: "hours",     label: "Hours & OT" },
+  { id: "pto",       label: "Time Off" },
   { id: "managers",  label: "Manager Compliance" },
 ];
 
@@ -1210,6 +1290,9 @@ export default function ExecutivePage() {
   );
   const { data: adherenceData } = useSWR<ShiftAdherenceData>(
     "executive-shift-adherence", () => executiveApi.shiftAdherence()
+  );
+  const { data: ptoData } = useSWR<PTOAnalyticsData>(
+    "executive-pto-analytics", () => executiveApi.ptoAnalytics()
   );
 
   // ── Derived ──
@@ -1652,6 +1735,28 @@ export default function ExecutivePage() {
             rows={hourAllocationRows}
             subtitle={viewMode === "monthly" ? currentMonthLabel : report?.week_label ?? dashData?.hours_date_range ?? undefined}
           />
+        </>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* TIME OFF TAB                                                           */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {activeTab === "pto" && (
+        <>
+          <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
+            <SectionLabel>Time Off by Location</SectionLabel>
+            <span className="text-[0.68rem]" style={{ color: "var(--card-desc)" }}>All imported hours · cumulative</span>
+          </div>
+          <div className="mb-5 grid grid-cols-2 md:grid-cols-4 gap-3">
+            <SpotlightCard title="Total PTO" value={fmtHrs(ptoData?.total_pto ?? 0)} detail="Vacation + Personal" accent="#0f7fb3" />
+            <SpotlightCard title="Vacation" value={fmtHrs((ptoData?.locations ?? []).reduce((s, l) => s + l.vacation_hours, 0))} accent="#16a34a" />
+            <SpotlightCard title="Personal" value={fmtHrs((ptoData?.locations ?? []).reduce((s, l) => s + l.personal_hours, 0))} accent="#d97706" />
+            <SpotlightCard title="Protected" value={fmtHrs((ptoData?.locations ?? []).reduce((s, l) => s + l.protected_hours, 0))} detail="Jury, sick, FMLA, etc." accent="#6366f1" />
+          </div>
+          {ptoData && <PtoByLocation locations={ptoData.locations} />}
+          <p className="mt-3 text-[0.68rem]" style={{ color: "var(--card-desc)" }}>
+            Totals reflect all hours imported to date and are not affected by the period selector above. Protected time (jury duty, sick, bereavement, FMLA) is shown separately and excluded from Total PTO.
+          </p>
         </>
       )}
 
