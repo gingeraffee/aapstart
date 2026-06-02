@@ -10,8 +10,9 @@ from app.auth.service import require_admin, require_executive, normalize_tracks
 from app.database.connection import get_db
 from app.database.models import (
     AttendancePoint, Employee, UserProgress, UserNote,
-    TimeRecord, PerformanceReview, AbsenceRecord, WoshReport,
+    TimeRecord, PerformanceReview, AbsenceRecord, WoshReport, ImportLog,
 )
+from app.database.import_log import record_import
 from app.content.loader import get_modules_for_tracks
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
@@ -308,6 +309,15 @@ async def import_bamboo_employees(
             created_count += 1
 
     db.commit()
+    record_import(
+        db,
+        dataset_key="employees",
+        dataset_label="Employee Directory",
+        filename=name,
+        user=admin,
+        row_count=created_count + updated_count,
+        note=f"{created_count} created, {updated_count} updated",
+    )
     return {
         "created": created_count,
         "updated": updated_count,
@@ -484,6 +494,15 @@ async def import_employees_xlsx(
             db.commit()
 
     result["manager_linked"] = manager_linked
+    record_import(
+        db,
+        dataset_key="employees",
+        dataset_label="Employee Directory",
+        filename=fname,
+        user=admin,
+        row_count=int(result.get("added", 0)),
+        note=f"{result.get('added', 0)} added, {manager_linked} managers linked",
+    )
     return result
 
 
@@ -929,6 +948,15 @@ async def import_attendance_points(
         inserted += 1
 
     db.commit()
+    record_import(
+        db,
+        dataset_key="points",
+        dataset_label="Attendance Points",
+        filename=name,
+        user=admin,
+        row_count=inserted,
+        note=f"{skipped} skipped" if skipped else None,
+    )
     return {"inserted": inserted, "skipped": skipped, "errors": errors}
 
 
@@ -1063,6 +1091,15 @@ async def import_employee_directory(
         updated += 1
 
     db.commit()
+    record_import(
+        db,
+        dataset_key="employees",
+        dataset_label="Employee Directory",
+        filename=name,
+        user=admin,
+        row_count=updated,
+        note=f"{updated} updated, {manager_linked} managers linked",
+    )
     return {
         "updated":        updated,
         "skipped":        skipped,
@@ -1245,6 +1282,41 @@ def import_status(
                 **review_summary,
                 "clear_endpoint": "/admin/import/reviews",
             },
+        ],
+    }
+
+
+# -- Imported files history --
+
+@router.get("/imports")
+def import_history(
+    limit: int = 200,
+    admin: dict = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """List of every data file uploaded through the import tools, newest first.
+    Powers the 'Imported Data' tab in the admin Data Inventory panel."""
+    limit = max(1, min(limit, 1000))
+    rows = (
+        db.query(ImportLog)
+        .order_by(ImportLog.uploaded_at.desc())
+        .limit(limit)
+        .all()
+    )
+    return {
+        "files": [
+            {
+                "id": r.id,
+                "dataset_key": r.dataset_key,
+                "dataset_label": r.dataset_label,
+                "filename": r.filename,
+                "row_count": r.row_count,
+                "uploaded_by": r.uploaded_by,
+                "uploaded_by_name": r.uploaded_by_name,
+                "note": r.note,
+                "uploaded_at": r.uploaded_at.isoformat() if r.uploaded_at else None,
+            }
+            for r in rows
         ],
     }
 

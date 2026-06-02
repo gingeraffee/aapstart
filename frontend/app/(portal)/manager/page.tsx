@@ -580,6 +580,26 @@ function EmployeeCard({ member, onClick }: { member: ManagerTeamMemberV2; onClic
           );
         })}
       </div>
+      {(() => {
+        const total = member.modules_total ?? 0;
+        const done = Math.min(member.modules_completed, total || member.modules_completed);
+        const pct = total > 0 ? Math.round((done / total) * 100) : null;
+        return (
+          <div className="mt-3 border-t pt-3" style={{ borderColor: "rgba(153,182,218,0.2)" }}>
+            <div className="flex items-center justify-between">
+              <p className="text-[0.64rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>Modules</p>
+              <p className="text-[0.72rem] font-medium tabular-nums" style={{ color: "var(--sidebar-text)" }}>
+                {total > 0 ? `${done} / ${total}` : done}{pct !== null && ` · ${pct}%`}
+              </p>
+            </div>
+            {total > 0 && (
+              <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full" style={{ background: "rgba(153,182,218,0.25)" }}>
+                <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: pct === 100 ? "#16a34a" : "#0ea5e9" }} />
+              </div>
+            )}
+          </div>
+        );
+      })()}
       <div className="mt-3 flex items-center justify-between border-t pt-3" style={{ borderColor: "rgba(153,182,218,0.2)" }}>
         <div>
           <p className="text-[0.64rem] font-bold uppercase tracking-[0.1em]" style={{ color: "var(--sidebar-label)" }}>Last Login</p>

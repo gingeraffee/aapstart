@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/context/AuthContext";
 import { adminApi, executiveApi, managerApi, modulesApi } from "@/lib/api";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
-import type { BambooImportResult, EmployeeImportResult, EmployeeImportRowInput, EmployeeRecord, ImportDataset, ImportResult, ImportStatus, ModuleSummary, WoshReportMeta } from "@/lib/types";
+import type { BambooImportResult, EmployeeImportResult, EmployeeImportRowInput, EmployeeRecord, ImportDataset, ImportedFile, ImportHistory, ImportResult, ImportStatus, ModuleSummary, WoshReportMeta } from "@/lib/types";
 
 const TRACKS = ["hr", "warehouse", "administrative", "management"] as const;
 const TRACK_LABELS: Record<string, string> = {
@@ -1725,6 +1725,7 @@ function DataImportCard({
 function DataImportsPanel({ onToast }: { onToast: (msg: string, tone?: "success" | "error") => void }) {
   const { data, isLoading, mutate } = useSWR<ImportStatus>("admin-import-status", () => adminApi.importStatus());
   const [clearingKey, setClearingKey] = useState<string | null>(null);
+  const [tab, setTab] = useState<"inventory" | "imported">("inventory");
 
   // Smooth-scroll into view if the URL arrives with #data-inventory
   useEffect(() => {
@@ -1757,18 +1758,97 @@ function DataImportsPanel({ onToast }: { onToast: (msg: string, tone?: "success"
     <div id="data-inventory" className="relative overflow-hidden rounded-[24px] p-6 scroll-mt-24" style={cardStyle()}>
       <div className="absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,#0ea5d9_0%,#22d3ee_100%)]" />
 
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="inline-flex rounded-full px-2.5 py-1 text-[0.64rem] font-bold uppercase tracking-[0.16em]" style={{ background: "rgba(14,165,233,0.08)", color: "#0d6b9d" }}>
-            Data Inventory
-          </p>
-          <h2 className="mt-2 text-[1.12rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>
-            What's currently loaded
-          </h2>
-          <p className="mt-1 max-w-[640px] text-[0.82rem] leading-[1.6]" style={{ color: "var(--card-desc)" }}>
-            Check here before re-downloading any source report. Each tile shows row count, date range, and how long ago it was last imported.
-          </p>
+      <div>
+        <p className="inline-flex rounded-full px-2.5 py-1 text-[0.64rem] font-bold uppercase tracking-[0.16em]" style={{ background: "rgba(14,165,233,0.08)", color: "#0d6b9d" }}>
+          Data Inventory
+        </p>
+        <h2 className="mt-2 text-[1.12rem] font-extrabold tracking-[-0.02em]" style={{ color: "var(--heading-color)" }}>
+          {tab === "inventory" ? "What's currently loaded" : "Imported files"}
+        </h2>
+        <p className="mt-1 max-w-[640px] text-[0.82rem] leading-[1.6]" style={{ color: "var(--card-desc)" }}>
+          {tab === "inventory"
+            ? "Check here before re-downloading any source report. Each tile shows row count, date range, and how long ago it was last imported."
+            : "Every data file uploaded through the import tools, newest first."}
+        </p>
+      </div>
+
+      {/* Tab switcher */}
+      <div className="mt-4 inline-flex rounded-[12px] p-1" style={{ background: "var(--tab-group-bg)", border: "1px solid var(--card-border)" }}>
+        {([
+          { key: "inventory", label: "Data Inventory" },
+          { key: "imported", label: "Imported Data" },
+        ] as const).map((t) => {
+          const active = tab === t.key;
+          return (
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              className="rounded-[9px] px-3.5 py-1.5 text-[0.76rem] font-semibold transition-all"
+              style={{
+                background: active ? "var(--card-bg)" : "transparent",
+                color: active ? "var(--heading-color)" : "var(--card-desc)",
+                boxShadow: active ? "0 1px 3px rgba(16,35,60,0.12)" : "none",
+              }}
+            >
+              {t.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {tab === "inventory" ? (
+        <div className="mt-5">
+          <div className="mb-3 flex justify-end">
+            <button
+              onClick={() => mutate()}
+              className="rounded-[12px] px-3 py-2 text-[0.75rem] font-semibold transition-all hover:opacity-70"
+              style={{ background: "var(--tab-group-bg)", border: "1px solid var(--card-border)", color: "var(--module-context)" }}
+            >
+              ⟳ Refresh
+            </button>
+          </div>
+          {isLoading ? (
+            <div className="flex justify-center py-8"><Spinner /></div>
+          ) : !data ? (
+            <p className="text-[0.78rem]" style={{ color: "var(--card-desc)" }}>Couldn't load status.</p>
+          ) : (
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+              {data.datasets.map((ds) => (
+                <DataImportCard
+                  key={ds.key}
+                  ds={ds}
+                  onClear={handleClear}
+                  clearing={clearingKey === ds.key}
+                  onChanged={() => { void mutate(); }}
+                />
+              ))}
+            </div>
+          )}
         </div>
+      ) : (
+        <ImportedDataView />
+      )}
+    </div>
+  );
+}
+
+function ImportedDataView() {
+  const { data, isLoading, mutate } = useSWR<ImportHistory>("admin-import-history", () => adminApi.importHistory());
+  const files = data?.files ?? [];
+
+  function fmtDateTime(iso: string | null): string {
+    if (!iso) return "—";
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return "—";
+    return d.toLocaleString(undefined, {
+      year: "numeric", month: "short", day: "numeric",
+      hour: "numeric", minute: "2-digit",
+    });
+  }
+
+  return (
+    <div className="mt-5">
+      <div className="mb-3 flex justify-end">
         <button
           onClick={() => mutate()}
           className="rounded-[12px] px-3 py-2 text-[0.75rem] font-semibold transition-all hover:opacity-70"
@@ -1778,25 +1858,67 @@ function DataImportsPanel({ onToast }: { onToast: (msg: string, tone?: "success"
         </button>
       </div>
 
-      <div className="mt-5">
-        {isLoading ? (
-          <div className="flex justify-center py-8"><Spinner /></div>
-        ) : !data ? (
-          <p className="text-[0.78rem]" style={{ color: "var(--card-desc)" }}>Couldn't load status.</p>
-        ) : (
-          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-            {data.datasets.map((ds) => (
-              <DataImportCard
-                key={ds.key}
-                ds={ds}
-                onClear={handleClear}
-                clearing={clearingKey === ds.key}
-                onChanged={() => { void mutate(); }}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+      {isLoading ? (
+        <div className="flex justify-center py-8"><Spinner /></div>
+      ) : files.length === 0 ? (
+        <p className="rounded-[14px] px-4 py-6 text-center text-[0.8rem]" style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", color: "var(--card-desc)" }}>
+          No files have been uploaded yet. Imports made from here on will appear in this list.
+        </p>
+      ) : (
+        <div className="overflow-x-auto rounded-[16px]" style={{ border: "1px solid var(--card-border)" }}>
+          <table className="w-full border-collapse text-[0.78rem]">
+            <thead>
+              <tr style={{ background: "var(--tab-group-bg)" }}>
+                {["File", "Dataset", "Uploaded by", "When", "Rows"].map((h) => (
+                  <th
+                    key={h}
+                    className={cn(
+                      "px-3.5 py-2.5 text-left font-bold uppercase tracking-[0.08em] text-[0.62rem]",
+                      h === "Rows" && "text-right",
+                    )}
+                    style={{ color: "var(--card-desc)" }}
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {files.map((f: ImportedFile) => (
+                <tr key={f.id} style={{ borderTop: "1px solid var(--card-border)" }}>
+                  <td className="max-w-[260px] px-3.5 py-2.5 font-semibold" style={{ color: "var(--heading-color)" }}>
+                    <span className="block truncate" title={f.filename ?? undefined}>
+                      {f.filename ?? "(unnamed file)"}
+                    </span>
+                    {f.note && (
+                      <span className="mt-0.5 block text-[0.68rem] font-normal" style={{ color: "var(--card-desc)" }}>
+                        {f.note}
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-3.5 py-2.5">
+                    <span
+                      className="inline-flex rounded-full px-2 py-0.5 text-[0.66rem] font-semibold"
+                      style={{ background: "rgba(14,165,233,0.1)", color: "#0d6b9d" }}
+                    >
+                      {f.dataset_label}
+                    </span>
+                  </td>
+                  <td className="px-3.5 py-2.5" style={{ color: "var(--module-context)" }}>
+                    {f.uploaded_by_name ?? f.uploaded_by ?? "—"}
+                  </td>
+                  <td className="whitespace-nowrap px-3.5 py-2.5" style={{ color: "var(--module-context)" }}>
+                    {fmtDateTime(f.uploaded_at)}
+                  </td>
+                  <td className="px-3.5 py-2.5 text-right font-semibold" style={{ color: "var(--heading-color)" }}>
+                    {f.row_count.toLocaleString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

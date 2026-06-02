@@ -140,6 +140,22 @@ class WoshReport(Base):
     uploaded_at = Column(DateTime, default=func.now())
 
 
+class ImportLog(Base):
+    """Audit record written each time a data file is uploaded through the admin import
+    tools. One row per successful upload — powers the 'Imported Data' admin view."""
+    __tablename__ = "import_logs"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    dataset_key = Column(String, nullable=False, index=True)   # "time", "absences", "wosh", ...
+    dataset_label = Column(String, nullable=False)             # human label e.g. "Hours (Payclock)"
+    filename = Column(String, nullable=True)                   # original uploaded filename
+    row_count = Column(Integer, nullable=False, default=0)     # rows added/updated by this upload
+    uploaded_by = Column(String, nullable=True)                # employee_id of the uploader
+    uploaded_by_name = Column(String, nullable=True)           # display name of the uploader
+    note = Column(String, nullable=True)                       # optional extra detail
+    uploaded_at = Column(DateTime, default=func.now(), index=True)
+
+
 class UserNote(Base):
     """A note or question a user writes while working through a module."""
     __tablename__ = "user_notes"

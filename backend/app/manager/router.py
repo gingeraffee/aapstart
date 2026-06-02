@@ -12,6 +12,8 @@ from app.database.models import (
     ATTENDANCE_THRESHOLDS, AttendancePoint,
     Employee, TimeRecord, PerformanceReview, UserProgress, AbsenceRecord,
 )
+from app.database.import_log import record_import
+from app.content.loader import get_modules_for_tracks
 
 router = APIRouter(prefix="/api/manager", tags=["manager"])
 
@@ -465,6 +467,15 @@ async def import_time(
         inserted += 1
 
     db.commit()
+    record_import(
+        db,
+        dataset_key="time",
+        dataset_label="Hours (Payclock)",
+        filename=name,
+        user=manager,
+        row_count=inserted,
+        note=f"{skipped} skipped" if skipped else None,
+    )
     return {"inserted": inserted, "skipped": skipped, "errors": errors}
 
 
@@ -555,6 +566,15 @@ async def import_reviews(
         inserted += 1
 
     db.commit()
+    record_import(
+        db,
+        dataset_key="reviews",
+        dataset_label="Performance Reviews",
+        filename=name,
+        user=manager,
+        row_count=inserted,
+        note=f"{skipped} skipped" if skipped else None,
+    )
     return {"inserted": inserted, "skipped": skipped, "errors": errors}
 
 
@@ -716,6 +736,15 @@ async def import_absences(
         hours_upserted += 1
 
     db.commit()
+    record_import(
+        db,
+        dataset_key="absences",
+        dataset_label="Absences",
+        filename=name,
+        user=manager,
+        row_count=inserted,
+        note=f"{skipped} skipped" if skipped else None,
+    )
     return {"inserted": inserted, "skipped": skipped, "errors": errors, "hours_upserted": hours_upserted}
 
 
@@ -974,6 +1003,16 @@ def _build_snapshot(
                     "modules_completed": sub_modules.get(e.employee_id, 0),
                 })
 
+    # Total published modules assigned to each track-set (memoized) — denominator for completion %.
+    _modules_total_cache: dict[tuple[str, ...], int] = {}
+
+    def _modules_total_for(tracks: list[str]) -> int:
+        key = tuple(sorted(tracks))
+        if key not in _modules_total_cache:
+            mods = get_modules_for_tracks(list(key))
+            _modules_total_cache[key] = sum(1 for m in mods if m.get("status") == "published")
+        return _modules_total_cache[key]
+
     team_list = [
         {
             "employee_id": e.employee_id,
@@ -983,6 +1022,7 @@ def _build_snapshot(
             "last_login_at": e.last_login_at.isoformat() if e.last_login_at else None,
             "first_login_at": e.first_login_at.isoformat() if e.first_login_at else None,
             "modules_completed": emp_modules_completed.get(e.employee_id, 0),
+            "modules_total": _modules_total_for(normalize_tracks(e.track)),
             "point_total": pts_by_emp.get(e.employee_id),
             "threshold": _threshold_for(pts_by_emp.get(e.employee_id)),
             "is_manager": e.is_manager,

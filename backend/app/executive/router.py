@@ -17,6 +17,7 @@ from app.database.models import (
     TimeRecord,
     WoshReport,
 )
+from app.database.import_log import record_import
 
 router = APIRouter(prefix="/api/executive", tags=["executive"])
 
@@ -756,6 +757,15 @@ async def upload_wosh(
 
     exc_count = len(parsed_data.get("exceptions") or [])
     mgr_count = len(parsed_data.get("by_manager_detail") or [])
+    record_import(
+        db,
+        dataset_key="wosh",
+        dataset_label="WOSH Shift Exceptions",
+        filename=file.filename,
+        user=user,
+        row_count=exc_count,
+        note=report.week_label,
+    )
     return {
         "id":           report.id,
         "week_label":   report.week_label,

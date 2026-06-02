@@ -121,6 +121,8 @@ export interface ManagerTeamMember {
   last_login_at: string | null;
   first_login_at: string | null;
   modules_completed: number;
+  /** Total published modules assigned to this member's track(s). Present on dashboard roster payloads. */
+  modules_total?: number;
   is_manager?: boolean;
   reports?: IndirectReport[];
 }
@@ -319,6 +321,22 @@ export interface ImportDataset {
 
 export interface ImportStatus {
   datasets: ImportDataset[];
+}
+
+export interface ImportedFile {
+  id: number;
+  dataset_key: ImportDataset["key"];
+  dataset_label: string;
+  filename: string | null;
+  row_count: number;
+  uploaded_by: string | null;
+  uploaded_by_name: string | null;
+  note: string | null;
+  uploaded_at: string | null;
+}
+
+export interface ImportHistory {
+  files: ImportedFile[];
 }
 
 export interface DashboardData {
