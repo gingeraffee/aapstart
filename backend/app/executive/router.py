@@ -7,7 +7,7 @@ from openpyxl import load_workbook
 from sqlalchemy import func as sa_func
 from sqlalchemy.orm import Session
 
-from app.auth.service import require_executive, require_hr_and_admin, normalize_tracks
+from app.auth.service import require_admin, require_hr_and_admin, normalize_tracks
 from app.database.connection import get_db
 from app.database.models import (
     ATTENDANCE_THRESHOLDS,
@@ -249,7 +249,7 @@ def executive_dashboard(
     week_start: str | None = Query(None),
     from_date: str | None = Query(None),
     to_date: str | None = Query(None),
-    user: dict = Depends(require_executive),
+    user: dict = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
     """Org-wide headcount and hours-by-department summary."""
@@ -378,7 +378,7 @@ def hours_by_location(
     week_start: str | None = Query(None),
     from_date: str | None = Query(None),
     to_date: str | None = Query(None),
-    user: dict = Depends(require_executive),
+    user: dict = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
     """Hours (regular + OT) grouped by display location and department."""
@@ -475,7 +475,7 @@ def _normalize_location(loc: str | None, div: str | None) -> str:
 
 @router.get("/headcount")
 def headcount_by_location(
-    user: dict = Depends(require_executive),
+    user: dict = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
     """Active employee headcount grouped by display location → department."""
@@ -520,7 +520,7 @@ def headcount_by_location(
 
 @router.get("/pto-analytics")
 def pto_analytics(
-    user: dict = Depends(require_executive),
+    user: dict = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
     """Vacation + personal hours by display location and department."""
@@ -590,7 +590,7 @@ def pto_analytics(
 
 @router.get("/shift-adherence")
 def shift_adherence(
-    user: dict = Depends(require_executive),
+    user: dict = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
     """Per-manager compliance ranked by OT rate, absences, and review past-due rate."""
@@ -791,7 +791,7 @@ def clear_wosh_reports(
 
 @router.get("/wosh/latest")
 def get_wosh_latest(
-    user: dict = Depends(require_executive),
+    user: dict = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
     report = db.query(WoshReport).order_by(WoshReport.uploaded_at.desc()).first()
@@ -802,7 +802,7 @@ def get_wosh_latest(
 
 @router.get("/wosh/history")
 def get_wosh_history(
-    user: dict = Depends(require_executive),
+    user: dict = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
     reports = db.query(WoshReport).order_by(WoshReport.uploaded_at.desc()).all()
@@ -812,7 +812,7 @@ def get_wosh_history(
 @router.get("/wosh/{report_id}")
 def get_wosh_report(
     report_id: int,
-    user: dict = Depends(require_executive),
+    user: dict = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
     report = db.query(WoshReport).filter_by(id=report_id).first()

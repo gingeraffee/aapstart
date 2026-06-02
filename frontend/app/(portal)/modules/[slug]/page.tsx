@@ -2376,7 +2376,7 @@ export default function ModulePage() {
 
       <ModuleShell
         breadcrumbs={isManagement
-          ? [{ label: "Manager Resources", href: "/overview" }, { label: currentModule.title }]
+          ? [{ label: "Management Processes", href: "/overview" }, { label: currentModule.title }]
           : [{ label: "My Path", href: "/overview" }, { label: currentModule.title }]
         }
         moduleOrder={currentModule.order}

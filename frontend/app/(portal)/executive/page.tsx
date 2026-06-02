@@ -1350,7 +1350,7 @@ export default function ExecutivePage() {
     ? currentMonthLabel
     : weeks[currentIndex]?.week_label ?? "No reports uploaded";
 
-  if (user && !user.is_executive && !user.is_admin) {
+  if (user && !user.is_admin) {
     router.replace("/overview");
     return null;
   }

@@ -346,67 +346,6 @@ export function AppShell({ children }: AppShellProps) {
             </details>
           )}
 
-          {/* ── Manager Resources section (HR admins, collapsed by default) ── */}
-          {showManagementTab && managementModules.length > 0 ? (
-            <details className="group mt-5 border-t pt-4 [&_summary::-webkit-details-marker]:hidden" style={{ borderColor: "var(--sidebar-divider)" }}>
-              <summary
-                className="mb-2.5 flex cursor-pointer list-none items-center justify-between px-2 text-[0.54rem] font-bold uppercase tracking-[0.17em]"
-                style={{ color: "var(--sidebar-label)" }}
-              >
-                <span>Manager Resources</span>
-                <span className="flex items-center gap-2">
-                  <span className="rounded-full px-2 py-0.5 text-[0.5rem]" style={{ background: "var(--sidebar-icon-bg)", color: "var(--sidebar-text)" }}>
-                    {managementModules.length}
-                  </span>
-                  <span className="text-[0.7rem] transition-transform duration-200 group-open:rotate-90">&gt;</span>
-                </span>
-              </summary>
-
-              <div className="space-y-1">
-                {managementModules.map((m) => {
-                  const isActive = pathname.startsWith(`/modules/${m.slug}`);
-
-                  return (
-                    <Link
-                      key={m.slug}
-                      href={`/modules/${m.slug}`}
-                      className={cn(
-                        "flex items-center gap-2.5 rounded-[12px] px-3.5 py-2.5 text-[0.8rem] font-semibold transition-all duration-200",
-                        isActive ? "shadow-[0_8px_14px_rgba(16,35,60,0.16)]" : ""
-                      )}
-                      style={{
-                        color: isActive ? "var(--sidebar-text-active)" : "var(--sidebar-text)",
-                        ...(isActive ? activeNavStyle : undefined),
-                      }}
-                    >
-                      <span
-                        className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full transition-all"
-                        style={{
-                          color: isActive ? "var(--sidebar-icon-active-text)" : "var(--sidebar-icon-text)",
-                          background: isActive ? "var(--sidebar-icon-active-bg)" : "var(--sidebar-icon-bg)",
-                        }}
-                      >
-                        <svg
-                          width="10"
-                          height="10"
-                          viewBox="0 0 12 12"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M2 3h8M2 6h8M2 9h5" />
-                        </svg>
-                      </span>
-                      <span className="leading-tight">{m.title}</span>
-                    </Link>
-                  );
-                })}
-              </div>
-            </details>
-          ) : null}
-
           {/* ── Management Processes section (management + HR) ── */}
           {showManagementSection && managementModules.length > 0 && (
             <details open={!canCollapse} className={cn("group [&_summary::-webkit-details-marker]:hidden", showJourney ? "mt-5 border-t pt-4" : "mt-3")} style={showJourney ? { borderColor: "var(--sidebar-divider)" } : undefined}>
@@ -515,7 +454,7 @@ export function AppShell({ children }: AppShellProps) {
           )}
 
           {/* Executive Dashboard button */}
-          {(user?.is_executive || user?.is_admin) && (
+          {user?.is_admin && (
             <Link
               href="/executive"
               title="Executive Reports"
@@ -657,7 +596,7 @@ export function AppShell({ children }: AppShellProps) {
         )}
 
         <div className="mx-auto flex items-center gap-7 md:absolute md:left-1/2 md:mx-0 md:-translate-x-1/2">
-          {(user?.is_executive || user?.is_admin) && (
+          {user?.is_admin && (
             <button
               onClick={() => router.push("/executive")}
               className="pb-0.5 text-[0.85rem] font-semibold transition-colors duration-200"
@@ -728,7 +667,7 @@ export function AppShell({ children }: AppShellProps) {
                 borderBottom: isManagementGuidesPage ? "2px solid var(--sidebar-text)" : "2px solid transparent",
               }}
             >
-              Manager Resources
+              Management Guides
             </button>
           )}
         </div>
