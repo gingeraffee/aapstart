@@ -25,6 +25,14 @@ class Settings(BaseSettings):
     # TOTP 2FA
     totp_issuer_name: str = "AAP Start"
     totp_required: bool = True
+    # Session cookie cross-site behavior.
+    # When the frontend and backend are on different sites (e.g. separate
+    # *.onrender.com subdomains), the browser only sends the session cookie
+    # if it is SameSite=None and Secure. Production sets these via env:
+    #   SESSION_COOKIE_SAMESITE=none  and  SESSION_COOKIE_SECURE=true
+    # Local dev keeps the defaults (lax / not-secure) so http://localhost works.
+    session_cookie_samesite: str = "lax"
+    session_cookie_secure: bool = False
 
     class Config:
         env_file = ".env"

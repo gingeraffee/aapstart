@@ -18,9 +18,9 @@ def _set_session_cookie(response: Response, token: str):
         key="aap_session",
         value=token,
         httponly=True,
-        samesite="lax",
+        samesite=settings.session_cookie_samesite,
         max_age=60 * 60 * 8,  # 8 hours
-        secure=False,         # Set True in production with HTTPS
+        secure=settings.session_cookie_secure,
     )
 
 
@@ -205,5 +205,9 @@ def me(current_user: dict = Depends(service.get_current_user)):
 
 @router.post("/logout")
 def logout(response: Response):
-    response.delete_cookie("aap_session")
+    response.delete_cookie(
+        "aap_session",
+        samesite=settings.session_cookie_samesite,
+        secure=settings.session_cookie_secure,
+    )
     return {"message": "Logged out."}
